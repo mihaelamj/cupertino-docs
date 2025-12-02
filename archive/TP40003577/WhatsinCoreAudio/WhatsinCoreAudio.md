@@ -1,6 +1,7 @@
 ---
 title: "Appendix B: Core Audio Services"
 book: "Core Audio Overview"
+framework: "CoreAudio"
 chapterId: "TP40003577-CH4"
 date: "2017-10-30"
 description: "Provides an overview of Core Audio and its programming interfaces. "

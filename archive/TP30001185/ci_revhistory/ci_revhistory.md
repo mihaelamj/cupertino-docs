@@ -1,6 +1,7 @@
 ---
 title: "Revision History"
 book: "Core Image Programming Guide"
+framework: "CoreImage"
 chapterId: "TP30001185-CH99"
 date: "2016-09-13"
 description: "Provides an overview and explains how to use and create image filters and image units."

@@ -1,6 +1,7 @@
 ---
 title: "Setting Up Layer Objects"
 book: "Core Animation Programming Guide"
+framework: "QuartzCore"
 chapterId: "TP40004514-CH13"
 date: "2015-03-09"
 description: "Introduces the main components and services of Core Animation."

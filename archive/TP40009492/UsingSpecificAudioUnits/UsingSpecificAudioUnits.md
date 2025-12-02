@@ -1,6 +1,7 @@
 ---
 title: "Using Specific Audio Units"
 book: "Audio Unit Hosting Guide for iOS"
+framework: "CoreAudio"
 chapterId: "TP40009492-CH17"
 date: "2010-09-01"
 description: "Explains how to use system-supplied audio units."

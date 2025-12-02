@@ -1,6 +1,7 @@
 ---
 title: "Introduction"
 book: "Core Text Programming Guide"
+framework: "CoreText"
 chapterId: "TP40005533-CH1"
 date: "2014-09-17"
 description: "Explains how to do text layout and font-related operations using the Core Text programming interfaces."

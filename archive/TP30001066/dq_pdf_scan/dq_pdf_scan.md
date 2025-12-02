@@ -1,6 +1,7 @@
 ---
 title: "PDF Document Parsing"
 book: "Quartz 2D Programming Guide"
+framework: "CoreGraphics"
 chapterId: "TP30001066-CH220"
 date: "2017-03-21"
 description: "Explains how to use Quartz 2D. Includes illustrations and sample code."

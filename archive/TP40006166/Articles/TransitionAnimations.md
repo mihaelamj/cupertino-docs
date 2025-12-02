@@ -1,6 +1,7 @@
 ---
 title: "Transition Animation"
 book: "Animation Types and Timing Programming Guide"
+framework: "QuartzCore"
 chapterId: "TP40006674"
 date: "2010-05-18"
 description: "Describes the animation and timing classes used by both Core Animation and Cocoa Animation proxies."

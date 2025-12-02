@@ -1,6 +1,7 @@
 ---
 title: "Adding Behavior to a Cocoa Program"
 book: "Cocoa Fundamentals Guide"
+framework: "Cocoa"
 chapterId: "TP40002974-CH5"
 date: "2013-09-18"
 description: "Introduces the basic concepts, terminology, architectures, and design patterns of the Cocoa and Cocoa Touch frameworks and development environment."

@@ -1,6 +1,7 @@
 ---
 title: "What Is Core Audio?"
 book: "Core Audio Overview"
+framework: "CoreAudio"
 chapterId: "TP40003577-CH3"
 date: "2017-10-30"
 description: "Provides an overview of Core Audio and its programming interfaces. "

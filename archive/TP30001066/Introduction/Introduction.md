@@ -1,6 +1,7 @@
 ---
 title: "Introduction"
 book: "Quartz 2D Programming Guide"
+framework: "CoreGraphics"
 chapterId: "TP40007533"
 date: "2017-03-21"
 description: "Explains how to use Quartz 2D. Includes illustrations and sample code."
