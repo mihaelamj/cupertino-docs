@@ -1,0 +1,144 @@
+{
+  "abstract" : "A view controller that displays a popover tip in UIKit applications.",
+  "codeExamples" : [
+    {
+      "code" : "import TipKit\nimport UIKit\n\nstruct CatTracksFeatureTip: Tip {\n    var title: Text {\n        Text(\"Sample tip title\")\n    }\n\n    var message: Text? {\n        Text(\"Sample tip message\")\n    }\n\n    var image: Image? {\n        Image(systemName: \"globe\")\n    }\n}\n\nclass CatTracksViewController: UIViewController {\n    @IBOutlet weak var catTracksFeatureButton: UIButton!\n\n    private var catTracksFeatureTip = CatTracksFeatureTip()\n    private var tipObservationTask: Task<Void, Never>?\n    private weak var tipPopoverController: TipUIPopoverViewController?\n\n    override func viewDidAppear(_ animated: Bool) {\n        super.viewDidAppear(animated)\n\n        tipObservationTask = tipObservationTask ?? Task { @MainActor in\n            for await shouldDisplay in catTracksFeatureTip.shouldDisplayUpdates {\n                if shouldDisplay {\n                    let popoverController = TipUIPopoverViewController(catTracksFeatureTip, sourceItem: catTracksFeatureButton)\n                    present(popoverController, animated: animated)\n                    tipPopoverController = popoverController\n                }\n                else {\n                    if presentedViewController is TipUIPopoverViewController {\n                        dismiss(animated: animated)\n                        tipPopoverController = nil\n                    }\n                }\n            }\n        }\n    }\n\n    override func viewWillDisappear(_ animated: Bool) {\n        super.viewWillDisappear(animated)\n\n        tipObservationTask?.cancel()\n        tipObservationTask = nil\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCoding",
+    "NSExtensionRequestHandling",
+    "NSObjectProtocol",
+    "NSTouchBarProvider",
+    "UIActivityItemsConfigurationProviding",
+    "UIAppearanceContainer",
+    "UIContentContainer",
+    "UIFocusEnvironment",
+    "UIPasteConfigurationSupporting",
+    "UIResponderStandardEditActions",
+    "UIStateRestoring",
+    "UITraitChangeObservable",
+    "UITraitEnvironment",
+    "UIUserActivityRestoring"
+  ],
+  "contentHash" : "0637c65bde8026737f2f0b55041ee3cf71f5c71ab4f6b62a92670066360ecadd",
+  "crawledAt" : "2025-12-02T06:09:19Z",
+  "declaration" : {
+    "code" : "@MainActor @objc @preconcurrency final class TipUIPopoverViewController",
+    "language" : "swift"
+  },
+  "id" : "15DA6808-23E5-47E8-8523-2725DD556DA2",
+  "kind" : "class",
+  "module" : "TipKit",
+  "overview" : "## Overview\n\nUse this view controller to present a tip you want to display using [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIPopoverPresentationController].\n\nPresenting or dismissing TipUIPopoverViewController is done by listening to a tip’s [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tip\/shouldDisplayUpdates] or [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tip\/statusUpdates].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\ncrawled: 2025-12-02T06:09:19Z\n---\n\n# TipUIPopoverViewController\n\n**Class**\n\nA view controller that displays a popover tip in UIKit applications.\n\n## Declaration\n\n```swift\n@MainActor @objc @preconcurrency final class TipUIPopoverViewController\n```\n\n## Overview\n\nUse this view controller to present a tip you want to display using [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIPopoverPresentationController].\n\nPresenting or dismissing TipUIPopoverViewController is done by listening to a tip’s [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tip\/shouldDisplayUpdates] or [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tip\/statusUpdates].\n\n```swift\nimport TipKit\nimport UIKit\n\nstruct CatTracksFeatureTip: Tip {\n    var title: Text {\n        Text(\"Sample tip title\")\n    }\n\n    var message: Text? {\n        Text(\"Sample tip message\")\n    }\n\n    var image: Image? {\n        Image(systemName: \"globe\")\n    }\n}\n\nclass CatTracksViewController: UIViewController {\n    @IBOutlet weak var catTracksFeatureButton: UIButton!\n\n    private var catTracksFeatureTip = CatTracksFeatureTip()\n    private var tipObservationTask: Task<Void, Never>?\n    private weak var tipPopoverController: TipUIPopoverViewController?\n\n    override func viewDidAppear(_ animated: Bool) {\n        super.viewDidAppear(animated)\n\n        tipObservationTask = tipObservationTask ?? Task { @MainActor in\n            for await shouldDisplay in catTracksFeatureTip.shouldDisplayUpdates {\n                if shouldDisplay {\n                    let popoverController = TipUIPopoverViewController(catTracksFeatureTip, sourceItem: catTracksFeatureButton)\n                    present(popoverController, animated: animated)\n                    tipPopoverController = popoverController\n                }\n                else {\n                    if presentedViewController is TipUIPopoverViewController {\n                        dismiss(animated: animated)\n                        tipPopoverController = nil\n                    }\n                }\n            }\n        }\n    }\n\n    override func viewWillDisappear(_ animated: Bool) {\n        super.viewWillDisappear(animated)\n\n        tipObservationTask?.cancel()\n        tipObservationTask = nil\n    }\n}\n```\n\n## Initializers\n\n- **init(_:sourceItem:actionHandler:)**: Initializes a popover controller with the specified tip.\n- **init(coder:)**\n- **init(nibName:bundle:)**\n\n## Instance Properties\n\n- **backgroundColor**: The background color to use for the tip view.\n- **backgroundStyle**: The background style to use for the tip view.\n- **imageSize**: Size of the image displayed in the tip view.\n- **imageStyle**: Foreground style for the tip’s image.\n- **presentationDelegate**: The popover presentation delegate, which lets you customize the behavior of a popover-based presentation.\n- **sourceItem**: The item on which to anchor the tip popover.\n- **viewStyle**: The given style for TipView within the view hierarchy.\n\n## UIKit Views\n\n- **TipUIView**: A user interface element that represents a tip in UIKit applications.\n- **TipUICollectionViewCell**: A collection view cell that embeds a tip.\n- **TipUICollectionReusableView**: A UICollectionReusableView subclass that represents a tip.\n\n## Inherits From\n\n- UIViewController\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCoding\n- NSExtensionRequestHandling\n- NSObjectProtocol\n- NSTouchBarProvider\n- UIActivityItemsConfigurationProviding\n- UIAppearanceContainer\n- UIContentContainer\n- UIFocusEnvironment\n- UIPasteConfigurationSupporting\n- UIResponderStandardEditActions\n- UIStateRestoring\n- UITraitChangeObservable\n- UITraitEnvironment\n- UIUserActivityRestoring\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a popover controller with the specified tip.",
+          "name" : "init(_:sourceItem:actionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\/init(_:sourceItem:actionHandler:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(coder:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\/init(coder:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(nibName:bundle:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\/init(nibName:bundle:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The background color to use for the tip view.",
+          "name" : "backgroundColor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\/backgroundColor"
+        },
+        {
+          "description" : "The background style to use for the tip view.",
+          "name" : "backgroundStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\/backgroundStyle"
+        },
+        {
+          "description" : "Size of the image displayed in the tip view.",
+          "name" : "imageSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\/imageSize"
+        },
+        {
+          "description" : "Foreground style for the tip’s image.",
+          "name" : "imageStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\/imageStyle"
+        },
+        {
+          "description" : "The popover presentation delegate, which lets you customize the behavior of a popover-based presentation.",
+          "name" : "presentationDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\/presentationDelegate"
+        },
+        {
+          "description" : "The item on which to anchor the tip popover.",
+          "name" : "sourceItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\/sourceItem"
+        },
+        {
+          "description" : "The given style for TipView within the view hierarchy.",
+          "name" : "viewStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController\/viewStyle"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A user interface element that represents a tip in UIKit applications.",
+          "name" : "TipUIView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIView"
+        },
+        {
+          "description" : "A collection view cell that embeds a tip.",
+          "name" : "TipUICollectionViewCell",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUICollectionViewCell"
+        },
+        {
+          "description" : "A UICollectionReusableView subclass that represents a tip.",
+          "name" : "TipUICollectionReusableView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUICollectionReusableView"
+        }
+      ],
+      "title" : "UIKit Views"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "UIViewController"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TipUIPopoverViewController",
+  "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipUIPopoverViewController"
+}

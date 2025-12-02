@@ -1,0 +1,121 @@
+{
+  "abstract" : "An object you use to install macOS on the specified virtual machine.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Call VZMacOSInstaller with a URL that corresponds to a local file. \n\/\/ This is the storage location for the restore image the app downloads.\nlet localRestoreImageURL = ...\n\n\/\/ Load the latest restore image.\nguard let restoreImage = try? await VZMacOSRestoreImage.latestSupported else {\n    \/\/ Handle the error.\n    abort()\n}\n\n\/\/ Call VZMacOSInstaller with a URL that corresponds to a local file. \n\/\/ Because restoreImage came from latestSupported, its URL property refers to a \n\/\/ restore image on the network. Download the restore image to the local file system.\nguard let (location, _) = try? await URLSession.shared.download(from: restoreImage.url, delegate: nil) \n    else {\n        \/\/ Handle the error.\n        abort()\n}\n\nguard ((try? FileManager.default.moveItem(at: location, to: localRestoreImageURL)) != nil) else {\n    \/\/ Handle the error.\n    abort()\n}\n\nDispatchQueue.main.async {\n    \/\/ Becuase this restore image came from VZMacOSRestoreImage.\n    \/\/ latestSupported, mostFeaturefulSupportedConfiguration should not be nil.\n    let configurationRequirements = restoreImage.mostFeaturefulSupportedConfiguration!\n\n    \/\/ Construct a VZVirtualMachineConfiguration that satisfies the configuration requirements.\n    let configuration = VZVirtualMachineConfiguration()\n    configuration.bootLoader = VZMacOSBootLoader()\n    configuration.platform = VZMacPlatformConfiguration()\n\n    \/\/ The following are minimum values; you can use larger values if desired.\n    configuration.cpuCount = configurationRequirements.minimumSupportedCPUCount\n    configuration.memorySize = configurationRequirements.minimumSupportedMemorySize\n\n    \/\/ Set other configuration properties as necessary.\n    \/\/ ...\n\nguard ((try? configuration.validate()) != nil) else {\n    \/\/ Handle the error.\n    abort()\n}\n\nlet virtualMachine = VZVirtualMachine(configuration: configuration)\nlet installer = VZMacOSInstaller(virtualMachine: virtualMachine, restoringFromImageAt: localRestoreImageURL)\ninstaller.install(completionHandler: { (result: Result) in\n    if case let .failure(error) = result {\n        \/\/ Handle the error.\n        abort()\n    } else {\n        \/\/ Installation was successful.\n    }\n})\n\n\/\/ Observe progress using installer.progress object.\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "3a173a086701e6868c4069bb50544d121cbc86e4958cc741a45777eae04ae782",
+  "crawledAt" : "2025-12-02T21:10:40Z",
+  "declaration" : {
+    "code" : "class VZMacOSInstaller",
+    "language" : "swift"
+  },
+  "id" : "CEC3E623-4BBB-4CAA-B471-1D69534D5779",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Virtualization",
+  "overview" : "## Overview\n\nInitialize a [doc:\/\/com.apple.virtualization\/documentation\/Virtualization\/VZMacOSInstaller] object with a [doc:\/\/com.apple.virtualization\/documentation\/Virtualization\/VZVirtualMachine] and a file URL that refers to a macOS restore image.\n\nThe following code example shows how to use a `VZMacOSInstaller:`",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMacOSInstaller\ncrawled: 2025-12-02T21:10:40Z\n---\n\n# VZMacOSInstaller\n\n**Class**\n\nAn object you use to install macOS on the specified virtual machine.\n\n## Declaration\n\n```swift\nclass VZMacOSInstaller\n```\n\n## Overview\n\nInitialize a [doc:\/\/com.apple.virtualization\/documentation\/Virtualization\/VZMacOSInstaller] object with a [doc:\/\/com.apple.virtualization\/documentation\/Virtualization\/VZVirtualMachine] and a file URL that refers to a macOS restore image.\n\nThe following code example shows how to use a `VZMacOSInstaller:`\n\n```swift\n\/\/ Call VZMacOSInstaller with a URL that corresponds to a local file. \n\/\/ This is the storage location for the restore image the app downloads.\nlet localRestoreImageURL = ...\n\n\/\/ Load the latest restore image.\nguard let restoreImage = try? await VZMacOSRestoreImage.latestSupported else {\n    \/\/ Handle the error.\n    abort()\n}\n\n\/\/ Call VZMacOSInstaller with a URL that corresponds to a local file. \n\/\/ Because restoreImage came from latestSupported, its URL property refers to a \n\/\/ restore image on the network. Download the restore image to the local file system.\nguard let (location, _) = try? await URLSession.shared.download(from: restoreImage.url, delegate: nil) \n    else {\n        \/\/ Handle the error.\n        abort()\n}\n\nguard ((try? FileManager.default.moveItem(at: location, to: localRestoreImageURL)) != nil) else {\n    \/\/ Handle the error.\n    abort()\n}\n\nDispatchQueue.main.async {\n    \/\/ Becuase this restore image came from VZMacOSRestoreImage.\n    \/\/ latestSupported, mostFeaturefulSupportedConfiguration should not be nil.\n    let configurationRequirements = restoreImage.mostFeaturefulSupportedConfiguration!\n\n    \/\/ Construct a VZVirtualMachineConfiguration that satisfies the configuration requirements.\n    let configuration = VZVirtualMachineConfiguration()\n    configuration.bootLoader = VZMacOSBootLoader()\n    configuration.platform = VZMacPlatformConfiguration()\n\n    \/\/ The following are minimum values; you can use larger values if desired.\n    configuration.cpuCount = configurationRequirements.minimumSupportedCPUCount\n    configuration.memorySize = configurationRequirements.minimumSupportedMemorySize\n\n    \/\/ Set other configuration properties as necessary.\n    \/\/ ...\n\nguard ((try? configuration.validate()) != nil) else {\n    \/\/ Handle the error.\n    abort()\n}\n\nlet virtualMachine = VZVirtualMachine(configuration: configuration)\nlet installer = VZMacOSInstaller(virtualMachine: virtualMachine, restoringFromImageAt: localRestoreImageURL)\ninstaller.install(completionHandler: { (result: Result) in\n    if case let .failure(error) = result {\n        \/\/ Handle the error.\n        abort()\n    } else {\n        \/\/ Installation was successful.\n    }\n})\n\n\/\/ Observe progress using installer.progress object.\n}\n```\n\n## Creating a macOS Installer\n\n- **init(virtualMachine:restoringFromImageAt:)**: Creates a macOS installer object.\n\n## Getting Information About an Installation\n\n- **progress**: A progress object that you can use to observe or cancel an installation.\n- **restoreImageURL**: The restore image URL used to initialize this installer.\n- **virtualMachine**: The virtual machine used to initialize this installer.\n\n## Installing macOS\n\n- **install(completionHandler:)**: Start installing macOS.\n- **install()**: Start installing macOS.\n\n## Related Documentation\n\n- **VZVirtualMachine**: An object that manages the overall state and configuration of your VM.\n\n## Installers\n\n- **VZMacOSRestoreImage**: An object that describes a version of macOS to install on to a virtual machine.\n- **VZMacOSConfigurationRequirements**: An object that describes the parameter constraints required by a specific configuration of macOS.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a macOS installer object.",
+          "name" : "init(virtualMachine:restoringFromImageAt:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMacOSInstaller\/init(virtualMachine:restoringFromImageAt:)"
+        }
+      ],
+      "title" : "Creating a macOS Installer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A progress object that you can use to observe or cancel an installation.",
+          "name" : "progress",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMacOSInstaller\/progress"
+        },
+        {
+          "description" : "The restore image URL used to initialize this installer.",
+          "name" : "restoreImageURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMacOSInstaller\/restoreImageURL"
+        },
+        {
+          "description" : "The virtual machine used to initialize this installer.",
+          "name" : "virtualMachine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMacOSInstaller\/virtualMachine"
+        }
+      ],
+      "title" : "Getting Information About an Installation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Start installing macOS.",
+          "name" : "install(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMacOSInstaller\/install(completionHandler:)"
+        },
+        {
+          "description" : "Start installing macOS.",
+          "name" : "install()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMacOSInstaller\/install()"
+        }
+      ],
+      "title" : "Installing macOS"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that manages the overall state and configuration of your VM.",
+          "name" : "VZVirtualMachine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZVirtualMachine"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that describes a version of macOS to install on to a virtual machine.",
+          "name" : "VZMacOSRestoreImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMacOSRestoreImage"
+        },
+        {
+          "description" : "An object that describes the parameter constraints required by a specific configuration of macOS.",
+          "name" : "VZMacOSConfigurationRequirements",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMacOSConfigurationRequirements"
+        }
+      ],
+      "title" : "Installers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "VZMacOSInstaller",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMacOSInstaller"
+}

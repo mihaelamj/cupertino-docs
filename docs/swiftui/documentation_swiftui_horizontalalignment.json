@@ -1,0 +1,157 @@
+{
+  "abstract" : "An alignment position along the horizontal axis.",
+  "codeExamples" : [
+    {
+      "code" : "private struct HorizontalAlignmentGallery: View {\n    var body: some View {\n        HStack(spacing: 30) {\n            column(alignment: .leading, text: \"Leading\")\n            column(alignment: .center, text: \"Center\")\n            column(alignment: .trailing, text: \"Trailing\")\n        }\n        .frame(height: 150)\n    }\n\n    private func column(alignment: HorizontalAlignment, text: String) -> some View {\n        VStack(alignment: alignment, spacing: 0) {\n            Color.red.frame(width: 1)\n            Text(text).font(.title).border(.gray)\n            Color.red.frame(width: 1)\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "HorizontalAlignmentGallery()\n    .environment(\\.layoutDirection, .rightToLeft)",
+      "language" : "swift"
+    },
+    {
+      "code" : "private struct OneQuarterAlignment: AlignmentID {\n    static func defaultValue(in context: ViewDimensions) -> CGFloat {\n        context.width \/ 4\n    }\n}\n\nextension HorizontalAlignment {\n    static let oneQuarter = HorizontalAlignment(OneQuarterAlignment.self)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct LayeredVerticalStripes: View {\n    var body: some View {\n        ZStack(alignment: Alignment(horizontal: .oneQuarter, vertical: .center)) {\n            verticalStripes(color: .blue)\n                .frame(width: 300, height: 150)\n            verticalStripes(color: .green)\n                .frame(width: 180, height: 80)\n        }\n    }\n\n    private func verticalStripes(color: Color) -> some View {\n        HStack(spacing: 1) {\n            ForEach(0..<4) { _ in color }\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "BitwiseCopyable",
+    "Copyable",
+    "Equatable",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "54adb0b8bdfbbab6d25d316c5143097abd615df6196b00325b10b32d534a8426",
+  "crawledAt" : "2025-12-02T17:38:48Z",
+  "declaration" : {
+    "code" : "@frozen struct HorizontalAlignment",
+    "language" : "swift"
+  },
+  "id" : "672B4709-A5BF-42E0-B8EC-CB1CB3FE30B6",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nUse horizontal alignment guides to tell SwiftUI how to position views relative to one another horizontally, like when you place views vertically in an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VStack]. The following example demonstrates common built-in horizontal alignments:\n\n\n\nYou can generate the example above by creating a series of columns implemented as vertical stacks, where you configure each stack with a different alignment guide:\n\nDuring layout, SwiftUI aligns the views inside each stack by bringing together the specified guides of the affected views. SwiftUI calculates the position of a guide for a particular view based on the characteristics of the view. For example, the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/HorizontalAlignment\/center] guide appears at half the width of the view. You can override the guide calculation for a particular view using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/alignmentGuide(_:computeValue:)] view modifier.\n\n### Layout direction\n\nWhen a user configures their device to use a left-to-right language like English, the system places the leading alignment on the left and the trailing alignment on the right, as the example from the previous section demonstrates. However, in a right-to-left language, the system reverses these. You can see this by using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/environment(_:_:)] view modifier to explicitly override the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues\/layoutDirection] environment value for the view defined above:\n\n\n\nThis automatic layout adjustment makes it easier to localize your app, but it’s still important to test your app for the different locales that you ship into. For more information about the localization process, see [doc:\/\/com.apple.documentation\/documentation\/Xcode\/localization].\n\n### Custom alignment guides\n\nYou can create a custom horizontal alignment by creating a type that conforms to the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AlignmentID] protocol, and then using that type to initialize a new static property on `HorizontalAlignment`:\n\nYou implement the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AlignmentID\/defaultValue(in:)] method to calculate a default value for the custom alignment guide. The method receives a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ViewDimensions] instance that you can use to calculate an appropriate value based on characteristics of the view. The example above places the guide at one quarter of the width of the view, as measured from the view’s origin.\n\nYou can then use the custom alignment guide like any built-in guide. For example, you can use it as the `alignment` parameter to a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VStack], or you can change it for a specific view using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/alignmentGuide(_:computeValue:)] view modifier. Custom alignment guides also automatically reverse in a right-to-left environment, just like built-in guides.\n\n### Composite alignment\n\nCombine a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VerticalAlignment] with a `HorizontalAlignment` to create a composite [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Alignment] that indicates both vertical and horizontal positioning in one value. For example, you could combine your custom `oneQuarter` horizontal alignment from the previous section with a built-in [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VerticalAlignment\/center] vertical alignment to use in a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ZStack]:\n\nThe example above uses widths and heights that generate two mismatched sets of four vertical stripes. The [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ZStack] centers the two sets vertically and aligns them horizontally one quarter of the way from the leading edge of each set. In a left-to-right locale, this aligns the right edges of the left-most stripes of each set:\n\n",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/HorizontalAlignment\ncrawled: 2025-12-02T17:38:48Z\n---\n\n# HorizontalAlignment\n\n**Structure**\n\nAn alignment position along the horizontal axis.\n\n## Declaration\n\n```swift\n@frozen struct HorizontalAlignment\n```\n\n## Overview\n\nUse horizontal alignment guides to tell SwiftUI how to position views relative to one another horizontally, like when you place views vertically in an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VStack]. The following example demonstrates common built-in horizontal alignments:\n\n\n\nYou can generate the example above by creating a series of columns implemented as vertical stacks, where you configure each stack with a different alignment guide:\n\n```swift\nprivate struct HorizontalAlignmentGallery: View {\n    var body: some View {\n        HStack(spacing: 30) {\n            column(alignment: .leading, text: \"Leading\")\n            column(alignment: .center, text: \"Center\")\n            column(alignment: .trailing, text: \"Trailing\")\n        }\n        .frame(height: 150)\n    }\n\n    private func column(alignment: HorizontalAlignment, text: String) -> some View {\n        VStack(alignment: alignment, spacing: 0) {\n            Color.red.frame(width: 1)\n            Text(text).font(.title).border(.gray)\n            Color.red.frame(width: 1)\n        }\n    }\n}\n```\n\nDuring layout, SwiftUI aligns the views inside each stack by bringing together the specified guides of the affected views. SwiftUI calculates the position of a guide for a particular view based on the characteristics of the view. For example, the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/HorizontalAlignment\/center] guide appears at half the width of the view. You can override the guide calculation for a particular view using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/alignmentGuide(_:computeValue:)] view modifier.\n\n### Layout direction\n\nWhen a user configures their device to use a left-to-right language like English, the system places the leading alignment on the left and the trailing alignment on the right, as the example from the previous section demonstrates. However, in a right-to-left language, the system reverses these. You can see this by using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/environment(_:_:)] view modifier to explicitly override the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues\/layoutDirection] environment value for the view defined above:\n\n```swift\nHorizontalAlignmentGallery()\n    .environment(\\.layoutDirection, .rightToLeft)\n```\n\n\n\nThis automatic layout adjustment makes it easier to localize your app, but it’s still important to test your app for the different locales that you ship into. For more information about the localization process, see [doc:\/\/com.apple.documentation\/documentation\/Xcode\/localization].\n\n### Custom alignment guides\n\nYou can create a custom horizontal alignment by creating a type that conforms to the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AlignmentID] protocol, and then using that type to initialize a new static property on `HorizontalAlignment`:\n\n```swift\nprivate struct OneQuarterAlignment: AlignmentID {\n    static func defaultValue(in context: ViewDimensions) -> CGFloat {\n        context.width \/ 4\n    }\n}\n\nextension HorizontalAlignment {\n    static let oneQuarter = HorizontalAlignment(OneQuarterAlignment.self)\n}\n```\n\nYou implement the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AlignmentID\/defaultValue(in:)] method to calculate a default value for the custom alignment guide. The method receives a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ViewDimensions] instance that you can use to calculate an appropriate value based on characteristics of the view. The example above places the guide at one quarter of the width of the view, as measured from the view’s origin.\n\nYou can then use the custom alignment guide like any built-in guide. For example, you can use it as the `alignment` parameter to a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VStack], or you can change it for a specific view using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/alignmentGuide(_:computeValue:)] view modifier. Custom alignment guides also automatically reverse in a right-to-left environment, just like built-in guides.\n\n### Composite alignment\n\nCombine a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VerticalAlignment] with a `HorizontalAlignment` to create a composite [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Alignment] that indicates both vertical and horizontal positioning in one value. For example, you could combine your custom `oneQuarter` horizontal alignment from the previous section with a built-in [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VerticalAlignment\/center] vertical alignment to use in a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ZStack]:\n\n```swift\nstruct LayeredVerticalStripes: View {\n    var body: some View {\n        ZStack(alignment: Alignment(horizontal: .oneQuarter, vertical: .center)) {\n            verticalStripes(color: .blue)\n                .frame(width: 300, height: 150)\n            verticalStripes(color: .green)\n                .frame(width: 180, height: 80)\n        }\n    }\n\n    private func verticalStripes(color: Color) -> some View {\n        HStack(spacing: 1) {\n            ForEach(0..<4) { _ in color }\n        }\n    }\n}\n```\n\nThe example above uses widths and heights that generate two mismatched sets of four vertical stripes. The [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ZStack] centers the two sets vertically and aligns them horizontally one quarter of the way from the leading edge of each set. In a left-to-right locale, this aligns the right edges of the left-most stripes of each set:\n\n\n\n## Getting guides\n\n- **leading**: A guide that marks the leading edge of the view.\n- **center**: A guide that marks the horizontal center of the view.\n- **trailing**: A guide that marks the trailing edge of the view.\n- **listRowSeparatorLeading**: A guide marking the leading edge of a `List` row separator.\n- **listRowSeparatorTrailing**: A guide marking the trailing edge of a `List` row separator.\n\n## Creating a custom alignment\n\n- **init(_:)**: Creates a custom horizontal alignment of the specified type.\n- **combineExplicit(_:)**: Merges a sequence of explicit alignment values produced by this instance.\n\n## Aligning views\n\n- **Aligning views within a stack**: Position views inside a stack using alignment guides.\n- **Aligning views across stacks**: Create a custom alignment and use it to align views across multiple stacks.\n- **alignmentGuide(_:computeValue:)**: Sets the view’s horizontal alignment.\n- **Alignment**: An alignment in both axes.\n- **VerticalAlignment**: An alignment position along the vertical axis.\n- **DepthAlignment**: An alignment position along the depth axis.\n- **AlignmentID**: A type that you use to create custom alignment guides.\n- **ViewDimensions**: A view’s size and alignment guides in its own coordinate space.\n- **ViewDimensions3D**: A view’s 3D size and alignment guides in its own coordinate space.\n- **SpatialContainer**: A layout container that aligns overlapping content in 3D space.\n\n## Conforms To\n\n- BitwiseCopyable\n- Copyable\n- Equatable\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A guide that marks the leading edge of the view.",
+          "name" : "leading",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/HorizontalAlignment\/leading"
+        },
+        {
+          "description" : "A guide that marks the horizontal center of the view.",
+          "name" : "center",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/HorizontalAlignment\/center"
+        },
+        {
+          "description" : "A guide that marks the trailing edge of the view.",
+          "name" : "trailing",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/HorizontalAlignment\/trailing"
+        },
+        {
+          "description" : "A guide marking the leading edge of a `List` row separator.",
+          "name" : "listRowSeparatorLeading",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/HorizontalAlignment\/listRowSeparatorLeading"
+        },
+        {
+          "description" : "A guide marking the trailing edge of a `List` row separator.",
+          "name" : "listRowSeparatorTrailing",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/HorizontalAlignment\/listRowSeparatorTrailing"
+        }
+      ],
+      "title" : "Getting guides"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a custom horizontal alignment of the specified type.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/HorizontalAlignment\/init(_:)"
+        },
+        {
+          "description" : "Merges a sequence of explicit alignment values produced by this instance.",
+          "name" : "combineExplicit(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/HorizontalAlignment\/combineExplicit(_:)"
+        }
+      ],
+      "title" : "Creating a custom alignment"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Position views inside a stack using alignment guides.",
+          "name" : "Aligning views within a stack",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Aligning-Views-Within-a-Stack"
+        },
+        {
+          "description" : "Create a custom alignment and use it to align views across multiple stacks.",
+          "name" : "Aligning views across stacks",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Aligning-Views-Across-Stacks"
+        },
+        {
+          "description" : "Sets the view’s horizontal alignment.",
+          "name" : "alignmentGuide(_:computeValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/alignmentGuide(_:computeValue:)"
+        },
+        {
+          "description" : "An alignment in both axes.",
+          "name" : "Alignment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Alignment"
+        },
+        {
+          "description" : "An alignment position along the vertical axis.",
+          "name" : "VerticalAlignment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/VerticalAlignment"
+        },
+        {
+          "description" : "An alignment position along the depth axis.",
+          "name" : "DepthAlignment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/DepthAlignment"
+        },
+        {
+          "description" : "A type that you use to create custom alignment guides.",
+          "name" : "AlignmentID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AlignmentID"
+        },
+        {
+          "description" : "A view’s size and alignment guides in its own coordinate space.",
+          "name" : "ViewDimensions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ViewDimensions"
+        },
+        {
+          "description" : "A view’s 3D size and alignment guides in its own coordinate space.",
+          "name" : "ViewDimensions3D",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ViewDimensions3D"
+        },
+        {
+          "description" : "A layout container that aligns overlapping content in 3D space.",
+          "name" : "SpatialContainer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/SpatialContainer"
+        }
+      ],
+      "title" : "Aligning views"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "HorizontalAlignment",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/HorizontalAlignment"
+}

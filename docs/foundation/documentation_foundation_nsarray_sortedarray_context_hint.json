@@ -1,0 +1,72 @@
+{
+  "abstract" : "Returns a new array that lists the receiving array’s elements in ascending order as defined by the comparison function `comparator`.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "ec11d89958ee81c7ba876760f41cbf396112b7ed7bf3415b86e2f6ae42f1b83a",
+  "crawledAt" : "2025-12-01T21:44:50Z",
+  "declaration" : {
+    "code" : "func sortedArray(_ comparator: (Any, Any, UnsafeMutableRawPointer?) -> Int, context: UnsafeMutableRawPointer?, hint: Data?) -> [Any]",
+    "language" : "swift"
+  },
+  "id" : "7F6EEA8B-C7D9-41EF-864C-6DEF1048A4CE",
+  "kind" : "method",
+  "module" : "Foundation",
+  "overview" : "## Discussion\n\nThe new array contains references to the receiving array’s elements, not copies of them.\n\nThis method is similar to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArray(_:context:)], except that it uses the supplied hint to speed the sorting process. When you know the array is nearly sorted, this method is faster than [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArray(_:context:)]. If you sorted a large array (`N` entries) once, and you don’t change it much (`P` additions and deletions, where `P` is much smaller than `N`), then you can reuse the work you did in the original sort by conceptually doing a merge sort between the `N` “old” items and the `P` “new” items.\n\nTo obtain an appropriate hint, use [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArrayHint]. You should obtain this hint when the original array has been sorted, and keep hold of it until you need it, after the array has been modified. The hint is computed by [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArrayHint] in `O(N)` (where `N` is the number of items). This assumes that items in the array implement a `-hash` method. Given a suitable hint, and assuming that the hash function is a “good” hash function, -[doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArray(_:context:hint:)] sorts the array in `O(P*LOG(P)+N)` where `P` is the number of adds or deletes. This is an improvement over the un-hinted sort, `O(N*LOG(N))`, when `P` is small.\n\nThe hint is simply an array of size `N` containing the `N` hashes. To re-sort you need internally to create a map table mapping a hash to the index. Using this map table on the new array, you can get a first guess for the indexes, and then sort that. For example, a sorted array {A, B, D, E, F} with corresponding hash values {25, 96, 78, 32, 17}, may be subject to small changes that result in contents {E, A, C, B, F}. The mapping table maps the hashes {25, 96, 78, 32, 17} to the indexes {#0, #1, #2, #3, #4}. If the hashes for {E, A, C, B, F} are {32, 25, 99, 96, 17}, then by using the mapping table you can get a first order sort {#3, #0, ?, #1, #4}, so therefore create an initial semi-sorted array {A, B, E, F}, and then perform a cheap merge sort with {C} that yields {A, B, C, E, F}.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/NSArray\/sortedArray(_:context:hint:)\ncrawled: 2025-12-01T21:44:50Z\n---\n\n# sortedArray(_:context:hint:)\n\n**Instance Method**\n\nReturns a new array that lists the receiving array’s elements in ascending order as defined by the comparison function `comparator`.\n\n## Declaration\n\n```swift\nfunc sortedArray(_ comparator: (Any, Any, UnsafeMutableRawPointer?) -> Int, context: UnsafeMutableRawPointer?, hint: Data?) -> [Any]\n```\n\n## Discussion\n\nThe new array contains references to the receiving array’s elements, not copies of them.\n\nThis method is similar to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArray(_:context:)], except that it uses the supplied hint to speed the sorting process. When you know the array is nearly sorted, this method is faster than [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArray(_:context:)]. If you sorted a large array (`N` entries) once, and you don’t change it much (`P` additions and deletions, where `P` is much smaller than `N`), then you can reuse the work you did in the original sort by conceptually doing a merge sort between the `N` “old” items and the `P` “new” items.\n\nTo obtain an appropriate hint, use [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArrayHint]. You should obtain this hint when the original array has been sorted, and keep hold of it until you need it, after the array has been modified. The hint is computed by [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArrayHint] in `O(N)` (where `N` is the number of items). This assumes that items in the array implement a `-hash` method. Given a suitable hint, and assuming that the hash function is a “good” hash function, -[doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArray(_:context:hint:)] sorts the array in `O(P*LOG(P)+N)` where `P` is the number of adds or deletes. This is an improvement over the un-hinted sort, `O(N*LOG(N))`, when `P` is small.\n\nThe hint is simply an array of size `N` containing the `N` hashes. To re-sort you need internally to create a map table mapping a hash to the index. Using this map table on the new array, you can get a first guess for the indexes, and then sort that. For example, a sorted array {A, B, D, E, F} with corresponding hash values {25, 96, 78, 32, 17}, may be subject to small changes that result in contents {E, A, C, B, F}. The mapping table maps the hashes {25, 96, 78, 32, 17} to the indexes {#0, #1, #2, #3, #4}. If the hashes for {E, A, C, B, F} are {32, 25, 99, 96, 17}, then by using the mapping table you can get a first order sort {#3, #0, ?, #1, #4}, so therefore create an initial semi-sorted array {A, B, E, F}, and then perform a cheap merge sort with {C} that yields {A, B, C, E, F}.\n\n## Sorting\n\n- **sortedArrayHint**: Analyzes the array and returns a “hint” that speeds the sorting of the array when the hint is supplied to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArray(_:context:hint:)].\n- **sortedArray(_:context:)**: Returns a new array that lists the receiving array’s elements in ascending order as defined by the comparison function `comparator`.\n- **sortedArray(using:)**: Returns a copy of the receiving array sorted as specified by a given array of sort descriptors.\n- **sortedArray(using:)**: Returns an array that lists the receiving array’s elements in ascending order, as determined by the comparison method specified by a given selector.\n- **sortedArray(comparator:)**: Returns an array that lists the receiving array’s elements in ascending order, as determined by the comparison method specified by a given `NSComparator` block.\n- **sortedArray(options:usingComparator:)**: Returns an array that lists the receiving array’s elements in ascending order, as determined by the comparison method specified by a given `NSComparator` block.\n- **Comparator**: Defines the signature for a block object used for comparison operations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Analyzes the array and returns a “hint” that speeds the sorting of the array when the hint is supplied to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSArray\/sortedArray(_:context:hint:)].",
+          "name" : "sortedArrayHint",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSArray\/sortedArrayHint"
+        },
+        {
+          "description" : "Returns a new array that lists the receiving array’s elements in ascending order as defined by the comparison function `comparator`.",
+          "name" : "sortedArray(_:context:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSArray\/sortedArray(_:context:)"
+        },
+        {
+          "description" : "Returns a copy of the receiving array sorted as specified by a given array of sort descriptors.",
+          "name" : "sortedArray(using:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSArray\/sortedArray(using:)-82wi1"
+        },
+        {
+          "description" : "Returns an array that lists the receiving array’s elements in ascending order, as determined by the comparison method specified by a given selector.",
+          "name" : "sortedArray(using:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSArray\/sortedArray(using:)-9nhh9"
+        },
+        {
+          "description" : "Returns an array that lists the receiving array’s elements in ascending order, as determined by the comparison method specified by a given `NSComparator` block.",
+          "name" : "sortedArray(comparator:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSArray\/sortedArray(comparator:)"
+        },
+        {
+          "description" : "Returns an array that lists the receiving array’s elements in ascending order, as determined by the comparison method specified by a given `NSComparator` block.",
+          "name" : "sortedArray(options:usingComparator:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSArray\/sortedArray(options:usingComparator:)"
+        },
+        {
+          "description" : "Defines the signature for a block object used for comparison operations.",
+          "name" : "Comparator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Comparator"
+        }
+      ],
+      "title" : "Sorting"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "sortedArray(_:context:hint:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSArray\/sortedArray(_:context:hint:)"
+}

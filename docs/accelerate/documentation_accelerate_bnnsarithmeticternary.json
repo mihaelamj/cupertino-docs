@@ -1,0 +1,160 @@
+{
+  "abstract" : "A structure that contains the inputs and output of an arithmetic operation with three inputs.",
+  "codeExamples" : [
+    {
+      "code" : "static func ternaryArithmetic() {\n    \n    let aData = UnsafeMutableBufferPointer<Float>.allocate(capacity: 1)\n    _ = aData.initialize(from: [10])\n    let aDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                            layout: BNNSDataLayoutVector,\n                                            size: (1, 0, 0, 0, 0, 0, 0, 0),\n                                            stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                            data: aData.baseAddress!,\n                                            data_type: BNNSDataType.float,\n                                            table_data: nil,\n                                            table_data_type: BNNSDataType.float,\n                                            data_scale: 1, data_bias: 0)\n    \n    let bData = UnsafeMutableBufferPointer<Float>.allocate(capacity: 1)\n    _ = bData.initialize(from: [20])\n    let bDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                            layout: BNNSDataLayoutVector,\n                                            size: (1, 0, 0, 0, 0, 0, 0, 0),\n                                            stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                            data: bData.baseAddress!,\n                                            data_type: BNNSDataType.float,\n                                            table_data: nil,\n                                            table_data_type: BNNSDataType.float,\n                                            data_scale: 1, data_bias: 0)\n    \n    let cData = UnsafeMutableBufferPointer<Float>.allocate(capacity: 1)\n    _ = cData.initialize(from: [100])\n    let cDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                            layout: BNNSDataLayoutVector,\n                                            size: (1, 0, 0, 0, 0, 0, 0, 0),\n                                            stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                            data: cData.baseAddress!,\n                                            data_type: BNNSDataType.float,\n                                            table_data: nil,\n                                            table_data_type: BNNSDataType.float,\n                                            data_scale: 1, data_bias: 0)\n    \n    let outputData = UnsafeMutableBufferPointer<Float>.allocate(capacity: 1)\n    let outputDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                 layout: BNNSDataLayoutVector,\n                                                 size: (1, 0, 0, 0, 0, 0, 0, 0),\n                                                 stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                 data: outputData.baseAddress!,\n                                                 data_type: BNNSDataType.float,\n                                                 table_data: nil,\n                                                 table_data_type: BNNSDataType.float,\n                                                 data_scale: 1, data_bias: 0)\n    \n    let fields = BNNSArithmeticTernary(in1: aDescriptor, in1_type: BNNSSample,\n                                       in2: bDescriptor, in2_type: BNNSSample,\n                                       in3: cDescriptor, in3_type: BNNSSample,\n                                       out: outputDescriptor, out_type: BNNSSample)\n    \n    let arithmeticLayer: BNNSFilter? = withUnsafePointer(to: fields) { fieldsPtr in\n        \n        var layerParameters = BNNSLayerParametersArithmetic(\n            arithmetic_function: BNNSArithmeticMultiplyAdd,\n            arithmetic_function_fields: UnsafeMutableRawPointer(mutating: fieldsPtr),\n            activation: .identity)\n        \n        return BNNSFilterCreateLayerArithmetic(&layerParameters, nil)\n    }\n    \n    var rawInputPointer = [ UnsafeRawPointer(aDescriptor.data!),\n                            UnsafeRawPointer(bDescriptor.data!),\n                            UnsafeRawPointer(cDescriptor.data!)]\n    \n    BNNSArithmeticFilterApplyBatch(arithmeticLayer,\n                                   1,\n                                   3,\n                                   &rawInputPointer,\n                                   [1, 1, 1],\n                                   outputDescriptor.data!,\n                                   1)\n    \n    \/\/ Prints `10 * 20 + 100 (300)`\n    print(Array(outputData))\n    \n    aData.deallocate()\n    bData.deallocate()\n    cData.deallocate()\n    outputData.deallocate()\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "BitwiseCopyable"
+  ],
+  "contentHash" : "3c3e8178f7d43e2b5e349d6a5ee942ed7123f91d5aa67b4b55237e2754e9bba4",
+  "crawledAt" : "2025-12-02T01:20:57Z",
+  "declaration" : {
+    "code" : "struct BNNSArithmeticTernary",
+    "language" : "swift"
+  },
+  "id" : "D78417AD-9EF9-4DD9-A7B8-CBCF523995F7",
+  "kind" : "struct",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nUse a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSArithmeticTernary] structure to pass the descriptions and types of the inputs and output of a binary arithmetic operation to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerParametersArithmetic].\n\nThe following code shows how to calculate the element-wise multiply-add of two vectors:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\ncrawled: 2025-12-02T01:20:57Z\n---\n\n# BNNSArithmeticTernary\n\n**Structure**\n\nA structure that contains the inputs and output of an arithmetic operation with three inputs.\n\n## Declaration\n\n```swift\nstruct BNNSArithmeticTernary\n```\n\n## Overview\n\nUse a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSArithmeticTernary] structure to pass the descriptions and types of the inputs and output of a binary arithmetic operation to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerParametersArithmetic].\n\nThe following code shows how to calculate the element-wise multiply-add of two vectors:\n\n```swift\nstatic func ternaryArithmetic() {\n    \n    let aData = UnsafeMutableBufferPointer<Float>.allocate(capacity: 1)\n    _ = aData.initialize(from: [10])\n    let aDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                            layout: BNNSDataLayoutVector,\n                                            size: (1, 0, 0, 0, 0, 0, 0, 0),\n                                            stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                            data: aData.baseAddress!,\n                                            data_type: BNNSDataType.float,\n                                            table_data: nil,\n                                            table_data_type: BNNSDataType.float,\n                                            data_scale: 1, data_bias: 0)\n    \n    let bData = UnsafeMutableBufferPointer<Float>.allocate(capacity: 1)\n    _ = bData.initialize(from: [20])\n    let bDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                            layout: BNNSDataLayoutVector,\n                                            size: (1, 0, 0, 0, 0, 0, 0, 0),\n                                            stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                            data: bData.baseAddress!,\n                                            data_type: BNNSDataType.float,\n                                            table_data: nil,\n                                            table_data_type: BNNSDataType.float,\n                                            data_scale: 1, data_bias: 0)\n    \n    let cData = UnsafeMutableBufferPointer<Float>.allocate(capacity: 1)\n    _ = cData.initialize(from: [100])\n    let cDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                            layout: BNNSDataLayoutVector,\n                                            size: (1, 0, 0, 0, 0, 0, 0, 0),\n                                            stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                            data: cData.baseAddress!,\n                                            data_type: BNNSDataType.float,\n                                            table_data: nil,\n                                            table_data_type: BNNSDataType.float,\n                                            data_scale: 1, data_bias: 0)\n    \n    let outputData = UnsafeMutableBufferPointer<Float>.allocate(capacity: 1)\n    let outputDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                 layout: BNNSDataLayoutVector,\n                                                 size: (1, 0, 0, 0, 0, 0, 0, 0),\n                                                 stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                 data: outputData.baseAddress!,\n                                                 data_type: BNNSDataType.float,\n                                                 table_data: nil,\n                                                 table_data_type: BNNSDataType.float,\n                                                 data_scale: 1, data_bias: 0)\n    \n    let fields = BNNSArithmeticTernary(in1: aDescriptor, in1_type: BNNSSample,\n                                       in2: bDescriptor, in2_type: BNNSSample,\n                                       in3: cDescriptor, in3_type: BNNSSample,\n                                       out: outputDescriptor, out_type: BNNSSample)\n    \n    let arithmeticLayer: BNNSFilter? = withUnsafePointer(to: fields) { fieldsPtr in\n        \n        var layerParameters = BNNSLayerParametersArithmetic(\n            arithmetic_function: BNNSArithmeticMultiplyAdd,\n            arithmetic_function_fields: UnsafeMutableRawPointer(mutating: fieldsPtr),\n            activation: .identity)\n        \n        return BNNSFilterCreateLayerArithmetic(&layerParameters, nil)\n    }\n    \n    var rawInputPointer = [ UnsafeRawPointer(aDescriptor.data!),\n                            UnsafeRawPointer(bDescriptor.data!),\n                            UnsafeRawPointer(cDescriptor.data!)]\n    \n    BNNSArithmeticFilterApplyBatch(arithmeticLayer,\n                                   1,\n                                   3,\n                                   &rawInputPointer,\n                                   [1, 1, 1],\n                                   outputDescriptor.data!,\n                                   1)\n    \n    \/\/ Prints `10 * 20 + 100 (300)`\n    print(Array(outputData))\n    \n    aData.deallocate()\n    bData.deallocate()\n    cData.deallocate()\n    outputData.deallocate()\n}\n```\n\n## Creating an Arithmetic Structure\n\n- **init(in1:in1_type:in2:in2_type:in3:in3_type:out:out_type:)**: Returns a new arithmetic structure that takes three inputs from the specified parameters.\n- **init()**: Returns a new arithmetic structure that takes three inputs.\n\n## Inspecting the Properties of an Arithmetic Structure\n\n- **in1**: The descriptor of the first input.\n- **in1_type**: The descriptor type of the first input.\n- **in2**: The descriptor of the second input.\n- **in2_type**: The descriptor type of the second input.\n- **in3**: The descriptor of the third input.\n- **in3_type**: The descriptor type of the third input.\n- **out**: The descriptor of the output.\n- **out_type**: The descriptor type of the output.\n\n## Arithmetic layers\n\n- **BNNS.UnaryArithmeticLayer**: A layer object that wraps a unary arithmetic filter and manages its deinitialization.\n- **BNNS.BinaryArithmeticLayer**: A layer object that wraps a binary arithmetic filter and manages its deinitialization.\n- **BNNS.TernaryArithmeticLayer**: A layer object that wraps a ternary arithmetic filter and manages its deinitialization.\n- **BNNSDescriptorType**: Constants that describe the input and output types of an arithmetic operation.\n- **BNNSArithmeticUnary**: A structure that contains the input and output of an arithmetic operation with a single input.\n- **BNNSArithmeticBinary**: A structure that contains the inputs and output of an arithmetic operation with two inputs.\n- **BNNSArithmeticFunction**: Constants that define arithmetic operations.\n- **BNNSLayerParametersArithmetic**: A structure that contains the parameters of an arithmetic layer.\n- **BNNSFilterCreateLayerArithmetic(_:_:)**: Returns a new arithmetic layer.\n- **BNNSArithmeticFilterApplyBatch(_:_:_:_:_:_:_:)**: Applies an arithmetic filter to a set of input objects, writing the result to a set of output objects.\n- **BNNSArithmeticFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:)**: Applies an arithmetic filter backward to generate input gradients.\n\n## Conforms To\n\n- BitwiseCopyable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a new arithmetic structure that takes three inputs from the specified parameters.",
+          "name" : "init(in1:in1_type:in2:in2_type:in3:in3_type:out:out_type:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\/init(in1:in1_type:in2:in2_type:in3:in3_type:out:out_type:)"
+        },
+        {
+          "description" : "Returns a new arithmetic structure that takes three inputs.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\/init()"
+        }
+      ],
+      "title" : "Creating an Arithmetic Structure"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The descriptor of the first input.",
+          "name" : "in1",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\/in1"
+        },
+        {
+          "description" : "The descriptor type of the first input.",
+          "name" : "in1_type",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\/in1_type"
+        },
+        {
+          "description" : "The descriptor of the second input.",
+          "name" : "in2",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\/in2"
+        },
+        {
+          "description" : "The descriptor type of the second input.",
+          "name" : "in2_type",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\/in2_type"
+        },
+        {
+          "description" : "The descriptor of the third input.",
+          "name" : "in3",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\/in3"
+        },
+        {
+          "description" : "The descriptor type of the third input.",
+          "name" : "in3_type",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\/in3_type"
+        },
+        {
+          "description" : "The descriptor of the output.",
+          "name" : "out",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\/out"
+        },
+        {
+          "description" : "The descriptor type of the output.",
+          "name" : "out_type",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary\/out_type"
+        }
+      ],
+      "title" : "Inspecting the Properties of an Arithmetic Structure"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A layer object that wraps a unary arithmetic filter and manages its deinitialization.",
+          "name" : "BNNS.UnaryArithmeticLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/UnaryArithmeticLayer"
+        },
+        {
+          "description" : "A layer object that wraps a binary arithmetic filter and manages its deinitialization.",
+          "name" : "BNNS.BinaryArithmeticLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/BinaryArithmeticLayer"
+        },
+        {
+          "description" : "A layer object that wraps a ternary arithmetic filter and manages its deinitialization.",
+          "name" : "BNNS.TernaryArithmeticLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/TernaryArithmeticLayer"
+        },
+        {
+          "description" : "Constants that describe the input and output types of an arithmetic operation.",
+          "name" : "BNNSDescriptorType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSDescriptorType"
+        },
+        {
+          "description" : "A structure that contains the input and output of an arithmetic operation with a single input.",
+          "name" : "BNNSArithmeticUnary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticUnary"
+        },
+        {
+          "description" : "A structure that contains the inputs and output of an arithmetic operation with two inputs.",
+          "name" : "BNNSArithmeticBinary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticBinary"
+        },
+        {
+          "description" : "Constants that define arithmetic operations.",
+          "name" : "BNNSArithmeticFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticFunction"
+        },
+        {
+          "description" : "A structure that contains the parameters of an arithmetic layer.",
+          "name" : "BNNSLayerParametersArithmetic",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerParametersArithmetic"
+        },
+        {
+          "description" : "Returns a new arithmetic layer.",
+          "name" : "BNNSFilterCreateLayerArithmetic(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateLayerArithmetic(_:_:)"
+        },
+        {
+          "description" : "Applies an arithmetic filter to a set of input objects, writing the result to a set of output objects.",
+          "name" : "BNNSArithmeticFilterApplyBatch(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticFilterApplyBatch(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies an arithmetic filter backward to generate input gradients.",
+          "name" : "BNNSArithmeticFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Arithmetic layers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSArithmeticTernary",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSArithmeticTernary"
+}

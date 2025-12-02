@@ -1,0 +1,153 @@
+{
+  "abstract" : "An operation that fetches database changes.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Create a fetch operation using the server change\n\/\/ token from the previous fetch.\nCKFetchDatabaseChangesOperation *operation =\n    [[CKFetchDatabaseChangesOperation alloc]\n     initWithPreviousServerChangeToken:token];\n    \n\/\/ Collect the IDs of the modified record zones.\noperation.recordZoneWithIDChangedBlock = ^(CKRecordZoneID *recordZoneID) {\n    [recordZoneIDs addObject:recordZoneID];\n};\n    \n\/\/ Process any change tokens that CloudKit provides\n\/\/ as the operation runs.\noperation.changeTokenUpdatedBlock = ^(CKServerChangeToken *newToken) {\n    tokenHandler(newToken);\n};\n    \n\/\/ Store the final change token and pass the IDs of the\n\/\/ modified record zones for further processing.\noperation.fetchDatabaseChangesCompletionBlock =\n    ^(CKServerChangeToken *newToken, BOOL more, NSError *error) {\n    if (error) {\n        \/\/ Handle the error.\n    } else {\n        tokenHandler(newToken);\n        recordZonesHandler(recordZoneIDs);\n    }\n};\n    \n\/\/ Set an appropriate QoS and add the operation to the shared\n\/\/ database's operation queue to execute it.\noperation.qualityOfService = NSQualityOfServiceUtility;\n[CKContainer.defaultContainer.sharedCloudDatabase addOperation:operation];",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "dc4a5dd7e0b2deb73a9841008489f86f72e515d23aea026ed03f0624e5abab5c",
+  "crawledAt" : "2025-12-02T13:35:50Z",
+  "declaration" : {
+    "code" : "class CKFetchDatabaseChangesOperation",
+    "language" : "swift"
+  },
+  "id" : "0E8D5BB0-5129-4890-8783-E7728E620970",
+  "kind" : "class",
+  "module" : "CloudKit",
+  "overview" : "## Overview\n\nUse this operation to fetch all record zone changes in a database. This includes new record zones, changed zones — including deleted or purged zones — and zones that contain record changes. When you create the operation, you provide a server change token, which is an opaque token that represents a specific point in the database’s history. CloudKit returns only the changes that occur after that point. For your app’s first fetch, or to refetch every change in the database’s history, use `nil` instead.\n\nThe operation yields new change tokens during its execution, and issues a final change token when it completes without error. The change tokens conform to [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSSecureCoding] and are safe to cache on-disk. This operation’s tokens aren’t compatible with [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchRecordZoneChangesOperation] so you should segregate them in your cache. Don’t infer any behavior or order from the tokens’ contents.\n\nWhen your app launches for the first time, use this operation to fetch all the database’s changes. Cache the results on-device and use [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKDatabaseSubscription] to subscribe to future changes. Fetch those changes on receipt of the push notifications the subscription generates. It’s not necessary to perform a fetch each time your app launches, or to schedule fetches at regular intervals.\n\nThe operation calls [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/recordZoneWithIDChangedBlock] for each zone that contains record changes. It also calls it for new and modified record zones. Store the IDs that CloudKit provides to this callback. Use those IDs with [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchRecordZoneChangesOperation] to fetch the corresponding changes. There are similar callbacks for deleted and purged record zones.\n\nTo run the operation, add it to the corresponding database’s operation queue. The operation executes its callbacks on a private serial queue.\n\nThe following example shows how to create the operation, configure its callbacks, and execute it. For brevity, it omits the delete and purge callbacks.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\ncrawled: 2025-12-02T13:35:50Z\n---\n\n# CKFetchDatabaseChangesOperation\n\n**Class**\n\nAn operation that fetches database changes.\n\n## Declaration\n\n```swift\nclass CKFetchDatabaseChangesOperation\n```\n\n## Overview\n\nUse this operation to fetch all record zone changes in a database. This includes new record zones, changed zones — including deleted or purged zones — and zones that contain record changes. When you create the operation, you provide a server change token, which is an opaque token that represents a specific point in the database’s history. CloudKit returns only the changes that occur after that point. For your app’s first fetch, or to refetch every change in the database’s history, use `nil` instead.\n\n\n\nThe operation yields new change tokens during its execution, and issues a final change token when it completes without error. The change tokens conform to [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSSecureCoding] and are safe to cache on-disk. This operation’s tokens aren’t compatible with [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchRecordZoneChangesOperation] so you should segregate them in your cache. Don’t infer any behavior or order from the tokens’ contents.\n\nWhen your app launches for the first time, use this operation to fetch all the database’s changes. Cache the results on-device and use [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKDatabaseSubscription] to subscribe to future changes. Fetch those changes on receipt of the push notifications the subscription generates. It’s not necessary to perform a fetch each time your app launches, or to schedule fetches at regular intervals.\n\nThe operation calls [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/recordZoneWithIDChangedBlock] for each zone that contains record changes. It also calls it for new and modified record zones. Store the IDs that CloudKit provides to this callback. Use those IDs with [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchRecordZoneChangesOperation] to fetch the corresponding changes. There are similar callbacks for deleted and purged record zones.\n\nTo run the operation, add it to the corresponding database’s operation queue. The operation executes its callbacks on a private serial queue.\n\nThe following example shows how to create the operation, configure its callbacks, and execute it. For brevity, it omits the delete and purge callbacks.\n\n```swift\n\/\/ Create a fetch operation using the server change\n\/\/ token from the previous fetch.\nCKFetchDatabaseChangesOperation *operation =\n    [[CKFetchDatabaseChangesOperation alloc]\n     initWithPreviousServerChangeToken:token];\n    \n\/\/ Collect the IDs of the modified record zones.\noperation.recordZoneWithIDChangedBlock = ^(CKRecordZoneID *recordZoneID) {\n    [recordZoneIDs addObject:recordZoneID];\n};\n    \n\/\/ Process any change tokens that CloudKit provides\n\/\/ as the operation runs.\noperation.changeTokenUpdatedBlock = ^(CKServerChangeToken *newToken) {\n    tokenHandler(newToken);\n};\n    \n\/\/ Store the final change token and pass the IDs of the\n\/\/ modified record zones for further processing.\noperation.fetchDatabaseChangesCompletionBlock =\n    ^(CKServerChangeToken *newToken, BOOL more, NSError *error) {\n    if (error) {\n        \/\/ Handle the error.\n    } else {\n        tokenHandler(newToken);\n        recordZonesHandler(recordZoneIDs);\n    }\n};\n    \n\/\/ Set an appropriate QoS and add the operation to the shared\n\/\/ database's operation queue to execute it.\noperation.qualityOfService = NSQualityOfServiceUtility;\n[CKContainer.defaultContainer.sharedCloudDatabase addOperation:operation];\n```\n\n## Creating an Operation\n\n- **init(previousServerChangeToken:)**: Creates an operation for fetching database changes.\n- **init()**: Creates an empty fetch database changes operation.\n\n## Configuring the Operation\n\n- **fetchAllChanges**: A Boolean value that indicates whether to send repeated requests to the server.\n- **previousServerChangeToken**: The server change token.\n- **resultsLimit**: The maximum number of results that the operation fetches.\n\n## Processing the Operation’s Results\n\n- **recordZoneWithIDChangedBlock**: The closure to execute with a single record zone change.\n- **recordZoneWithIDWasDeletedBlock**: The closure to execute when a record zone no longer exists.\n- **recordZoneWithIDWasDeletedDueToUserEncryptedDataResetBlock**: The closure to execute when a user-invoked account reset deletes a record zone.\n- **recordZoneWithIDWasPurgedBlock**: The closure to execute when CloudKit purges a record zone.\n- **changeTokenUpdatedBlock**: The closure to execute when the change token updates.\n- **fetchDatabaseChangesCompletionBlock**: The closure to execute when the operation finishes.\n\n## Instance Properties\n\n- **fetchDatabaseChangesResultBlock**\n\n## Database Changes\n\n- **CKDatabaseSubscription**: A subscription that generates push notifications when CloudKit modifies records in a database.\n- **CKDatabaseNotification**: A notification that triggers when the contents of a database change.\n\n## Inherits From\n\n- CKDatabaseOperation\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an operation for fetching database changes.",
+          "name" : "init(previousServerChangeToken:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/init(previousServerChangeToken:)"
+        },
+        {
+          "description" : "Creates an empty fetch database changes operation.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/init()"
+        }
+      ],
+      "title" : "Creating an Operation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether to send repeated requests to the server.",
+          "name" : "fetchAllChanges",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/fetchAllChanges"
+        },
+        {
+          "description" : "The server change token.",
+          "name" : "previousServerChangeToken",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/previousServerChangeToken"
+        },
+        {
+          "description" : "The maximum number of results that the operation fetches.",
+          "name" : "resultsLimit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/resultsLimit"
+        }
+      ],
+      "title" : "Configuring the Operation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The closure to execute with a single record zone change.",
+          "name" : "recordZoneWithIDChangedBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/recordZoneWithIDChangedBlock"
+        },
+        {
+          "description" : "The closure to execute when a record zone no longer exists.",
+          "name" : "recordZoneWithIDWasDeletedBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/recordZoneWithIDWasDeletedBlock"
+        },
+        {
+          "description" : "The closure to execute when a user-invoked account reset deletes a record zone.",
+          "name" : "recordZoneWithIDWasDeletedDueToUserEncryptedDataResetBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/recordZoneWithIDWasDeletedDueToUserEncryptedDataResetBlock"
+        },
+        {
+          "description" : "The closure to execute when CloudKit purges a record zone.",
+          "name" : "recordZoneWithIDWasPurgedBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/recordZoneWithIDWasPurgedBlock"
+        },
+        {
+          "description" : "The closure to execute when the change token updates.",
+          "name" : "changeTokenUpdatedBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/changeTokenUpdatedBlock"
+        },
+        {
+          "description" : "The closure to execute when the operation finishes.",
+          "name" : "fetchDatabaseChangesCompletionBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/fetchDatabaseChangesCompletionBlock"
+        }
+      ],
+      "title" : "Processing the Operation’s Results"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "fetchDatabaseChangesResultBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation\/fetchDatabaseChangesResultBlock"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A subscription that generates push notifications when CloudKit modifies records in a database.",
+          "name" : "CKDatabaseSubscription",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKDatabaseSubscription"
+        },
+        {
+          "description" : "A notification that triggers when the contents of a database change.",
+          "name" : "CKDatabaseNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKDatabaseNotification"
+        }
+      ],
+      "title" : "Database Changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "CKDatabaseOperation"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "CKFetchDatabaseChangesOperation",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation"
+}

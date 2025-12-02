@@ -1,0 +1,41 @@
+{
+  "abstract" : "Copies pixel data from the texture to a buffer in system memory.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "cca6b5974e5cf80b153f3f9db137993d1af022668713323c451197d2e8d076fe",
+  "crawledAt" : "2025-12-01T18:04:53Z",
+  "declaration" : {
+    "code" : "func getBytes(_ pixelBytes: UnsafeMutableRawPointer, bytesPerRow: Int, bytesPerImage: Int, from region: MTLRegion, mipmapLevel level: Int, slice: Int)",
+    "language" : "swift"
+  },
+  "id" : "A6893017-1795-4D28-9DFF-8EBB0FDE462D",
+  "kind" : "method",
+  "module" : "Metal",
+  "overview" : "## Discussion\n\nThis method runs on the CPU and immediately copies the pixel data from the texture to system memory, but it doesn’t synchronize with any GPU texture memory operations. Ensure all operations that write or render to the texture complete before reading the texture’s contents using one of the following methods:\n\nFor multisample textures, the method consecutively positions each sample within a pixel in memory and treats the pixels as part of one row.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/MTLTexture\/getBytes(_:bytesPerRow:bytesPerImage:from:mipmapLevel:slice:)\ncrawled: 2025-12-01T18:04:53Z\n---\n\n# getBytes(_:bytesPerRow:bytesPerImage:from:mipmapLevel:slice:)\n\n**Instance Method**\n\nCopies pixel data from the texture to a buffer in system memory.\n\n## Declaration\n\n```swift\nfunc getBytes(_ pixelBytes: UnsafeMutableRawPointer, bytesPerRow: Int, bytesPerImage: Int, from region: MTLRegion, mipmapLevel level: Int, slice: Int)\n```\n\n## Parameters\n\n- **pixelBytes**: A pointer to a destination buffer in system memory.\n- **bytesPerRow**: The number of bytes (*stride*) between two adjacent rows of pixel data in the destination buffer. For [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTextureType\/type1D] and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTextureType\/type1DArray], use `0`. For raw and packed pixel types, the stride is the number of pixels in one row. For compressed pixel formats, the stride is the number of bytes from the beginning of one row of blocks to the beginning of the next.\n\nYour data type determines how you should compute `bytesPerRow`:\n\n- For raw or packed pixel data, use a multiple of the pixel size less than [doc:\/\/com.apple.documentation\/documentation\/Swift\/Int32\/max] `* pixel size`.\n- For compressed pixel data, use a multiple of the compression block size. When working with PowerVR Texture Compression (PVRTC), use `0.`\n\nNonzero values smaller than the texture width or any values not a multiple of the pixel or block size cause an error.\n- **bytesPerImage**: The stride between adjacent images in the destination buffer.\n- **region**: The location of a block of pixels in the texture slice. For textures compressed as PVRTC, use the entire texture for the region.\n- **level**: A zero-indexed value that selects the texture’s mipmap level as the method’s data source. Use `0` for textures that don’t have mipmaps.\n- **slice**: A zero-indexed value specifying the destination texture slice:\n\n- For a cube texture, `slice` is a value between `0` and `5`, inclusive, that defines which cube face is the source.\n- For a texture array, `slice` is the element index.\n- For a cube texture array, slice defines both the cube face and an array index. To determine the correct slice for a cube texture array, treat it as having a stride of `6`: `slice = cubeFace + arrayIndex * 6.`\n- For all other texture types, use `0`.\n\n## Discussion\n\n\n\nThis method runs on the CPU and immediately copies the pixel data from the texture to system memory, but it doesn’t synchronize with any GPU texture memory operations. Ensure all operations that write or render to the texture complete before reading the texture’s contents using one of the following methods:\n\n- Synchronize on the GPU with a [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLBlitCommandEncoder\/synchronize(resource:)] or [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLBlitCommandEncoder\/synchronize(texture:slice:level:)] command in an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLBlitCommandEncoder].\n- Synchronize on the CPU with a callback passed to the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLCommandBuffer\/addCompletedHandler(_:)] method to handle completion asynchronously, or the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLCommandBuffer\/waitUntilCompleted()] method to block thread execution until the GPU work completes.\n\nFor multisample textures, the method consecutively positions each sample within a pixel in memory and treats the pixels as part of one row.\n\n## Copying data from a texture image\n\n- **getBytes(_:bytesPerRow:from:mipmapLevel:)**: Copies pixel data from the first slice of the texture to a buffer in system memory.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Copies pixel data from the first slice of the texture to a buffer in system memory.",
+          "name" : "getBytes(_:bytesPerRow:from:mipmapLevel:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLTexture\/getBytes(_:bytesPerRow:from:mipmapLevel:)"
+        }
+      ],
+      "title" : "Copying data from a texture image"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "getBytes(_:bytesPerRow:bytesPerImage:from:mipmapLevel:slice:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLTexture\/getBytes(_:bytesPerRow:bytesPerImage:from:mipmapLevel:slice:)"
+}

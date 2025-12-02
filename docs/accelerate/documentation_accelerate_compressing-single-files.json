@@ -1,0 +1,65 @@
+{
+  "abstract" : "Compress a single file and store the result on the file system.",
+  "codeExamples" : [
+    {
+      "code" : "let sourceFilePath = FilePath(NSTemporaryDirectory() + \"myFile.pdf\")\n\nguard let readFileStream = ArchiveByteStream.fileStream(\n        path: sourceFilePath,\n        mode: .readOnly,\n        options: [ ],\n        permissions: FilePermissions(rawValue: 0o644)) else {\n    return\n}\ndefer {\n    try? readFileStream.close()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let archiveFilePath = FilePath(NSTemporaryDirectory() + \"myFile.pdf.lzfse\")\n\nguard let writeFileStream = ArchiveByteStream.fileStream(\n        path: archiveFilePath,\n        mode: .writeOnly,\n        options: [ .create ],\n        permissions: FilePermissions(rawValue: 0o644)) else {\n    return\n}\ndefer {\n    try? writeFileStream.close()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "guard let compressStream = ArchiveByteStream.compressionStream(\n        using: .lzfse,\n        writingTo: writeFileStream) else {\n    return\n}\ndefer {\n    try? compressStream.close()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "do {\n    _ = try ArchiveByteStream.process(readingFrom: readFileStream,\n                                      writingTo: compressStream)\n} catch {\n    print(\"Handle `ArchiveByteStream.process` failed.\")\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "285e18a4288fd851caf43eb0a57895b452a498e99bae9ec54f4e4f61d195fe9f",
+  "crawledAt" : "2025-12-02T16:44:16Z",
+  "id" : "605342DD-277F-4099-B12E-8446D74E51D7",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nIn this article, you’ll learn how to use AppleArchive to compress a single-source file, and write the compressed data to a file.\n\nThe code below compresses a file named `myFile.pdf` using the [doc:\/\/com.apple.documentation\/documentation\/Compression\/Algorithm\/lzfse] algorithm, and stores the result in a file named `myFile.pdf.lzfse`.\n\n### Create the file stream to read the source file\n\nThe [doc:\/\/com.apple.documentation\/documentation\/AppleArchive\/ArchiveByteStream] class provides static factory methods that create streams for different functions. In this case, use [doc:\/\/com.apple.documentation\/documentation\/AppleArchive\/ArchiveByteStream\/fileStream(path:mode:options:permissions:)] to create a byte stream that reads the source file:\n\n### Create the file stream to write the compressed file\n\nYou also use [doc:\/\/com.apple.documentation\/documentation\/AppleArchive\/ArchiveByteStream\/fileStream(path:mode:options:permissions:)] to create the file stream that writes the compressed file to the file system. In this case, use the [doc:\/\/com.apple.documentation\/documentation\/System\/FileDescriptor\/AccessMode\/writeOnly] mode:\n\n### Create the compression stream\n\nCreate the compression stream, and specify the compression algorithm as [doc:\/\/com.apple.documentation\/documentation\/AppleArchive\/ArchiveCompression\/lzfse]. Specify the file-writing stream as the stream that receives the compressed data:\n\n### Compress the source file\n\nFinally, call [doc:\/\/com.apple.documentation\/documentation\/AppleArchive\/ArchiveByteStream\/process(readingFrom:writingTo:)] to send the output of the file-reading stream to the compression stream. In turn, the compression stream sends its output to the file-writing stream:\n\nOn return, `myFile.pdf.lzfse` exists in [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSTemporaryDirectory()] and contains the compressed contents of `myFile.pdf`.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/accelerate\/compressing-single-files\ncrawled: 2025-12-02T16:44:16Z\n---\n\n# Compressing single files\n\n**Article**\n\nCompress a single file and store the result on the file system.\n\n## Overview\n\nIn this article, you’ll learn how to use AppleArchive to compress a single-source file, and write the compressed data to a file.\n\nThe code below compresses a file named `myFile.pdf` using the [doc:\/\/com.apple.documentation\/documentation\/Compression\/Algorithm\/lzfse] algorithm, and stores the result in a file named `myFile.pdf.lzfse`.\n\n### Create the file stream to read the source file\n\nThe [doc:\/\/com.apple.documentation\/documentation\/AppleArchive\/ArchiveByteStream] class provides static factory methods that create streams for different functions. In this case, use [doc:\/\/com.apple.documentation\/documentation\/AppleArchive\/ArchiveByteStream\/fileStream(path:mode:options:permissions:)] to create a byte stream that reads the source file:\n\n```swift\nlet sourceFilePath = FilePath(NSTemporaryDirectory() + \"myFile.pdf\")\n\nguard let readFileStream = ArchiveByteStream.fileStream(\n        path: sourceFilePath,\n        mode: .readOnly,\n        options: [ ],\n        permissions: FilePermissions(rawValue: 0o644)) else {\n    return\n}\ndefer {\n    try? readFileStream.close()\n}\n```\n\n### Create the file stream to write the compressed file\n\nYou also use [doc:\/\/com.apple.documentation\/documentation\/AppleArchive\/ArchiveByteStream\/fileStream(path:mode:options:permissions:)] to create the file stream that writes the compressed file to the file system. In this case, use the [doc:\/\/com.apple.documentation\/documentation\/System\/FileDescriptor\/AccessMode\/writeOnly] mode:\n\n```swift\nlet archiveFilePath = FilePath(NSTemporaryDirectory() + \"myFile.pdf.lzfse\")\n\nguard let writeFileStream = ArchiveByteStream.fileStream(\n        path: archiveFilePath,\n        mode: .writeOnly,\n        options: [ .create ],\n        permissions: FilePermissions(rawValue: 0o644)) else {\n    return\n}\ndefer {\n    try? writeFileStream.close()\n}\n```\n\n### Create the compression stream\n\nCreate the compression stream, and specify the compression algorithm as [doc:\/\/com.apple.documentation\/documentation\/AppleArchive\/ArchiveCompression\/lzfse]. Specify the file-writing stream as the stream that receives the compressed data:\n\n```swift\nguard let compressStream = ArchiveByteStream.compressionStream(\n        using: .lzfse,\n        writingTo: writeFileStream) else {\n    return\n}\ndefer {\n    try? compressStream.close()\n}\n```\n\n### Compress the source file\n\nFinally, call [doc:\/\/com.apple.documentation\/documentation\/AppleArchive\/ArchiveByteStream\/process(readingFrom:writingTo:)] to send the output of the file-reading stream to the compression stream. In turn, the compression stream sends its output to the file-writing stream:\n\n```swift\ndo {\n    _ = try ArchiveByteStream.process(readingFrom: readFileStream,\n                                      writingTo: compressStream)\n} catch {\n    print(\"Handle `ArchiveByteStream.process` failed.\")\n}\n```\n\nOn return, `myFile.pdf.lzfse` exists in [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSTemporaryDirectory()] and contains the compressed contents of `myFile.pdf`.\n\n## Directories, Files, and Data Archives\n\n- **Decompressing single files**: Recreate a single file from a compressed file.\n- **Compressing file system directories**: Compress the contents of an entire directory and store the result on the file system.\n- **Decompressing and extracting an archived directory**: Recreate an entire file system directory from an archive file.\n- **Compressing and saving a string to the file system**: Compress the contents of a Unicode string and store the result on the file system.\n- **Decompressing and parsing an archived string**: Recreate a string from an archive file.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Recreate a single file from a compressed file.",
+          "name" : "Decompressing single files",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/decompressing-single-files"
+        },
+        {
+          "description" : "Compress the contents of an entire directory and store the result on the file system.",
+          "name" : "Compressing file system directories",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/compressing-file-system-directories"
+        },
+        {
+          "description" : "Recreate an entire file system directory from an archive file.",
+          "name" : "Decompressing and extracting an archived directory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/decompressing-and-extracting-an-archived-directory"
+        },
+        {
+          "description" : "Compress the contents of a Unicode string and store the result on the file system.",
+          "name" : "Compressing and saving a string to the file system",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/compressing-and-saving-a-string-to-the-file-system"
+        },
+        {
+          "description" : "Recreate a string from an archive file.",
+          "name" : "Decompressing and parsing an archived string",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/decompressing-and-parsing-an-archived-string"
+        }
+      ],
+      "title" : "Directories, Files, and Data Archives"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Compressing single files",
+  "url" : "https:\/\/developer.apple.com\/documentation\/accelerate\/compressing-single-files"
+}

@@ -1,0 +1,432 @@
+{
+  "abstract" : "A unit of asynchronous work.",
+  "codeExamples" : [
+    {
+      "code" : "struct Work: Sendable {}\n\nactor Worker {\n    var work: Task<Void, Never>?\n    var result: Work?\n\n    deinit {\n        \/\/ even though the task is still retained,\n        \/\/ once it completes it no longer causes a reference cycle with the actor\n\n        print(\"deinit actor\")\n    }\n\n    func start() {\n        work = Task {\n            print(\"start task work\")\n            try? await Task.sleep(for: .seconds(3))\n            self.result = Work() \/\/ we captured self\n            print(\"completed task work\")\n            \/\/ but as the task completes, this reference is released\n        }\n        \/\/ we keep a strong reference to the task\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "await Worker().start()",
+      "language" : "swift"
+    },
+    {
+      "code" : "start task work\ncompleted task work\ndeinit actor",
+      "language" : "other"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "Equatable",
+    "Hashable",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "04c861855142ef9e670f22d10052b349657e7317b88d7ae0ff5e6bc6e299de0f",
+  "crawledAt" : "2025-12-02T16:24:22Z",
+  "declaration" : {
+    "code" : "@frozen struct Task<Success, Failure> where Success : Sendable, Failure : Error",
+    "language" : "swift"
+  },
+  "id" : "3C0C3085-DE6A-4F81-B33E-EA1B975ADBDF",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nWhen you create an instance of `Task`, you provide a closure that contains the work for that task to perform. Tasks can start running immediately after creation; you don’t explicitly start or schedule them. After creating a task, you use the instance to interact with it — for example, to wait for it to complete or to cancel it. It’s not a programming error to discard a reference to a task without waiting for that task to finish or canceling it. A task runs regardless of whether you keep a reference to it. However, if you discard the reference to a task, you give up the ability to wait for that task’s result or cancel the task.\n\nTo support operations on the current task, which can be either a detached task or child task, `Task` also exposes class methods like `yield()`. Because these methods are asynchronous, they’re always invoked as part of an existing task.\n\nOnly code that’s running as part of the task can interact with that task. To interact with the current task, you call one of the static methods on `Task`.\n\nA task’s execution can be seen as a series of periods where the task ran. Each such period ends at a suspension point or the completion of the task. These periods of execution are represented by instances of `PartialAsyncTask`. Unless you’re implementing a custom executor, you don’t directly interact with partial tasks.\n\nFor information about the language-level concurrency model that `Task` is part of, see [https:\/\/docs.swift.org\/swift-book\/LanguageGuide\/Concurrency.html] in [https:\/\/docs.swift.org\/swift-book\/].\n\n# Task Cancellation\n\nTasks include a shared mechanism for indicating cancellation, but not a shared implementation for how to handle cancellation. Depending on the work you’re doing in the task, the correct way to stop that work varies. Likewise, it’s the responsibility of the code running as part of the task to check for cancellation whenever stopping is appropriate. In a long-task that includes multiple pieces, you might need to check for cancellation at several points, and handle cancellation differently at each point. If you only need to throw an error to stop the work, call the `Task.checkCancellation()` function to check for cancellation. Other responses to cancellation include returning the work completed so far, returning an empty result, or returning `nil`.\n\nCancellation is a purely Boolean state; there’s no way to include additional information like the reason for cancellation. This reflects the fact that a task can be canceled for many reasons, and additional reasons can accrue during the cancellation process.\n\n### Task closure lifetime\n\nTasks are initialized by passing a closure containing the code that will be executed by a given task.\n\nAfter this code has run to completion, the task has completed, resulting in either a failure or result value, this closure is eagerly released.\n\nRetaining a task object doesn’t indefinitely retain the closure, because any references that a task holds are released after the task completes. Consequently, tasks rarely need to capture weak references to values.\n\nFor example, in the following snippet of code it is not necessary to capture the actor as `weak`, because as the task completes it’ll let go of the actor reference, breaking the reference cycle between the Task and the actor holding it.\n\nAnd using it like this:\n\nNote that the actor is only retained by the start() method’s use of `self`, and that the start method immediately returns, without waiting for the unstructured `Task` to finish. Once the task is completed and its closure is destroyed, the strong reference to the actor is also released allowing the actor to deinitialize as expected.\n\nTherefore, the above call will consistently result in the following output:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/Task\ncrawled: 2025-12-02T16:24:22Z\n---\n\n# Task\n\n**Structure**\n\nA unit of asynchronous work.\n\n## Declaration\n\n```swift\n@frozen struct Task<Success, Failure> where Success : Sendable, Failure : Error\n```\n\n## Overview\n\nWhen you create an instance of `Task`, you provide a closure that contains the work for that task to perform. Tasks can start running immediately after creation; you don’t explicitly start or schedule them. After creating a task, you use the instance to interact with it — for example, to wait for it to complete or to cancel it. It’s not a programming error to discard a reference to a task without waiting for that task to finish or canceling it. A task runs regardless of whether you keep a reference to it. However, if you discard the reference to a task, you give up the ability to wait for that task’s result or cancel the task.\n\nTo support operations on the current task, which can be either a detached task or child task, `Task` also exposes class methods like `yield()`. Because these methods are asynchronous, they’re always invoked as part of an existing task.\n\nOnly code that’s running as part of the task can interact with that task. To interact with the current task, you call one of the static methods on `Task`.\n\nA task’s execution can be seen as a series of periods where the task ran. Each such period ends at a suspension point or the completion of the task. These periods of execution are represented by instances of `PartialAsyncTask`. Unless you’re implementing a custom executor, you don’t directly interact with partial tasks.\n\nFor information about the language-level concurrency model that `Task` is part of, see [https:\/\/docs.swift.org\/swift-book\/LanguageGuide\/Concurrency.html] in [https:\/\/docs.swift.org\/swift-book\/].\n\n# Task Cancellation\n\nTasks include a shared mechanism for indicating cancellation, but not a shared implementation for how to handle cancellation. Depending on the work you’re doing in the task, the correct way to stop that work varies. Likewise, it’s the responsibility of the code running as part of the task to check for cancellation whenever stopping is appropriate. In a long-task that includes multiple pieces, you might need to check for cancellation at several points, and handle cancellation differently at each point. If you only need to throw an error to stop the work, call the `Task.checkCancellation()` function to check for cancellation. Other responses to cancellation include returning the work completed so far, returning an empty result, or returning `nil`.\n\nCancellation is a purely Boolean state; there’s no way to include additional information like the reason for cancellation. This reflects the fact that a task can be canceled for many reasons, and additional reasons can accrue during the cancellation process.\n\n### Task closure lifetime\n\nTasks are initialized by passing a closure containing the code that will be executed by a given task.\n\nAfter this code has run to completion, the task has completed, resulting in either a failure or result value, this closure is eagerly released.\n\nRetaining a task object doesn’t indefinitely retain the closure, because any references that a task holds are released after the task completes. Consequently, tasks rarely need to capture weak references to values.\n\nFor example, in the following snippet of code it is not necessary to capture the actor as `weak`, because as the task completes it’ll let go of the actor reference, breaking the reference cycle between the Task and the actor holding it.\n\n```swift\nstruct Work: Sendable {}\n\nactor Worker {\n    var work: Task<Void, Never>?\n    var result: Work?\n\n    deinit {\n        \/\/ even though the task is still retained,\n        \/\/ once it completes it no longer causes a reference cycle with the actor\n\n        print(\"deinit actor\")\n    }\n\n    func start() {\n        work = Task {\n            print(\"start task work\")\n            try? await Task.sleep(for: .seconds(3))\n            self.result = Work() \/\/ we captured self\n            print(\"completed task work\")\n            \/\/ but as the task completes, this reference is released\n        }\n        \/\/ we keep a strong reference to the task\n    }\n}\n```\n\nAnd using it like this:\n\n```swift\nawait Worker().start()\n```\n\nNote that the actor is only retained by the start() method’s use of `self`, and that the start method immediately returns, without waiting for the unstructured `Task` to finish. Once the task is completed and its closure is destroyed, the strong reference to the actor is also released allowing the actor to deinitialize as expected.\n\nTherefore, the above call will consistently result in the following output:\n\n```other\nstart task work\ncompleted task work\ndeinit actor\n```\n\n## Creating a Task\n\n- **init(name:priority:operation:)**: Runs the given nonthrowing operation asynchronously as part of a new *unstructured* top-level task.\n- **init(name:priority:operation:)**: Runs the given throwing operation asynchronously as part of a new *unstructured* top-level task.\n- **init(name:executorPreference:priority:operation:)**: Runs the given throwing operation asynchronously as part of a new *unstructured* top-level task.\n- **init(name:executorPreference:priority:operation:)**: Runs the given nonthrowing operation asynchronously as part of a new *unstructured* top-level task.\n- **currentPriority**: The current task’s priority.\n- **basePriority**: The current task’s base priority.\n- **withTaskPriorityEscalationHandler(operation:onPriorityEscalated:isolation:)**: Runs the passed `operation` while registering a task priority escalation handler. The handler will be triggered concurrently to the current task if the current is subject to priority escalation.\n\n## Creating a Detached Task\n\n- **detached(name:priority:operation:)**: Runs the given throwing operation asynchronously as part of a new *unstructured* *detached* top-level task.\n- **detached(name:priority:operation:)**: Runs the given nonthrowing operation asynchronously as part of a new *unstructured* *detached* top-level task.\n- **detached(name:executorPreference:priority:operation:)**: Runs the given throwing operation asynchronously as part of a new *unstructured* *detached* top-level task.\n- **detached(name:executorPreference:priority:operation:)**: Runs the given nonthrowing operation asynchronously as part of a new *unstructured* *detached* top-level task.\n\n## Creating a Task that Starts Immediately\n\n- **immediate(name:priority:executorPreference:operation:)**: Create and immediately start running a new detached task in the context of the calling thread\/task.\n- **immediate(name:priority:executorPreference:operation:)**: Create and immediately start running a new detached task in the context of the calling thread\/task.\n- **immediateDetached(name:priority:executorPreference:operation:)**: Create and immediately start running a new task in the context of the calling thread\/task.\n- **immediateDetached(name:priority:executorPreference:operation:)**: Create and immediately start running a new task in the context of the calling thread\/task.\n\n## Accessing Results\n\n- **value**: The result from a throwing task, after it completes.\n- **value**: The result from a nonthrowing task, after it completes.\n- **result**: The result or error from a throwing task, after it completes.\n\n## Accessing the Current Task’s Name\n\n- **name**: Returns the human-readable name of the current task, if it was set during the tasks’ creation.\n\n## Canceling Tasks\n\n- **CancellationError**: An error that indicates a task was canceled.\n- **cancel()**: Cancels this task.\n- **isCancelled**: A Boolean value that indicates whether the task should stop executing.\n- **isCancelled**: A Boolean value that indicates whether the task should stop executing.\n- **checkCancellation()**: Throws an error if the task was canceled.\n- **withTaskCancellationHandler(handler:operation:)**\n- **withTaskCancellationHandler(operation:onCancel:isolation:)**: Execute an operation with a cancellation handler that’s immediately invoked if the current task is canceled.\n\n## Suspending Execution\n\n- **yield()**: Suspends the current task and allows other tasks to execute.\n- **sleep(nanoseconds:)**: Suspends the current task for at least the given duration in nanoseconds.\n- **sleep(for:tolerance:clock:)**: Suspends the current task for the given duration.\n- **sleep(until:tolerance:clock:)**: Suspends the current task until the given deadline within a tolerance.\n\n## Escalating Tasks\n\n- **escalatePriority(to:)**: Manually escalate the task `priority` of this task to the `newPriority`.\n\n## Comparing Tasks\n\n- **==(_:_:)**: Returns a Boolean value indicating whether two values are equal.\n- **!=(_:_:)**: Returns a Boolean value indicating whether two values are not equal.\n- **hashValue**: The hash value.\n- **hash(into:)**: Hashes the essential components of this value by feeding them into the given hasher.\n\n## Deprecated\n\n- **Task.Group**\n- **Task.Handle**\n- **Task.Priority**\n- **CancellationError()**\n- **getResult()**\n- **get()**\n- **get()**\n- **sleep(_:)**\n- **suspend()**\n- **runDetached(priority:operation:)**: Deprecated, available only for source compatibility reasons.\n- **runDetached(priority:operation:)**: Deprecated, available only for source compatibility reasons.\n- **startSynchronously(name:priority:_:)**\n- **startSynchronously(name:priority:_:)**\n- **withCancellationHandler(handler:operation:)**\n- **withGroup(resultType:returning:body:)**\n\n## Default Implementations\n\n- **Equatable Implementations**\n- **Hashable Implementations**\n\n## Tasks\n\n- **TaskGroup**: A group that contains dynamically created child tasks.\n- **withTaskGroup(of:returning:isolation:body:)**: Starts a new scope that can contain a dynamic number of child tasks.\n- **ThrowingTaskGroup**: A group that contains throwing, dynamically created child tasks.\n- **withThrowingTaskGroup(of:returning:isolation:body:)**: Starts a new scope that can contain a dynamic number of throwing child tasks.\n- **TaskPriority**: The priority of a task.\n- **DiscardingTaskGroup**: A discarding group that contains dynamically created child tasks.\n- **withDiscardingTaskGroup(returning:isolation:body:)**: Starts a new scope that can contain a dynamic number of child tasks.\n- **ThrowingDiscardingTaskGroup**: A throwing discarding group that contains dynamically created child tasks.\n- **withThrowingDiscardingTaskGroup(returning:isolation:body:)**: Starts a new scope that can contain a dynamic number of child tasks.\n- **UnsafeCurrentTask**: An unsafe reference to the current task.\n\n## Conforms To\n\n- Copyable\n- Equatable\n- Hashable\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Runs the given nonthrowing operation asynchronously as part of a new *unstructured* top-level task.",
+          "name" : "init(name:priority:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/init(name:priority:operation:)-2dll5"
+        },
+        {
+          "description" : "Runs the given throwing operation asynchronously as part of a new *unstructured* top-level task.",
+          "name" : "init(name:priority:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/init(name:priority:operation:)-43wmk"
+        },
+        {
+          "description" : "Runs the given throwing operation asynchronously as part of a new *unstructured* top-level task.",
+          "name" : "init(name:executorPreference:priority:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/init(name:executorPreference:priority:operation:)-59bfi"
+        },
+        {
+          "description" : "Runs the given nonthrowing operation asynchronously as part of a new *unstructured* top-level task.",
+          "name" : "init(name:executorPreference:priority:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/init(name:executorPreference:priority:operation:)-81pay"
+        },
+        {
+          "description" : "The current task’s priority.",
+          "name" : "currentPriority",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/currentPriority"
+        },
+        {
+          "description" : "The current task’s base priority.",
+          "name" : "basePriority",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/basePriority"
+        },
+        {
+          "description" : "Runs the passed `operation` while registering a task priority escalation handler. The handler will be triggered concurrently to the current task if the current is subject to priority escalation.",
+          "name" : "withTaskPriorityEscalationHandler(operation:onPriorityEscalated:isolation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withTaskPriorityEscalationHandler(operation:onPriorityEscalated:isolation:)"
+        }
+      ],
+      "title" : "Creating a Task"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Runs the given throwing operation asynchronously as part of a new *unstructured* *detached* top-level task.",
+          "name" : "detached(name:priority:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/detached(name:priority:operation:)-795w1"
+        },
+        {
+          "description" : "Runs the given nonthrowing operation asynchronously as part of a new *unstructured* *detached* top-level task.",
+          "name" : "detached(name:priority:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/detached(name:priority:operation:)-9xki7"
+        },
+        {
+          "description" : "Runs the given throwing operation asynchronously as part of a new *unstructured* *detached* top-level task.",
+          "name" : "detached(name:executorPreference:priority:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/detached(name:executorPreference:priority:operation:)-6r16s"
+        },
+        {
+          "description" : "Runs the given nonthrowing operation asynchronously as part of a new *unstructured* *detached* top-level task.",
+          "name" : "detached(name:executorPreference:priority:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/detached(name:executorPreference:priority:operation:)-75ffe"
+        }
+      ],
+      "title" : "Creating a Detached Task"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create and immediately start running a new detached task in the context of the calling thread\/task.",
+          "name" : "immediate(name:priority:executorPreference:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/immediate(name:priority:executorPreference:operation:)-88o80"
+        },
+        {
+          "description" : "Create and immediately start running a new detached task in the context of the calling thread\/task.",
+          "name" : "immediate(name:priority:executorPreference:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/immediate(name:priority:executorPreference:operation:)-9bghc"
+        },
+        {
+          "description" : "Create and immediately start running a new task in the context of the calling thread\/task.",
+          "name" : "immediateDetached(name:priority:executorPreference:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/immediateDetached(name:priority:executorPreference:operation:)-52ipd"
+        },
+        {
+          "description" : "Create and immediately start running a new task in the context of the calling thread\/task.",
+          "name" : "immediateDetached(name:priority:executorPreference:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/immediateDetached(name:priority:executorPreference:operation:)-7h41b"
+        }
+      ],
+      "title" : "Creating a Task that Starts Immediately"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The result from a throwing task, after it completes.",
+          "name" : "value",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/value-60t02"
+        },
+        {
+          "description" : "The result from a nonthrowing task, after it completes.",
+          "name" : "value",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/value-40dtq"
+        },
+        {
+          "description" : "The result or error from a throwing task, after it completes.",
+          "name" : "result",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/result"
+        }
+      ],
+      "title" : "Accessing Results"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the human-readable name of the current task, if it was set during the tasks’ creation.",
+          "name" : "name",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/name"
+        }
+      ],
+      "title" : "Accessing the Current Task’s Name"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An error that indicates a task was canceled.",
+          "name" : "CancellationError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/CancellationError"
+        },
+        {
+          "description" : "Cancels this task.",
+          "name" : "cancel()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/cancel()"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the task should stop executing.",
+          "name" : "isCancelled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/isCancelled-swift.property"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the task should stop executing.",
+          "name" : "isCancelled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/isCancelled-swift.type.property"
+        },
+        {
+          "description" : "Throws an error if the task was canceled.",
+          "name" : "checkCancellation()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/checkCancellation()"
+        },
+        {
+          "description" : "",
+          "name" : "withTaskCancellationHandler(handler:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withTaskCancellationHandler(handler:operation:)"
+        },
+        {
+          "description" : "Execute an operation with a cancellation handler that’s immediately invoked if the current task is canceled.",
+          "name" : "withTaskCancellationHandler(operation:onCancel:isolation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withTaskCancellationHandler(operation:onCancel:isolation:)"
+        }
+      ],
+      "title" : "Canceling Tasks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Suspends the current task and allows other tasks to execute.",
+          "name" : "yield()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/yield()"
+        },
+        {
+          "description" : "Suspends the current task for at least the given duration in nanoseconds.",
+          "name" : "sleep(nanoseconds:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/sleep(nanoseconds:)"
+        },
+        {
+          "description" : "Suspends the current task for the given duration.",
+          "name" : "sleep(for:tolerance:clock:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/sleep(for:tolerance:clock:)"
+        },
+        {
+          "description" : "Suspends the current task until the given deadline within a tolerance.",
+          "name" : "sleep(until:tolerance:clock:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/sleep(until:tolerance:clock:)"
+        }
+      ],
+      "title" : "Suspending Execution"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Manually escalate the task `priority` of this task to the `newPriority`.",
+          "name" : "escalatePriority(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/escalatePriority(to:)"
+        }
+      ],
+      "title" : "Escalating Tasks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value indicating whether two values are equal.",
+          "name" : "==(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/==(_:_:)"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether two values are not equal.",
+          "name" : "!=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/!=(_:_:)"
+        },
+        {
+          "description" : "The hash value.",
+          "name" : "hashValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/hashValue"
+        },
+        {
+          "description" : "Hashes the essential components of this value by feeding them into the given hasher.",
+          "name" : "hash(into:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/hash(into:)"
+        }
+      ],
+      "title" : "Comparing Tasks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Task.Group",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/Group"
+        },
+        {
+          "description" : "",
+          "name" : "Task.Handle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/Handle"
+        },
+        {
+          "description" : "",
+          "name" : "Task.Priority",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/Priority"
+        },
+        {
+          "description" : "",
+          "name" : "CancellationError()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/CancellationError()"
+        },
+        {
+          "description" : "",
+          "name" : "getResult()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/getResult()"
+        },
+        {
+          "description" : "",
+          "name" : "get()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/get()-4i2gt"
+        },
+        {
+          "description" : "",
+          "name" : "get()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/get()-4ohks"
+        },
+        {
+          "description" : "",
+          "name" : "sleep(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/sleep(_:)"
+        },
+        {
+          "description" : "",
+          "name" : "suspend()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/suspend()"
+        },
+        {
+          "description" : "Deprecated, available only for source compatibility reasons.",
+          "name" : "runDetached(priority:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/runDetached(priority:operation:)-88zf5"
+        },
+        {
+          "description" : "Deprecated, available only for source compatibility reasons.",
+          "name" : "runDetached(priority:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/runDetached(priority:operation:)-8s8lh"
+        },
+        {
+          "description" : "",
+          "name" : "startSynchronously(name:priority:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/startSynchronously(name:priority:_:)-38jhc"
+        },
+        {
+          "description" : "",
+          "name" : "startSynchronously(name:priority:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/startSynchronously(name:priority:_:)-47sar"
+        },
+        {
+          "description" : "",
+          "name" : "withCancellationHandler(handler:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/withCancellationHandler(handler:operation:)"
+        },
+        {
+          "description" : "",
+          "name" : "withGroup(resultType:returning:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/withGroup(resultType:returning:body:)"
+        }
+      ],
+      "title" : "Deprecated"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Equatable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/Equatable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Hashable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/Hashable-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A group that contains dynamically created child tasks.",
+          "name" : "TaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskGroup"
+        },
+        {
+          "description" : "Starts a new scope that can contain a dynamic number of child tasks.",
+          "name" : "withTaskGroup(of:returning:isolation:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withTaskGroup(of:returning:isolation:body:)"
+        },
+        {
+          "description" : "A group that contains throwing, dynamically created child tasks.",
+          "name" : "ThrowingTaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/ThrowingTaskGroup"
+        },
+        {
+          "description" : "Starts a new scope that can contain a dynamic number of throwing child tasks.",
+          "name" : "withThrowingTaskGroup(of:returning:isolation:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withThrowingTaskGroup(of:returning:isolation:body:)"
+        },
+        {
+          "description" : "The priority of a task.",
+          "name" : "TaskPriority",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskPriority"
+        },
+        {
+          "description" : "A discarding group that contains dynamically created child tasks.",
+          "name" : "DiscardingTaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/DiscardingTaskGroup"
+        },
+        {
+          "description" : "Starts a new scope that can contain a dynamic number of child tasks.",
+          "name" : "withDiscardingTaskGroup(returning:isolation:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withDiscardingTaskGroup(returning:isolation:body:)"
+        },
+        {
+          "description" : "A throwing discarding group that contains dynamically created child tasks.",
+          "name" : "ThrowingDiscardingTaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/ThrowingDiscardingTaskGroup"
+        },
+        {
+          "description" : "Starts a new scope that can contain a dynamic number of child tasks.",
+          "name" : "withThrowingDiscardingTaskGroup(returning:isolation:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withThrowingDiscardingTaskGroup(returning:isolation:body:)"
+        },
+        {
+          "description" : "An unsafe reference to the current task.",
+          "name" : "UnsafeCurrentTask",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeCurrentTask"
+        }
+      ],
+      "title" : "Tasks"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Task",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task"
+}

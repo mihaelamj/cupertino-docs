@@ -1,0 +1,65 @@
+{
+  "abstract" : "Improve Rosetta performance by adding support for the total store ordering (TSO) memory model to your Linux kernel.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "df4c68d0b2f84b3f9cdedad93fce86d883d0a00e57833368644ebc879b4e6855",
+  "crawledAt" : "2025-12-02T16:17:14Z",
+  "id" : "970B0261-60C1-4E07-9AFC-2DCB507C586B",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Virtualization",
+  "overview" : "## Overview\n\nRosetta is a translation process that makes it possible to run apps that contain x86_64 instructions on Apple silicon. In macOS, Rosetta allows apps built for Intel-based Mac computers to run seamlessly on Apple silicon, and enables the same capability for Intel Linux apps in ARM Linux VMs.\n\nRosetta enables Linux distributions running on Apple silicon to support legacy Intel binaries with the addition of a few lines of code in your virtualization-enabled app, and the creation of a directory share for Rosetta to use.\n\n### Optimize the memory model for recompiled x86_64 instructions\n\nBy applying a set of kernel optimizations to support the TSO memory model, it’s possible to increase Rosetta performance. The optimizations this patch adds to the Linux kernel sources make the following enhancements to the system:\n\n### Patch the Linux kernel\n\nThe Rosetta Linux kernel patches are available to download on Apple’s developer portal; see [https:\/\/developer.apple.com\/download\/files\/RosettaPatch.zip].\n\nThis patch applies cleanly to Linux 6.10 kernel. You can apply these patches to other Linux kernel versions, but they may require some manual editing.\n\nFollow these steps to apply the Rosetta patch:\n\n### Enable Rosetta and activate TSO in your app\n\nTo allow Linux apps to take advantage of the TSO memory model, the app needs to call the `prctl` API on each thread that needs TSO support by calling `prctl(PR_SET_MEM_MODEL, PR_SET_MEM_MODEL_TSO)`in order to set the `tso` bit on that thread.\n\nFor basic information on Rosetta and running x86_64 binaries on Apple silicon under Linux, see [doc:\/\/com.apple.virtualization\/documentation\/Virtualization\/running-intel-binaries-in-linux-vms-with-rosetta].\n\n### Provide enhanced Linux kernels or distributions\n\nThe Rosetta patches are open source software; you can add them to kernels or distributions you provide to people using your virtualization-enabled app, or include instructions for how people can apply and use the patch in their own kernel builds and take advantage of the optimization.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Virtualization\/accelerating-the-performance-of-rosetta\ncrawled: 2025-12-02T16:17:14Z\n---\n\n# Accelerating the performance of Rosetta\n\n**Article**\n\nImprove Rosetta performance by adding support for the total store ordering (TSO) memory model to your Linux kernel.\n\n## Overview\n\nRosetta is a translation process that makes it possible to run apps that contain x86_64 instructions on Apple silicon. In macOS, Rosetta allows apps built for Intel-based Mac computers to run seamlessly on Apple silicon, and enables the same capability for Intel Linux apps in ARM Linux VMs.\n\nRosetta enables Linux distributions running on Apple silicon to support legacy Intel binaries with the addition of a few lines of code in your virtualization-enabled app, and the creation of a directory share for Rosetta to use.\n\n### Optimize the memory model for recompiled x86_64 instructions\n\nBy applying a set of kernel optimizations to support the TSO memory model, it’s possible to increase Rosetta performance. The optimizations this patch adds to the Linux kernel sources make the following enhancements to the system:\n\n- Adds support for context-switching the `ACTLR.TSOEN` bit when the thread switches. This optimization allows per-thread setting of the `ACTLR.TSOEN` bit and allows userspace programs to set the `ACTLR.TSOEN` bit of their thread as needed.\n- Creates functions that can read and modify the `ACTLR.TSOEN` bit on Apple silicon. Setting this bit to `1` changes the CPU’s memory model to the x86-64 TSO memory model. Clearing it sets the CPU’s memory model to the standard ARM64 memory model.\n- Adds a new process control mode to the `prctl` (process control) API that allows userspace programs to change the TSO bit. The process control mode helps emulators that recompile x86_64 instructions to ARM64 instructions. Previously, programs needed to emulate TSO, degrading performance. With this change, emulators can selectively enable TSO for processes that need the emulation. Without selective enablement, the system opts all processes into this memory mode, which degrades performance for native ARM processes that don’t need it.\n\n### Patch the Linux kernel\n\nThe Rosetta Linux kernel patches are available to download on Apple’s developer portal; see [https:\/\/developer.apple.com\/download\/files\/RosettaPatch.zip].\n\n\n\nThis patch applies cleanly to Linux 6.10 kernel. You can apply these patches to other Linux kernel versions, but they may require some manual editing.\n\nFollow these steps to apply the Rosetta patch:\n\n1. Download the `RosettaPatch.zip` file into a convenient place on your Mac.\n2. Unzip the archive; it creates a `RosettaPatch` directory that contains a `LICENSE.txt` file and the patch itself, `RosettaPatch.diff`.\n3. Copy the patch file to your Linux system running in your virtualization-enabled app.\n4. Open a new terminal on your Linux system and enable root privileges, for example by using the `sudo` command.\n5. Change directory to the location of your distribution’s kernel sources, typically `\/usr\/src\/linux`.\n6. Apply the patch with the patch command, using the command `patch -p1 < Rosetta.diff` in terminal.\n7. After applying the patch, rebuild and install the new kernel as the new, active boot kernel for your system.\n\n### Enable Rosetta and activate TSO in your app\n\nTo allow Linux apps to take advantage of the TSO memory model, the app needs to call the `prctl` API on each thread that needs TSO support by calling `prctl(PR_SET_MEM_MODEL, PR_SET_MEM_MODEL_TSO)`in order to set the `tso` bit on that thread.\n\nFor basic information on Rosetta and running x86_64 binaries on Apple silicon under Linux, see [doc:\/\/com.apple.virtualization\/documentation\/Virtualization\/running-intel-binaries-in-linux-vms-with-rosetta].\n\n### Provide enhanced Linux kernels or distributions\n\nThe Rosetta patches are open source software; you can add them to kernels or distributions you provide to people using your virtualization-enabled app, or include instructions for how people can apply and use the patch in their own kernel builds and take advantage of the optimization.\n\n## Virtual machine setup\n\n- **Running macOS in a virtual machine on Apple silicon**: Install and run macOS in a virtual machine using the Virtualization framework.\n- **Running Linux in a Virtual Machine**: Run a Linux operating system on your Mac using the Virtualization framework.\n- **Running GUI Linux in a virtual machine on a Mac**: Install and run GUI Linux in a virtual machine using the Virtualization framework.\n- **Installing macOS on a Virtual Machine**: Download a macOS restore image and install it in a new VM.\n- **Creating and Running a Linux Virtual Machine**: Design and run custom Linux guests on Apple silicon or Intel-based Mac Computers.\n- **Virtualize macOS on a Mac**: Configure and run macOS guests on Apple silicon.\n- **Virtualize Linux on a Mac**: Configure and run Linux guests on Apple silicon and Intel-based Mac computers.\n- **Running Intel Binaries in Linux VMs with Rosetta**: Run x86_64 Linux binaries under ARM Linux on Apple silicon.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Install and run macOS in a virtual machine using the Virtualization framework.",
+          "name" : "Running macOS in a virtual machine on Apple silicon",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/running-macos-in-a-virtual-machine-on-apple-silicon"
+        },
+        {
+          "description" : "Run a Linux operating system on your Mac using the Virtualization framework.",
+          "name" : "Running Linux in a Virtual Machine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/running-linux-in-a-virtual-machine"
+        },
+        {
+          "description" : "Install and run GUI Linux in a virtual machine using the Virtualization framework.",
+          "name" : "Running GUI Linux in a virtual machine on a Mac",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/running-gui-linux-in-a-virtual-machine-on-a-mac"
+        },
+        {
+          "description" : "Download a macOS restore image and install it in a new VM.",
+          "name" : "Installing macOS on a Virtual Machine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/installing-macos-on-a-virtual-machine"
+        },
+        {
+          "description" : "Design and run custom Linux guests on Apple silicon or Intel-based Mac Computers.",
+          "name" : "Creating and Running a Linux Virtual Machine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/creating-and-running-a-linux-virtual-machine"
+        },
+        {
+          "description" : "Configure and run macOS guests on Apple silicon.",
+          "name" : "Virtualize macOS on a Mac",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/virtualize-macos-on-a-mac"
+        },
+        {
+          "description" : "Configure and run Linux guests on Apple silicon and Intel-based Mac computers.",
+          "name" : "Virtualize Linux on a Mac",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/virtualize-linux-on-a-mac"
+        },
+        {
+          "description" : "Run x86_64 Linux binaries under ARM Linux on Apple silicon.",
+          "name" : "Running Intel Binaries in Linux VMs with Rosetta",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/running-intel-binaries-in-linux-vms-with-rosetta"
+        }
+      ],
+      "title" : "Virtual machine setup"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Accelerating the performance of Rosetta",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/accelerating-the-performance-of-rosetta"
+}

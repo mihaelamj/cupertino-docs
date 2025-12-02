@@ -1,0 +1,135 @@
+{
+  "abstract" : "A view’s size and alignment guides in its own coordinate space.",
+  "codeExamples" : [
+    {
+      "code" : "private struct FirstThirdAlignment: AlignmentID {\n    static func defaultValue(in context: ViewDimensions) -> CGFloat {\n        context.height \/ 3\n    }\n}\n\nextension VerticalAlignment {\n    static let firstThird = VerticalAlignment(FirstThirdAlignment.self)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct ViewDimensionsOffset: View {\n    var body: some View {\n        VStack(alignment: .leading) {\n            Text(\"Default\")\n            Text(\"Indented\")\n                .alignmentGuide(.leading) { context in\n                    context[.leading] - 10\n                }\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "ViewDimensionsOffset()\n    .environment(\\.layoutDirection, .rightToLeft)",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "Equatable"
+  ],
+  "contentHash" : "7dfe02e500feb5a758f52712f1f37244531b61c15f8d892b1212da54686a8fc5",
+  "crawledAt" : "2025-12-02T17:38:51Z",
+  "declaration" : {
+    "code" : "struct ViewDimensions",
+    "language" : "swift"
+  },
+  "id" : "D0F061BE-E3A6-44AB-9345-668E549726B3",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nThis structure contains the size and alignment guides of a view. You receive an instance of this structure to use in a variety of layout calculations, like when you:\n\n### Custom alignment guides\n\nYou receive an instance of this structure as the `context` parameter to the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AlignmentID\/defaultValue(in:)] method that you implement to produce the default offset for an alignment guide, or as the first argument to the closure you provide to the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/alignmentGuide(_:computeValue:)] view modifier to override the default calculation for an alignment guide. In both cases you can use the instance, if helpful, to calculate the offset for the guide. For example, you could compute a default offset for a custom [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VerticalAlignment] as a fraction of the view’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ViewDimensions\/height]:\n\nAs another example, you could use the view dimensions instance to look up the offset of an existing guide and modify it:\n\nThe example above indents the second text view because the subtraction moves the second text view’s leading guide in the negative x direction, which is to the left in the view’s coordinate space. As a result, SwiftUI moves the second text view to the right, relative to the first text view, to keep their leading guides aligned:\n\n\n\n### Layout direction\n\nThe discussion above describes a left-to-right language environment, but you don’t change your guide calculation to operate in a right-to-left environment. SwiftUI moves the view’s origin from the left to the right side of the view and inverts the positive x direction. As a result, the existing calculation produces the same effect, but in the opposite direction.\n\nYou can see this if you use the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/environment(_:_:)] modifier to set the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues\/layoutDirection] property for the view that you defined above:\n\nWith no change in your guide, this produces the desired effect — it indents the second text view’s right side, relative to the first text view’s right side. The leading edge is now on the right, and the direction of the offset is reversed:\n\n",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/ViewDimensions\ncrawled: 2025-12-02T17:38:51Z\n---\n\n# ViewDimensions\n\n**Structure**\n\nA view’s size and alignment guides in its own coordinate space.\n\n## Declaration\n\n```swift\nstruct ViewDimensions\n```\n\n## Overview\n\nThis structure contains the size and alignment guides of a view. You receive an instance of this structure to use in a variety of layout calculations, like when you:\n\n- Define a default value for a custom alignment guide; see [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AlignmentID\/defaultValue(in:)].\n- Modify an alignment guide on a view; see [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/alignmentGuide(_:computeValue:)].\n- Ask for the dimensions of a subview of a custom view layout; see [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutSubview\/dimensions(in:)].\n\n### Custom alignment guides\n\nYou receive an instance of this structure as the `context` parameter to the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AlignmentID\/defaultValue(in:)] method that you implement to produce the default offset for an alignment guide, or as the first argument to the closure you provide to the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/alignmentGuide(_:computeValue:)] view modifier to override the default calculation for an alignment guide. In both cases you can use the instance, if helpful, to calculate the offset for the guide. For example, you could compute a default offset for a custom [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VerticalAlignment] as a fraction of the view’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ViewDimensions\/height]:\n\n```swift\nprivate struct FirstThirdAlignment: AlignmentID {\n    static func defaultValue(in context: ViewDimensions) -> CGFloat {\n        context.height \/ 3\n    }\n}\n\nextension VerticalAlignment {\n    static let firstThird = VerticalAlignment(FirstThirdAlignment.self)\n}\n```\n\nAs another example, you could use the view dimensions instance to look up the offset of an existing guide and modify it:\n\n```swift\nstruct ViewDimensionsOffset: View {\n    var body: some View {\n        VStack(alignment: .leading) {\n            Text(\"Default\")\n            Text(\"Indented\")\n                .alignmentGuide(.leading) { context in\n                    context[.leading] - 10\n                }\n        }\n    }\n}\n```\n\nThe example above indents the second text view because the subtraction moves the second text view’s leading guide in the negative x direction, which is to the left in the view’s coordinate space. As a result, SwiftUI moves the second text view to the right, relative to the first text view, to keep their leading guides aligned:\n\n\n\n### Layout direction\n\nThe discussion above describes a left-to-right language environment, but you don’t change your guide calculation to operate in a right-to-left environment. SwiftUI moves the view’s origin from the left to the right side of the view and inverts the positive x direction. As a result, the existing calculation produces the same effect, but in the opposite direction.\n\nYou can see this if you use the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/environment(_:_:)] modifier to set the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues\/layoutDirection] property for the view that you defined above:\n\n```swift\nViewDimensionsOffset()\n    .environment(\\.layoutDirection, .rightToLeft)\n```\n\nWith no change in your guide, this produces the desired effect — it indents the second text view’s right side, relative to the first text view’s right side. The leading edge is now on the right, and the direction of the offset is reversed:\n\n\n\n## Getting dimensions\n\n- **height**: The view’s height.\n- **width**: The view’s width.\n\n## Accessing guide values\n\n- **subscript(_:)**: Gets the value of the given horizontal guide.\n- **subscript(explicit:)**: Gets the explicit value of the given horizontal alignment guide.\n\n## Aligning views\n\n- **Aligning views within a stack**: Position views inside a stack using alignment guides.\n- **Aligning views across stacks**: Create a custom alignment and use it to align views across multiple stacks.\n- **alignmentGuide(_:computeValue:)**: Sets the view’s horizontal alignment.\n- **Alignment**: An alignment in both axes.\n- **HorizontalAlignment**: An alignment position along the horizontal axis.\n- **VerticalAlignment**: An alignment position along the vertical axis.\n- **DepthAlignment**: An alignment position along the depth axis.\n- **AlignmentID**: A type that you use to create custom alignment guides.\n- **ViewDimensions3D**: A view’s 3D size and alignment guides in its own coordinate space.\n- **SpatialContainer**: A layout container that aligns overlapping content in 3D space.\n\n## Conforms To\n\n- Copyable\n- Equatable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The view’s height.",
+          "name" : "height",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ViewDimensions\/height"
+        },
+        {
+          "description" : "The view’s width.",
+          "name" : "width",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ViewDimensions\/width"
+        }
+      ],
+      "title" : "Getting dimensions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Gets the value of the given horizontal guide.",
+          "name" : "subscript(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ViewDimensions\/subscript(_:)"
+        },
+        {
+          "description" : "Gets the explicit value of the given horizontal alignment guide.",
+          "name" : "subscript(explicit:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ViewDimensions\/subscript(explicit:)"
+        }
+      ],
+      "title" : "Accessing guide values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Position views inside a stack using alignment guides.",
+          "name" : "Aligning views within a stack",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Aligning-Views-Within-a-Stack"
+        },
+        {
+          "description" : "Create a custom alignment and use it to align views across multiple stacks.",
+          "name" : "Aligning views across stacks",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Aligning-Views-Across-Stacks"
+        },
+        {
+          "description" : "Sets the view’s horizontal alignment.",
+          "name" : "alignmentGuide(_:computeValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/alignmentGuide(_:computeValue:)"
+        },
+        {
+          "description" : "An alignment in both axes.",
+          "name" : "Alignment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Alignment"
+        },
+        {
+          "description" : "An alignment position along the horizontal axis.",
+          "name" : "HorizontalAlignment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/HorizontalAlignment"
+        },
+        {
+          "description" : "An alignment position along the vertical axis.",
+          "name" : "VerticalAlignment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/VerticalAlignment"
+        },
+        {
+          "description" : "An alignment position along the depth axis.",
+          "name" : "DepthAlignment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/DepthAlignment"
+        },
+        {
+          "description" : "A type that you use to create custom alignment guides.",
+          "name" : "AlignmentID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AlignmentID"
+        },
+        {
+          "description" : "A view’s 3D size and alignment guides in its own coordinate space.",
+          "name" : "ViewDimensions3D",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ViewDimensions3D"
+        },
+        {
+          "description" : "A layout container that aligns overlapping content in 3D space.",
+          "name" : "SpatialContainer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/SpatialContainer"
+        }
+      ],
+      "title" : "Aligning views"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "ViewDimensions",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ViewDimensions"
+}

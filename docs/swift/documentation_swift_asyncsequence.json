@@ -1,0 +1,382 @@
+{
+  "abstract" : "A type that provides asynchronous, sequential, iterated access to its elements.",
+  "codeExamples" : [
+    {
+      "code" : "for await number in Counter(howHigh: 10) {\n    print(number, terminator: \" \")\n}\n\/\/ Prints \"1 2 3 4 5 6 7 8 9 10 \"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let found = await Counter(howHigh: 10).contains(5) \/\/ true",
+      "language" : "swift"
+    },
+    {
+      "code" : "let stream = Counter(howHigh: 10)\n    .map { $0 % 2 == 0 ? \"Even\" : \"Odd\" }\nfor await s in stream {\n    print(s, terminator: \" \")\n}\n\/\/ Prints \"Odd Even Odd Even Odd Even Odd Even Odd Even \"",
+      "language" : "swift"
+    }
+  ],
+  "conformingTypes" : [
+    "AsyncCompactMapSequence",
+    "AsyncDropFirstSequence",
+    "AsyncDropWhileSequence",
+    "AsyncFilterSequence",
+    "AsyncFlatMapSequence",
+    "AsyncMapSequence",
+    "AsyncPrefixSequence",
+    "AsyncPrefixWhileSequence",
+    "AsyncStream",
+    "AsyncThrowingCompactMapSequence",
+    "AsyncThrowingDropWhileSequence",
+    "AsyncThrowingFilterSequence",
+    "AsyncThrowingFlatMapSequence",
+    "AsyncThrowingMapSequence",
+    "AsyncThrowingPrefixWhileSequence",
+    "AsyncThrowingStream",
+    "Observations",
+    "TaskGroup",
+    "ThrowingTaskGroup"
+  ],
+  "contentHash" : "9f74229229db98db298dc005a27cc34051813c5a180207585ea8d4b9249e1b1e",
+  "crawledAt" : "2025-12-01T02:49:51Z",
+  "declaration" : {
+    "code" : "protocol AsyncSequence<Element, Failure>",
+    "language" : "swift"
+  },
+  "id" : "12F6E57C-8E83-4BFF-BC2E-A7AC2C846F0A",
+  "kind" : "protocol",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nAn `AsyncSequence` resembles the `Sequence` type — offering a list of values you can step through one at a time — and adds asynchronicity. An `AsyncSequence` may have all, some, or none of its values available when you first use it. Instead, you use `await` to receive values as they become available.\n\nAs with `Sequence`, you typically iterate through an `AsyncSequence` with a `for await`-`in` loop. However, because the caller must potentially wait for values, you use the `await` keyword. The following example shows how to iterate over `Counter`, a custom `AsyncSequence` that produces `Int` values from `1` up to a `howHigh` value:\n\nAn `AsyncSequence` doesn’t generate or contain the values; it just defines how you access them. Along with defining the type of values as an associated type called `Element`, the `AsyncSequence` defines a `makeAsyncIterator()` method. This returns an instance of type `AsyncIterator`. Like the standard `IteratorProtocol`, the `AsyncIteratorProtocol` defines a single `next()` method to produce elements. The difference is that the `AsyncIterator` defines its `next()` method as `async`, which requires a caller to wait for the next value with the `await` keyword.\n\n`AsyncSequence` also defines methods for processing the elements you receive, modeled on the operations provided by the basic `Sequence` in the standard library. There are two categories of methods: those that return a single value, and those that return another `AsyncSequence`.\n\nSingle-value methods eliminate the need for a `for await`-`in` loop, and instead let you make a single `await` call. For example, the `contains(_:)` method returns a Boolean value that indicates if a given value exists in the `AsyncSequence`. Given the `Counter` sequence from the previous example, you can test for the existence of a sequence member with a one-line call:\n\nMethods that return another `AsyncSequence` return a type specific to the method’s semantics. For example, the `.map(_:)` method returns a `AsyncMapSequence` (or a `AsyncThrowingMapSequence`, if the closure you provide to the `map(_:)` method can throw an error). These returned sequences don’t eagerly await the next member of the sequence, which allows the caller to decide when to start work. Typically, you’ll iterate over these sequences with `for await`-`in`, like the base `AsyncSequence` you started with. In the following example, the `map(_:)` method transforms each `Int` received from a `Counter` sequence into a `String`:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\ncrawled: 2025-12-01T02:49:51Z\n---\n\n# AsyncSequence\n\n**Protocol**\n\nA type that provides asynchronous, sequential, iterated access to its elements.\n\n## Declaration\n\n```swift\nprotocol AsyncSequence<Element, Failure>\n```\n\n## Overview\n\nAn `AsyncSequence` resembles the `Sequence` type — offering a list of values you can step through one at a time — and adds asynchronicity. An `AsyncSequence` may have all, some, or none of its values available when you first use it. Instead, you use `await` to receive values as they become available.\n\nAs with `Sequence`, you typically iterate through an `AsyncSequence` with a `for await`-`in` loop. However, because the caller must potentially wait for values, you use the `await` keyword. The following example shows how to iterate over `Counter`, a custom `AsyncSequence` that produces `Int` values from `1` up to a `howHigh` value:\n\n```swift\nfor await number in Counter(howHigh: 10) {\n    print(number, terminator: \" \")\n}\n\/\/ Prints \"1 2 3 4 5 6 7 8 9 10 \"\n```\n\nAn `AsyncSequence` doesn’t generate or contain the values; it just defines how you access them. Along with defining the type of values as an associated type called `Element`, the `AsyncSequence` defines a `makeAsyncIterator()` method. This returns an instance of type `AsyncIterator`. Like the standard `IteratorProtocol`, the `AsyncIteratorProtocol` defines a single `next()` method to produce elements. The difference is that the `AsyncIterator` defines its `next()` method as `async`, which requires a caller to wait for the next value with the `await` keyword.\n\n`AsyncSequence` also defines methods for processing the elements you receive, modeled on the operations provided by the basic `Sequence` in the standard library. There are two categories of methods: those that return a single value, and those that return another `AsyncSequence`.\n\nSingle-value methods eliminate the need for a `for await`-`in` loop, and instead let you make a single `await` call. For example, the `contains(_:)` method returns a Boolean value that indicates if a given value exists in the `AsyncSequence`. Given the `Counter` sequence from the previous example, you can test for the existence of a sequence member with a one-line call:\n\n```swift\nlet found = await Counter(howHigh: 10).contains(5) \/\/ true\n```\n\nMethods that return another `AsyncSequence` return a type specific to the method’s semantics. For example, the `.map(_:)` method returns a `AsyncMapSequence` (or a `AsyncThrowingMapSequence`, if the closure you provide to the `map(_:)` method can throw an error). These returned sequences don’t eagerly await the next member of the sequence, which allows the caller to decide when to start work. Typically, you’ll iterate over these sequences with `for await`-`in`, like the base `AsyncSequence` you started with. In the following example, the `map(_:)` method transforms each `Int` received from a `Counter` sequence into a `String`:\n\n```swift\nlet stream = Counter(howHigh: 10)\n    .map { $0 % 2 == 0 ? \"Even\" : \"Odd\" }\nfor await s in stream {\n    print(s, terminator: \" \")\n}\n\/\/ Prints \"Odd Even Odd Even Odd Even Odd Even Odd Even \"\n```\n\n## Creating an Iterator\n\n- **makeAsyncIterator()**: Creates the asynchronous iterator that produces elements of this asynchronous sequence.\n- **AsyncIterator**: The type of asynchronous iterator that produces elements of this asynchronous sequence.\n- **AsyncIteratorProtocol**: A type that asynchronously supplies the values of a sequence one at a time.\n- **Element**: The type of element produced by this asynchronous sequence.\n\n## Finding Elements\n\n- **contains(_:)**: Returns a Boolean value that indicates whether the asynchronous sequence contains the given element.\n- **contains(where:)**: Returns a Boolean value that indicates whether the asynchronous sequence contains an element that satisfies the given predicate.\n- **allSatisfy(_:)**: Returns a Boolean value that indicates whether all elements produced by the asynchronous sequence satisfy the given predicate.\n- **first(where:)**: Returns the first element of the sequence that satisfies the given predicate.\n- **min()**: Returns the minimum element in an asynchronous sequence of comparable elements.\n- **min(by:)**: Returns the minimum element in the asynchronous sequence, using the given predicate as the comparison between elements.\n- **max()**: Returns the maximum element in an asynchronous sequence of comparable elements.\n- **max(by:)**: Returns the maximum element in the asynchronous sequence, using the given predicate as the comparison between elements.\n\n## Selecting Elements\n\n- **prefix(_:)**: Returns an asynchronous sequence, up to the specified maximum length, containing the initial elements of the base asynchronous sequence.\n- **AsyncPrefixSequence**: An asynchronous sequence, up to a specified maximum length, containing the initial elements of a base asynchronous sequence.\n- **prefix(while:)**: Returns an asynchronous sequence, containing the initial, consecutive elements of the base sequence that satisfy the given predicate.\n- **AsyncPrefixWhileSequence**: An asynchronous sequence, containing the initial, consecutive elements of the base sequence that satisfy a given predicate.\n- **prefix(while:)**: Returns an asynchronous sequence, containing the initial, consecutive elements of the base sequence that satisfy the given error-throwing predicate.\n- **AsyncThrowingPrefixWhileSequence**: An asynchronous sequence, containing the initial, consecutive elements of the base sequence that satisfy the given error-throwing predicate.\n\n## Excluding Elements\n\n- **dropFirst(_:)**: Omits a specified number of elements from the base asynchronous sequence, then passes through all remaining elements.\n- **AsyncDropFirstSequence**: An asynchronous sequence which omits a specified number of elements from the base asynchronous sequence, then passes through all remaining elements.\n- **drop(while:)**: Omits elements from the base asynchronous sequence until a given closure returns false, after which it passes through all remaining elements.\n- **AsyncDropWhileSequence**: An asynchronous sequence which omits elements from the base sequence until a given closure returns false, after which it passes through all remaining elements.\n- **drop(while:)**: Omits elements from the base sequence until a given error-throwing closure returns false, after which it passes through all remaining elements.\n- **AsyncThrowingDropWhileSequence**: An asynchronous sequence which omits elements from the base sequence until a given error-throwing closure returns false, after which it passes through all remaining elements.\n- **filter(_:)**: Creates an asynchronous sequence that contains, in order, the elements of the base sequence that satisfy the given predicate.\n- **AsyncFilterSequence**: An asynchronous sequence that contains, in order, the elements of the base sequence that satisfy a given predicate.\n- **filter(_:)**: Creates an asynchronous sequence that contains, in order, the elements of the base sequence that satisfy the given error-throwing predicate.\n- **AsyncThrowingFilterSequence**: An asynchronous sequence that contains, in order, the elements of the base sequence that satisfy the given error-throwing predicate.\n\n## Transforming a Sequence\n\n- **map(_:)**: Creates an asynchronous sequence that maps the given closure over the asynchronous sequence’s elements.\n- **AsyncMapSequence**: An asynchronous sequence that maps the given closure over the asynchronous sequence’s elements.\n- **map(_:)**: Creates an asynchronous sequence that maps the given error-throwing closure over the asynchronous sequence’s elements.\n- **AsyncThrowingMapSequence**: An asynchronous sequence that maps the given error-throwing closure over the asynchronous sequence’s elements.\n- **compactMap(_:)**: Creates an asynchronous sequence that maps the given closure over the asynchronous sequence’s elements, omitting results that don’t return a value.\n- **AsyncCompactMapSequence**: An asynchronous sequence that maps a given closure over the asynchronous sequence’s elements, omitting results that don’t return a value.\n- **compactMap(_:)**: Creates an asynchronous sequence that maps an error-throwing closure over the base sequence’s elements, omitting results that don’t return a value.\n- **AsyncThrowingCompactMapSequence**: An asynchronous sequence that maps an error-throwing closure over the base sequence’s elements, omitting results that don’t return a value.\n- **AsyncFlatMapSequence**: An asynchronous sequence that concatenates the results of calling a given transformation with each element of this sequence.\n- **AsyncThrowingFlatMapSequence**: An asynchronous sequence that concatenates the results of calling a given error-throwing transformation with each element of this sequence.\n- **reduce(_:_:)**: Returns the result of combining the elements of the asynchronous sequence using the given closure.\n- **reduce(into:_:)**: Returns the result of combining the elements of the asynchronous sequence using the given closure, given a mutable initial value.\n\n## Adapting Textual Sequences\n\n- **characters**: A non-blocking sequence of `Characters` created by decoding the elements of `self` as UTF8.\n- **AsyncCharacterSequence**: An asynchronous sequence of characters.\n- **unicodeScalars**: A non-blocking sequence of `UnicodeScalars` created by decoding the elements of `self` as UTF8.\n- **AsyncUnicodeScalarSequence**: An asychronous sequence of Unicode scalar values.\n- **lines**: A non-blocking sequence of newline-separated `Strings` created by decoding the elements of `self` as UTF8.\n- **AsyncLineSequence**: An asynchronous sequence of lines of text.\n\n## Associated Types\n\n- **Failure**: The type of errors produced when iteration over the sequence fails.\n\n## Instance Methods\n\n- **flatMap(_:)**: Creates an asynchronous sequence that concatenates the results of calling the given transformation with each element of this sequence.\n- **flatMap(_:)**: Creates an asynchronous sequence that concatenates the results of calling the given transformation with each element of this sequence.\n- **flatMap(_:)**: Creates an asynchronous sequence that concatenates the results of calling the given error-throwing transformation with each element of this sequence.\n- **flatMap(_:)**: Creates an asynchronous sequence that concatenates the results of calling the given transformation with each element of this sequence.\n\n## Asynchronous Sequences\n\n- **AsyncStream**: An asynchronous sequence generated from a closure that calls a continuation to produce new elements.\n- **AsyncThrowingStream**: An asynchronous sequence generated from an error-throwing closure that calls a continuation to produce new elements.\n\n## Conforming Types\n\n- AsyncCompactMapSequence\n- AsyncDropFirstSequence\n- AsyncDropWhileSequence\n- AsyncFilterSequence\n- AsyncFlatMapSequence\n- AsyncMapSequence\n- AsyncPrefixSequence\n- AsyncPrefixWhileSequence\n- AsyncStream\n- AsyncThrowingCompactMapSequence\n- AsyncThrowingDropWhileSequence\n- AsyncThrowingFilterSequence\n- AsyncThrowingFlatMapSequence\n- AsyncThrowingMapSequence\n- AsyncThrowingPrefixWhileSequence\n- AsyncThrowingStream\n- Observations\n- TaskGroup\n- ThrowingTaskGroup\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates the asynchronous iterator that produces elements of this asynchronous sequence.",
+          "name" : "makeAsyncIterator()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/makeAsyncIterator()"
+        },
+        {
+          "description" : "The type of asynchronous iterator that produces elements of this asynchronous sequence.",
+          "name" : "AsyncIterator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/AsyncIterator"
+        },
+        {
+          "description" : "A type that asynchronously supplies the values of a sequence one at a time.",
+          "name" : "AsyncIteratorProtocol",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncIteratorProtocol"
+        },
+        {
+          "description" : "The type of element produced by this asynchronous sequence.",
+          "name" : "Element",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/Element"
+        }
+      ],
+      "title" : "Creating an Iterator"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value that indicates whether the asynchronous sequence contains the given element.",
+          "name" : "contains(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/contains(_:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether the asynchronous sequence contains an element that satisfies the given predicate.",
+          "name" : "contains(where:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/contains(where:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether all elements produced by the asynchronous sequence satisfy the given predicate.",
+          "name" : "allSatisfy(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/allSatisfy(_:)"
+        },
+        {
+          "description" : "Returns the first element of the sequence that satisfies the given predicate.",
+          "name" : "first(where:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/first(where:)"
+        },
+        {
+          "description" : "Returns the minimum element in an asynchronous sequence of comparable elements.",
+          "name" : "min()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/min()"
+        },
+        {
+          "description" : "Returns the minimum element in the asynchronous sequence, using the given predicate as the comparison between elements.",
+          "name" : "min(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/min(by:)"
+        },
+        {
+          "description" : "Returns the maximum element in an asynchronous sequence of comparable elements.",
+          "name" : "max()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/max()"
+        },
+        {
+          "description" : "Returns the maximum element in the asynchronous sequence, using the given predicate as the comparison between elements.",
+          "name" : "max(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/max(by:)"
+        }
+      ],
+      "title" : "Finding Elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns an asynchronous sequence, up to the specified maximum length, containing the initial elements of the base asynchronous sequence.",
+          "name" : "prefix(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/prefix(_:)"
+        },
+        {
+          "description" : "An asynchronous sequence, up to a specified maximum length, containing the initial elements of a base asynchronous sequence.",
+          "name" : "AsyncPrefixSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncPrefixSequence"
+        },
+        {
+          "description" : "Returns an asynchronous sequence, containing the initial, consecutive elements of the base sequence that satisfy the given predicate.",
+          "name" : "prefix(while:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/prefix(while:)-2xy95"
+        },
+        {
+          "description" : "An asynchronous sequence, containing the initial, consecutive elements of the base sequence that satisfy a given predicate.",
+          "name" : "AsyncPrefixWhileSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncPrefixWhileSequence"
+        },
+        {
+          "description" : "Returns an asynchronous sequence, containing the initial, consecutive elements of the base sequence that satisfy the given error-throwing predicate.",
+          "name" : "prefix(while:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/prefix(while:)-6yp5n"
+        },
+        {
+          "description" : "An asynchronous sequence, containing the initial, consecutive elements of the base sequence that satisfy the given error-throwing predicate.",
+          "name" : "AsyncThrowingPrefixWhileSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncThrowingPrefixWhileSequence"
+        }
+      ],
+      "title" : "Selecting Elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Omits a specified number of elements from the base asynchronous sequence, then passes through all remaining elements.",
+          "name" : "dropFirst(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/dropFirst(_:)"
+        },
+        {
+          "description" : "An asynchronous sequence which omits a specified number of elements from the base asynchronous sequence, then passes through all remaining elements.",
+          "name" : "AsyncDropFirstSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncDropFirstSequence"
+        },
+        {
+          "description" : "Omits elements from the base asynchronous sequence until a given closure returns false, after which it passes through all remaining elements.",
+          "name" : "drop(while:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/drop(while:)-9sp3b"
+        },
+        {
+          "description" : "An asynchronous sequence which omits elements from the base sequence until a given closure returns false, after which it passes through all remaining elements.",
+          "name" : "AsyncDropWhileSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncDropWhileSequence"
+        },
+        {
+          "description" : "Omits elements from the base sequence until a given error-throwing closure returns false, after which it passes through all remaining elements.",
+          "name" : "drop(while:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/drop(while:)-67kgo"
+        },
+        {
+          "description" : "An asynchronous sequence which omits elements from the base sequence until a given error-throwing closure returns false, after which it passes through all remaining elements.",
+          "name" : "AsyncThrowingDropWhileSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncThrowingDropWhileSequence"
+        },
+        {
+          "description" : "Creates an asynchronous sequence that contains, in order, the elements of the base sequence that satisfy the given predicate.",
+          "name" : "filter(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/filter(_:)-435af"
+        },
+        {
+          "description" : "An asynchronous sequence that contains, in order, the elements of the base sequence that satisfy a given predicate.",
+          "name" : "AsyncFilterSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncFilterSequence"
+        },
+        {
+          "description" : "Creates an asynchronous sequence that contains, in order, the elements of the base sequence that satisfy the given error-throwing predicate.",
+          "name" : "filter(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/filter(_:)-2cc0l"
+        },
+        {
+          "description" : "An asynchronous sequence that contains, in order, the elements of the base sequence that satisfy the given error-throwing predicate.",
+          "name" : "AsyncThrowingFilterSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncThrowingFilterSequence"
+        }
+      ],
+      "title" : "Excluding Elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an asynchronous sequence that maps the given closure over the asynchronous sequence’s elements.",
+          "name" : "map(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/map(_:)-1q1k3"
+        },
+        {
+          "description" : "An asynchronous sequence that maps the given closure over the asynchronous sequence’s elements.",
+          "name" : "AsyncMapSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncMapSequence"
+        },
+        {
+          "description" : "Creates an asynchronous sequence that maps the given error-throwing closure over the asynchronous sequence’s elements.",
+          "name" : "map(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/map(_:)-70wgb"
+        },
+        {
+          "description" : "An asynchronous sequence that maps the given error-throwing closure over the asynchronous sequence’s elements.",
+          "name" : "AsyncThrowingMapSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncThrowingMapSequence"
+        },
+        {
+          "description" : "Creates an asynchronous sequence that maps the given closure over the asynchronous sequence’s elements, omitting results that don’t return a value.",
+          "name" : "compactMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/compactMap(_:)-gfdq"
+        },
+        {
+          "description" : "An asynchronous sequence that maps a given closure over the asynchronous sequence’s elements, omitting results that don’t return a value.",
+          "name" : "AsyncCompactMapSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncCompactMapSequence"
+        },
+        {
+          "description" : "Creates an asynchronous sequence that maps an error-throwing closure over the base sequence’s elements, omitting results that don’t return a value.",
+          "name" : "compactMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/compactMap(_:)-1f8zn"
+        },
+        {
+          "description" : "An asynchronous sequence that maps an error-throwing closure over the base sequence’s elements, omitting results that don’t return a value.",
+          "name" : "AsyncThrowingCompactMapSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncThrowingCompactMapSequence"
+        },
+        {
+          "description" : "An asynchronous sequence that concatenates the results of calling a given transformation with each element of this sequence.",
+          "name" : "AsyncFlatMapSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncFlatMapSequence"
+        },
+        {
+          "description" : "An asynchronous sequence that concatenates the results of calling a given error-throwing transformation with each element of this sequence.",
+          "name" : "AsyncThrowingFlatMapSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncThrowingFlatMapSequence"
+        },
+        {
+          "description" : "Returns the result of combining the elements of the asynchronous sequence using the given closure.",
+          "name" : "reduce(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/reduce(_:_:)"
+        },
+        {
+          "description" : "Returns the result of combining the elements of the asynchronous sequence using the given closure, given a mutable initial value.",
+          "name" : "reduce(into:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/reduce(into:_:)"
+        }
+      ],
+      "title" : "Transforming a Sequence"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A non-blocking sequence of `Characters` created by decoding the elements of `self` as UTF8.",
+          "name" : "characters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/characters"
+        },
+        {
+          "description" : "An asynchronous sequence of characters.",
+          "name" : "AsyncCharacterSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AsyncCharacterSequence"
+        },
+        {
+          "description" : "A non-blocking sequence of `UnicodeScalars` created by decoding the elements of `self` as UTF8.",
+          "name" : "unicodeScalars",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/unicodeScalars"
+        },
+        {
+          "description" : "An asychronous sequence of Unicode scalar values.",
+          "name" : "AsyncUnicodeScalarSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AsyncUnicodeScalarSequence"
+        },
+        {
+          "description" : "A non-blocking sequence of newline-separated `Strings` created by decoding the elements of `self` as UTF8.",
+          "name" : "lines",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/lines"
+        },
+        {
+          "description" : "An asynchronous sequence of lines of text.",
+          "name" : "AsyncLineSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AsyncLineSequence"
+        }
+      ],
+      "title" : "Adapting Textual Sequences"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The type of errors produced when iteration over the sequence fails.",
+          "name" : "Failure",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/Failure"
+        }
+      ],
+      "title" : "Associated Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an asynchronous sequence that concatenates the results of calling the given transformation with each element of this sequence.",
+          "name" : "flatMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/flatMap(_:)-4bl9a"
+        },
+        {
+          "description" : "Creates an asynchronous sequence that concatenates the results of calling the given transformation with each element of this sequence.",
+          "name" : "flatMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/flatMap(_:)-54rrt"
+        },
+        {
+          "description" : "Creates an asynchronous sequence that concatenates the results of calling the given error-throwing transformation with each element of this sequence.",
+          "name" : "flatMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/flatMap(_:)-5j8ra"
+        },
+        {
+          "description" : "Creates an asynchronous sequence that concatenates the results of calling the given transformation with each element of this sequence.",
+          "name" : "flatMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/flatMap(_:)-5rn1j"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An asynchronous sequence generated from a closure that calls a continuation to produce new elements.",
+          "name" : "AsyncStream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncStream"
+        },
+        {
+          "description" : "An asynchronous sequence generated from an error-throwing closure that calls a continuation to produce new elements.",
+          "name" : "AsyncThrowingStream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncThrowingStream"
+        }
+      ],
+      "title" : "Asynchronous Sequences"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AsyncSequence",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence"
+}

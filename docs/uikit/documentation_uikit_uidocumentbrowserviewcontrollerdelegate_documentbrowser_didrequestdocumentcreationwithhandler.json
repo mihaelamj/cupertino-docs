@@ -1,0 +1,52 @@
+{
+  "abstract" : "Asks the delegate to create a new document.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Create New Document\nfunc documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {\n        \n    let doc = \/\/ Create a new UIDocument... \n    let url = \/\/ Get a temporary URL...\n    \n    \/\/ Create a new document in a temporary location\n    doc.save(to: url, for: .forCreating) { (saveSuccess) in\n        \n        \/\/ Make sure the document saved successfully\n        guard saveSuccess else {            \n            \/\/ Cancel document creation\n            importHandler(nil, .none)\n            return\n        }\n        \n        \/\/ Close the document.\n        doc.close(completionHandler: { (closeSuccess) in\n            \n            \/\/ Make sure the document closed successfully\n            guard closeSuccess else {                \n                \/\/ Cancel document creation\n                importHandler(nil, .none)\n                return\n            }\n            \n            \/\/ Pass the document's temporary URL to the import handler.\n            importHandler(url, .move)\n        })\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "23da9c3a1ecd7ede53a7f1cf5be4fdee60620939f0bfb7d125e8e22ee52826d4",
+  "crawledAt" : "2025-12-01T22:55:23Z",
+  "declaration" : {
+    "code" : "optional func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void)",
+    "language" : "swift"
+  },
+  "id" : "2375CD57-1775-4991-A573-2382AD7F2989",
+  "kind" : "method",
+  "module" : "UIKit",
+  "overview" : "## Discussion\n\nImplement this method to create new documents for the user:\n\nThe following example shows a possible implementation of the  [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:didRequestDocumentCreationWithHandler:)] method.\n\nAfter the `importHandler` block is called, the document browser asynchronously imports the document into its final destination. When possible, the document browser imports to the currently open directory. When there is no currently open directory (for example, when the Recents tab is open), it uses the default directory.\n\nUsers can set the default directory in Settings. For more information, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/setting-up-a-document-browser-app].\n\nWhen the import is complete, the browser calls one of the following delegate methods:\n\nThe document browser enables the Add button (+) only when both of the following are true:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:didRequestDocumentCreationWithHandler:)\ncrawled: 2025-12-01T22:55:23Z\n---\n\n# documentBrowser(_:didRequestDocumentCreationWithHandler:)\n\n**Instance Method**\n\nAsks the delegate to create a new document.\n\n## Declaration\n\n```swift\noptional func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void)\n```\n\n## Parameters\n\n- **controller**: The current document browser.\n- **importHandler**: A block that takes the following parameters:\n\n\n\n## Discussion\n\nImplement this method to create new documents for the user:\n\n1. (Optional) Display any controls the user needs to configure the document.\n2. Create a new document and save it to a temporary location. If you use a [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocument] subclass to create the document, you must close it before calling the `importHandler` block. Always open a new document in your [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:didImportDocumentAt:toDestinationURL:)] method.\n3. Call the provided `importHandler` block. To confirm the request, pass in the document’s temporary URL and the import mode ([doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewController\/ImportMode\/copy] or [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewController\/ImportMode\/move]). To cancel the request, pass `nil` and [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewController\/ImportMode\/none].\n4. Implement the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:didImportDocumentAt:toDestinationURL:)] method. In this method, open the document at the destination URL. You must use either a [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocument] subclass, or a file presenter and file coordination.\n5. Modally present this document to the user.\n\n\n\nThe following example shows a possible implementation of the  [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:didRequestDocumentCreationWithHandler:)] method.\n\n```swift\n\/\/ Create New Document\nfunc documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {\n        \n    let doc = \/\/ Create a new UIDocument... \n    let url = \/\/ Get a temporary URL...\n    \n    \/\/ Create a new document in a temporary location\n    doc.save(to: url, for: .forCreating) { (saveSuccess) in\n        \n        \/\/ Make sure the document saved successfully\n        guard saveSuccess else {            \n            \/\/ Cancel document creation\n            importHandler(nil, .none)\n            return\n        }\n        \n        \/\/ Close the document.\n        doc.close(completionHandler: { (closeSuccess) in\n            \n            \/\/ Make sure the document closed successfully\n            guard closeSuccess else {                \n                \/\/ Cancel document creation\n                importHandler(nil, .none)\n                return\n            }\n            \n            \/\/ Pass the document's temporary URL to the import handler.\n            importHandler(url, .move)\n        })\n    }\n}\n```\n\nAfter the `importHandler` block is called, the document browser asynchronously imports the document into its final destination. When possible, the document browser imports to the currently open directory. When there is no currently open directory (for example, when the Recents tab is open), it uses the default directory.\n\nUsers can set the default directory in Settings. For more information, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/setting-up-a-document-browser-app].\n\nWhen the import is complete, the browser calls one of the following delegate methods:\n\n- **On success.** [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:didImportDocumentAt:toDestinationURL:)]\n- **On failure.** [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:failedToImportDocumentAt:error:)]\n\nThe document browser enables the Add button (+) only when both of the following are true:\n\n- The [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewController\/allowsDocumentCreation] property is set to [doc:\/\/com.apple.documentation\/documentation\/Swift\/true] (the default value).\n- The document browser delegate implements the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:didRequestDocumentCreationWithHandler:)] method.\n\n\n\n## Creating new documents\n\n- **UIDocumentBrowserViewController.ImportMode**: The document browser’s import modes.\n- **documentBrowser(_:didImportDocumentAt:toDestinationURL:)**: Tells the delegate that a document has been successfully imported.\n- **documentBrowser(_:failedToImportDocumentAt:error:)**: Tells the delegate that the document browser failed to import the specified document.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The document browser’s import modes.",
+          "name" : "UIDocumentBrowserViewController.ImportMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIDocumentBrowserViewController\/ImportMode"
+        },
+        {
+          "description" : "Tells the delegate that a document has been successfully imported.",
+          "name" : "documentBrowser(_:didImportDocumentAt:toDestinationURL:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:didImportDocumentAt:toDestinationURL:)"
+        },
+        {
+          "description" : "Tells the delegate that the document browser failed to import the specified document.",
+          "name" : "documentBrowser(_:failedToImportDocumentAt:error:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:failedToImportDocumentAt:error:)"
+        }
+      ],
+      "title" : "Creating new documents"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "documentBrowser(_:didRequestDocumentCreationWithHandler:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIDocumentBrowserViewControllerDelegate\/documentBrowser(_:didRequestDocumentCreationWithHandler:)"
+}

@@ -1,0 +1,102 @@
+{
+  "abstract" : "Starts a new scope that can contain a dynamic number of throwing child tasks.",
+  "codeExamples" : [
+    {
+      "code" : "var sum = 0\nfor try await result in group {\n    sum += result\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "guard let first = try await group.next() else {\n    group.cancelAll()\n    return 0\n}\nlet second = await group.next() ?? 0\ngroup.cancelAll()\nreturn first + second",
+      "language" : "swift"
+    },
+    {
+      "code" : "try await withThrowingTaskGroup(of: Void.self) { group in\n    group.addTask { throw SomeError() }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "try await withThrowingTaskGroup(of: Void.self) { group in\n    group.addTask { throw SomeError() }\n    try await group.next()\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "3f3096531263798f945991e276f0db17da01228a603ed7d66ea9d09238a59f61",
+  "crawledAt" : "2025-12-01T02:48:11Z",
+  "declaration" : {
+    "code" : "@backDeployed(before: macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0)\nfunc withThrowingTaskGroup<ChildTaskResult, GroupResult>(of childTaskResultType: ChildTaskResult.Type = ChildTaskResult.self, returning returnType: GroupResult.Type = GroupResult.self, isolation: isolated (any Actor)? = #isolation, body: (inout ThrowingTaskGroup<ChildTaskResult, any Error>) async throws -> GroupResult) async rethrows -> GroupResult where ChildTaskResult : Sendable",
+    "language" : "swift"
+  },
+  "id" : "471A9459-307B-4378-98B0-E28354FF95EA",
+  "kind" : "function",
+  "module" : "Swift",
+  "overview" : "## Discussion\n\nA group *always* waits for all of its child tasks to complete before it returns. Even canceled tasks must run until completion before this function returns. Canceled child tasks cooperatively react to cancellation and attempt to return as early as possible. After this function returns, the task group is always empty.\n\nTo collect the results of the group’s child tasks, you can use a `for`-`await`-`in` loop:\n\nIf you need more control or only a few results, you can call `next()` directly:\n\n# Error Handling\n\nThrowing an error in one of the child tasks of a task group doesn’t immediately cancel the other tasks in that group. However, throwing out of the `body` of the `withThrowingTaskGroup` method does cancel the group, and all of its child tasks. For example, if you call `next()` in the task group and propagate its error, all other tasks are canceled. For example, in the code below, nothing is canceled and the group doesn’t throw an error:\n\nIn contrast, this example throws `SomeError` and cancels all of the tasks in the group:\n\nAn individual task throws its error in the corresponding call to `Group.next()`, which gives you a chance to handle the individual error or to let the group rethrow the error.\n\nRefer to [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskGroup] documentation for detailed discussion of semantics shared between all task groups.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/withThrowingTaskGroup(of:returning:isolation:body:)\ncrawled: 2025-12-01T02:48:11Z\n---\n\n# withThrowingTaskGroup(of:returning:isolation:body:)\n\n**Function**\n\nStarts a new scope that can contain a dynamic number of throwing child tasks.\n\n## Declaration\n\n```swift\n@backDeployed(before: macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0)\nfunc withThrowingTaskGroup<ChildTaskResult, GroupResult>(of childTaskResultType: ChildTaskResult.Type = ChildTaskResult.self, returning returnType: GroupResult.Type = GroupResult.self, isolation: isolated (any Actor)? = #isolation, body: (inout ThrowingTaskGroup<ChildTaskResult, any Error>) async throws -> GroupResult) async rethrows -> GroupResult where ChildTaskResult : Sendable\n```\n\n## Discussion\n\nA group *always* waits for all of its child tasks to complete before it returns. Even canceled tasks must run until completion before this function returns. Canceled child tasks cooperatively react to cancellation and attempt to return as early as possible. After this function returns, the task group is always empty.\n\nTo collect the results of the group’s child tasks, you can use a `for`-`await`-`in` loop:\n\n```swift\nvar sum = 0\nfor try await result in group {\n    sum += result\n}\n```\n\nIf you need more control or only a few results, you can call `next()` directly:\n\n```swift\nguard let first = try await group.next() else {\n    group.cancelAll()\n    return 0\n}\nlet second = await group.next() ?? 0\ngroup.cancelAll()\nreturn first + second\n```\n\n# Error Handling\n\nThrowing an error in one of the child tasks of a task group doesn’t immediately cancel the other tasks in that group. However, throwing out of the `body` of the `withThrowingTaskGroup` method does cancel the group, and all of its child tasks. For example, if you call `next()` in the task group and propagate its error, all other tasks are canceled. For example, in the code below, nothing is canceled and the group doesn’t throw an error:\n\n```swift\ntry await withThrowingTaskGroup(of: Void.self) { group in\n    group.addTask { throw SomeError() }\n}\n```\n\nIn contrast, this example throws `SomeError` and cancels all of the tasks in the group:\n\n```swift\ntry await withThrowingTaskGroup(of: Void.self) { group in\n    group.addTask { throw SomeError() }\n    try await group.next()\n}\n```\n\nAn individual task throws its error in the corresponding call to `Group.next()`, which gives you a chance to handle the individual error or to let the group rethrow the error.\n\nRefer to [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskGroup] documentation for detailed discussion of semantics shared between all task groups.\n\n\n\n\n\n\n\n## Tasks\n\n- **Task**: A unit of asynchronous work.\n- **TaskGroup**: A group that contains dynamically created child tasks.\n- **withTaskGroup(of:returning:isolation:body:)**: Starts a new scope that can contain a dynamic number of child tasks.\n- **ThrowingTaskGroup**: A group that contains throwing, dynamically created child tasks.\n- **TaskPriority**: The priority of a task.\n- **DiscardingTaskGroup**: A discarding group that contains dynamically created child tasks.\n- **withDiscardingTaskGroup(returning:isolation:body:)**: Starts a new scope that can contain a dynamic number of child tasks.\n- **ThrowingDiscardingTaskGroup**: A throwing discarding group that contains dynamically created child tasks.\n- **withThrowingDiscardingTaskGroup(returning:isolation:body:)**: Starts a new scope that can contain a dynamic number of child tasks.\n- **UnsafeCurrentTask**: An unsafe reference to the current task.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A unit of asynchronous work.",
+          "name" : "Task",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task"
+        },
+        {
+          "description" : "A group that contains dynamically created child tasks.",
+          "name" : "TaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskGroup"
+        },
+        {
+          "description" : "Starts a new scope that can contain a dynamic number of child tasks.",
+          "name" : "withTaskGroup(of:returning:isolation:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withTaskGroup(of:returning:isolation:body:)"
+        },
+        {
+          "description" : "A group that contains throwing, dynamically created child tasks.",
+          "name" : "ThrowingTaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/ThrowingTaskGroup"
+        },
+        {
+          "description" : "The priority of a task.",
+          "name" : "TaskPriority",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskPriority"
+        },
+        {
+          "description" : "A discarding group that contains dynamically created child tasks.",
+          "name" : "DiscardingTaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/DiscardingTaskGroup"
+        },
+        {
+          "description" : "Starts a new scope that can contain a dynamic number of child tasks.",
+          "name" : "withDiscardingTaskGroup(returning:isolation:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withDiscardingTaskGroup(returning:isolation:body:)"
+        },
+        {
+          "description" : "A throwing discarding group that contains dynamically created child tasks.",
+          "name" : "ThrowingDiscardingTaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/ThrowingDiscardingTaskGroup"
+        },
+        {
+          "description" : "Starts a new scope that can contain a dynamic number of child tasks.",
+          "name" : "withThrowingDiscardingTaskGroup(returning:isolation:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withThrowingDiscardingTaskGroup(returning:isolation:body:)"
+        },
+        {
+          "description" : "An unsafe reference to the current task.",
+          "name" : "UnsafeCurrentTask",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeCurrentTask"
+        }
+      ],
+      "title" : "Tasks"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "withThrowingTaskGroup(of:returning:isolation:body:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withThrowingTaskGroup(of:returning:isolation:body:)"
+}

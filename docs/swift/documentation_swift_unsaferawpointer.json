@@ -1,0 +1,270 @@
+{
+  "abstract" : "A raw pointer for accessing untyped data.",
+  "codeExamples" : [
+    {
+      "code" : "let bytesPointer = UnsafeMutableRawPointer.allocate(byteCount: 4, alignment: 4)\nbytesPointer.storeBytes(of: 0xFFFF_FFFF, as: UInt32.self)\n\n\/\/ Load a value from the memory referenced by 'bytesPointer'\nlet x = bytesPointer.load(as: UInt8.self)       \/\/ 255\n\n\/\/ Load a value from the last two allocated bytes\nlet offsetPointer = bytesPointer + 2\nlet y = offsetPointer.load(as: UInt16.self)     \/\/ 65535",
+      "language" : "swift"
+    },
+    {
+      "code" : "bytesPointer.deallocate()",
+      "language" : "swift"
+    },
+    {
+      "code" : "func print<T>(address p: UnsafeRawPointer, as type: T.Type) {\n    let value = p.load(as: type)\n    print(value)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ 'rawPointer' points to memory initialized with `Int` values.\nlet rawPointer: UnsafeRawPointer = ...\nprint(address: rawPointer, as: Int.self)\n\/\/ Prints \"42\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let intPointer: UnsafePointer<Int> = ...\nprint(address: intPointer, as: Int.self)\n\/\/ Prints \"42\"\n\nlet mutableIntPointer = UnsafeMutablePointer(mutating: intPointer)\nprint(address: mutableIntPointer, as: Int.self)\n\/\/ Prints \"42\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "var value: Int = 23\nprint(address: &value, as: Int.self)\n\/\/ Prints \"23\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let numbers = [5, 10, 15, 20]\nprint(address: numbers, as: Int.self)\n\/\/ Prints \"5\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "var mutableNumbers = numbers\nprint(address: &mutableNumbers, as: Int.self)",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "AtomicOptionalRepresentable",
+    "AtomicRepresentable",
+    "BitwiseCopyable",
+    "Comparable",
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "CustomReflectable",
+    "Equatable",
+    "Hashable",
+    "Strideable"
+  ],
+  "contentHash" : "4e0042d859c4a0160551c1343855f5677f4759fd622e84c310407b21ba57a581",
+  "crawledAt" : "2025-12-01T21:04:43Z",
+  "declaration" : {
+    "code" : "@frozen struct UnsafeRawPointer",
+    "language" : "swift"
+  },
+  "id" : "18F12130-B46C-4A1F-9D39-FB7DC17FEF7F",
+  "kind" : "struct",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nThe `UnsafeRawPointer` type provides no automated memory management, no type safety, and no alignment guarantees. You are responsible for handling the life cycle of any memory you work with through unsafe pointers, to avoid leaks or undefined behavior.\n\nMemory that you manually manage can be either *untyped* or *bound* to a specific type. You use the `UnsafeRawPointer` type to access and manage raw bytes in memory, whether or not that memory has been bound to a specific type.\n\n# Understanding a Pointer’s Memory State\n\nThe memory referenced by an `UnsafeRawPointer` instance can be in one of several states. Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform. Memory can be untyped and uninitialized, bound to a type and uninitialized, or bound to a type and initialized to a value. Finally, memory that was allocated previously may have been deallocated, leaving existing pointers referencing unallocated memory.\n\n## Raw, Uninitialized Memory\n\nRaw memory that has just been allocated is in an *uninitialized, untyped* state. Uninitialized memory must be initialized with values of a type before it can be used with any typed operations.\n\nTo bind uninitialized memory to a type without initializing it, use the `bindMemory(to:count:)` method. This method returns a typed pointer for further typed access to the memory.\n\n## Typed Memory\n\nMemory that has been bound to a type, whether it is initialized or uninitialized, is typically accessed using typed pointers—instances of `UnsafePointer` and `UnsafeMutablePointer`. Initialization, assignment, and deinitialization can be performed using `UnsafeMutablePointer` methods.\n\nMemory that has been bound to a type can be rebound to a different type only after it has been deinitialized or if the bound type is a *trivial type*. Deinitializing typed memory does not unbind that memory’s type. The deinitialized memory can be reinitialized with values of the same type, bound to a new type, or deallocated.\n\nWhen reading from  memory as raw bytes when that memory is bound to a type, you must ensure that you satisfy any alignment requirements.\n\n# Raw Pointer Arithmetic\n\nPointer arithmetic with raw pointers is performed at the byte level. When you add to or subtract from a raw pointer, the result is a new raw pointer offset by that number of bytes. The following example allocates four bytes of memory and stores `0xFF` in all four bytes:\n\nThe code above stores the value `0xFFFF_FFFF` into the four newly allocated bytes, and then loads the first byte as a `UInt8` instance and the third and fourth bytes as a `UInt16` instance.\n\nAlways remember to deallocate any memory that you allocate yourself.\n\n# Implicit Casting and Bridging\n\nWhen calling a function or method with an `UnsafeRawPointer` parameter, you can pass an instance of that specific pointer type, pass an instance of a compatible pointer type, or use Swift’s implicit bridging to pass a compatible pointer.\n\nFor example, the `print(address:as:)` function in the following code sample takes an `UnsafeRawPointer` instance as its first parameter:\n\nAs is typical in Swift, you can call the `print(address:as:)` function with an `UnsafeRawPointer` instance. This example passes `rawPointer` as the initial parameter.\n\nBecause typed pointers can be implicitly cast to raw pointers when passed as a parameter, you can also call `print(address:as:)` with any mutable or immutable typed pointer instance.\n\nAlternatively, you can use Swift’s *implicit bridging* to pass a pointer to an instance or to the elements of an array. Use inout syntax to implicitly create a pointer to an instance of any type. The following example uses implicit bridging to pass a pointer to `value` when calling `print(address:as:)`:\n\nAn immutable pointer to the elements of an array is implicitly created when you pass the array as an argument. This example uses implicit bridging to pass a pointer to the elements of `numbers` when calling `print(address:as:)`.\n\nYou can also use inout syntax to pass a mutable pointer to the elements of an array. Because `print(address:as:)` requires an immutable pointer, although this is syntactically valid, it isn’t necessary.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/swift\/unsaferawpointer\ncrawled: 2025-12-01T21:04:43Z\n---\n\n# UnsafeRawPointer\n\n**Structure**\n\nA raw pointer for accessing untyped data.\n\n## Declaration\n\n```swift\n@frozen struct UnsafeRawPointer\n```\n\n## Overview\n\nThe `UnsafeRawPointer` type provides no automated memory management, no type safety, and no alignment guarantees. You are responsible for handling the life cycle of any memory you work with through unsafe pointers, to avoid leaks or undefined behavior.\n\nMemory that you manually manage can be either *untyped* or *bound* to a specific type. You use the `UnsafeRawPointer` type to access and manage raw bytes in memory, whether or not that memory has been bound to a specific type.\n\n# Understanding a Pointer’s Memory State\n\nThe memory referenced by an `UnsafeRawPointer` instance can be in one of several states. Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform. Memory can be untyped and uninitialized, bound to a type and uninitialized, or bound to a type and initialized to a value. Finally, memory that was allocated previously may have been deallocated, leaving existing pointers referencing unallocated memory.\n\n## Raw, Uninitialized Memory\n\nRaw memory that has just been allocated is in an *uninitialized, untyped* state. Uninitialized memory must be initialized with values of a type before it can be used with any typed operations.\n\nTo bind uninitialized memory to a type without initializing it, use the `bindMemory(to:count:)` method. This method returns a typed pointer for further typed access to the memory.\n\n## Typed Memory\n\nMemory that has been bound to a type, whether it is initialized or uninitialized, is typically accessed using typed pointers—instances of `UnsafePointer` and `UnsafeMutablePointer`. Initialization, assignment, and deinitialization can be performed using `UnsafeMutablePointer` methods.\n\nMemory that has been bound to a type can be rebound to a different type only after it has been deinitialized or if the bound type is a *trivial type*. Deinitializing typed memory does not unbind that memory’s type. The deinitialized memory can be reinitialized with values of the same type, bound to a new type, or deallocated.\n\n\n\nWhen reading from  memory as raw bytes when that memory is bound to a type, you must ensure that you satisfy any alignment requirements.\n\n# Raw Pointer Arithmetic\n\nPointer arithmetic with raw pointers is performed at the byte level. When you add to or subtract from a raw pointer, the result is a new raw pointer offset by that number of bytes. The following example allocates four bytes of memory and stores `0xFF` in all four bytes:\n\n```swift\nlet bytesPointer = UnsafeMutableRawPointer.allocate(byteCount: 4, alignment: 4)\nbytesPointer.storeBytes(of: 0xFFFF_FFFF, as: UInt32.self)\n\n\/\/ Load a value from the memory referenced by 'bytesPointer'\nlet x = bytesPointer.load(as: UInt8.self)       \/\/ 255\n\n\/\/ Load a value from the last two allocated bytes\nlet offsetPointer = bytesPointer + 2\nlet y = offsetPointer.load(as: UInt16.self)     \/\/ 65535\n```\n\nThe code above stores the value `0xFFFF_FFFF` into the four newly allocated bytes, and then loads the first byte as a `UInt8` instance and the third and fourth bytes as a `UInt16` instance.\n\nAlways remember to deallocate any memory that you allocate yourself.\n\n```swift\nbytesPointer.deallocate()\n```\n\n# Implicit Casting and Bridging\n\nWhen calling a function or method with an `UnsafeRawPointer` parameter, you can pass an instance of that specific pointer type, pass an instance of a compatible pointer type, or use Swift’s implicit bridging to pass a compatible pointer.\n\nFor example, the `print(address:as:)` function in the following code sample takes an `UnsafeRawPointer` instance as its first parameter:\n\n```swift\nfunc print<T>(address p: UnsafeRawPointer, as type: T.Type) {\n    let value = p.load(as: type)\n    print(value)\n}\n```\n\nAs is typical in Swift, you can call the `print(address:as:)` function with an `UnsafeRawPointer` instance. This example passes `rawPointer` as the initial parameter.\n\n```swift\n\/\/ 'rawPointer' points to memory initialized with `Int` values.\nlet rawPointer: UnsafeRawPointer = ...\nprint(address: rawPointer, as: Int.self)\n\/\/ Prints \"42\"\n```\n\nBecause typed pointers can be implicitly cast to raw pointers when passed as a parameter, you can also call `print(address:as:)` with any mutable or immutable typed pointer instance.\n\n```swift\nlet intPointer: UnsafePointer<Int> = ...\nprint(address: intPointer, as: Int.self)\n\/\/ Prints \"42\"\n\nlet mutableIntPointer = UnsafeMutablePointer(mutating: intPointer)\nprint(address: mutableIntPointer, as: Int.self)\n\/\/ Prints \"42\"\n```\n\nAlternatively, you can use Swift’s *implicit bridging* to pass a pointer to an instance or to the elements of an array. Use inout syntax to implicitly create a pointer to an instance of any type. The following example uses implicit bridging to pass a pointer to `value` when calling `print(address:as:)`:\n\n```swift\nvar value: Int = 23\nprint(address: &value, as: Int.self)\n\/\/ Prints \"23\"\n```\n\nAn immutable pointer to the elements of an array is implicitly created when you pass the array as an argument. This example uses implicit bridging to pass a pointer to the elements of `numbers` when calling `print(address:as:)`.\n\n```swift\nlet numbers = [5, 10, 15, 20]\nprint(address: numbers, as: Int.self)\n\/\/ Prints \"5\"\n```\n\nYou can also use inout syntax to pass a mutable pointer to the elements of an array. Because `print(address:as:)` requires an immutable pointer, although this is syntactically valid, it isn’t necessary.\n\n```swift\nvar mutableNumbers = numbers\nprint(address: &mutableNumbers, as: Int.self)\n```\n\n\n\n## Initializers\n\n- **init(_:)**: Creates a new raw pointer from an `AutoreleasingUnsafeMutablePointer` instance.\n- **init(_:)**: Creates a new raw pointer from the given typed pointer.\n- **init(_:)**: Creates a new raw pointer from an `AutoreleasingUnsafeMutablePointer` instance.\n- **init(_:)**: Creates a new raw pointer from the given mutable raw pointer.\n- **init(_:)**: Creates a new raw pointer from the given typed pointer.\n- **init(_:)**: Creates a new raw pointer from the given typed pointer.\n- **init(_:)**: Creates a new raw pointer from the given mutable raw pointer.\n- **init(_:)**: Creates a new raw pointer from the given typed pointer.\n\n## Instance Properties\n\n- **customPlaygroundQuickLook**: A custom playground Quick Look for this instance.\n- **hashValue**: The hash value.\n\n## Instance Methods\n\n- **alignedDown(for:)**: Obtain the preceding pointer properly aligned to store a value of type `T`.\n- **alignedDown(toMultipleOf:)**: Obtain the preceding pointer whose bit pattern is a multiple of `alignment`.\n- **alignedUp(for:)**: Obtain the next pointer properly aligned to store a value of type `T`.\n- **alignedUp(toMultipleOf:)**: Obtain the next pointer whose bit pattern is a multiple of `alignment`.\n- **assumingMemoryBound(to:)**: Returns a typed pointer to the memory referenced by this pointer, assuming that the memory is already bound to the specified type.\n- **bindMemory(to:capacity:)**: Binds the memory to the specified type and returns a typed pointer to the bound memory.\n- **deallocate()**: Deallocates the previously allocated memory block referenced by this pointer.\n- **load(fromByteOffset:as:)**: Returns a new instance of the given type, constructed from the raw memory at the specified offset.\n- **loadUnaligned(fromByteOffset:as:)**: Returns a new instance of the given type, constructed from the raw memory at the specified offset.\n- **loadUnaligned(fromByteOffset:as:)**: Returns a new instance of the given type, constructed from the raw memory at the specified offset.\n- **withMemoryRebound(to:capacity:_:)**: Executes the given closure while temporarily binding memory to the specified number of instances of type `T`.\n\n## Type Aliases\n\n- **UnsafeRawPointer.Pointee**\n\n## Default Implementations\n\n- **AtomicOptionalRepresentable Implementations**\n- **AtomicRepresentable Implementations**\n- **Comparable Implementations**\n- **CustomReflectable Implementations**\n- **Equatable Implementations**\n- **Hashable Implementations**\n- **Strideable Implementations**\n\n## Raw Pointers\n\n- **UnsafeMutableRawPointer**: A raw pointer for accessing and manipulating untyped data.\n- **UnsafeRawBufferPointer**: A  nonowning collection interface to the bytes in a region of memory.\n- **UnsafeMutableRawBufferPointer**: A mutable nonowning collection interface to the bytes in a region of memory.\n\n## Conforms To\n\n- AtomicOptionalRepresentable\n- AtomicRepresentable\n- BitwiseCopyable\n- Comparable\n- Copyable\n- CustomDebugStringConvertible\n- CustomReflectable\n- Equatable\n- Hashable\n- Strideable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new raw pointer from an `AutoreleasingUnsafeMutablePointer` instance.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/init(_:)-1z2cc"
+        },
+        {
+          "description" : "Creates a new raw pointer from the given typed pointer.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/init(_:)-1z902"
+        },
+        {
+          "description" : "Creates a new raw pointer from an `AutoreleasingUnsafeMutablePointer` instance.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/init(_:)-2kyf"
+        },
+        {
+          "description" : "Creates a new raw pointer from the given mutable raw pointer.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/init(_:)-4dxzd"
+        },
+        {
+          "description" : "Creates a new raw pointer from the given typed pointer.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/init(_:)-76a4f"
+        },
+        {
+          "description" : "Creates a new raw pointer from the given typed pointer.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/init(_:)-84kry"
+        },
+        {
+          "description" : "Creates a new raw pointer from the given mutable raw pointer.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/init(_:)-8tlvz"
+        },
+        {
+          "description" : "Creates a new raw pointer from the given typed pointer.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/init(_:)-9t67o"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A custom playground Quick Look for this instance.",
+          "name" : "customPlaygroundQuickLook",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/customPlaygroundQuickLook"
+        },
+        {
+          "description" : "The hash value.",
+          "name" : "hashValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/hashValue"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Obtain the preceding pointer properly aligned to store a value of type `T`.",
+          "name" : "alignedDown(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/alignedDown(for:)"
+        },
+        {
+          "description" : "Obtain the preceding pointer whose bit pattern is a multiple of `alignment`.",
+          "name" : "alignedDown(toMultipleOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/alignedDown(toMultipleOf:)"
+        },
+        {
+          "description" : "Obtain the next pointer properly aligned to store a value of type `T`.",
+          "name" : "alignedUp(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/alignedUp(for:)"
+        },
+        {
+          "description" : "Obtain the next pointer whose bit pattern is a multiple of `alignment`.",
+          "name" : "alignedUp(toMultipleOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/alignedUp(toMultipleOf:)"
+        },
+        {
+          "description" : "Returns a typed pointer to the memory referenced by this pointer, assuming that the memory is already bound to the specified type.",
+          "name" : "assumingMemoryBound(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/assumingMemoryBound(to:)"
+        },
+        {
+          "description" : "Binds the memory to the specified type and returns a typed pointer to the bound memory.",
+          "name" : "bindMemory(to:capacity:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/bindMemory(to:capacity:)"
+        },
+        {
+          "description" : "Deallocates the previously allocated memory block referenced by this pointer.",
+          "name" : "deallocate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/deallocate()"
+        },
+        {
+          "description" : "Returns a new instance of the given type, constructed from the raw memory at the specified offset.",
+          "name" : "load(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/load(fromByteOffset:as:)"
+        },
+        {
+          "description" : "Returns a new instance of the given type, constructed from the raw memory at the specified offset.",
+          "name" : "loadUnaligned(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/loadUnaligned(fromByteOffset:as:)-5wi7f"
+        },
+        {
+          "description" : "Returns a new instance of the given type, constructed from the raw memory at the specified offset.",
+          "name" : "loadUnaligned(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/loadUnaligned(fromByteOffset:as:)-8a8c8"
+        },
+        {
+          "description" : "Executes the given closure while temporarily binding memory to the specified number of instances of type `T`.",
+          "name" : "withMemoryRebound(to:capacity:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/withMemoryRebound(to:capacity:_:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "UnsafeRawPointer.Pointee",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/Pointee"
+        }
+      ],
+      "title" : "Type Aliases"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "AtomicOptionalRepresentable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/AtomicOptionalRepresentable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "AtomicRepresentable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/AtomicRepresentable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Comparable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/Comparable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "CustomReflectable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/CustomReflectable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Equatable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/Equatable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Hashable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/Hashable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Strideable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer\/Strideable-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A raw pointer for accessing and manipulating untyped data.",
+          "name" : "UnsafeMutableRawPointer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawPointer"
+        },
+        {
+          "description" : "A  nonowning collection interface to the bytes in a region of memory.",
+          "name" : "UnsafeRawBufferPointer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawBufferPointer"
+        },
+        {
+          "description" : "A mutable nonowning collection interface to the bytes in a region of memory.",
+          "name" : "UnsafeMutableRawBufferPointer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer"
+        }
+      ],
+      "title" : "Raw Pointers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "UnsafeRawPointer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/swift\/unsaferawpointer"
+}

@@ -1,0 +1,104 @@
+{
+  "abstract" : "A class that processes a framebuffer object to detect and dim sequences of flashing lights.",
+  "codeExamples" : [
+    {
+      "code" : "import MediaAccessibility\nimport CoreVideo\nimport OSLog\n\nprivate let processor = MAFlashingLightsProcessor()\nprivate let logger = Logger()\n\nfunc readVideoBuffer() {\n    \n    \/\/ Confirm that the Dim Flashing Lights setting is on before processing video.\n    if !MADimFlashingLightsEnabled() { return }\n\n    \/\/ Retrieve the CVPixelBuffer from your video content.\n    \/\/ ...\n    \n    \/\/ Get the IOSurface that backs the pixel buffer.\n    guard let inSurface = CVPixelBufferGetIOSurface(pixelBuffer)?.takeUnretainedValue() else {\n        logger.debug(\"Can't initialize input surface.\")\n        return\n    }\n    \n    \/\/ Use the properties of the pixel buffer to initialize an output IOSurface.\n    guard var outSurface = IOSurface(properties: [\n        .width: CVPixelBufferGetWidth(pixelBuffer),\n        .height: CVPixelBufferGetHeight(pixelBuffer),\n        .bytesPerRow: CVPixelBufferGetWidth(pixelBuffer) * 4,\n        .bytesPerElement: 4,\n        .pixelFormat: CVPixelBufferGetPixelFormatType(pixelBuffer)\n    ]) as IOSurfaceRef? else {\n        logger.debug(\"Can't initialize output surface.\")\n        return\n    }\n    \n    \/\/ Verify that the input IOSurface is compatible with the flashing lights processor.\n    if processor.canProcessSurface(inSurface) {\n        \n        \/\/ Analyze input IOSurface for flashing light sequences\n        \/\/ and write mitigated content to output IOSurface.\n        let result = processor.processSurface(inSurface, outSurface: &outSurface,\n                                              timestamp: CFAbsoluteTimeGetCurrent())\n        \n        if result.surfaceProcessed {\n            logger.debug(\"\"\"\n            Processed content with flashing lights intensity \\(result.intensityLevel)\n            and mitigated output with mitigation level \\(result.mitigationLevel).\n            \"\"\")\n            \n            \/\/ Convert the mitigated output surface back to CVPixelBuffer\n            \/\/ and draw the video content.\n            \/\/ ...\n            \n        } else {\n            logger.debug(\"Can't process input surface.\")\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "ae50c563581aa22f68daa91aee07981924d8855dc47ac3500547c23cbab5d4c8",
+  "crawledAt" : "2025-12-02T16:05:44Z",
+  "declaration" : {
+    "code" : "class MAFlashingLightsProcessor",
+    "language" : "swift"
+  },
+  "id" : "F08ABB15-2883-4061-94FA-FD848DA9097A",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Media Accessibility",
+  "overview" : "## Overview\n\nA device with the Dim Flashing Lights setting on automatically dims the brightness of flashing effect sequences when it detects them in video content. If your app performs custom video drawing instead of using [doc:\/\/com.apple.documentation\/documentation\/AVFoundation] APIs, you can use the [doc:\/\/com.apple.mediaaccessibility\/documentation\/MediaAccessibility\/MAFlashingLightsProcessor] class to detect and mitigate sequences of flashing effects in your video content.\n\nThe following example shows how you might incorporate [doc:\/\/com.apple.mediaaccessibility\/documentation\/MediaAccessibility\/MAFlashingLightsProcessor] into code that uses [doc:\/\/com.apple.documentation\/documentation\/CoreVideo] APIs.\n\nFor more information, see [doc:\/\/com.apple.mediaaccessibility\/documentation\/MediaAccessibility\/flashing-lights].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MediaAccessibility\/MAFlashingLightsProcessor\ncrawled: 2025-12-02T16:05:44Z\n---\n\n# MAFlashingLightsProcessor\n\n**Class**\n\nA class that processes a framebuffer object to detect and dim sequences of flashing lights.\n\n## Declaration\n\n```swift\nclass MAFlashingLightsProcessor\n```\n\n## Overview\n\nA device with the Dim Flashing Lights setting on automatically dims the brightness of flashing effect sequences when it detects them in video content. If your app performs custom video drawing instead of using [doc:\/\/com.apple.documentation\/documentation\/AVFoundation] APIs, you can use the [doc:\/\/com.apple.mediaaccessibility\/documentation\/MediaAccessibility\/MAFlashingLightsProcessor] class to detect and mitigate sequences of flashing effects in your video content.\n\nThe following example shows how you might incorporate [doc:\/\/com.apple.mediaaccessibility\/documentation\/MediaAccessibility\/MAFlashingLightsProcessor] into code that uses [doc:\/\/com.apple.documentation\/documentation\/CoreVideo] APIs.\n\n```swift\nimport MediaAccessibility\nimport CoreVideo\nimport OSLog\n\nprivate let processor = MAFlashingLightsProcessor()\nprivate let logger = Logger()\n\nfunc readVideoBuffer() {\n    \n    \/\/ Confirm that the Dim Flashing Lights setting is on before processing video.\n    if !MADimFlashingLightsEnabled() { return }\n\n    \/\/ Retrieve the CVPixelBuffer from your video content.\n    \/\/ ...\n    \n    \/\/ Get the IOSurface that backs the pixel buffer.\n    guard let inSurface = CVPixelBufferGetIOSurface(pixelBuffer)?.takeUnretainedValue() else {\n        logger.debug(\"Can't initialize input surface.\")\n        return\n    }\n    \n    \/\/ Use the properties of the pixel buffer to initialize an output IOSurface.\n    guard var outSurface = IOSurface(properties: [\n        .width: CVPixelBufferGetWidth(pixelBuffer),\n        .height: CVPixelBufferGetHeight(pixelBuffer),\n        .bytesPerRow: CVPixelBufferGetWidth(pixelBuffer) * 4,\n        .bytesPerElement: 4,\n        .pixelFormat: CVPixelBufferGetPixelFormatType(pixelBuffer)\n    ]) as IOSurfaceRef? else {\n        logger.debug(\"Can't initialize output surface.\")\n        return\n    }\n    \n    \/\/ Verify that the input IOSurface is compatible with the flashing lights processor.\n    if processor.canProcessSurface(inSurface) {\n        \n        \/\/ Analyze input IOSurface for flashing light sequences\n        \/\/ and write mitigated content to output IOSurface.\n        let result = processor.processSurface(inSurface, outSurface: &outSurface,\n                                              timestamp: CFAbsoluteTimeGetCurrent())\n        \n        if result.surfaceProcessed {\n            logger.debug(\"\"\"\n            Processed content with flashing lights intensity \\(result.intensityLevel)\n            and mitigated output with mitigation level \\(result.mitigationLevel).\n            \"\"\")\n            \n            \/\/ Convert the mitigated output surface back to CVPixelBuffer\n            \/\/ and draw the video content.\n            \/\/ ...\n            \n        } else {\n            logger.debug(\"Can't process input surface.\")\n        }\n    }\n}\n```\n\nFor more information, see [doc:\/\/com.apple.mediaaccessibility\/documentation\/MediaAccessibility\/flashing-lights].\n\n## Checking compatibility\n\n- **canProcessSurface(_:)**: Returns a Boolean value that indicates whether the flashing lights processor can process the content in the surface for sequences of flashing lights.\n\n## Processing video content\n\n- **processSurface(_:outSurface:timestamp:options:)**: Processes a surface by analyzing pixels for sequences of flashing lights and mitigates them by dimming the content.\n- **MAFlashingLightsProcessor.Result**: An object that reports the result of the flashing lights processor.\n- **MAFlashingLightsProcessor.OptionKey**: Options for the flashing lights processor.\n\n## Dim flashing lights\n\n- **Responding to changes in the flashing lights setting**: Adjust your UI when a person chooses to dim flashing lights on their Apple device.\n- **MADimFlashingLightsEnabled()**: Returns a Boolean value that indicates whether the flashing lights setting is enabled on the device.\n- **kMADimFlashingLightsChangedNotification**: A notification that posts when a person changes the flashing lights setting on the device.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value that indicates whether the flashing lights processor can process the content in the surface for sequences of flashing lights.",
+          "name" : "canProcessSurface(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaAccessibility\/MAFlashingLightsProcessor\/canProcessSurface(_:)"
+        }
+      ],
+      "title" : "Checking compatibility"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Processes a surface by analyzing pixels for sequences of flashing lights and mitigates them by dimming the content.",
+          "name" : "processSurface(_:outSurface:timestamp:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaAccessibility\/MAFlashingLightsProcessor\/processSurface(_:outSurface:timestamp:options:)"
+        },
+        {
+          "description" : "An object that reports the result of the flashing lights processor.",
+          "name" : "MAFlashingLightsProcessor.Result",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaAccessibility\/MAFlashingLightsProcessor\/Result"
+        },
+        {
+          "description" : "Options for the flashing lights processor.",
+          "name" : "MAFlashingLightsProcessor.OptionKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaAccessibility\/MAFlashingLightsProcessor\/OptionKey"
+        }
+      ],
+      "title" : "Processing video content"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adjust your UI when a person chooses to dim flashing lights on their Apple device.",
+          "name" : "Responding to changes in the flashing lights setting",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaAccessibility\/responding-to-changes-in-the-flashing-lights-setting"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether the flashing lights setting is enabled on the device.",
+          "name" : "MADimFlashingLightsEnabled()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaAccessibility\/MADimFlashingLightsEnabled()"
+        },
+        {
+          "description" : "A notification that posts when a person changes the flashing lights setting on the device.",
+          "name" : "kMADimFlashingLightsChangedNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaAccessibility\/kMADimFlashingLightsChangedNotification"
+        }
+      ],
+      "title" : "Dim flashing lights"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MAFlashingLightsProcessor",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MediaAccessibility\/MAFlashingLightsProcessor"
+}

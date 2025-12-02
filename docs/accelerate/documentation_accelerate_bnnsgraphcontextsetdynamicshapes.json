@@ -1,0 +1,80 @@
+{
+  "abstract" : "Specifies the dynamic shapes for a graph and, if possible, infers, the output shapes.",
+  "codeExamples" : [
+    {
+      "code" : "var inputShape: [UInt64] = [1024, 1, 1]\nlet rank = inputShape.count\nvar outputShape = [UInt64](repeating: 0, count: rank)\n\nlet result = outputShape.withUnsafeMutableBufferPointer { output in\n    inputShape.withUnsafeMutableBufferPointer { input in\n        \n        var shapes = [\n            bnns_graph_shape_t(rank: rank, shape: output.baseAddress!),\n            bnns_graph_shape_t(rank:rank, shape: input.baseAddress!)\n        ]\n        \n        return BNNSGraphContextSetDynamicShapes(context, nil,\n                                                shapes.count, &shapes)\n    }\n}\n    \n\/\/ Prints \"[1024, 1, 1]\".\nprint(outputShape)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "29fd441ce2cab715e74a9515a9091ad51991c29d19f1f4f46a29f603f389c71e",
+  "crawledAt" : "2025-11-30T20:10:43Z",
+  "declaration" : {
+    "code" : "func BNNSGraphContextSetDynamicShapes(_ context: bnns_graph_context_t, _ function: UnsafePointer<CChar>?, _ shapes_count: Int, _ shapes: UnsafeMutablePointer<bnns_graph_shape_t>) -> Int32",
+    "language" : "swift"
+  },
+  "id" : "4953CD02-7911-48E4-A4A5-AAE3EBE31D11",
+  "kind" : "function",
+  "module" : "Accelerate",
+  "overview" : "## Return Value\n\n- `0` on success if all tensor shapes were exactly determined. That is, the workspace size is exact.\n\n## Discussion\n\n## Discussion\n\nDon’t call this function while existing calls to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSGraphContextExecute(_:_:_:_:_:_:)] are running.\n\nFor example, the following code sets the dynamic shapes for an example graph context, specifies the output shape, and updates the context’s required workspace size.\n\nOn return, the output shape contains the correct size for the input shape, and a subsequent call to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSGraphContextGetWorkspaceSize(_:_:)] returns the correct workspace size.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraphContextSetDynamicShapes(_:_:_:_:)\ncrawled: 2025-11-30T20:10:43Z\n---\n\n# BNNSGraphContextSetDynamicShapes(_:_:_:_:)\n\n**Function**\n\nSpecifies the dynamic shapes for a graph and, if possible, infers, the output shapes.\n\n## Declaration\n\n```swift\nfunc BNNSGraphContextSetDynamicShapes(_ context: bnns_graph_context_t, _ function: UnsafePointer<CChar>?, _ shapes_count: Int, _ shapes: UnsafeMutablePointer<bnns_graph_shape_t>) -> Int32\n```\n\n## Parameters\n\n- **context**: The graph context.\n- **function**: The function. Specify as `nil` if the graph only contains one function.\n- **shapes_count**: The number of elements in the `shapes` array.\n- **shapes**: An array of input and output shapes in the same order as you pass to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSGraphContextExecute(_:_:_:_:_:_:)].\n\nOn input, this function reads input shapes with a nonzero rank, and uses the constant or default value from the source model for input shapes with a zero rank. The function generates an error for shapes with a nonzero value that doesn’t match the source model.\n\nOn output, the function sets output shapes with a nonzero rank to the upper bounds of the expected output shape. If the function can’t deduce the output shape because it depends on the input data values, the value of `shapes[idx].size[d]` is zero.\n\n## Return Value\n\n- `0` on success if all tensor shapes were exactly determined. That is, the workspace size is exact.\n\n## Discussion\n\n- `1` on success if one or more tensor shapes are merely bounds, but no tensor is unbounded. That is, the workspace size is bounded.\n- `2` on success if one or more tensor shapes are unbounded and BNNS will allocate workspace memory during execution.\n- A negative value indicates an error.\n\n## Discussion\n\nDon’t call this function while existing calls to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSGraphContextExecute(_:_:_:_:_:_:)] are running.\n\nFor example, the following code sets the dynamic shapes for an example graph context, specifies the output shape, and updates the context’s required workspace size.\n\n```swift\nvar inputShape: [UInt64] = [1024, 1, 1]\nlet rank = inputShape.count\nvar outputShape = [UInt64](repeating: 0, count: rank)\n\nlet result = outputShape.withUnsafeMutableBufferPointer { output in\n    inputShape.withUnsafeMutableBufferPointer { input in\n        \n        var shapes = [\n            bnns_graph_shape_t(rank: rank, shape: output.baseAddress!),\n            bnns_graph_shape_t(rank:rank, shape: input.baseAddress!)\n        ]\n        \n        return BNNSGraphContextSetDynamicShapes(context, nil,\n                                                shapes.count, &shapes)\n    }\n}\n    \n\/\/ Prints \"[1024, 1, 1]\".\nprint(outputShape)\n```\n\nOn return, the output shape contains the correct size for the input shape, and a subsequent call to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSGraphContextGetWorkspaceSize(_:_:)] returns the correct workspace size.\n\n## Specifying and querying a context’s properties\n\n- **BNNSGraphContextSetStreamingAdvanceCount(_:_:)**: Sets the streaming advancement amount for cases with dynamically shaped inputs.\n- **BNNSGraphContextSetArgumentType(_:_:)**: Specifies the argument type for a graph context.\n- **BNNSGraphArgumentType**: Constants that specify the argument type for a graph context.\n- **bnns_graph_shape_t**: The specification of the shape of an argument.\n- **BNNSGraphContextSetBatchSize(_:_:_:)**: Sets the batch size for a graph.\n- **BNNSGraphContextEnableNanAndInfChecks(_:_:)**: Specifies that the context checks intermediate tensors for NaNs and infinities.\n- **BNNSGraphContextGetWorkspaceSize(_:_:)**: Returns the minimum size, in bytes, of the workspace that graph context execution requires.\n- **BNNSGraphContextSetStreamingAdvanceCount(_:_:)**: Sets the streaming advancement amount for cases with dynamically shaped inputs.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the streaming advancement amount for cases with dynamically shaped inputs.",
+          "name" : "BNNSGraphContextSetStreamingAdvanceCount(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraphContextSetStreamingAdvanceCount(_:_:)"
+        },
+        {
+          "description" : "Specifies the argument type for a graph context.",
+          "name" : "BNNSGraphContextSetArgumentType(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraphContextSetArgumentType(_:_:)"
+        },
+        {
+          "description" : "Constants that specify the argument type for a graph context.",
+          "name" : "BNNSGraphArgumentType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraphArgumentType"
+        },
+        {
+          "description" : "The specification of the shape of an argument.",
+          "name" : "bnns_graph_shape_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/bnns_graph_shape_t"
+        },
+        {
+          "description" : "Sets the batch size for a graph.",
+          "name" : "BNNSGraphContextSetBatchSize(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraphContextSetBatchSize(_:_:_:)"
+        },
+        {
+          "description" : "Specifies that the context checks intermediate tensors for NaNs and infinities.",
+          "name" : "BNNSGraphContextEnableNanAndInfChecks(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraphContextEnableNanAndInfChecks(_:_:)"
+        },
+        {
+          "description" : "Returns the minimum size, in bytes, of the workspace that graph context execution requires.",
+          "name" : "BNNSGraphContextGetWorkspaceSize(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraphContextGetWorkspaceSize(_:_:)"
+        },
+        {
+          "description" : "Sets the streaming advancement amount for cases with dynamically shaped inputs.",
+          "name" : "BNNSGraphContextSetStreamingAdvanceCount(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraphContextSetStreamingAdvanceCount(_:_:)"
+        }
+      ],
+      "title" : "Specifying and querying a context’s properties"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSGraphContextSetDynamicShapes(_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraphContextSetDynamicShapes(_:_:_:_:)"
+}

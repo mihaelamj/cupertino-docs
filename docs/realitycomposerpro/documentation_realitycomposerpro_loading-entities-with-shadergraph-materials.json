@@ -1,0 +1,59 @@
+{
+  "abstract" : "Bring entities that contain materials created with Reality Composer Pro for use in your visionOS app.",
+  "codeExamples" : [
+    {
+      "code" : "struct ShaderSamplesApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ShaderSamplesView()\n        }\n        .windowStyle(.volumetric)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "private func loadShaders() async {\n    guard\n        let shaderSamplesSceneRoot = try? await Entity(\n            named: \"ShaderSamplesScene\", in: realityKitContentBundle\n        ).children.first\n    else {\n        return\n    }\n\n    \/\/ Get the shader sample entities.\n    for shaderSampleEntity in shaderSamplesSceneRoot.children {\n        shaderSampleEntities.append(shaderSampleEntity)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "private func createRealityView(_ shaderSampleEntity: Entity) -> some View {\n    RealityView { content in\n        shaderSampleEntity.position = [0, 0, 0]\n        shaderSampleEntity.scale = SIMD3<Float>(\n            repeating: 0.75)\n        content.add(shaderSampleEntity)\n    }\n    .glassBackgroundEffect()\n    .containerRelativeFrame(\n        [.horizontal], count: 3, spacing: 5)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "var body: some View {\n    ScrollView(.horizontal) {\n        HStack {\n            ForEach(shaderSampleEntities) { shaderSampleEntity in\n                VStack {\n                    \/\/ Display the shader sample entity.\n                    createRealityView(shaderSampleEntity)\n\n                    \/\/ Display the shader name.\n                    createDisplayName(shaderSampleEntity)\n                }.padding([.bottom])\n            }\n        }\n    }.task {\n        \/\/ Load the shader samples scene root.\n        await loadShaders()\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "43e3f60076fb3b312f61c005db7beb12d918ee050b3ab6ee4a89647fd81b0e3a",
+  "crawledAt" : "2025-12-02T15:50:26Z",
+  "id" : "36F08D2B-90A6-4FA4-9F91-E8DC3A20302D",
+  "kind" : "unknown",
+  "language" : "swift",
+  "overview" : "## Overview\n\nReality Composer Pro gives you the ability to create entities that you can bring over to, and interact with, in your visionOS app. This sample loads the entities created with [https:\/\/developer.apple.com\/documentation\/shadergraph] and places them in a [https:\/\/developer.apple.com\/documentation\/swiftui\/scrollview].\n\n\n\n## Create the materials in ShaderGraph\n\nIn the Project Navigator, open Packages > RealityKitContent, select `Package.realitycomposerpro`, then click Open in Reality Composer Pro.\n\n\n\nThe `RealityKitContent` package in the sample includes these shaders:\n\n## Create a volumetric view in the app\n\nThe sample uses a volumetric view in a [https:\/\/developer.apple.com\/documentation\/swiftui\/windowgroup] to load the entities from the `RealityKitContent` package:\n\n## Load the shaders from the content package\n\nThe `loadShaders` method loads all the shader entities containing the shader materials from the `ShaderSamplesScene` scene in the `realityKitContentBundle`:\n\nThe method saves the entities in a list named `shaderSampleEntities` to be used later to create the [https:\/\/developer.apple.com\/documentation\/realitykit\/realityviewcontent].\n\n## Add the shader entities into the RealityView content\n\nThe `createRealityView`  method in the sample creates a [https:\/\/developer.apple.com\/documentation\/realitykit\/realityview] for an entity and adds it to the [https:\/\/developer.apple.com\/documentation\/realitykit\/realityviewcontent] in the `createRealityView` method:\n\nThe method positions the `shaderSampleEntity` at the center of the `RealityView` and reduces the scale to fit in the [https:\/\/developer.apple.com\/documentation\/swiftui\/scrollview].\n\n## Load the entities into a ScrollView\n\nThe sample uses a [https:\/\/developer.apple.com\/documentation\/swiftui\/scrollview] to display all the entities in the `shaderSampleEntities` list in a [https:\/\/developer.apple.com\/documentation\/RealityKit\/RealityView]. The `ScrollView` shows the name of the shader below the `RealityView`:\n\nThe sample loads the shaders in an asynchronous [https:\/\/developer.apple.com\/documentation\/swift\/task], and displays the shaders in `ScrollView`.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/RealityComposerPro\/loading-entities-with-shadergraph-materials\ncrawled: 2025-12-02T15:50:26Z\n---\n\n# Loading entities with ShaderGraph materials\n\n**Sample Code**\n\nBring entities that contain materials created with Reality Composer Pro for use in your visionOS app.\n\n## Overview\n\nReality Composer Pro gives you the ability to create entities that you can bring over to, and interact with, in your visionOS app. This sample loads the entities created with [https:\/\/developer.apple.com\/documentation\/shadergraph] and places them in a [https:\/\/developer.apple.com\/documentation\/swiftui\/scrollview].\n\n\n\n## Create the materials in ShaderGraph\n\nIn the Project Navigator, open Packages > RealityKitContent, select `Package.realitycomposerpro`, then click Open in Reality Composer Pro.\n\n\n\nThe `RealityKitContent` package in the sample includes these shaders:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n## Create a volumetric view in the app\n\nThe sample uses a volumetric view in a [https:\/\/developer.apple.com\/documentation\/swiftui\/windowgroup] to load the entities from the `RealityKitContent` package:\n\n```swift\nstruct ShaderSamplesApp: App {\n    var body: some Scene {\n        WindowGroup {\n            ShaderSamplesView()\n        }\n        .windowStyle(.volumetric)\n    }\n}\n```\n\n## Load the shaders from the content package\n\nThe `loadShaders` method loads all the shader entities containing the shader materials from the `ShaderSamplesScene` scene in the `realityKitContentBundle`:\n\n```swift\nprivate func loadShaders() async {\n    guard\n        let shaderSamplesSceneRoot = try? await Entity(\n            named: \"ShaderSamplesScene\", in: realityKitContentBundle\n        ).children.first\n    else {\n        return\n    }\n\n    \/\/ Get the shader sample entities.\n    for shaderSampleEntity in shaderSamplesSceneRoot.children {\n        shaderSampleEntities.append(shaderSampleEntity)\n    }\n}\n```\n\nThe method saves the entities in a list named `shaderSampleEntities` to be used later to create the [https:\/\/developer.apple.com\/documentation\/realitykit\/realityviewcontent].\n\n## Add the shader entities into the RealityView content\n\nThe `createRealityView`  method in the sample creates a [https:\/\/developer.apple.com\/documentation\/realitykit\/realityview] for an entity and adds it to the [https:\/\/developer.apple.com\/documentation\/realitykit\/realityviewcontent] in the `createRealityView` method:\n\n```swift\nprivate func createRealityView(_ shaderSampleEntity: Entity) -> some View {\n    RealityView { content in\n        shaderSampleEntity.position = [0, 0, 0]\n        shaderSampleEntity.scale = SIMD3<Float>(\n            repeating: 0.75)\n        content.add(shaderSampleEntity)\n    }\n    .glassBackgroundEffect()\n    .containerRelativeFrame(\n        [.horizontal], count: 3, spacing: 5)\n}\n```\n\nThe method positions the `shaderSampleEntity` at the center of the `RealityView` and reduces the scale to fit in the [https:\/\/developer.apple.com\/documentation\/swiftui\/scrollview].\n\n## Load the entities into a ScrollView\n\nThe sample uses a [https:\/\/developer.apple.com\/documentation\/swiftui\/scrollview] to display all the entities in the `shaderSampleEntities` list in a [https:\/\/developer.apple.com\/documentation\/RealityKit\/RealityView]. The `ScrollView` shows the name of the shader below the `RealityView`:\n\n```swift\nvar body: some View {\n    ScrollView(.horizontal) {\n        HStack {\n            ForEach(shaderSampleEntities) { shaderSampleEntity in\n                VStack {\n                    \/\/ Display the shader sample entity.\n                    createRealityView(shaderSampleEntity)\n\n                    \/\/ Display the shader name.\n                    createDisplayName(shaderSampleEntity)\n                }.padding([.bottom])\n            }\n        }\n    }.task {\n        \/\/ Load the shader samples scene root.\n        await loadShaders()\n    }\n}\n```\n\nThe sample loads the shaders in an asynchronous [https:\/\/developer.apple.com\/documentation\/swift\/task], and displays the shaders in `ScrollView`.\n\n\n\n## Shader Graph\n\n- **Designing materials with Shader Graph**: Create realistic materials with Shader Graph’s node editor in Reality Composer Pro.\n- **Creating a Fresnel outline effect with Shader Graph**: Highlight a model by adding an outline effect.\n- **Creating a vertex displacement material with Shader Graph**: Animate the vertices of a mesh over time with 3D Perlin noise by creating a Shader Graph material.\n- **Correcting normals after vertex displacement with Shader Graph**: Approximate new vertex normals for materials that displace a mesh’s vertices.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create realistic materials with Shader Graph’s node editor in Reality Composer Pro.",
+          "name" : "Designing materials with Shader Graph",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityComposerPro\/Editor_ShaderGraph"
+        },
+        {
+          "description" : "Highlight a model by adding an outline effect.",
+          "name" : "Creating a Fresnel outline effect with Shader Graph",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityComposerPro\/Creating-a-Fresnel-outline-effect-with-Shader-Graph"
+        },
+        {
+          "description" : "Animate the vertices of a mesh over time with 3D Perlin noise by creating a Shader Graph material.",
+          "name" : "Creating a vertex displacement material with Shader Graph",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityComposerPro\/Creating-a-vertex-displacement-material-with-Shader-Graph"
+        },
+        {
+          "description" : "Approximate new vertex normals for materials that displace a mesh’s vertices.",
+          "name" : "Correcting normals after vertex displacement with Shader Graph",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityComposerPro\/Correcting-normals-after-vertex-displacement-with-Shader-Graph"
+        }
+      ],
+      "title" : "Shader Graph"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Loading entities with ShaderGraph materials",
+  "url" : "https:\/\/developer.apple.com\/documentation\/RealityComposerPro\/loading-entities-with-shadergraph-materials"
+}

@@ -1,0 +1,314 @@
+{
+  "abstract" : "An image buffer that stores an image’s pixel data, dimensions, bit depth, and number of channels.",
+  "codeExamples" : [
+    {
+      "code" : " let src = vImage.PixelBuffer<vImage.Interleaved8x4>(cgImage: cgImage,\n                                                     cgImageFormat: &cgImageFormat)\n let dest = vImage.PixelBuffer<vImage.Interleaved8x4>(src.size)\n\n src.boxConvolve(kernelSize: vImage.Size(width: 64, height: 64),\n                 edgeMode: .truncateKernel,\n                 destination: dest)",
+      "language" : "swift"
+    },
+    {
+      "code" : " let src = vImage.PixelBuffer<vImage.Interleaved8x4>(cgImage: cgImage,\n                                                     cgImageFormat: &cgImageFormat)\n let dest = vImage.PixelBuffer<vImage.InterleavedFx4>(size: src.size)\n\n src.convert(to: dest)",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "AccelerateBuffer",
+    "AccelerateMatrixBuffer",
+    "AccelerateMutableBuffer",
+    "AccelerateMutableMatrixBuffer",
+    "Copyable"
+  ],
+  "contentHash" : "a6f3c6b681975580c0d55e25ee787e930708a5ecbc8b64c7313cbf13c28fb5c3",
+  "crawledAt" : "2025-12-02T16:05:41Z",
+  "declaration" : {
+    "code" : "struct PixelBuffer<Format> where Format : PixelFormat",
+    "language" : "swift"
+  },
+  "id" : "984D6D0A-908D-4CFD-A9DB-8FA3FE089EE5",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nUse a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] to represent an image from a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance, a [doc:\/\/com.apple.documentation\/documentation\/CoreVideo\/CVPixelBuffer] structure, or a collection of raw pixel values. Pixel buffers are typed by their bits per channel and number of channels. For example, [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/Interleaved8x4] indicates a 4-channel, 8-bit-per-channel pixel buffer that contains image data such as RGBA or CMYK.\n\nPixel buffers expose methods that are available for the buffer’s pixel format. For example, the fast box convolution functions are only available for one- and four-channel 8-bit per channel buffers:\n\nTyped pixel buffers provide a simple API to convert between pixel formats. For example, the following code converts 8-bit unsigned integer pixels to 32-bit floating point pixels:\n\nvImage pixel buffers manage their memory, therefore, you don’t need to call [doc:\/\/com.apple.documentation\/documentation\/Swift\/UnsafeMutableRawPointer\/deallocate()] when you’re finished with the buffer.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\ncrawled: 2025-12-02T16:05:41Z\n---\n\n# vImage.PixelBuffer\n\n**Structure**\n\nAn image buffer that stores an image’s pixel data, dimensions, bit depth, and number of channels.\n\n## Declaration\n\n```swift\nstruct PixelBuffer<Format> where Format : PixelFormat\n```\n\n## Overview\n\nUse a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] to represent an image from a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance, a [doc:\/\/com.apple.documentation\/documentation\/CoreVideo\/CVPixelBuffer] structure, or a collection of raw pixel values. Pixel buffers are typed by their bits per channel and number of channels. For example, [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/Interleaved8x4] indicates a 4-channel, 8-bit-per-channel pixel buffer that contains image data such as RGBA or CMYK.\n\nPixel buffers expose methods that are available for the buffer’s pixel format. For example, the fast box convolution functions are only available for one- and four-channel 8-bit per channel buffers:\n\n```swift\n let src = vImage.PixelBuffer<vImage.Interleaved8x4>(cgImage: cgImage,\n                                                     cgImageFormat: &cgImageFormat)\n let dest = vImage.PixelBuffer<vImage.Interleaved8x4>(src.size)\n\n src.boxConvolve(kernelSize: vImage.Size(width: 64, height: 64),\n                 edgeMode: .truncateKernel,\n                 destination: dest)\n```\n\nTyped pixel buffers provide a simple API to convert between pixel formats. For example, the following code converts 8-bit unsigned integer pixels to 32-bit floating point pixels:\n\n```swift\n let src = vImage.PixelBuffer<vImage.Interleaved8x4>(cgImage: cgImage,\n                                                     cgImageFormat: &cgImageFormat)\n let dest = vImage.PixelBuffer<vImage.InterleavedFx4>(size: src.size)\n\n src.convert(to: dest)\n```\n\nvImage pixel buffers manage their memory, therefore, you don’t need to call [doc:\/\/com.apple.documentation\/documentation\/Swift\/UnsafeMutableRawPointer\/deallocate()] when you’re finished with the buffer.\n\n## Pixel buffer essentials\n\n- **Creating vImage pixel buffers**: Allocate and initialize pixel buffers from raw pixel data, Core Graphics images, and Core Video buffers.\n- **Pixel formats**: Specify a pixel buffer’s bit depth, number of channels, and data storage format.\n- **Working with underlying data**: Access a pixel buffer’s underlying pixel data.\n\n## Inspecting a pixel buffer\n\n- **width**: The width of the pixel buffer.\n- **height**: The height of the pixel buffer.\n- **size**: The size of the pixel buffer.\n- **channelCount**: Returns the number of channels.\n- **rowStride**: The width, in pixels, of the underlying memory, including any additional row byte padding.\n- **byteCountPerPixel**: Returns the number of bytes per pixel.\n- **count**: The total number of pixels multiplied by the number of channels in the buffer, including any row padding.\n- **array**: An array of `width * height * channelCount` values that’s a copy of the buffer’s visible contents.\n\n## Pixel buffer methods\n\n- **copy(to:)**: Copies the contents of the pixel buffer to another pixel buffer.\n- **copy(to:cvImageFormat:cgImageFormat:)**: Copies the contents of a pixel buffer to a Core Video pixel buffer.\n- **makeCGImage(cgImageFormat:)**: Returns a Core Graphics image from the pixel buffer’s contents.\n- **withCVPixelBuffer(readOnly:body:)**: Calls the given closure with a locked 32-bit BGRA Core Video Pixel Buffer.\n\n## Pixel buffer operations\n\n- **Applying geometric operations to pixel buffers**: Reflect, shear, rotate, scale, and apply affine transforms to image data.\n- **Applying color transforms to pixel buffers**: Adjust the colors of an image by applying gamma, polynomials, or multidimensional lookup.\n- **Blending and compositing pixel buffers**: Composite two pixel buffers to create a single image.\n- **Convolving and applying morphology**: Apply convolution, dilation, or erosion to a pixel buffer.\n- **Thresholding and clipping pixel buffer values**: Limit the values in a pixel buffer to a threshold or a range.\n- **Calculating and transforming histograms**: Enhance and adjust the contrast of an image with histogram equalization, contrast stretching, and specification.\n- **Converting pixel buffers**: Convert pixel buffer data between different bit-depths.\n- **Interleaving and deinterleaving pixel buffers**: Convert pixel buffer data between interleaved and planar formats.\n- **Cropping and working with regions of interest**: Crop images and apply operations to regions of interest.\n- **Applying channel operations**: Extract, flatten, permute, and overwrite the individual color channels of a pixel buffer.\n- **Applying arithmetic operations**: Multiply the pixel values of a buffer by scalar values or matrices.\n\n## Instance Properties\n\n- **bytesPerRow**: The width, in bytes, of the underlying memory including any additional row byte padding.\n\n## Instance Methods\n\n- **applyLookup(_:destination:)**\n- **applyLookup(_:destination:)**\n- **applyLookup(_:destination:)**\n- **applyMorphology(operation:destination:)**: Applies a morphology operation to the buffer.\n- **applyMorphology(operation:destination:)**: Applies a morphology operation to the buffer.\n- **convolve(with:bias:edgeMode:destination:)**\n- **separableConvolve(horizontalKernel:verticalKernel:bias:edgeMode:destination:)**\n- **withBNNSTensor(_:)**: Calls the given closure with a pointer to a BNNS tensor that shares memory with the pixel buffer.\n\n## Default Implementations\n\n- **AccelerateBuffer Implementations**\n- **AccelerateMatrixBuffer Implementations**\n- **AccelerateMutableMatrixBuffer Implementations**\n\n## vImage Pixel Buffers\n\n- **Using vImage pixel buffers to generate video effects**: Render real-time video effects with the vImage Pixel Buffer.\n- **Applying tone curve adjustments to images**: Use the vImage library’s polynomial transform to apply tone curve adjustments to images.\n- **Adjusting the brightness and contrast of an image**: Use a gamma function to apply a linear or exponential curve.\n- **Adjusting the hue of an image**: Convert an image to L*a*b* color space and apply hue adjustment.\n- **Sharing texture data between the Model I\/O framework and the vImage library**: Use Model I\/O and vImage to composite a photograph over a computer-generated sky.\n- **Calculating the dominant colors in an image**: Find the main colors in an image by implementing k-means clustering using the Accelerate framework.\n\n## Conforms To\n\n- AccelerateBuffer\n- AccelerateMatrixBuffer\n- AccelerateMutableBuffer\n- AccelerateMutableMatrixBuffer\n- Copyable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Allocate and initialize pixel buffers from raw pixel data, Core Graphics images, and Core Video buffers.",
+          "name" : "Creating vImage pixel buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/creating-vimage-pixel-buffers"
+        },
+        {
+          "description" : "Specify a pixel buffer’s bit depth, number of channels, and data storage format.",
+          "name" : "Pixel formats",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/pixel-formats"
+        },
+        {
+          "description" : "Access a pixel buffer’s underlying pixel data.",
+          "name" : "Working with underlying data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/working-with-underlying-data"
+        }
+      ],
+      "title" : "Pixel buffer essentials"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The width of the pixel buffer.",
+          "name" : "width",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/width"
+        },
+        {
+          "description" : "The height of the pixel buffer.",
+          "name" : "height",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/height"
+        },
+        {
+          "description" : "The size of the pixel buffer.",
+          "name" : "size",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/size"
+        },
+        {
+          "description" : "Returns the number of channels.",
+          "name" : "channelCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/channelCount"
+        },
+        {
+          "description" : "The width, in pixels, of the underlying memory, including any additional row byte padding.",
+          "name" : "rowStride",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/rowStride"
+        },
+        {
+          "description" : "Returns the number of bytes per pixel.",
+          "name" : "byteCountPerPixel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/byteCountPerPixel"
+        },
+        {
+          "description" : "The total number of pixels multiplied by the number of channels in the buffer, including any row padding.",
+          "name" : "count",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/count"
+        },
+        {
+          "description" : "An array of `width * height * channelCount` values that’s a copy of the buffer’s visible contents.",
+          "name" : "array",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/array"
+        }
+      ],
+      "title" : "Inspecting a pixel buffer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Copies the contents of the pixel buffer to another pixel buffer.",
+          "name" : "copy(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/copy(to:)"
+        },
+        {
+          "description" : "Copies the contents of a pixel buffer to a Core Video pixel buffer.",
+          "name" : "copy(to:cvImageFormat:cgImageFormat:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/copy(to:cvImageFormat:cgImageFormat:)"
+        },
+        {
+          "description" : "Returns a Core Graphics image from the pixel buffer’s contents.",
+          "name" : "makeCGImage(cgImageFormat:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)"
+        },
+        {
+          "description" : "Calls the given closure with a locked 32-bit BGRA Core Video Pixel Buffer.",
+          "name" : "withCVPixelBuffer(readOnly:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/withCVPixelBuffer(readOnly:body:)"
+        }
+      ],
+      "title" : "Pixel buffer methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Reflect, shear, rotate, scale, and apply affine transforms to image data.",
+          "name" : "Applying geometric operations to pixel buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-geometric-operations-to-pixel-buffers"
+        },
+        {
+          "description" : "Adjust the colors of an image by applying gamma, polynomials, or multidimensional lookup.",
+          "name" : "Applying color transforms to pixel buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-color-transforms-to-pixel-buffers"
+        },
+        {
+          "description" : "Composite two pixel buffers to create a single image.",
+          "name" : "Blending and compositing pixel buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/blending-and-compositing-pixel-buffers"
+        },
+        {
+          "description" : "Apply convolution, dilation, or erosion to a pixel buffer.",
+          "name" : "Convolving and applying morphology",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/convolving-and-applying-morphology"
+        },
+        {
+          "description" : "Limit the values in a pixel buffer to a threshold or a range.",
+          "name" : "Thresholding and clipping pixel buffer values",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/thresholding-and-clipping-pixel-buffer-values"
+        },
+        {
+          "description" : "Enhance and adjust the contrast of an image with histogram equalization, contrast stretching, and specification.",
+          "name" : "Calculating and transforming histograms",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/calculating-and-transforming-histograms"
+        },
+        {
+          "description" : "Convert pixel buffer data between different bit-depths.",
+          "name" : "Converting pixel buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/converting-pixel-buffers"
+        },
+        {
+          "description" : "Convert pixel buffer data between interleaved and planar formats.",
+          "name" : "Interleaving and deinterleaving pixel buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/interleaving-and-deinterleaving-pixel-buffers"
+        },
+        {
+          "description" : "Crop images and apply operations to regions of interest.",
+          "name" : "Cropping and working with regions of interest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/cropping-and-working-with-regions-of-interest"
+        },
+        {
+          "description" : "Extract, flatten, permute, and overwrite the individual color channels of a pixel buffer.",
+          "name" : "Applying channel operations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-channel-operations"
+        },
+        {
+          "description" : "Multiply the pixel values of a buffer by scalar values or matrices.",
+          "name" : "Applying arithmetic operations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-arithmetic-operations"
+        }
+      ],
+      "title" : "Pixel buffer operations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The width, in bytes, of the underlying memory including any additional row byte padding.",
+          "name" : "bytesPerRow",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/bytesPerRow"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "applyLookup(_:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyLookup(_:destination:)-3yi7i"
+        },
+        {
+          "description" : "",
+          "name" : "applyLookup(_:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyLookup(_:destination:)-6498m"
+        },
+        {
+          "description" : "",
+          "name" : "applyLookup(_:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyLookup(_:destination:)-715aw"
+        },
+        {
+          "description" : "Applies a morphology operation to the buffer.",
+          "name" : "applyMorphology(operation:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyMorphology(operation:destination:)-1aqer"
+        },
+        {
+          "description" : "Applies a morphology operation to the buffer.",
+          "name" : "applyMorphology(operation:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyMorphology(operation:destination:)-5al25"
+        },
+        {
+          "description" : "",
+          "name" : "convolve(with:bias:edgeMode:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/convolve(with:bias:edgeMode:destination:)-7no5n"
+        },
+        {
+          "description" : "",
+          "name" : "separableConvolve(horizontalKernel:verticalKernel:bias:edgeMode:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/separableConvolve(horizontalKernel:verticalKernel:bias:edgeMode:destination:)-15dhm"
+        },
+        {
+          "description" : "Calls the given closure with a pointer to a BNNS tensor that shares memory with the pixel buffer.",
+          "name" : "withBNNSTensor(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/withBNNSTensor(_:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "AccelerateBuffer Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/AccelerateBuffer-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "AccelerateMatrixBuffer Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/AccelerateMatrixBuffer-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "AccelerateMutableMatrixBuffer Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/AccelerateMutableMatrixBuffer-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Render real-time video effects with the vImage Pixel Buffer.",
+          "name" : "Using vImage pixel buffers to generate video effects",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/using-vimage-pixel-buffers-to-generate-video-effects"
+        },
+        {
+          "description" : "Use the vImage library’s polynomial transform to apply tone curve adjustments to images.",
+          "name" : "Applying tone curve adjustments to images",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-tone-curve-adjustments-to-images"
+        },
+        {
+          "description" : "Use a gamma function to apply a linear or exponential curve.",
+          "name" : "Adjusting the brightness and contrast of an image",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/adjusting-the-brightness-and-contrast-of-an-image"
+        },
+        {
+          "description" : "Convert an image to L*a*b* color space and apply hue adjustment.",
+          "name" : "Adjusting the hue of an image",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/adjusting-the-hue-of-an-image"
+        },
+        {
+          "description" : "Use Model I\/O and vImage to composite a photograph over a computer-generated sky.",
+          "name" : "Sharing texture data between the Model I\/O framework and the vImage library",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/sharing-texture-data-between-the-model-io-framework-and-the-vimage-library"
+        },
+        {
+          "description" : "Find the main colors in an image by implementing k-means clustering using the Accelerate framework.",
+          "name" : "Calculating the dominant colors in an image",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/calculating-the-dominant-colors-in-an-image"
+        }
+      ],
+      "title" : "vImage Pixel Buffers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vImage.PixelBuffer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer"
+}

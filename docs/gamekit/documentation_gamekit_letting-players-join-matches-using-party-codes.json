@@ -1,0 +1,51 @@
+{
+  "abstract" : "Add a rule that lets players invite players and join matches using a shared party code.",
+  "codeExamples" : [
+    {
+      "code" : "requests[0].properties.partyCode == requests[1].properties.partyCode",
+      "language" : "json"
+    },
+    {
+      "code" : "POST \/v1\/gameCenterMatchmakingRules\n{\n    \"data\": {\n        \"type\": \"gameCenterMatchmakingRules\",\n        \"attributes\": {\n            \"type\": \"COMPATIBLE\",\n            \"description\": \"Check whether the players have the same party code.\",\n            \"referenceName\": \"PartyCode\",\n            \"expression\": \"requests[0].properties.partyCode == requests[1].properties.partyCode\"\n        },\n        \"relationships\": {\n            \"ruleSet\": {\n                \"data\": {\n                    \"type\": \"gameCenterMatchmakingRuleSets\",\n                    \"id\": \"9e313753-2b8a-4762-b941-26f30c4184d2\"\n                }\n            }\n        }\n    }\n}",
+      "language" : "json"
+    },
+    {
+      "code" : "\/\/ Create a match request.\nlet request = GKMatchRequest()\n\n\/\/ Set the matchmaking rules queue name.\nrequest.queueName = \"com.example.mygame.PartyCodeQueue\"\n\n\/\/ Set properties to the game-specific keys you use in the rules.\nrequest.properties = [ \"partyCode\": partyCode]",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "7ee1d07f73e5c8e7b126579a3bc7fb5a1223cce2633546af30cd2a9067e46504",
+  "crawledAt" : "2025-12-02T19:33:56Z",
+  "id" : "93B45934-1088-4DD1-98C4-5C42CA7DAE32",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "GameKit",
+  "overview" : "## Overview\n\nYou can let players start a party or group game with other players who they share a party code with. You provide an interface in your game for creating a party code, and then starting and joining matches using that party code. Then use matchmaking rules to ensure that Game Center only matches players with the same party code.\n\n### Create a custom party code interface\n\nIn your code, implement a party code feature that:\n\nThe party code can be any combination of letters, numbers, or other characters that forms a unique identifier.\n\nTo share the party code, you can use in-game chat or data exchange in an existing match, or let the player copy the code and share outside of your game.\n\nTo submit match requests without presenting an interface using automatch, see [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/finding-multiple-players-for-a-game#Let-Game-Center-match-the-player-with-others].\n\n### Add a party code matchmaking rule\n\nThen create a compatible rule that finds players who have the same party code.\n\nIn a compatible rule, the `requests` array in the expression contains two match requests to compare. Write an expression that returns [doc:\/\/com.apple.documentation\/documentation\/Swift\/true] if the party code for the two requests is the same.\n\nCreate the party code rule using the [doc:\/\/com.apple.documentation\/documentation\/AppStoreConnectAPI\/POST-v1-gameCenterMatchmakingRuleSets] endpoint. In the `attributes` field, set the rule’s `type` field to `COMPATIBLE` and pass the party code expression. Set the `description` and `referenceName` fields to strings that make sense for your game. In the `relationships` field, pass the `id` for the rule set in the [doc:\/\/com.apple.documentation\/documentation\/AppStoreConnectAPI\/GameCenterMatchmakingQueueCreateRequest\/Data-data.dictionary\/Relationships-data.dictionary\/RuleSet-data.dictionary\/Data-data.dictionary] object.\n\nTo create a rule set, see [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/finding-players-using-matchmaking-rules#Create-rule-sets-that-contain-the-matchmaking-rules].\n\n### Create match requests using party codes\n\nIn your code, create a match request that initiates or joins a party by adding a `partyCode` key-value pair to the request’s `GKMatchRequest` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchRequest\/properties] dictionary.\n\nGame Center finds all compatible players in the queue that have the same party code.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/GameKit\/letting-players-join-matches-using-party-codes\ncrawled: 2025-12-02T19:33:56Z\n---\n\n# Letting players join matches using party codes\n\n**Article**\n\nAdd a rule that lets players invite players and join matches using a shared party code.\n\n## Overview\n\nYou can let players start a party or group game with other players who they share a party code with. You provide an interface in your game for creating a party code, and then starting and joining matches using that party code. Then use matchmaking rules to ensure that Game Center only matches players with the same party code.\n\n### Create a custom party code interface\n\nIn your code, implement a party code feature that:\n\n- Generates a unique party code for the local player\n- Initiates a match request from the local player using the party code\n- Shares the party code with their friends and others who they want to invite\n- Submits match requests from other players who receive a party code\n\nThe party code can be any combination of letters, numbers, or other characters that forms a unique identifier.\n\nTo share the party code, you can use in-game chat or data exchange in an existing match, or let the player copy the code and share outside of your game.\n\nTo submit match requests without presenting an interface using automatch, see [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/finding-multiple-players-for-a-game#Let-Game-Center-match-the-player-with-others].\n\n### Add a party code matchmaking rule\n\nThen create a compatible rule that finds players who have the same party code.\n\nIn a compatible rule, the `requests` array in the expression contains two match requests to compare. Write an expression that returns [doc:\/\/com.apple.documentation\/documentation\/Swift\/true] if the party code for the two requests is the same.\n\n```json\nrequests[0].properties.partyCode == requests[1].properties.partyCode\n```\n\nCreate the party code rule using the [doc:\/\/com.apple.documentation\/documentation\/AppStoreConnectAPI\/POST-v1-gameCenterMatchmakingRuleSets] endpoint. In the `attributes` field, set the rule’s `type` field to `COMPATIBLE` and pass the party code expression. Set the `description` and `referenceName` fields to strings that make sense for your game. In the `relationships` field, pass the `id` for the rule set in the [doc:\/\/com.apple.documentation\/documentation\/AppStoreConnectAPI\/GameCenterMatchmakingQueueCreateRequest\/Data-data.dictionary\/Relationships-data.dictionary\/RuleSet-data.dictionary\/Data-data.dictionary] object.\n\n```json\nPOST \/v1\/gameCenterMatchmakingRules\n{\n    \"data\": {\n        \"type\": \"gameCenterMatchmakingRules\",\n        \"attributes\": {\n            \"type\": \"COMPATIBLE\",\n            \"description\": \"Check whether the players have the same party code.\",\n            \"referenceName\": \"PartyCode\",\n            \"expression\": \"requests[0].properties.partyCode == requests[1].properties.partyCode\"\n        },\n        \"relationships\": {\n            \"ruleSet\": {\n                \"data\": {\n                    \"type\": \"gameCenterMatchmakingRuleSets\",\n                    \"id\": \"9e313753-2b8a-4762-b941-26f30c4184d2\"\n                }\n            }\n        }\n    }\n}\n```\n\nTo create a rule set, see [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/finding-players-using-matchmaking-rules#Create-rule-sets-that-contain-the-matchmaking-rules].\n\n### Create match requests using party codes\n\nIn your code, create a match request that initiates or joins a party by adding a `partyCode` key-value pair to the request’s `GKMatchRequest` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchRequest\/properties] dictionary.\n\n```swift\n\/\/ Create a match request.\nlet request = GKMatchRequest()\n\n\/\/ Set the matchmaking rules queue name.\nrequest.queueName = \"com.example.mygame.PartyCodeQueue\"\n\n\/\/ Set properties to the game-specific keys you use in the rules.\nrequest.properties = [ \"partyCode\": partyCode]\n```\n\nGame Center finds all compatible players in the queue that have the same party code.\n\n## Rules\n\n- **Finding players with similar skill levels**: Add a rule to find players in a range of skill levels to balance competitive gameplay.\n- **Assigning players to teams using rules**: Set criteria for assigning players to teams in your game using matchmaking rules.\n- **Creating matchmaking rules for backward compatibility**: Add matchmaking rules that support previous classic matchmaking versions of your game.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Add a rule to find players in a range of skill levels to balance competitive gameplay.",
+          "name" : "Finding players with similar skill levels",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/finding-players-with-similar-skill-levels"
+        },
+        {
+          "description" : "Set criteria for assigning players to teams in your game using matchmaking rules.",
+          "name" : "Assigning players to teams using rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/assigning-players-to-teams-using-rules"
+        },
+        {
+          "description" : "Add matchmaking rules that support previous classic matchmaking versions of your game.",
+          "name" : "Creating matchmaking rules for backward compatibility",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/creating-matchmaking-rules-for-backward-compatibility"
+        }
+      ],
+      "title" : "Rules"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Letting players join matches using party codes",
+  "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/letting-players-join-matches-using-party-codes"
+}

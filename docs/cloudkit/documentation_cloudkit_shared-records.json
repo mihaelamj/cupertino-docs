@@ -1,0 +1,134 @@
+{
+  "abstract" : "Share one or more records with other iCloud users.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "9f106e027fd61a85bbfc34fa473073046b3d430de2e9c3640066eea1af4b2cc9",
+  "crawledAt" : "2025-12-02T17:05:18Z",
+  "id" : "36D2B109-D657-477F-9EAF-2A67B4E7350C",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "CloudKit",
+  "overview" : "## Overview\n\nCloudKit users can share records in their private databases with other iCloud users, which enables collaboration between the people using your app. The user that initiates sharing, the owner, handles all aspects of the collaboration, from inviting people to participate to restricting what actions the participants can perform.\n\n\n\nCloudKit allows you to share both record zones and record hierarchies. If you want to share an unbounded collection of records that don’t have natural parent-child relationships, share their containing record zone. However, if you want to share only a specific set of related records, define an explicit record hierarchy and share that instead.\n\nFor more information, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/sharing-cloudkit-data-with-other-icloud-users].\n\n### Share a Record Zone or Hierarchy\n\nYou store shareable records in a custom record zone in the user’s private database. As you create records in that zone, they become eligible for record zone sharing. If you then choose to share that record zone, CloudKit allows participants to access all the records it contains.\n\nAlternatively, you can build a hierarchy by defining relationships between records as you create them. Set a record’s [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKRecord\/parent] property to designate it as a child of the referenced record. If your data model is hierarchical, this is good practice even if you don’t plan to share the records. Whereas sharing a record zone is catch-all, sharing a record hierarchy allows you to specify exactly which records to include.\n\nTo begin sharing, create an instance of [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare] with either the ID of the record zone to share, or the root record, which defines the point in the record hierarchy where you want to start sharing. CloudKit shares all the records in the record zone, or every record in the hierarchy below the root. A record can take part in only a single share. This applies to every record in the shared record zone or hierarchy.\n\nAfter you create the share, save it using [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKModifyRecordsOperation]. The shared records must already exist in iCloud or be part of the same save operation.\n\n### Invite Participants\n\nAfter saving the share, CloudKit assigns it a stable share URL. Use this URL to invite other users to participate. In iOS, [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UICloudSharingController] provides a consistent and familiar experience for managing a share’s participants and their permissions, and for distributing the share URL. Use [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSItemProvider] and [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSSharingService] in macOS (with the [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSSharingService\/Name\/cloudSharing] service name) to achieve similar functionality. Only invited participants can join a private share. Anyone with the share URL can join a public share. For more information, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/publicPermission].\n\nWhen an invited user taps or clicks the share URL, CloudKit verifies they have an active iCloud account, which must match their participant details. After successful verification, the system launches your app. CloudKit provides share metadata to your app’s scene delegate or app delegate. The method the system calls varies by platform and app configuration. For more information, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/Metadata].\n\n### Manage Share Participation\n\nAfter receiving the share metadata from CloudKit, use [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKAcceptSharesOperation] to confirm the user’s participation. CloudKit then creates a record zone in the participant’s shared database that provides a view into the owner’s private database. The record zone contains only the records in the share; no other data is accessible. A participant with write permissions can change or delete records in this new record zone. Any changes they make are visible to all participants.\n\nCreate a database subscription in the user’s shared database the first time they launch your app. Then, when they confirm participation in a share, iCloud notifies your app, on all of the user’s devices, of any changes to the shared records. For more information, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKDatabaseSubscription].\n\nTo stop sharing, the share’s owner must delete the share or, for shared hierarchies, the root record. If a participant wants to leave the share, delete the share record from their shared database. Use [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UICloudSharingController] or [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSSharingService] to allow a participant to stop participating. Or remove them from the share using the [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/removeParticipant(_:)] method, and then save the updated share to iCloud.\n\n### Customize the Sharing Experience\n\nYou can use the framework’s share-related operations to implement behavior similar to that of [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UICloudSharingController] and [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSSharingService] to build a custom sharing experience by following these steps:\n\nFor public shares, you can skip the first step. Accepting a public share’s metadata automatically adds the user as a participant.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CloudKit\/shared-records\ncrawled: 2025-12-02T17:05:18Z\n---\n\n# Shared Records\n\n**API Collection**\n\nShare one or more records with other iCloud users.\n\n## Overview\n\nCloudKit users can share records in their private databases with other iCloud users, which enables collaboration between the people using your app. The user that initiates sharing, the owner, handles all aspects of the collaboration, from inviting people to participate to restricting what actions the participants can perform.\n\n\n\nCloudKit allows you to share both record zones and record hierarchies. If you want to share an unbounded collection of records that don’t have natural parent-child relationships, share their containing record zone. However, if you want to share only a specific set of related records, define an explicit record hierarchy and share that instead.\n\nFor more information, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/sharing-cloudkit-data-with-other-icloud-users].\n\n### Share a Record Zone or Hierarchy\n\nYou store shareable records in a custom record zone in the user’s private database. As you create records in that zone, they become eligible for record zone sharing. If you then choose to share that record zone, CloudKit allows participants to access all the records it contains.\n\nAlternatively, you can build a hierarchy by defining relationships between records as you create them. Set a record’s [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKRecord\/parent] property to designate it as a child of the referenced record. If your data model is hierarchical, this is good practice even if you don’t plan to share the records. Whereas sharing a record zone is catch-all, sharing a record hierarchy allows you to specify exactly which records to include.\n\nTo begin sharing, create an instance of [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare] with either the ID of the record zone to share, or the root record, which defines the point in the record hierarchy where you want to start sharing. CloudKit shares all the records in the record zone, or every record in the hierarchy below the root. A record can take part in only a single share. This applies to every record in the shared record zone or hierarchy.\n\nAfter you create the share, save it using [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKModifyRecordsOperation]. The shared records must already exist in iCloud or be part of the same save operation.\n\n### Invite Participants\n\nAfter saving the share, CloudKit assigns it a stable share URL. Use this URL to invite other users to participate. In iOS, [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UICloudSharingController] provides a consistent and familiar experience for managing a share’s participants and their permissions, and for distributing the share URL. Use [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSItemProvider] and [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSSharingService] in macOS (with the [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSSharingService\/Name\/cloudSharing] service name) to achieve similar functionality. Only invited participants can join a private share. Anyone with the share URL can join a public share. For more information, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/publicPermission].\n\nWhen an invited user taps or clicks the share URL, CloudKit verifies they have an active iCloud account, which must match their participant details. After successful verification, the system launches your app. CloudKit provides share metadata to your app’s scene delegate or app delegate. The method the system calls varies by platform and app configuration. For more information, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/Metadata].\n\n\n\n### Manage Share Participation\n\nAfter receiving the share metadata from CloudKit, use [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKAcceptSharesOperation] to confirm the user’s participation. CloudKit then creates a record zone in the participant’s shared database that provides a view into the owner’s private database. The record zone contains only the records in the share; no other data is accessible. A participant with write permissions can change or delete records in this new record zone. Any changes they make are visible to all participants.\n\nCreate a database subscription in the user’s shared database the first time they launch your app. Then, when they confirm participation in a share, iCloud notifies your app, on all of the user’s devices, of any changes to the shared records. For more information, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKDatabaseSubscription].\n\nTo stop sharing, the share’s owner must delete the share or, for shared hierarchies, the root record. If a participant wants to leave the share, delete the share record from their shared database. Use [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UICloudSharingController] or [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSSharingService] to allow a participant to stop participating. Or remove them from the share using the [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/removeParticipant(_:)] method, and then save the updated share to iCloud.\n\n### Customize the Sharing Experience\n\nYou can use the framework’s share-related operations to implement behavior similar to that of [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UICloudSharingController] and [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSSharingService] to build a custom sharing experience by following these steps:\n\n1. Use [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchShareParticipantsOperation] to generate participants and add them to the share using [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/addParticipant(_:)]. Your app presents a list of potential participants to the user. You can also allow the owner to add participants by entering a participant’s email address or phone number.\n2. Save the share to iCloud.\n3. Provide the share URL to the participants. You can send the URL in an email or a message, or your app might have secure, in-app chat between users to facilitate distribution of the URL.\n4. For each participant, fetch the share’s metadata using [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchShareMetadataOperation] and the share URL.\n5. Use [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKAcceptSharesOperation] to confirm participation.\n6. After you share records, use the properties and methods on [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare] to manage the share’s participants.\n\nFor public shares, you can skip the first step. Accepting a public share’s metadata automatically adds the user as a participant.\n\n## Collaboration\n\n- **Sharing CloudKit Data with Other iCloud Users**: Create and share private CloudKit data with other users by implementing the sharing UI.\n- **Sharing Core Data objects between iCloud users**: Use Core Data and CloudKit to synchronize data between devices of an iCloud user and share data between different iCloud users.\n- **CKShare**: A specialized record type that manages a collection of shared records.\n- **CKShareTransferRepresentation**: A transfer representation the system uses to share an item.\n- **CKAllowedSharingOptions**: An object that controls participant access and permission options.\n- **CKSystemSharingUIObserver**: An object the system uses to monitor changes in sharing.\n- **UICloudSharingController**: A view controller that presents standard screens for adding and removing people from a CloudKit share record.\n- **CKSharingSupported**: A Boolean value that indicates your app supports CloudKit Sharing.\n\n## Share Requests\n\n- **CKFetchShareMetadataOperation**: An operation that fetches metadata for one or more shares.\n- **CKShare.Metadata**: An object that describes a shared record’s metadata.\n- **CKAcceptSharesOperation**: An operation that confirms a user’s participation in a share.\n\n## Participants\n\n- **CKFetchShareParticipantsOperation**: An operation that converts user identities into share participants.\n- **CKShare.Participant**: An object that describes a user’s participation in a share.\n\n## Base Objects\n\n- **CKOperation**: The abstract base class for all operations that execute in a database.\n\n## Records\n\n- **Local Records**: Manipulate records on-device and save changes to the server.\n- **Remote Records**: Use subscriptions and change tokens to efficiently manage modifications to remote records.\n- **CKSyncEngine**: An object that manages the synchronization of local and remote record data.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create and share private CloudKit data with other users by implementing the sharing UI.",
+          "name" : "Sharing CloudKit Data with Other iCloud Users",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/sharing-cloudkit-data-with-other-icloud-users"
+        },
+        {
+          "description" : "Use Core Data and CloudKit to synchronize data between devices of an iCloud user and share data between different iCloud users.",
+          "name" : "Sharing Core Data objects between iCloud users",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/sharing-core-data-objects-between-icloud-users"
+        },
+        {
+          "description" : "A specialized record type that manages a collection of shared records.",
+          "name" : "CKShare",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKShare"
+        },
+        {
+          "description" : "A transfer representation the system uses to share an item.",
+          "name" : "CKShareTransferRepresentation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKShareTransferRepresentation"
+        },
+        {
+          "description" : "An object that controls participant access and permission options.",
+          "name" : "CKAllowedSharingOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAllowedSharingOptions"
+        },
+        {
+          "description" : "An object the system uses to monitor changes in sharing.",
+          "name" : "CKSystemSharingUIObserver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKSystemSharingUIObserver"
+        },
+        {
+          "description" : "A view controller that presents standard screens for adding and removing people from a CloudKit share record.",
+          "name" : "UICloudSharingController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UICloudSharingController"
+        },
+        {
+          "description" : "A Boolean value that indicates your app supports CloudKit Sharing.",
+          "name" : "CKSharingSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Information-Property-List\/CKSharingSupported"
+        }
+      ],
+      "title" : "Collaboration"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An operation that fetches metadata for one or more shares.",
+          "name" : "CKFetchShareMetadataOperation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchShareMetadataOperation"
+        },
+        {
+          "description" : "An object that describes a shared record’s metadata.",
+          "name" : "CKShare.Metadata",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKShare\/Metadata"
+        },
+        {
+          "description" : "An operation that confirms a user’s participation in a share.",
+          "name" : "CKAcceptSharesOperation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAcceptSharesOperation"
+        }
+      ],
+      "title" : "Share Requests"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An operation that converts user identities into share participants.",
+          "name" : "CKFetchShareParticipantsOperation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchShareParticipantsOperation"
+        },
+        {
+          "description" : "An object that describes a user’s participation in a share.",
+          "name" : "CKShare.Participant",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKShare\/Participant"
+        }
+      ],
+      "title" : "Participants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The abstract base class for all operations that execute in a database.",
+          "name" : "CKOperation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKOperation"
+        }
+      ],
+      "title" : "Base Objects"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Manipulate records on-device and save changes to the server.",
+          "name" : "Local Records",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/local-records"
+        },
+        {
+          "description" : "Use subscriptions and change tokens to efficiently manage modifications to remote records.",
+          "name" : "Remote Records",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/remote-records"
+        },
+        {
+          "description" : "An object that manages the synchronization of local and remote record data.",
+          "name" : "CKSyncEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKSyncEngine-5sie5"
+        }
+      ],
+      "title" : "Records"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Shared Records",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/shared-records"
+}

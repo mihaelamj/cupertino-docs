@@ -1,0 +1,106 @@
+{
+  "abstract" : "Provide regular updates to Maps about the status of a booked ride.",
+  "codeExamples" : [
+    {
+      "code" : "public func startSendingUpdates(forGetRideStatus intent: INGetRideStatusIntent, \n            to observer: INGetRideStatusIntentResponseObserver) {\n   \/\/ Save a reference to the observer object\n   self.observer = observer\n   \/\/ Set up the timer on the main thread and save a reference to it.\n   DispatchQueue.main.async {\n      self.timer = Timer.scheduledTimer(withTimeInterval: 5, \n                      repeats: true, block: { (timer) in\n         let rideStatus = INRideStatus()\n         \/\/ FOR YOU TO DO: Configure the INRideStatus object.\n\n         \/\/ Create the response and deliver it.\n         let response = INGetRideStatusIntentResponse(code: .success, userActivity: nil)\n         response.rideStatus = rideStatus\n         self.observer?.didUpdate(getRideStatus: response)\n      })\n   }\n} ",
+      "language" : "swift"
+    },
+    {
+      "code" : "public func stopSendingUpdates(forGetRideStatus intent: INGetRideStatusIntent) {\n   self.observer = nil\n   self.timer?.invalidate()\n\t\/\/ Clean up any other state information.\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "a77a8c49460cd3c9fd4196f5dc5d7d8aa3c7e4ea1b6a77aa323fe02c11a668c0",
+  "crawledAt" : "2025-12-01T10:00:39Z",
+  "id" : "0DA76D9D-FA1F-4B80-B059-23CADBA092B9",
+  "kind" : "article",
+  "module" : "Intents",
+  "overview" : "## Overview\n\nAfter the user books a ride, Maps may call the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling\/startSendingUpdates(for:to:)] method of your [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling] handler object to ask for live status updates. Maps calls this method only once. Your implementation must set up a timer or other repeating task to generate status updates for the ride and deliver them to the provided observer object. Maps uses your updates to keep the user informed about the ride’s location and estimated arrival time.\n\nThe listing below shows a skeletal implementation of the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling\/startSendingUpdates(for:to:)] method that sets up a timer for generating status updates. Because the system can call this method may on any thread, the implementation sets up the timer on the main thread, which ensures that the timer continues to fire.\n\nWhen crafting your response, always include a valid [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideStatus] object. Here are some tips for configuring the status object to ensure that SiriKit processes your updates successfully:\n\nUpon the completion of a ride, call your handler object’s [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling\/stopSendingUpdates(for:)] method when you want to stop the delivery of live updates. You implement this method and use it to cancel the recurring task that you use to generates updates. You can stop updates at any time, but typically you do so after the ride is complete and have settled any charges.\n\nThe listing below shows an implementation of the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling\/stopSendingUpdates(for:)] method that invalidates the timer used to deliver live updates and removes references to the observer object. Because both your code and SiriKit can call this method, it is an ideal place to perform all cleanup associated with live updates.\n\nThe code you use to generate live updates must be fault-tolerant and able to handle errors well. Because getting live updates involves communicating with your server, you should handle cases where your server does not respond or returns an error. For example, you might return a cached response if your server does not respond in a timely manner. If you deliver an invalid response object to the observer, Maps calls the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling\/stopSendingUpdates(for:)] of your handler object and notifies the user that a problem occurred.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SiriKit\/providing-live-status-updates\ncrawled: 2025-12-01T10:00:39Z\n---\n\n# Providing Live Status Updates\n\n**Article**\n\nProvide regular updates to Maps about the status of a booked ride.\n\n## Overview\n\nAfter the user books a ride, Maps may call the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling\/startSendingUpdates(for:to:)] method of your [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling] handler object to ask for live status updates. Maps calls this method only once. Your implementation must set up a timer or other repeating task to generate status updates for the ride and deliver them to the provided observer object. Maps uses your updates to keep the user informed about the ride’s location and estimated arrival time.\n\nThe listing below shows a skeletal implementation of the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling\/startSendingUpdates(for:to:)] method that sets up a timer for generating status updates. Because the system can call this method may on any thread, the implementation sets up the timer on the main thread, which ensures that the timer continues to fire.\n\n```swift\npublic func startSendingUpdates(forGetRideStatus intent: INGetRideStatusIntent, \n            to observer: INGetRideStatusIntentResponseObserver) {\n   \/\/ Save a reference to the observer object\n   self.observer = observer\n   \/\/ Set up the timer on the main thread and save a reference to it.\n   DispatchQueue.main.async {\n      self.timer = Timer.scheduledTimer(withTimeInterval: 5, \n                      repeats: true, block: { (timer) in\n         let rideStatus = INRideStatus()\n         \/\/ FOR YOU TO DO: Configure the INRideStatus object.\n\n         \/\/ Create the response and deliver it.\n         let response = INGetRideStatusIntentResponse(code: .success, userActivity: nil)\n         response.rideStatus = rideStatus\n         self.observer?.didUpdate(getRideStatus: response)\n      })\n   }\n} \n```\n\nWhen crafting your response, always include a valid [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideStatus] object. Here are some tips for configuring the status object to ensure that SiriKit processes your updates successfully:\n\n- **Always specify a valid ride phase and completion status.** Maps uses the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideStatus\/phase] property of the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideStatus] object to communicate the ride status to the user. Specifically, when the phase changes, Maps updates that information in its interface. Never set the ride phase to [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRidePhase\/unknown].\n- **Always provide a completion status for a completed ride.** When setting the ride phase to [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRidePhase\/completed], assign an appropriate value to the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideStatus\/completionStatus] property of the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideStatus] object to indicate how to resolve the ride.\n- **Always use the same ride identifier that you used during booking.** Updates must include the same value in the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideStatus\/rideIdentifier] property of the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideStatus] object that you used when booking the ride. If the identifiers do not match, SiriKit ignores any further updates.\n- **Provide a valid ride option object.** The value in the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideStatus\/rideOption] property of the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideStatus] object need not match the one you specified during booking, but the ride option name and estimated pickup date must be valid.\n- **Provide a map annotation image for your vehicle.** Maps uses the map annotation image from your status object to show the position of your vehicle on the map surface. Specify this image using the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideVehicle\/mapAnnotationImage] property of the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INRideVehicle] object you assign to your status object.\n\nUpon the completion of a ride, call your handler object’s [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling\/stopSendingUpdates(for:)] method when you want to stop the delivery of live updates. You implement this method and use it to cancel the recurring task that you use to generates updates. You can stop updates at any time, but typically you do so after the ride is complete and have settled any charges.\n\nThe listing below shows an implementation of the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling\/stopSendingUpdates(for:)] method that invalidates the timer used to deliver live updates and removes references to the observer object. Because both your code and SiriKit can call this method, it is an ideal place to perform all cleanup associated with live updates.\n\n```swift\npublic func stopSendingUpdates(forGetRideStatus intent: INGetRideStatusIntent) {\n   self.observer = nil\n   self.timer?.invalidate()\n\t\/\/ Clean up any other state information.\n}\n```\n\nThe code you use to generate live updates must be fault-tolerant and able to handle errors well. Because getting live updates involves communicating with your server, you should handle cases where your server does not respond or returns an error. For example, you might return a cached response if your server does not respond in a timely manner. If you deliver an invalid response object to the observer, Maps calls the [doc:\/\/com.apple.sirikit\/documentation\/Intents\/INGetRideStatusIntentHandling\/stopSendingUpdates(for:)] of your handler object and notifies the user that a problem occurred.\n\n## Articles\n\n- **Adding User Interactivity with Siri Shortcuts and the Shortcuts App**: Add custom intents and parameters to help users interact more quickly and effectively with Siri and the Shortcuts app.\n- **Defining Relevant Shortcuts for the Siri Watch Face**: Inform Siri when your app’s shortcuts may be useful to the user.\n- **Deleting Donated Shortcuts**: Remove your donations from Siri.\n- **Dispatching intents to handlers**: Provide SiriKit with an intent handler capable of handling a specific intent.\n- **Improving Siri Media Interactions and App Selection**: Fine-tune voice controls and improve Siri Suggestions by sharing app capabilities, customized names, and listening habits with the system.\n- **Improving interactions between Siri and your messaging app**: Donate app-specific content, use Siri’s contact suggestions, and adopt the latest platform features to create a more consistent messaging experience.\n- **Registering Custom Vocabulary with SiriKit**: Register your app’s custom terminology, and provide sample phrases for how to use your app with Siri.\n- **Confirming the Details of an Intent**: Perform final validation of the intent parameters and verify that your services are ready to fulfill the intent.\n- **Handling an Intent**: Fulfill the intent and provide feedback to SiriKit about what you did.\n- **Resolving the Parameters of an Intent**: Validate the parameters of an intent and make sure that you have the information you need to continue.\n- **Generating a List of Ride Options**: Generate ride options for Maps to display to the user.\n- **Handling the Ride-Booking Intents**: Support the different intent-handling sequences for booking rides with Shortcuts or Maps.\n- **Donating Reservations**: Inform Siri of reservations made from your app.\n- **Specifying Synonyms for Your App Name**: Provide alternative names for your app that are more familiar or easier for users to speak.\n- **Intent Phrases**: The keys that you include in your global vocabulary file to show how users engage your app from Siri.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Add custom intents and parameters to help users interact more quickly and effectively with Siri and the Shortcuts app.",
+          "name" : "Adding User Interactivity with Siri Shortcuts and the Shortcuts App",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/adding-user-interactivity-with-siri-shortcuts-and-the-shortcuts-app"
+        },
+        {
+          "description" : "Inform Siri when your app’s shortcuts may be useful to the user.",
+          "name" : "Defining Relevant Shortcuts for the Siri Watch Face",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/defining-relevant-shortcuts-for-the-siri-watch-face"
+        },
+        {
+          "description" : "Remove your donations from Siri.",
+          "name" : "Deleting Donated Shortcuts",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/deleting-donated-shortcuts"
+        },
+        {
+          "description" : "Provide SiriKit with an intent handler capable of handling a specific intent.",
+          "name" : "Dispatching intents to handlers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/dispatching-intents-to-handlers"
+        },
+        {
+          "description" : "Fine-tune voice controls and improve Siri Suggestions by sharing app capabilities, customized names, and listening habits with the system.",
+          "name" : "Improving Siri Media Interactions and App Selection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/improving-siri-media-interactions-and-app-selection"
+        },
+        {
+          "description" : "Donate app-specific content, use Siri’s contact suggestions, and adopt the latest platform features to create a more consistent messaging experience.",
+          "name" : "Improving interactions between Siri and your messaging app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/improving-interactions-between-siri-and-your-messaging-app"
+        },
+        {
+          "description" : "Register your app’s custom terminology, and provide sample phrases for how to use your app with Siri.",
+          "name" : "Registering Custom Vocabulary with SiriKit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/registering-custom-vocabulary-with-sirikit"
+        },
+        {
+          "description" : "Perform final validation of the intent parameters and verify that your services are ready to fulfill the intent.",
+          "name" : "Confirming the Details of an Intent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/confirming-the-details-of-an-intent"
+        },
+        {
+          "description" : "Fulfill the intent and provide feedback to SiriKit about what you did.",
+          "name" : "Handling an Intent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/handling-an-intent"
+        },
+        {
+          "description" : "Validate the parameters of an intent and make sure that you have the information you need to continue.",
+          "name" : "Resolving the Parameters of an Intent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/resolving-the-parameters-of-an-intent"
+        },
+        {
+          "description" : "Generate ride options for Maps to display to the user.",
+          "name" : "Generating a List of Ride Options",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/generating-a-list-of-ride-options"
+        },
+        {
+          "description" : "Support the different intent-handling sequences for booking rides with Shortcuts or Maps.",
+          "name" : "Handling the Ride-Booking Intents",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/handling-the-ride-booking-intents"
+        },
+        {
+          "description" : "Inform Siri of reservations made from your app.",
+          "name" : "Donating Reservations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/donating-reservations"
+        },
+        {
+          "description" : "Provide alternative names for your app that are more familiar or easier for users to speak.",
+          "name" : "Specifying Synonyms for Your App Name",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/specifying-synonyms-for-your-app-name"
+        },
+        {
+          "description" : "The keys that you include in your global vocabulary file to show how users engage your app from Siri.",
+          "name" : "Intent Phrases",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/intent-phrases"
+        }
+      ],
+      "title" : "Articles"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Providing Live Status Updates",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SiriKit\/providing-live-status-updates"
+}

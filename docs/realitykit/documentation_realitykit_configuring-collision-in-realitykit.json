@@ -1,0 +1,76 @@
+{
+  "abstract" : "Use collision groups and collision filters to control which objects collide.",
+  "codeExamples" : [
+    {
+      "code" : "    let planeGroup = CollisionGroup(rawValue: 1 << 0)\n    let cubeGroup = CollisionGroup(rawValue: 1 << 1)\n    let beveledCubeGroup = CollisionGroup(rawValue: 1 << 2)\n    let sphereGroup = CollisionGroup(rawValue: 1 << 3)",
+      "language" : "swift"
+    },
+    {
+      "code" : "    let cubeMask = CollisionGroup.all.subtracting(cubeGroup)\n    let cubeFilter = CollisionFilter(group: cubeGroup,\n                                      mask: cubeMask)",
+      "language" : "swift"
+    },
+    {
+      "code" : "    cube1.collision?.filter = cubeFilter\n    cube2.collision?.filter = cubeFilter\n    cube3.collision?.filter = cubeFilter",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "00fdeb0e26b3d8c93665a5c210100ed26bb0b528d9f1e9612c5c76d681e590e3",
+  "crawledAt" : "2025-12-02T20:16:08Z",
+  "id" : "C26AF1CF-7CC1-4018-807E-B33A2B4392C5",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "RealityKit",
+  "overview" : "## Overview\n\nBy default, in RealityKit physics simulations, all physics objects collide with all other physics objects. Often, this is the desired behavior, but sometimes, you need to specify that certain objects won’t collide with certain other objects. In RealityKit, that’s accomplished using [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CollisionGroup] in combination with [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CollisionFilter].\n\nThis sample code project shows how to use collision groups and collision filters together to take precise control over which entities collide in a RealityKit scene. In this sample, entities can be dragged around the scene. As they are dragged, they will collide with unlike entities, but ignore (or pass through) like entities. So, for example, if you drag a sphere into a cube, they will collide, causing the cube to move. However, if you drag a sphere into another sphere, they’ll pass through each other.\n\nCollision filters define which entities will collide with which other entities based on the other entity’s collision group. That means all entities that share the same filter are part of the same group or groups and have the same collision properties.  More than one filter can be created for each collision group, however, so not all members of the same collision group necessarily collide with the same other objects.\n\n`CollisionGroup` conforms to [doc:\/\/com.apple.documentation\/documentation\/Swift\/OptionSet], which means you typically create individual groups by assigning each group a different bit flag value. If each group has a distinct bit representing it, that allows you to configure collision filters that collide with, or ignore any combination of individual collision groups using `OptionSet`’s various methods.\n\nHere is how the four collision groups in this sample project are defined:\n\nYou don’t assign collision groups directly to entities. Instead, you create filters that define the collision properties for individual entities. Assigning a collision filter to an entity automatically places that entity into the collision filter’s group or groups.\n\nFor example, here is how this sample creates the filter for the `cubeGroup`, used by cubes so they collide with everything except other cubes:\n\nAfter creating a collision filter, assign it to all the entities that should use that filter, like this:\n\n## Getting Started\n\nRequires Xcode 16.2, iOS 18, and an iOS device with an A9 or later processor. ARKit is not supported in iOS Simulator.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/realitykit\/configuring-collision-in-realitykit\ncrawled: 2025-12-02T20:16:08Z\n---\n\n# Configuring Collision in RealityKit\n\n**Sample Code**\n\nUse collision groups and collision filters to control which objects collide.\n\n## Overview\n\nBy default, in RealityKit physics simulations, all physics objects collide with all other physics objects. Often, this is the desired behavior, but sometimes, you need to specify that certain objects won’t collide with certain other objects. In RealityKit, that’s accomplished using [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CollisionGroup] in combination with [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CollisionFilter].\n\nThis sample code project shows how to use collision groups and collision filters together to take precise control over which entities collide in a RealityKit scene. In this sample, entities can be dragged around the scene. As they are dragged, they will collide with unlike entities, but ignore (or pass through) like entities. So, for example, if you drag a sphere into a cube, they will collide, causing the cube to move. However, if you drag a sphere into another sphere, they’ll pass through each other.\n\nCollision filters define which entities will collide with which other entities based on the other entity’s collision group. That means all entities that share the same filter are part of the same group or groups and have the same collision properties.  More than one filter can be created for each collision group, however, so not all members of the same collision group necessarily collide with the same other objects.\n\n`CollisionGroup` conforms to [doc:\/\/com.apple.documentation\/documentation\/Swift\/OptionSet], which means you typically create individual groups by assigning each group a different bit flag value. If each group has a distinct bit representing it, that allows you to configure collision filters that collide with, or ignore any combination of individual collision groups using `OptionSet`’s various methods.\n\nHere is how the four collision groups in this sample project are defined:\n\n```swift\n    let planeGroup = CollisionGroup(rawValue: 1 << 0)\n    let cubeGroup = CollisionGroup(rawValue: 1 << 1)\n    let beveledCubeGroup = CollisionGroup(rawValue: 1 << 2)\n    let sphereGroup = CollisionGroup(rawValue: 1 << 3)\n```\n\nYou don’t assign collision groups directly to entities. Instead, you create filters that define the collision properties for individual entities. Assigning a collision filter to an entity automatically places that entity into the collision filter’s group or groups.\n\nFor example, here is how this sample creates the filter for the `cubeGroup`, used by cubes so they collide with everything except other cubes:\n\n```swift\n    let cubeMask = CollisionGroup.all.subtracting(cubeGroup)\n    let cubeFilter = CollisionFilter(group: cubeGroup,\n                                      mask: cubeMask)\n```\n\n\n\nAfter creating a collision filter, assign it to all the entities that should use that filter, like this:\n\n```swift\n    cube1.collision?.filter = cubeFilter\n    cube2.collision?.filter = cubeFilter\n    cube3.collision?.filter = cubeFilter\n```\n\n## Getting Started\n\nRequires Xcode 16.2, iOS 18, and an iOS device with an A9 or later processor. ARKit is not supported in iOS Simulator.\n\n## Collision shapes and groups\n\n- **Simulating physics with collisions in your visionOS app**: Create entities that behave and react like physical objects in a RealityKit view.\n- **CollisionComponent**: A component that gives an entity the ability to collide with other entities that also have collision components.\n- **CollisionComponent.Mode**: A mode that dictates how much collision data is collected for a given entity.\n- **ShapeResource**: A representation of a shape.\n- **ShapeResourceError**\n- **CollisionGroup**: A bitmask used to define the collision group to which an entity belongs.\n- **CollisionFilter**: A set of masks that determine whether entities can collide during simulations.\n- **TriggerVolume**: An invisible 3D shape that detects when objects enter or exit a given region of space.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create entities that behave and react like physical objects in a RealityKit view.",
+          "name" : "Simulating physics with collisions in your visionOS app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/simulating-physics-with-collisions-in-your-visionos-app"
+        },
+        {
+          "description" : "A component that gives an entity the ability to collide with other entities that also have collision components.",
+          "name" : "CollisionComponent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CollisionComponent"
+        },
+        {
+          "description" : "A mode that dictates how much collision data is collected for a given entity.",
+          "name" : "CollisionComponent.Mode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CollisionComponent\/Mode-swift.enum"
+        },
+        {
+          "description" : "A representation of a shape.",
+          "name" : "ShapeResource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/ShapeResource"
+        },
+        {
+          "description" : "",
+          "name" : "ShapeResourceError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/ShapeResourceError"
+        },
+        {
+          "description" : "A bitmask used to define the collision group to which an entity belongs.",
+          "name" : "CollisionGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CollisionGroup"
+        },
+        {
+          "description" : "A set of masks that determine whether entities can collide during simulations.",
+          "name" : "CollisionFilter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CollisionFilter"
+        },
+        {
+          "description" : "An invisible 3D shape that detects when objects enter or exit a given region of space.",
+          "name" : "TriggerVolume",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/TriggerVolume"
+        }
+      ],
+      "title" : "Collision shapes and groups"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Configuring Collision in RealityKit",
+  "url" : "https:\/\/developer.apple.com\/documentation\/realitykit\/configuring-collision-in-realitykit"
+}

@@ -1,0 +1,61 @@
+{
+  "abstract" : "Asynchronously requests permission to read a data type that requires per-object authorization (such as vision prescriptions).",
+  "codeExamples" : [
+    {
+      "code" : "@State private var trigger = false\nlet store = HKHealthStore()\n\nvar body: some Scene {\n    WindowGroup {\n        ContentView(enabled: $authenticated)\n            .healthDataAccessRequest(store: store,\n                                     objectType: .visionPrescriptionType(),\n                                     predicate: nil,\n                                     trigger: trigger) { result in\n\n                switch result {\n                case .success(_):\n                    authenticated = true\n                case .failure(let error):\n                    \/\/ Handle the error here.\n                    fatalError(\"*** An error occurred while requesting authentication: \\(error) ***\")\n                }\n\n                logger.debug(\"Authentication Complete.\")\n            }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Read the newest prescription from the HealthKit store.\nlet queryDescriptor = HKSampleQueryDescriptor(predicates: [.visionPrescription()],\n                                              sortDescriptors: [SortDescriptor(\\.startDate, order: .reverse)],\n                                              limit: 1)\n\nlet prescription: HKVisionPrescription\n\ndo {\n    guard let result = try await queryDescriptor.result(for: store).first else {\n        print(\"*** No prescription found. ***\")\n        return\n    }\n\n    prescription = result\n} catch {\n    \/\/ Handle the error here.\n    fatalError(\"*** An error occurred while reading the most recent vision prescriptions: \\(error.localizedDescription) ***\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Request authorization for additional samples.\ntrigger.toggle()",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "e6914afd0b9b97e0cea1d72fedfcb0a97349cfa04848de7336ba3eb2bbc82b1b",
+  "crawledAt" : "2025-12-02T17:23:57Z",
+  "declaration" : {
+    "code" : "@preconcurrency nonisolated func healthDataAccessRequest(store: HKHealthStore, objectType: HKObjectType, predicate: NSPredicate? = nil, trigger: some Equatable, completion: @escaping (Result<Bool, any Error>) -> Void) -> some View\n",
+    "language" : "swift"
+  },
+  "id" : "2AE2D259-7E65-4826-9051-0043B1181D1A",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Discussion\n\nSome samples require per-object authorization. For these samples, people can select which ones your app can read on a sample-by-sample basis. By default, your app can read any of the per-object authorization samples that it has saved to the HealthKit store; however, you may not always have access to those samples. People can update the authorization status for any of these samples at any time.\n\nYour app can begin by setting up the request in SwiftUI.\n\nNext, query for any samples that it already has permission to read.\n\nBased on the results, you can then decide whether you need to request authorization for additional samples. Modify the trigger’s value to prompt someone to modify the samples your app has access to read.\n\nWhen your app calls this method, HealthKit displays an authorization sheet that asks for permission to read the samples that match the predicate and object type. The person using your app can then select individual samples to share with your app. The system always asks for permission, regardless of whether the user previously granted it.\n\nPeople can individually enable each of the prescriptions. After they respond, the system calls the callback handler on an arbitrary background queue.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/healthDataAccessRequest(store:objectType:predicate:trigger:completion:)\ncrawled: 2025-12-02T17:23:57Z\n---\n\n# healthDataAccessRequest(store:objectType:predicate:trigger:completion:)\n\n**Instance Method**\n\nAsynchronously requests permission to read a data type that requires per-object authorization (such as vision prescriptions).\n\n## Declaration\n\n```swift\n@preconcurrency nonisolated func healthDataAccessRequest(store: HKHealthStore, objectType: HKObjectType, predicate: NSPredicate? = nil, trigger: some Equatable, completion: @escaping (Result<Bool, any Error>) -> Void) -> some View\n\n```\n\n## Parameters\n\n- **store**: The HealthKit store where you’re requesting authorization.\n- **objectType**: The data type you want to read. This type must be a type that requires per-object authorization.\n- **predicate**: An optional predicate that further restricts the objects of interest.\n- **trigger**: A value used to trigger the request. This value must be a [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/State] variable. Any change to the variable triggers a request.\n- **completion**: A block that the system calls after the request is complete. The system passes the result parameter.\n\n## Discussion\n\nSome samples require per-object authorization. For these samples, people can select which ones your app can read on a sample-by-sample basis. By default, your app can read any of the per-object authorization samples that it has saved to the HealthKit store; however, you may not always have access to those samples. People can update the authorization status for any of these samples at any time.\n\nYour app can begin by setting up the request in SwiftUI.\n\n```swift\n@State private var trigger = false\nlet store = HKHealthStore()\n\nvar body: some Scene {\n    WindowGroup {\n        ContentView(enabled: $authenticated)\n            .healthDataAccessRequest(store: store,\n                                     objectType: .visionPrescriptionType(),\n                                     predicate: nil,\n                                     trigger: trigger) { result in\n\n                switch result {\n                case .success(_):\n                    authenticated = true\n                case .failure(let error):\n                    \/\/ Handle the error here.\n                    fatalError(\"*** An error occurred while requesting authentication: \\(error) ***\")\n                }\n\n                logger.debug(\"Authentication Complete.\")\n            }\n    }\n}\n```\n\nNext, query for any samples that it already has permission to read.\n\n```swift\n\/\/ Read the newest prescription from the HealthKit store.\nlet queryDescriptor = HKSampleQueryDescriptor(predicates: [.visionPrescription()],\n                                              sortDescriptors: [SortDescriptor(\\.startDate, order: .reverse)],\n                                              limit: 1)\n\nlet prescription: HKVisionPrescription\n\ndo {\n    guard let result = try await queryDescriptor.result(for: store).first else {\n        print(\"*** No prescription found. ***\")\n        return\n    }\n\n    prescription = result\n} catch {\n    \/\/ Handle the error here.\n    fatalError(\"*** An error occurred while reading the most recent vision prescriptions: \\(error.localizedDescription) ***\")\n}\n```\n\nBased on the results, you can then decide whether you need to request authorization for additional samples. Modify the trigger’s value to prompt someone to modify the samples your app has access to read.\n\n```swift\n\/\/ Request authorization for additional samples.\ntrigger.toggle()\n```\n\n\n\nWhen your app calls this method, HealthKit displays an authorization sheet that asks for permission to read the samples that match the predicate and object type. The person using your app can then select individual samples to share with your app. The system always asks for permission, regardless of whether the user previously granted it.\n\nPeople can individually enable each of the prescriptions. After they respond, the system calls the callback handler on an arbitrary background queue.\n\n## Accessing health data\n\n- **healthDataAccessRequest(store:readTypes:trigger:completion:)**: Requests permission to read the specified HealthKit data types.\n- **healthDataAccessRequest(store:shareTypes:readTypes:trigger:completion:)**: Requests permission to save and read the specified HealthKit data types.\n- **workoutPreview(_:isPresented:)**: Presents a preview of the workout contents as a modal sheet\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Requests permission to read the specified HealthKit data types.",
+          "name" : "healthDataAccessRequest(store:readTypes:trigger:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/healthDataAccessRequest(store:readTypes:trigger:completion:)"
+        },
+        {
+          "description" : "Requests permission to save and read the specified HealthKit data types.",
+          "name" : "healthDataAccessRequest(store:shareTypes:readTypes:trigger:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/healthDataAccessRequest(store:shareTypes:readTypes:trigger:completion:)"
+        },
+        {
+          "description" : "Presents a preview of the workout contents as a modal sheet",
+          "name" : "workoutPreview(_:isPresented:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/workoutPreview(_:isPresented:)"
+        }
+      ],
+      "title" : "Accessing health data"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "healthDataAccessRequest(store:objectType:predicate:trigger:completion:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/healthDataAccessRequest(store:objectType:predicate:trigger:completion:)"
+}

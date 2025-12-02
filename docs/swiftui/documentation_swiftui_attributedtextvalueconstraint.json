@@ -1,0 +1,156 @@
+{
+  "abstract" : "A protocol for defining a constraint on the value of a certain attribute.",
+  "codeExamples" : [
+    {
+      "code" : "struct NoBlackOrWhiteForeground<Scope: AttributeScope>: AttributedTextValueConstraint {\n    typealias AttributeKey = AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute\n\n    func constrain(\n        _ container: inout Attributes\n    ) {\n        if container.foregroundColor == .white || container.foregroundColor == .black {\n            container.foregroundColor = .primary\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension MyTextFormattingDefinition {\n    struct Scope: AttributeScope {\n        \/* ... *\/\n        let foregroundColor: AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute\n        let backgroundColor: AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute\n    }\n}\n\nstruct NoEqualForegroundAndBackground: AttributedTextValueConstraint {\n    typealias Scope = MyTextFormattingDefinition.Scope\n    typealias AttributeKey = AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute\n\n    func constrain(\n        _ container: inout Attributes\n    ) {\n        if let color = container.foregroundColor,\n           container.backgroundColor == color\n        {\n            container.backgroundColor = nil\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/\/ Makes the background color for all Genmoji blue.\n\/\/\/\n\/\/\/ - Note: This constraint depends on a valid adaptiveImageGlyph value.\nstruct BlueGenmojiBackgroundConstraint<Scope: AttributeScope>: AttributedTextValueConstraint {\n    typealias AttributeKey = AttributeScopes.SwiftUIAttributes\n        .BackgroundColorAttribute\n\n    func constrain(\n        _ container: inout Attributes\n    ) {\n        if container[\n            AttributeScopes.SwiftUIAttributes.AdaptiveImageGlyphAttribute.self\n        ] != nil {\n            container.backgroundColor = .blue\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformingTypes" : [
+    "AttributedTextFormatting.ValueConstraint"
+  ],
+  "contentHash" : "2bc3f138e09497b42dd97a1f5134dc264461f64cf4053a993dcf28ffabdd7d73",
+  "crawledAt" : "2025-12-02T17:34:58Z",
+  "declaration" : {
+    "code" : "protocol AttributedTextValueConstraint : Hashable, Sendable, AttributedTextFormattingDefinition",
+    "language" : "swift"
+  },
+  "id" : "2D65C993-9F26-4DA4-B5F9-3047F724271C",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nUsed as an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextFormattingDefinition], this constrains the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextValueConstraint\/AttributeKey]’s value using the `constrain(_:)-(Attributes)` function.\n\nGiven value constraints can read other attribute values, it is crucial to avoid mixing value constraints in a way where they create cyclic dependencies with undefined behavior. Thus, it is recommended to think about value constraints in the context of the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextFormattingDefinition] they will be used in:\n\nA simple constraint only accesses a single attribute. It can be made generic over the attribute scope so it can be reused in different [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextFormattingDefinition]s.\n\nWhen the constraint needs to access other attribute values, it is recommended to define it on a specific attribute scope that is used for a single [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextFormattingDefinition].\n\nConstraints that access multiple attributes and are generic over the scope should document their dependencies so that the dependencies can be considered for the ordering of constraints in the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextFormattingDefinition\/body-1b01t].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/AttributedTextValueConstraint\ncrawled: 2025-12-02T17:34:58Z\n---\n\n# AttributedTextValueConstraint\n\n**Protocol**\n\nA protocol for defining a constraint on the value of a certain attribute.\n\n## Declaration\n\n```swift\nprotocol AttributedTextValueConstraint : Hashable, Sendable, AttributedTextFormattingDefinition\n```\n\n## Overview\n\nUsed as an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextFormattingDefinition], this constrains the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextValueConstraint\/AttributeKey]’s value using the `constrain(_:)-(Attributes)` function.\n\nGiven value constraints can read other attribute values, it is crucial to avoid mixing value constraints in a way where they create cyclic dependencies with undefined behavior. Thus, it is recommended to think about value constraints in the context of the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextFormattingDefinition] they will be used in:\n\nA simple constraint only accesses a single attribute. It can be made generic over the attribute scope so it can be reused in different [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextFormattingDefinition]s.\n\n```swift\nstruct NoBlackOrWhiteForeground<Scope: AttributeScope>: AttributedTextValueConstraint {\n    typealias AttributeKey = AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute\n\n    func constrain(\n        _ container: inout Attributes\n    ) {\n        if container.foregroundColor == .white || container.foregroundColor == .black {\n            container.foregroundColor = .primary\n        }\n    }\n}\n```\n\nWhen the constraint needs to access other attribute values, it is recommended to define it on a specific attribute scope that is used for a single [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextFormattingDefinition].\n\n```swift\nextension MyTextFormattingDefinition {\n    struct Scope: AttributeScope {\n        \/* ... *\/\n        let foregroundColor: AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute\n        let backgroundColor: AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute\n    }\n}\n\nstruct NoEqualForegroundAndBackground: AttributedTextValueConstraint {\n    typealias Scope = MyTextFormattingDefinition.Scope\n    typealias AttributeKey = AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute\n\n    func constrain(\n        _ container: inout Attributes\n    ) {\n        if let color = container.foregroundColor,\n           container.backgroundColor == color\n        {\n            container.backgroundColor = nil\n        }\n    }\n}\n```\n\nConstraints that access multiple attributes and are generic over the scope should document their dependencies so that the dependencies can be considered for the ordering of constraints in the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AttributedTextFormattingDefinition\/body-1b01t].\n\n```swift\n\/\/\/ Makes the background color for all Genmoji blue.\n\/\/\/\n\/\/\/ - Note: This constraint depends on a valid adaptiveImageGlyph value.\nstruct BlueGenmojiBackgroundConstraint<Scope: AttributeScope>: AttributedTextValueConstraint {\n    typealias AttributeKey = AttributeScopes.SwiftUIAttributes\n        .BackgroundColorAttribute\n\n    func constrain(\n        _ container: inout Attributes\n    ) {\n        if container[\n            AttributeScopes.SwiftUIAttributes.AdaptiveImageGlyphAttribute.self\n        ] != nil {\n            container.backgroundColor = .blue\n        }\n    }\n}\n```\n\n## Associated Types\n\n- **AttributeKey**: The attribute constrained by this constraint.\n\n## Instance Methods\n\n- **constrain(_:)**: Enforce constraints on the attribute.\n\n## Type Aliases\n\n- **AttributedTextValueConstraint.Attributes**: A proxy type for a container of partially constrained attributes.\n\n## Controlling text style\n\n- **bold(_:)**: Applies a bold font weight to the text in this view.\n- **italic(_:)**: Applies italics to the text in this view.\n- **underline(_:pattern:color:)**: Applies an underline to the text in this view.\n- **strikethrough(_:pattern:color:)**: Applies a strikethrough to the text in this view.\n- **textCase(_:)**: Sets a transform for the case of the text contained in this view when displayed.\n- **textCase**: A stylistic override to transform the case of `Text` when displayed, using the environment’s locale.\n- **monospaced(_:)**: Modifies the fonts of all child views to use the fixed-width variant of the current font, if possible.\n- **monospacedDigit()**: Modifies the fonts of all child views to use fixed-width digits, if possible, while leaving other characters proportionally spaced.\n- **AttributedTextFormattingDefinition**: A protocol for defining how text can be styled in a view.\n- **AttributedTextFormatting**: A namespace for types related to attributed text formatting definitions.\n\n## Inherits From\n\n- AttributedTextFormattingDefinition\n- Equatable\n- Hashable\n- Sendable\n- SendableMetatype\n\n## Conforming Types\n\n- AttributedTextFormatting.ValueConstraint\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The attribute constrained by this constraint.",
+          "name" : "AttributeKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AttributedTextValueConstraint\/AttributeKey"
+        }
+      ],
+      "title" : "Associated Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Enforce constraints on the attribute.",
+          "name" : "constrain(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AttributedTextValueConstraint\/constrain(_:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A proxy type for a container of partially constrained attributes.",
+          "name" : "AttributedTextValueConstraint.Attributes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AttributedTextValueConstraint\/Attributes"
+        }
+      ],
+      "title" : "Type Aliases"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Applies a bold font weight to the text in this view.",
+          "name" : "bold(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/bold(_:)"
+        },
+        {
+          "description" : "Applies italics to the text in this view.",
+          "name" : "italic(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/italic(_:)"
+        },
+        {
+          "description" : "Applies an underline to the text in this view.",
+          "name" : "underline(_:pattern:color:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/underline(_:pattern:color:)"
+        },
+        {
+          "description" : "Applies a strikethrough to the text in this view.",
+          "name" : "strikethrough(_:pattern:color:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/strikethrough(_:pattern:color:)"
+        },
+        {
+          "description" : "Sets a transform for the case of the text contained in this view when displayed.",
+          "name" : "textCase(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/textCase(_:)"
+        },
+        {
+          "description" : "A stylistic override to transform the case of `Text` when displayed, using the environment’s locale.",
+          "name" : "textCase",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/EnvironmentValues\/textCase"
+        },
+        {
+          "description" : "Modifies the fonts of all child views to use the fixed-width variant of the current font, if possible.",
+          "name" : "monospaced(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/monospaced(_:)"
+        },
+        {
+          "description" : "Modifies the fonts of all child views to use fixed-width digits, if possible, while leaving other characters proportionally spaced.",
+          "name" : "monospacedDigit()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/monospacedDigit()"
+        },
+        {
+          "description" : "A protocol for defining how text can be styled in a view.",
+          "name" : "AttributedTextFormattingDefinition",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AttributedTextFormattingDefinition"
+        },
+        {
+          "description" : "A namespace for types related to attributed text formatting definitions.",
+          "name" : "AttributedTextFormatting",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AttributedTextFormatting"
+        }
+      ],
+      "title" : "Controlling text style"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "AttributedTextFormattingDefinition"
+        },
+        {
+          "name" : "Equatable"
+        },
+        {
+          "name" : "Hashable"
+        },
+        {
+          "name" : "Sendable"
+        },
+        {
+          "name" : "SendableMetatype"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AttributedTextValueConstraint",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AttributedTextValueConstraint"
+}

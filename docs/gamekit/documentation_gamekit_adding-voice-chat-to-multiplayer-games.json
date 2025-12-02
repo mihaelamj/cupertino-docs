@@ -1,0 +1,98 @@
+{
+  "abstract" : "Enable players to voice chat with all, or groups of, players in a multiplayer game.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Activate the shared audio session.\ndo {\n    let audioSession = AVAudioSession.sharedInstance()\n\n    try audioSession.setActive(true, options: [])\n}\ncatch {\n    return\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "voiceChat = singlesMatch?.voiceChat(withName: \"PickupTennisChannel\")",
+      "language" : "swift"
+    },
+    {
+      "code" : "voiceChat?.volume = 0.5\nvoiceChat?.start()",
+      "language" : "swift"
+    },
+    {
+      "code" : "voiceChat?.isActive = true",
+      "language" : "swift"
+    },
+    {
+      "code" : "voiceChat?.playerVoiceChatStateDidChangeHandler = { player, state in\n    switch state {\n    case GKVoiceChat.PlayerState.connected:\n        \/\/ The player connected to chat.\n    case GKVoiceChat.PlayerState.disconnected:\n        \/\/ The player disconnected from chat.\n    case GKVoiceChat.PlayerState.speaking:\n        \/\/ The player is speaking.\n    case GKVoiceChat.PlayerState.silent:\n        \/\/ The player is silent.\n    case GKVoiceChat.PlayerState.connecting:\n        \/\/ The player is connecting.\n    @unknown default:\n        \/\/ The player state is unknown.\n    }\n    return\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "voiceChat?.stop()\nvoiceChat = nil\n\n\/\/ Deactivate the shared audio session.\ndo {\n    let audioSession = AVAudioSession.sharedInstance()\n\n    try audioSession.setActive(false, options: [])\n}\ncatch {\n    return\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "eef3f59815e1e17850f7b144f85d4feef45d1685b4b07da817d5d7925d1ff6f2",
+  "crawledAt" : "2025-12-02T16:10:53Z",
+  "id" : "30E2A8CF-9862-4008-9AB9-D225510F81FC",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "GameKit",
+  "overview" : "## Overview\n\nUse the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat] class to implement voice communication among players in a multiplayer game. Enable the player to communicate with all players in a group chat or a subset of players using separate audio channels. GameKit handles the low-level voice encoding and transmission for you; you add the controls to choose players, start and stop chats, mute players, and change the volume.\n\nTo learn about audio channels, see the [doc:\/\/com.apple.documentation\/documentation\/AVFAudio] framework.\n\n### Configure voice chat\n\nTo configure voice chat, add the [doc:\/\/com.apple.documentation\/documentation\/BundleResources\/Information-Property-List\/NSMicrophoneUsageDescription] key to the Information Property List in your project. Set it to a string that GameKit presents to the player when your game attempts to access the microphone. The string needs to state the reason your game needs access to the microphone. If the user doesn’t allow access, when you attempt to start voice chat, it fails with an error.\n\nNext, activate the system audio so that GameKit can use the default audio session for voice chat.\n\n### Create separate voice channels\n\nYou can use one or more separate audio channels for voice chat. For example, use one channel for communicating with all the players and another channel for communicating between team members.\n\nCreate a [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat] object that specifies a unique name for the channel. To communicate on the same channel, players need to use the same channel name. A GameKit match can have multiple channels, and a player can join as many channels as they want. If the player joins multiple channels, GameKit mixes the audio it receives from each channel into one audio output.\n\n### Start voice chat\n\nTo start voice chat on a channel, set the voice chat properties, such as the volume level, and invoke the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/start()] method.\n\nThe first time your game accesses the microphone on the player’s device, the system presents a dialog to the user that displays the reason your app wants permission to use the microphone. If you don’t provide a reason that the system presents to the player or the player doesn’t grant permission, GameKit won’t start the channel. To provide a reason, add the [doc:\/\/com.apple.documentation\/documentation\/BundleResources\/Information-Property-List\/NSMicrophoneUsageDescription] key to the Information Property List.\n\nIf the player grants permission, the voice chat object connects to the channel and GameKit notifies other players connected to the channel that the player joined the chat. When the player is connected, GameKit automatically plays voice data from other players.\n\n### Activate and switch the microphone between channels\n\nAfter you start voice chat on a channel, the player can hear the other players speak but you need to activate the microphone so GameKit can begin transmitting the player’s voice to the channel.\n\nFor a single channel, you can enable the microphone immediately after you start the chat, so that the player can begin speaking. Alternatively, you can provide a control for the player to activate the microphone when speaking, like a push-to-talk style interface. Use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/isActive] property to enable the microphone:\n\nIf the match has multiple channels, only one channel can use the microphone at a time. When you activate a channel, GameKit deactivates the other channels in the match. So, you need to provide a control in the interface for the player to choose the channel before speaking.\n\n### Add controls and feedback to your interface\n\nYou need to implement an interface that displays the status of players, shows when players connect and speak, mutes other players, and changes the volume of individual channels.\n\nFirst, update your interface when the state of a player changes. Set the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/playerVoiceChatStateDidChangeHandler] property to perform an action when a player connects, speaks, or disconnects from the chat. For example, highlight the avatar for the player who is speaking.\n\nThen, you can add a control that allows the player to mute other players including themselves using the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/setPlayer(_:muted:)] method. Finally, add another control for the player to adjust the volume of individual channels using the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/volume] property.\n\n### Stop voice chat\n\nTo stop transmitting data over the channel, use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/stop()] method, and deactivate the audio session. If you mute all the players, GameKit still sends the data to the local player, so instead use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/stop()] method.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/GameKit\/adding-voice-chat-to-multiplayer-games\ncrawled: 2025-12-02T16:10:53Z\n---\n\n# Adding voice chat to multiplayer games\n\n**Article**\n\nEnable players to voice chat with all, or groups of, players in a multiplayer game.\n\n## Overview\n\n\n\nUse the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat] class to implement voice communication among players in a multiplayer game. Enable the player to communicate with all players in a group chat or a subset of players using separate audio channels. GameKit handles the low-level voice encoding and transmission for you; you add the controls to choose players, start and stop chats, mute players, and change the volume.\n\nTo learn about audio channels, see the [doc:\/\/com.apple.documentation\/documentation\/AVFAudio] framework.\n\n\n\n### Configure voice chat\n\nTo configure voice chat, add the [doc:\/\/com.apple.documentation\/documentation\/BundleResources\/Information-Property-List\/NSMicrophoneUsageDescription] key to the Information Property List in your project. Set it to a string that GameKit presents to the player when your game attempts to access the microphone. The string needs to state the reason your game needs access to the microphone. If the user doesn’t allow access, when you attempt to start voice chat, it fails with an error.\n\nNext, activate the system audio so that GameKit can use the default audio session for voice chat.\n\n```swift\n\/\/ Activate the shared audio session.\ndo {\n    let audioSession = AVAudioSession.sharedInstance()\n\n    try audioSession.setActive(true, options: [])\n}\ncatch {\n    return\n}\n```\n\n### Create separate voice channels\n\nYou can use one or more separate audio channels for voice chat. For example, use one channel for communicating with all the players and another channel for communicating between team members.\n\nCreate a [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat] object that specifies a unique name for the channel. To communicate on the same channel, players need to use the same channel name. A GameKit match can have multiple channels, and a player can join as many channels as they want. If the player joins multiple channels, GameKit mixes the audio it receives from each channel into one audio output.\n\n```swift\nvoiceChat = singlesMatch?.voiceChat(withName: \"PickupTennisChannel\")\n```\n\n### Start voice chat\n\nTo start voice chat on a channel, set the voice chat properties, such as the volume level, and invoke the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/start()] method.\n\n```swift\nvoiceChat?.volume = 0.5\nvoiceChat?.start()\n```\n\nThe first time your game accesses the microphone on the player’s device, the system presents a dialog to the user that displays the reason your app wants permission to use the microphone. If you don’t provide a reason that the system presents to the player or the player doesn’t grant permission, GameKit won’t start the channel. To provide a reason, add the [doc:\/\/com.apple.documentation\/documentation\/BundleResources\/Information-Property-List\/NSMicrophoneUsageDescription] key to the Information Property List.\n\nIf the player grants permission, the voice chat object connects to the channel and GameKit notifies other players connected to the channel that the player joined the chat. When the player is connected, GameKit automatically plays voice data from other players.\n\n### Activate and switch the microphone between channels\n\nAfter you start voice chat on a channel, the player can hear the other players speak but you need to activate the microphone so GameKit can begin transmitting the player’s voice to the channel.\n\nFor a single channel, you can enable the microphone immediately after you start the chat, so that the player can begin speaking. Alternatively, you can provide a control for the player to activate the microphone when speaking, like a push-to-talk style interface. Use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/isActive] property to enable the microphone:\n\n```swift\nvoiceChat?.isActive = true\n```\n\nIf the match has multiple channels, only one channel can use the microphone at a time. When you activate a channel, GameKit deactivates the other channels in the match. So, you need to provide a control in the interface for the player to choose the channel before speaking.\n\n### Add controls and feedback to your interface\n\nYou need to implement an interface that displays the status of players, shows when players connect and speak, mutes other players, and changes the volume of individual channels.\n\nFirst, update your interface when the state of a player changes. Set the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/playerVoiceChatStateDidChangeHandler] property to perform an action when a player connects, speaks, or disconnects from the chat. For example, highlight the avatar for the player who is speaking.\n\n```swift\nvoiceChat?.playerVoiceChatStateDidChangeHandler = { player, state in\n    switch state {\n    case GKVoiceChat.PlayerState.connected:\n        \/\/ The player connected to chat.\n    case GKVoiceChat.PlayerState.disconnected:\n        \/\/ The player disconnected from chat.\n    case GKVoiceChat.PlayerState.speaking:\n        \/\/ The player is speaking.\n    case GKVoiceChat.PlayerState.silent:\n        \/\/ The player is silent.\n    case GKVoiceChat.PlayerState.connecting:\n        \/\/ The player is connecting.\n    @unknown default:\n        \/\/ The player state is unknown.\n    }\n    return\n}\n```\n\nThen, you can add a control that allows the player to mute other players including themselves using the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/setPlayer(_:muted:)] method. Finally, add another control for the player to adjust the volume of individual channels using the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/volume] property.\n\n### Stop voice chat\n\nTo stop transmitting data over the channel, use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/stop()] method, and deactivate the audio session. If you mute all the players, GameKit still sends the data to the local player, so instead use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKVoiceChat\/stop()] method.\n\n```swift\nvoiceChat?.stop()\nvoiceChat = nil\n\n\/\/ Deactivate the shared audio session.\ndo {\n    let audioSession = AVAudioSession.sharedInstance()\n\n    try audioSession.setActive(false, options: [])\n}\ncatch {\n    return\n}\n```\n\n## Real-time games\n\n- **Creating real-time games**: Develop games where multiple players interact in real time.\n- **Finding multiple players for a game**: Discover and invite other players to participate in a real-time game.\n- **Exchanging data between players in real-time games**: Send data between players in a real-time multiplayer game.\n- **Matchmaking rules**: Game Center applies different type of rules you create in a particular order to find the best matches.\n- **GKMatchRequest**: An object that encapsulates the parameters to create a real-time or turn-based match.\n- **GKMatchmaker**: An object that creates matches with other players without presenting an interface to the players.\n- **GKMatchmakerViewController**: An interface that allows a player to invite other players to a real-time game and automatch to fill any empty slots.\n- **GKInviteEventListener**: A protocol that handles invite events from Game Center.\n- **GKInvite**: An invitation to join a match sent to the local player from another player.\n- **GKMatch**: A peer-to-peer network between a group of players that sign into Game Center.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Develop games where multiple players interact in real time.",
+          "name" : "Creating real-time games",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/creating-real-time-games"
+        },
+        {
+          "description" : "Discover and invite other players to participate in a real-time game.",
+          "name" : "Finding multiple players for a game",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/finding-multiple-players-for-a-game"
+        },
+        {
+          "description" : "Send data between players in a real-time multiplayer game.",
+          "name" : "Exchanging data between players in real-time games",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/exchanging-data-between-players-in-real-time-games"
+        },
+        {
+          "description" : "Game Center applies different type of rules you create in a particular order to find the best matches.",
+          "name" : "Matchmaking rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/matchmaking-rules"
+        },
+        {
+          "description" : "An object that encapsulates the parameters to create a real-time or turn-based match.",
+          "name" : "GKMatchRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatchRequest"
+        },
+        {
+          "description" : "An object that creates matches with other players without presenting an interface to the players.",
+          "name" : "GKMatchmaker",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatchmaker"
+        },
+        {
+          "description" : "An interface that allows a player to invite other players to a real-time game and automatch to fill any empty slots.",
+          "name" : "GKMatchmakerViewController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatchmakerViewController"
+        },
+        {
+          "description" : "A protocol that handles invite events from Game Center.",
+          "name" : "GKInviteEventListener",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKInviteEventListener"
+        },
+        {
+          "description" : "An invitation to join a match sent to the local player from another player.",
+          "name" : "GKInvite",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKInvite"
+        },
+        {
+          "description" : "A peer-to-peer network between a group of players that sign into Game Center.",
+          "name" : "GKMatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatch"
+        }
+      ],
+      "title" : "Real-time games"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Adding voice chat to multiplayer games",
+  "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/adding-voice-chat-to-multiplayer-games"
+}

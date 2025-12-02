@@ -1,0 +1,51 @@
+{
+  "abstract" : "Use and interact with a virtual human interface device for testing and development.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ This describes a keyboard device according to the Human Interface Devices standard.\nlet keyboardDescriptor: Data = Data([0x05, 0x01, 0x09, 0x06, 0xA1, 0x01, 0x05, 0x07, 0x19, 0xE0, 0x29, 0xE7, 0x15, 0x00, 0x25, 0x01, 0x75, 0x01, 0x95, 0x08, 0x81, 0x02, 0x95, 0x01, 0x75, 0x08, 0x81, 0x01, 0x05, 0x08, 0x19, 0x01, 0x29, 0x05, 0x95, 0x05, 0x75, 0x01, 0x91, 0x02, 0x95, 0x01, 0x75, 0x03, 0x91, 0x01, 0x05, 0x07, 0x19, 0x00, 0x2A, 0xFF, 0x00, 0x95, 0x05, 0x75, 0x08, 0x15, 0x00, 0x26, 0xFF, 0x00, 0x81, 0x00, 0x05, 0xFF, 0x09, 0x03, 0x75, 0x08, 0x95, 0x01, 0x81, 0x02, 0xC0])\nlet properties = HIDVirtualDevice.Properties(descriptor: keyboardDescriptor, vendorID: 1)\n\nguard let device = HIDVirtualDevice(properties: properties) else {\n    return\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "final class Delegate : HIDVirtualDeviceDelegate {\n    \/\/ A handler for system requests to send data to the device.\n    func hidVirtualDevice(_ device: HIDVirtualDevice, receivedSetReportRequestOfType type: HIDReportType, id: HIDReportID?, data: Data) throws {\n        print(\"Device received a set report request for report type:\\(type) id:\\(String(describing: id)) with data:[\\(data.map { String(format: \"%02x\", $0) }.joined(separator: \" \"))]\")\n    }\n\n    \/\/ A handler for system requests to query data from the device.\n    func hidVirtualDevice(_ device: HIDVirtualDevice, receivedGetReportRequestOfType type: HIDReportType, id: HIDReportID?, maxSize: size_t) throws -> Data {\n        print(\"Device received a get report request for report type:\\(type) id:\\(String(describing: id))\")\n        assert(maxSize >= 4)\n        return (Data([1, 2, 3, 4]))\n    }\n}\n\nawait device.activate(delegate: Delegate())",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Send input data to the system to indicate device activity.\ntry await device.dispatchInputReport(data: Data([5, 6, 7, 8]), timestamp: SuspendingClock.now)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "45562c7ca88038f7f26cbfdea8dfd7767766fe22448e14cc8d2e64d922e33849",
+  "crawledAt" : "2025-12-02T17:02:14Z",
+  "id" : "229232D2-8213-4A54-9B76-4A5DD83752FB",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Core HID",
+  "overview" : "## Overview\n\nA virtual human interface device (HID) is a software implementation of a hardware device. The system treats the device as any other external peripheral. [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice] models a virtual device and you communicate with it using [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDDeviceClient]. Use a virtual device to transport data back and forth between other apps without the need for a connected device.\n\nDefine the details of a [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice] by passing a set of [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice\/Properties] during creation. You must pass [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice\/Properties\/descriptor] and [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice\/Properties\/vendorID], and specify additional properties using [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice\/Properties\/init(descriptor:vendorID:productID:transport:product:manufacturer:modelNumber:versionNumber:serialNumber:uniqueID:locationID:localizationCode:extraProperties:)].\n\nThe following creates a [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice] that acts as a keyboard:\n\nThe virtual device adopts the [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDeviceDelegate] protocol to process report requests. Clients on the system send set reports and receive get reports to and from this virtual device using [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDDeviceClient\/dispatchSetReportRequest(type:id:data:timeout:)] and [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDDeviceClient\/dispatchGetReportRequest(type:id:timeout:)]:\n\nThe virtual device can also dispatch input reports to clients. This is similar to a keyboard dispatching data when a key is pressed.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CoreHID\/CreatingVirtualDevices\ncrawled: 2025-12-02T17:02:14Z\n---\n\n# Creating virtual devices\n\n**Article**\n\nUse and interact with a virtual human interface device for testing and development.\n\n## Overview\n\nA virtual human interface device (HID) is a software implementation of a hardware device. The system treats the device as any other external peripheral. [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice] models a virtual device and you communicate with it using [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDDeviceClient]. Use a virtual device to transport data back and forth between other apps without the need for a connected device.\n\nDefine the details of a [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice] by passing a set of [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice\/Properties] during creation. You must pass [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice\/Properties\/descriptor] and [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice\/Properties\/vendorID], and specify additional properties using [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice\/Properties\/init(descriptor:vendorID:productID:transport:product:manufacturer:modelNumber:versionNumber:serialNumber:uniqueID:locationID:localizationCode:extraProperties:)].\n\nThe following creates a [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDevice] that acts as a keyboard:\n\n```swift\n\/\/ This describes a keyboard device according to the Human Interface Devices standard.\nlet keyboardDescriptor: Data = Data([0x05, 0x01, 0x09, 0x06, 0xA1, 0x01, 0x05, 0x07, 0x19, 0xE0, 0x29, 0xE7, 0x15, 0x00, 0x25, 0x01, 0x75, 0x01, 0x95, 0x08, 0x81, 0x02, 0x95, 0x01, 0x75, 0x08, 0x81, 0x01, 0x05, 0x08, 0x19, 0x01, 0x29, 0x05, 0x95, 0x05, 0x75, 0x01, 0x91, 0x02, 0x95, 0x01, 0x75, 0x03, 0x91, 0x01, 0x05, 0x07, 0x19, 0x00, 0x2A, 0xFF, 0x00, 0x95, 0x05, 0x75, 0x08, 0x15, 0x00, 0x26, 0xFF, 0x00, 0x81, 0x00, 0x05, 0xFF, 0x09, 0x03, 0x75, 0x08, 0x95, 0x01, 0x81, 0x02, 0xC0])\nlet properties = HIDVirtualDevice.Properties(descriptor: keyboardDescriptor, vendorID: 1)\n\nguard let device = HIDVirtualDevice(properties: properties) else {\n    return\n}\n```\n\nThe virtual device adopts the [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDVirtualDeviceDelegate] protocol to process report requests. Clients on the system send set reports and receive get reports to and from this virtual device using [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDDeviceClient\/dispatchSetReportRequest(type:id:data:timeout:)] and [doc:\/\/com.apple.CoreHID\/documentation\/CoreHID\/HIDDeviceClient\/dispatchGetReportRequest(type:id:timeout:)]:\n\n```swift\nfinal class Delegate : HIDVirtualDeviceDelegate {\n    \/\/ A handler for system requests to send data to the device.\n    func hidVirtualDevice(_ device: HIDVirtualDevice, receivedSetReportRequestOfType type: HIDReportType, id: HIDReportID?, data: Data) throws {\n        print(\"Device received a set report request for report type:\\(type) id:\\(String(describing: id)) with data:[\\(data.map { String(format: \"%02x\", $0) }.joined(separator: \" \"))]\")\n    }\n\n    \/\/ A handler for system requests to query data from the device.\n    func hidVirtualDevice(_ device: HIDVirtualDevice, receivedGetReportRequestOfType type: HIDReportType, id: HIDReportID?, maxSize: size_t) throws -> Data {\n        print(\"Device received a get report request for report type:\\(type) id:\\(String(describing: id))\")\n        assert(maxSize >= 4)\n        return (Data([1, 2, 3, 4]))\n    }\n}\n\nawait device.activate(delegate: Delegate())\n```\n\nThe virtual device can also dispatch input reports to clients. This is similar to a keyboard dispatching data when a key is pressed.\n\n```swift\n\/\/ Send input data to the system to indicate device activity.\ntry await device.dispatchInputReport(data: Data([5, 6, 7, 8]), timestamp: SuspendingClock.now)\n```\n\n## Simulation\n\n- **HIDVirtualDevice**: A virtual service to emulate a HID device connected to the system.\n- **HIDVirtualDeviceDelegate**: The delegate to receive notifications for a virtual HID device.\n- **HIDVirtualDevice.Properties**: The properties for a virtual HID device.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A virtual service to emulate a HID device connected to the system.",
+          "name" : "HIDVirtualDevice",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreHID\/HIDVirtualDevice"
+        },
+        {
+          "description" : "The delegate to receive notifications for a virtual HID device.",
+          "name" : "HIDVirtualDeviceDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreHID\/HIDVirtualDeviceDelegate"
+        },
+        {
+          "description" : "The properties for a virtual HID device.",
+          "name" : "HIDVirtualDevice.Properties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreHID\/HIDVirtualDevice\/Properties"
+        }
+      ],
+      "title" : "Simulation"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Creating virtual devices",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CoreHID\/CreatingVirtualDevices"
+}

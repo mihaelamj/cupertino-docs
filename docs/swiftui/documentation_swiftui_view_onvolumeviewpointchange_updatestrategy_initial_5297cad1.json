@@ -1,0 +1,99 @@
+{
+  "abstract" : "Adds an action to perform when the viewpoint of the volume changes.",
+  "codeExamples" : [
+    {
+      "code" : "struct RobotContentView: View {\n    @State var robotRotation: Rotation3D = .identity\n\n    var body: some View {\n        Model3D(named: \"robot\")\n            .onVolumeViewpointChange { _, newValue in\n                robotRotation = Rotation3D.slerp(\n                    from: robotRotation,\n                    to: newValue.squareAzimuth.orientation,\n                    t: 1.0,\n                    along: .shortest\n                )\n            }\n            .rotation3DEffect(robotRotation)\n            .animation(.easeInOut, value: robotRotation)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct ContentView: View {\n    @State var showingMoveToFrontSign = false\n    @State var moveToFrontSignViewpoint: Viewpoint3D = .standard\n\n    let supportedViewpoints = [SquareAzimuth.front]\n\n    var body: some View {\n        MoveToFrontSignView(viewpoint: moveToFrontSignViewpoint)\n            .opacity(showingMoveToFrontSign ? 1.0 : 0.0)\n            .animation(.easeInOut, value: showingMoveToFrontSign)\n            .onVolumeViewpointChange(updateStrategy: .all)\n                { _, newValue in\n\n                moveToFrontSignViewpoint = newViewpoint\n\n                let isSupported = supportedViewpoints.contains(\n                    newViewpoint.squareAzimuth)\n                showingMoveToFrontSign = !isSupported\n            }\n            .supportedVolumeViewpoints(supportedViewpoints)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "9d167fad9d70cf5938ccdd4245a8f4509105c17cd91c84a9d41feabca080c00c",
+  "crawledAt" : "2025-12-02T16:21:27Z",
+  "declaration" : {
+    "code" : "@MainActor @preconcurrency func onVolumeViewpointChange(updateStrategy: VolumeViewpointUpdateStrategy = .supported, initial: Bool = true, _ action: @escaping (Viewpoint3D, Viewpoint3D) -> Void) -> some View\n",
+    "language" : "swift"
+  },
+  "id" : "6EE99E9B-E54C-4D9B-9557-88D3FA57BD52",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Discussion\n\nUse the provided [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Viewpoint3D] to update the content of the volume:\n\nBy default, the action will only be run when the new viewpoint is equivalent to one of the values provided through [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/supportedVolumeViewpoints(_:)]. The viewpoint will be equivalent to where the window bar and ornaments are presented for a volume. Providing `.all` for the `updateStrategy` argument will result in the action being called without regard to the supported viewpoints.\n\nTo determine if the volume is being viewed from an unsupported viewpoint, provide `.all` for the `updateStrategy` argument and check if the viewpoint is not within the supported viewpoints:\n\nThe old and new [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Viewpoint3D] provided to the action are relative to the center of the volume.\n\nReading this value is only valid inside a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View] that inherits the environment of a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Scene] created with a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VolumetricWindowStyle].",
+  "platforms" : [
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/onVolumeViewpointChange(updateStrategy:initial:_:)\ncrawled: 2025-12-02T16:21:27Z\n---\n\n# onVolumeViewpointChange(updateStrategy:initial:_:)\n\n**Instance Method**\n\nAdds an action to perform when the viewpoint of the volume changes.\n\n## Declaration\n\n```swift\n@MainActor @preconcurrency func onVolumeViewpointChange(updateStrategy: VolumeViewpointUpdateStrategy = .supported, initial: Bool = true, _ action: @escaping (Viewpoint3D, Viewpoint3D) -> Void) -> some View\n\n```\n\n## Parameters\n\n- **updateStrategy**: Whether the action should be run for all viewpoint changes or only for supported viewpoint changes.\n- **initial**: Whether the action should be run when this view initially appears.\n- **action**: A closure to run when the viewpoint changes. The closure is also run when the volume is first opened if `initial` is `true`.\n\n## Discussion\n\nUse the provided [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Viewpoint3D] to update the content of the volume:\n\n```swift\nstruct RobotContentView: View {\n    @State var robotRotation: Rotation3D = .identity\n\n    var body: some View {\n        Model3D(named: \"robot\")\n            .onVolumeViewpointChange { _, newValue in\n                robotRotation = Rotation3D.slerp(\n                    from: robotRotation,\n                    to: newValue.squareAzimuth.orientation,\n                    t: 1.0,\n                    along: .shortest\n                )\n            }\n            .rotation3DEffect(robotRotation)\n            .animation(.easeInOut, value: robotRotation)\n    }\n}\n```\n\nBy default, the action will only be run when the new viewpoint is equivalent to one of the values provided through [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/supportedVolumeViewpoints(_:)]. The viewpoint will be equivalent to where the window bar and ornaments are presented for a volume. Providing `.all` for the `updateStrategy` argument will result in the action being called without regard to the supported viewpoints.\n\nTo determine if the volume is being viewed from an unsupported viewpoint, provide `.all` for the `updateStrategy` argument and check if the viewpoint is not within the supported viewpoints:\n\n```swift\nstruct ContentView: View {\n    @State var showingMoveToFrontSign = false\n    @State var moveToFrontSignViewpoint: Viewpoint3D = .standard\n\n    let supportedViewpoints = [SquareAzimuth.front]\n\n    var body: some View {\n        MoveToFrontSignView(viewpoint: moveToFrontSignViewpoint)\n            .opacity(showingMoveToFrontSign ? 1.0 : 0.0)\n            .animation(.easeInOut, value: showingMoveToFrontSign)\n            .onVolumeViewpointChange(updateStrategy: .all)\n                { _, newValue in\n\n                moveToFrontSignViewpoint = newViewpoint\n\n                let isSupported = supportedViewpoints.contains(\n                    newViewpoint.squareAzimuth)\n                showingMoveToFrontSign = !isSupported\n            }\n            .supportedVolumeViewpoints(supportedViewpoints)\n    }\n}\n```\n\nThe old and new [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Viewpoint3D] provided to the action are relative to the center of the volume.\n\nReading this value is only valid inside a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View] that inherits the environment of a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Scene] created with a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VolumetricWindowStyle].\n\n## Interacting with volumes\n\n- **supportedVolumeViewpoints(_:)**: Specifies which viewpoints are supported for the window bar and ornaments in a volume.\n- **VolumeViewpointUpdateStrategy**: A type describing when the action provided to [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/onVolumeViewpointChange(updateStrategy:initial:_:)] should be called.\n- **Viewpoint3D**: A type describing what direction something is being viewed from.\n- **SquareAzimuth**: A type describing what direction something is being viewed from along the horizontal plane and snapped to 4 directions.\n- **WorldAlignmentBehavior**: A type representing the world alignment behavior for a scene.\n- **volumeWorldAlignment(_:)**: Specifies how a volume should be aligned when moved in the world.\n- **WorldScalingBehavior**: Specifies the scaling behavior a window should have within the world.\n- **defaultWorldScaling(_:)**: Specify the world scaling behavior for the window.\n- **WorldScalingCompensation**: Indicates whether returned metrics will take dynamic scaling into account.\n- **worldTrackingLimitations**: The current limitations of the device tracking the user’s surroundings.\n- **WorldTrackingLimitation**: A structure to represent limitations of tracking the user’s surroundings.\n- **SurfaceSnappingInfo**: A type representing information about the window scenes snap state.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Specifies which viewpoints are supported for the window bar and ornaments in a volume.",
+          "name" : "supportedVolumeViewpoints(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/supportedVolumeViewpoints(_:)"
+        },
+        {
+          "description" : "A type describing when the action provided to [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/onVolumeViewpointChange(updateStrategy:initial:_:)] should be called.",
+          "name" : "VolumeViewpointUpdateStrategy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/VolumeViewpointUpdateStrategy"
+        },
+        {
+          "description" : "A type describing what direction something is being viewed from.",
+          "name" : "Viewpoint3D",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Viewpoint3D"
+        },
+        {
+          "description" : "A type describing what direction something is being viewed from along the horizontal plane and snapped to 4 directions.",
+          "name" : "SquareAzimuth",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/SquareAzimuth"
+        },
+        {
+          "description" : "A type representing the world alignment behavior for a scene.",
+          "name" : "WorldAlignmentBehavior",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/WorldAlignmentBehavior"
+        },
+        {
+          "description" : "Specifies how a volume should be aligned when moved in the world.",
+          "name" : "volumeWorldAlignment(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Scene\/volumeWorldAlignment(_:)"
+        },
+        {
+          "description" : "Specifies the scaling behavior a window should have within the world.",
+          "name" : "WorldScalingBehavior",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/WorldScalingBehavior"
+        },
+        {
+          "description" : "Specify the world scaling behavior for the window.",
+          "name" : "defaultWorldScaling(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Scene\/defaultWorldScaling(_:)"
+        },
+        {
+          "description" : "Indicates whether returned metrics will take dynamic scaling into account.",
+          "name" : "WorldScalingCompensation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/WorldScalingCompensation"
+        },
+        {
+          "description" : "The current limitations of the device tracking the user’s surroundings.",
+          "name" : "worldTrackingLimitations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/EnvironmentValues\/worldTrackingLimitations"
+        },
+        {
+          "description" : "A structure to represent limitations of tracking the user’s surroundings.",
+          "name" : "WorldTrackingLimitation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/WorldTrackingLimitation"
+        },
+        {
+          "description" : "A type representing information about the window scenes snap state.",
+          "name" : "SurfaceSnappingInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/SurfaceSnappingInfo"
+        }
+      ],
+      "title" : "Interacting with volumes"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "onVolumeViewpointChange(updateStrategy:initial:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/onVolumeViewpointChange(updateStrategy:initial:_:)"
+}

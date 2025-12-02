@@ -1,0 +1,87 @@
+{
+  "abstract" : "The color of an entity unmodified by lighting.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Load entity_basecolor.jpg from the app's bundle.\nif let baseResource = try? TextureResource.load(named: \"entity_basecolor\") {\n    let baseColor = CustomMaterial.Texture(baseResource)\n    customMaterial.baseColor = CustomMaterial.BaseColor(tint: .blue,\n                                                        texture:baseColor)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "#include <metal_stdlib>\n#include <RealityKit\/RealityKit.h>\nusing namespace metal;\n\n\/\/ Use samplers to retrieve a color value from a texture based on \/\/ UV\ncoordinates. Samplers can be reused with different textures. \/\/\nRealityKit reserves eight samplers for itself, so surface shaders should\n\/\/ never define more than eight samplers. constexpr sampler\ntextureSampler(address::clamp_to_edge, filter::bicubic);\n\n[[visible]] void mySurfaceShader(realitykit::surface_parameters params)\n{\n    \/\/ Retrieve the base color tint from the CustomMaterial.\n    half3 baseColorTint = (half3)params.material_constants().base_color_tint();\n\n    \/\/ Sample a value from the CustomMaterial's base color texture\n    \/\/ using the entity's UV coordinates.\n    auto uv = params.geometry().uv0();\n    auto tex = params.textures();\n    half3 color = (half3)tex.base_color().sample(textureSampler, uv).rgb;\n\n    \/\/ Multiply the tint and color sampled from the base color texture and\n    \/\/ assign the result to the shader's base color property.\n    color *= baseColorTint;\n    params.surface().set_base_color(color);\n}",
+      "language" : "cpp"
+    }
+  ],
+  "contentHash" : "6f6bd375bef0a2dfce70424aea5b795bd1d4fb2c6bc48fe8af548effe9eb9f83",
+  "crawledAt" : "2025-12-01T02:42:51Z",
+  "declaration" : {
+    "code" : "var baseColor: CustomMaterial.BaseColor { get set }",
+    "language" : "swift"
+  },
+  "id" : "E9D57110-8296-4721-9282-D967355C12E5",
+  "kind" : "property",
+  "module" : "RealityKit",
+  "overview" : "## Discussion\n\nIn physically based rendering, the base color of an entity is its color before RealityKit applies any lighting calculations or other rendering calculations to it. With custom materials, the base color `texture` and `tint` are available as inputs in your surface shader. With custom materials, RealityKit doesn’t automatically use the values set on the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/baseColor-swift.property] property. The material’s surface shader is responsible for calculating or setting the actual base color value for rendering by calling `params.surface().set_base_color()`.\n\nThe following code shows how to create a base color from a tint color and a texture, and then assign it to a custom material:\n\nIn your surface shader, you can access the `tint` of the material’s base color property by calling `params.material_constants().base_color_tint()`. You can access the texture by calling `params.textures().base_color()`.\n\nThe following surface shader function takes the tint and texture values from the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/baseColor-swift.property] property, multiplies them together, and sets the resulting value as the base color for rendering, which emulates the behavior of [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PhysicallyBasedMaterial]:\n\nFor more information on creating custom materials and writing shader functions, see [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/modifying-realitykit-rendering-using-custom-materials].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/baseColor-swift.property\ncrawled: 2025-12-01T02:42:51Z\n---\n\n# baseColor\n\n**Instance Property**\n\nThe color of an entity unmodified by lighting.\n\n## Declaration\n\n```swift\nvar baseColor: CustomMaterial.BaseColor { get set }\n```\n\n## Discussion\n\nIn physically based rendering, the base color of an entity is its color before RealityKit applies any lighting calculations or other rendering calculations to it. With custom materials, the base color `texture` and `tint` are available as inputs in your surface shader. With custom materials, RealityKit doesn’t automatically use the values set on the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/baseColor-swift.property] property. The material’s surface shader is responsible for calculating or setting the actual base color value for rendering by calling `params.surface().set_base_color()`.\n\nThe following code shows how to create a base color from a tint color and a texture, and then assign it to a custom material:\n\n```swift\n\/\/ Load entity_basecolor.jpg from the app's bundle.\nif let baseResource = try? TextureResource.load(named: \"entity_basecolor\") {\n    let baseColor = CustomMaterial.Texture(baseResource)\n    customMaterial.baseColor = CustomMaterial.BaseColor(tint: .blue,\n                                                        texture:baseColor)\n}\n```\n\nIn your surface shader, you can access the `tint` of the material’s base color property by calling `params.material_constants().base_color_tint()`. You can access the texture by calling `params.textures().base_color()`.\n\nThe following surface shader function takes the tint and texture values from the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/baseColor-swift.property] property, multiplies them together, and sets the resulting value as the base color for rendering, which emulates the behavior of [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PhysicallyBasedMaterial]:\n\n```cpp\n#include <metal_stdlib>\n#include <RealityKit\/RealityKit.h>\nusing namespace metal;\n\n\/\/ Use samplers to retrieve a color value from a texture based on \/\/ UV\ncoordinates. Samplers can be reused with different textures. \/\/\nRealityKit reserves eight samplers for itself, so surface shaders should\n\/\/ never define more than eight samplers. constexpr sampler\ntextureSampler(address::clamp_to_edge, filter::bicubic);\n\n[[visible]] void mySurfaceShader(realitykit::surface_parameters params)\n{\n    \/\/ Retrieve the base color tint from the CustomMaterial.\n    half3 baseColorTint = (half3)params.material_constants().base_color_tint();\n\n    \/\/ Sample a value from the CustomMaterial's base color texture\n    \/\/ using the entity's UV coordinates.\n    auto uv = params.geometry().uv0();\n    auto tex = params.textures();\n    half3 color = (half3)tex.base_color().sample(textureSampler, uv).rgb;\n\n    \/\/ Multiply the tint and color sampled from the base color texture and\n    \/\/ assign the result to the shader's base color property.\n    color *= baseColorTint;\n    params.surface().set_base_color(color);\n}\n```\n\nFor more information on creating custom materials and writing shader functions, see [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/modifying-realitykit-rendering-using-custom-materials].\n\n## Setting the core properties\n\n- **roughness**: The amount the surface of the 3D object scatters reflected light.\n- **metallic**: The reflectiveness of an entity.\n- **normal**: A texture map that stores fine surface details for the entity.\n- **emissiveColor**: The color of light this material emits.\n- **ambientOcclusion**: The ambient light exposure for a material.\n- **specular**: The bright highlights to apply to the entity.\n- **clearcoat**: The transparent highlights that simulate a clear, shiny coating on an entity.\n- **clearcoatRoughness**: The degree to which an entity’s clear, shiny coating scatters light to create soft highlights.\n- **clearcoatNormal**: Waviness and imperfections for the top clearcoat.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The amount the surface of the 3D object scatters reflected light.",
+          "name" : "roughness",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/roughness-swift.property"
+        },
+        {
+          "description" : "The reflectiveness of an entity.",
+          "name" : "metallic",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/metallic-swift.property"
+        },
+        {
+          "description" : "A texture map that stores fine surface details for the entity.",
+          "name" : "normal",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/normal-swift.property"
+        },
+        {
+          "description" : "The color of light this material emits.",
+          "name" : "emissiveColor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/emissiveColor-swift.property"
+        },
+        {
+          "description" : "The ambient light exposure for a material.",
+          "name" : "ambientOcclusion",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/ambientOcclusion-swift.property"
+        },
+        {
+          "description" : "The bright highlights to apply to the entity.",
+          "name" : "specular",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/specular-swift.property"
+        },
+        {
+          "description" : "The transparent highlights that simulate a clear, shiny coating on an entity.",
+          "name" : "clearcoat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/clearcoat-swift.property"
+        },
+        {
+          "description" : "The degree to which an entity’s clear, shiny coating scatters light to create soft highlights.",
+          "name" : "clearcoatRoughness",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/clearcoatRoughness-swift.property"
+        },
+        {
+          "description" : "Waviness and imperfections for the top clearcoat.",
+          "name" : "clearcoatNormal",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/clearcoatNormal-swift.property"
+        }
+      ],
+      "title" : "Setting the core properties"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "baseColor",
+  "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/baseColor-swift.property"
+}

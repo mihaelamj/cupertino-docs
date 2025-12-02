@@ -1,0 +1,270 @@
+{
+  "abstract" : "A mutable nonowning collection interface to the bytes in a region of memory.",
+  "codeExamples" : [
+    {
+      "code" : "var destBytes = someBytes[0..<n]",
+      "language" : "swift"
+    },
+    {
+      "code" : "var byteArray: [UInt8] = Array(destBytes)\nbyteArray += someBytes[n..<someBytes.count]",
+      "language" : "swift"
+    },
+    {
+      "code" : "destBytes[0..<n] = someBytes[n..<(n + n)]",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "AtomicRepresentable",
+    "BidirectionalCollection",
+    "BitwiseCopyable",
+    "Collection",
+    "ContiguousBytes",
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "MutableCollection",
+    "RandomAccessCollection",
+    "Sequence"
+  ],
+  "contentHash" : "6c6903c1f0fd0c83453c20e8af89a49047f3556166833cffe6986f3fc93992d0",
+  "crawledAt" : "2025-12-01T21:04:39Z",
+  "declaration" : {
+    "code" : "@frozen struct UnsafeMutableRawBufferPointer",
+    "language" : "swift"
+  },
+  "id" : "BC31A393-26E7-4E4A-8A47-2E84866A15E5",
+  "kind" : "struct",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nYou can use an `UnsafeMutableRawBufferPointer` instance in low-level operations to eliminate uniqueness checks and release mode bounds checks. Bounds checks are always performed in debug mode.\n\nAn `UnsafeMutableRawBufferPointer` instance is a view of the raw bytes in a region of memory. Each byte in memory is viewed as a `UInt8` value independent of the type of values held in that memory. Reading from and writing to memory through a raw buffer are untyped operations. Accessing this collection’s bytes does not bind the underlying memory to `UInt8`.\n\nIn addition to its collection interface, an `UnsafeMutableRawBufferPointer` instance also supports the following methods provided by `UnsafeMutableRawPointer`, including bounds checks in debug mode:\n\nTo access the underlying memory through typed operations, the memory must be bound to a trivial type.\n\n# UnsafeMutableRawBufferPointer Semantics\n\nAn `UnsafeMutableRawBufferPointer` instance is a view into memory and does not own the memory that it references. Copying a variable or constant of type `UnsafeMutableRawBufferPointer` does not copy the underlying memory. However, initializing another collection with an `UnsafeMutableRawBufferPointer` instance copies bytes out of the referenced memory and into the new collection.\n\nThe following example uses `someBytes`, an `UnsafeMutableRawBufferPointer` instance, to demonstrate the difference between assigning a buffer pointer and using a buffer pointer as the source for another collection’s elements. Here, the assignment to `destBytes` creates a new, nonowning buffer pointer covering the first `n` bytes of the memory that `someBytes` references—nothing is copied:\n\nNext, the bytes referenced by `destBytes` are copied into `byteArray`, a new `[UInt8]` array, and then the remainder of `someBytes` is appended to `byteArray`:\n\nAssigning into a ranged subscript of an `UnsafeMutableRawBufferPointer` instance copies bytes into the memory. The next `n` bytes of the memory that `someBytes` references are copied in this code:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/swift\/unsafemutablerawbufferpointer\ncrawled: 2025-12-01T21:04:39Z\n---\n\n# UnsafeMutableRawBufferPointer\n\n**Structure**\n\nA mutable nonowning collection interface to the bytes in a region of memory.\n\n## Declaration\n\n```swift\n@frozen struct UnsafeMutableRawBufferPointer\n```\n\n## Overview\n\nYou can use an `UnsafeMutableRawBufferPointer` instance in low-level operations to eliminate uniqueness checks and release mode bounds checks. Bounds checks are always performed in debug mode.\n\nAn `UnsafeMutableRawBufferPointer` instance is a view of the raw bytes in a region of memory. Each byte in memory is viewed as a `UInt8` value independent of the type of values held in that memory. Reading from and writing to memory through a raw buffer are untyped operations. Accessing this collection’s bytes does not bind the underlying memory to `UInt8`.\n\nIn addition to its collection interface, an `UnsafeMutableRawBufferPointer` instance also supports the following methods provided by `UnsafeMutableRawPointer`, including bounds checks in debug mode:\n\n- `load(fromByteOffset:as:)`\n- `loadUnaligned(fromByteOffset:as:)`\n- `storeBytes(of:toByteOffset:as:)`\n- `copyMemory(from:)`\n\nTo access the underlying memory through typed operations, the memory must be bound to a trivial type.\n\n\n\n# UnsafeMutableRawBufferPointer Semantics\n\nAn `UnsafeMutableRawBufferPointer` instance is a view into memory and does not own the memory that it references. Copying a variable or constant of type `UnsafeMutableRawBufferPointer` does not copy the underlying memory. However, initializing another collection with an `UnsafeMutableRawBufferPointer` instance copies bytes out of the referenced memory and into the new collection.\n\nThe following example uses `someBytes`, an `UnsafeMutableRawBufferPointer` instance, to demonstrate the difference between assigning a buffer pointer and using a buffer pointer as the source for another collection’s elements. Here, the assignment to `destBytes` creates a new, nonowning buffer pointer covering the first `n` bytes of the memory that `someBytes` references—nothing is copied:\n\n```swift\nvar destBytes = someBytes[0..<n]\n```\n\nNext, the bytes referenced by `destBytes` are copied into `byteArray`, a new `[UInt8]` array, and then the remainder of `someBytes` is appended to `byteArray`:\n\n```swift\nvar byteArray: [UInt8] = Array(destBytes)\nbyteArray += someBytes[n..<someBytes.count]\n```\n\nAssigning into a ranged subscript of an `UnsafeMutableRawBufferPointer` instance copies bytes into the memory. The next `n` bytes of the memory that `someBytes` references are copied in this code:\n\n```swift\ndestBytes[0..<n] = someBytes[n..<(n + n)]\n```\n\n## Initializers\n\n- **init(_:)**: Creates a new buffer over the same memory as the given buffer.\n- **init(_:)**: Creates a raw buffer over the contiguous bytes in the given typed buffer.\n- **init(mutating:)**: Creates a new mutable buffer over the same memory as the given buffer.\n- **init(rebasing:)**: Creates a raw buffer over the same memory as the given raw buffer slice, with the indices rebased to zero.\n- **init(start:count:)**: Creates a buffer over the specified number of contiguous bytes starting at the given pointer.\n\n## Instance Properties\n\n- **baseAddress**: A pointer to the first byte of the buffer.\n- **bytes**\n- **mutableBytes**\n\n## Instance Methods\n\n- **assumingMemoryBound(to:)**: Returns a typed buffer to the memory referenced by this buffer, assuming that the memory is already bound to the specified type.\n- **bindMemory(to:)**: Binds this buffer’s memory to the specified type and returns a typed buffer of the bound memory.\n- **copyBytes(from:)**: Copies from a collection of `UInt8` into this buffer’s memory.\n- **copyBytes(from:)**\n- **copyMemory(from:)**: Copies the bytes from the given buffer to this buffer’s memory.\n- **deallocate()**: Deallocates the memory block previously allocated at this buffer pointer’s base address.\n- **initializeMemory(as:from:)**: Initializes the buffer’s memory with the given elements, binding the initialized memory to the elements’ type.\n- **initializeMemory(as:fromContentsOf:)**: Initializes the buffer’s memory with every element of the source, binding the initialized memory to the elements’ type.\n- **initializeMemory(as:repeating:)**: Initializes the memory referenced by this buffer with the given value, binds the memory to the value’s type, and returns a typed buffer of the initialized memory.\n- **load(fromByteOffset:as:)**: Returns a new instance of the given type, read from the buffer pointer’s raw memory at the specified byte offset.\n- **loadUnaligned(fromByteOffset:as:)**: Returns a new instance of the given type, constructed from the raw memory at the specified offset.\n- **loadUnaligned(fromByteOffset:as:)**\n- **moveInitializeMemory(as:fromContentsOf:)**: Moves every element of an initialized source buffer into the uninitialized memory referenced by this buffer, leaving the source memory uninitialized and this buffer’s memory initialized.\n- **moveInitializeMemory(as:fromContentsOf:)**: Moves every element of an initialized source buffer slice into the uninitialized memory referenced by this buffer, leaving the source memory uninitialized and this buffer’s memory initialized.\n- **storeBytes(of:toByteOffset:as:)**: Stores a value’s bytes into the buffer pointer’s raw memory at the specified byte offset.\n- **withMemoryRebound(to:_:)**: Executes the given closure while temporarily binding the buffer to instances of type `T`.\n\n## Type Methods\n\n- **allocate(byteCount:alignment:)**: Allocates uninitialized memory with the specified size and alignment.\n- **allocate(count:)**\n\n## Default Implementations\n\n- **AtomicRepresentable Implementations**\n- **BidirectionalCollection Implementations**\n- **Collection Implementations**\n- **CustomDebugStringConvertible Implementations**\n- **MutableCollection Implementations**\n- **RandomAccessCollection Implementations**\n- **Sequence Implementations**\n\n## Raw Pointers\n\n- **UnsafeRawPointer**: A raw pointer for accessing untyped data.\n- **UnsafeMutableRawPointer**: A raw pointer for accessing and manipulating untyped data.\n- **UnsafeRawBufferPointer**: A  nonowning collection interface to the bytes in a region of memory.\n\n## Conforms To\n\n- AtomicRepresentable\n- BidirectionalCollection\n- BitwiseCopyable\n- Collection\n- ContiguousBytes\n- Copyable\n- CustomDebugStringConvertible\n- MutableCollection\n- RandomAccessCollection\n- Sequence\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new buffer over the same memory as the given buffer.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/init(_:)-5kt34"
+        },
+        {
+          "description" : "Creates a raw buffer over the contiguous bytes in the given typed buffer.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/init(_:)-9dmrh"
+        },
+        {
+          "description" : "Creates a new mutable buffer over the same memory as the given buffer.",
+          "name" : "init(mutating:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/init(mutating:)"
+        },
+        {
+          "description" : "Creates a raw buffer over the same memory as the given raw buffer slice, with the indices rebased to zero.",
+          "name" : "init(rebasing:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/init(rebasing:)"
+        },
+        {
+          "description" : "Creates a buffer over the specified number of contiguous bytes starting at the given pointer.",
+          "name" : "init(start:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/init(start:count:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A pointer to the first byte of the buffer.",
+          "name" : "baseAddress",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/baseAddress"
+        },
+        {
+          "description" : "",
+          "name" : "bytes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/bytes"
+        },
+        {
+          "description" : "",
+          "name" : "mutableBytes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/mutableBytes"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a typed buffer to the memory referenced by this buffer, assuming that the memory is already bound to the specified type.",
+          "name" : "assumingMemoryBound(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/assumingMemoryBound(to:)"
+        },
+        {
+          "description" : "Binds this buffer’s memory to the specified type and returns a typed buffer of the bound memory.",
+          "name" : "bindMemory(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/bindMemory(to:)"
+        },
+        {
+          "description" : "Copies from a collection of `UInt8` into this buffer’s memory.",
+          "name" : "copyBytes(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/copyBytes(from:)-6hg9u"
+        },
+        {
+          "description" : "",
+          "name" : "copyBytes(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/copyBytes(from:)-8y3nw"
+        },
+        {
+          "description" : "Copies the bytes from the given buffer to this buffer’s memory.",
+          "name" : "copyMemory(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/copyMemory(from:)"
+        },
+        {
+          "description" : "Deallocates the memory block previously allocated at this buffer pointer’s base address.",
+          "name" : "deallocate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/deallocate()"
+        },
+        {
+          "description" : "Initializes the buffer’s memory with the given elements, binding the initialized memory to the elements’ type.",
+          "name" : "initializeMemory(as:from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/initializeMemory(as:from:)"
+        },
+        {
+          "description" : "Initializes the buffer’s memory with every element of the source, binding the initialized memory to the elements’ type.",
+          "name" : "initializeMemory(as:fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/initializeMemory(as:fromContentsOf:)"
+        },
+        {
+          "description" : "Initializes the memory referenced by this buffer with the given value, binds the memory to the value’s type, and returns a typed buffer of the initialized memory.",
+          "name" : "initializeMemory(as:repeating:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/initializeMemory(as:repeating:)"
+        },
+        {
+          "description" : "Returns a new instance of the given type, read from the buffer pointer’s raw memory at the specified byte offset.",
+          "name" : "load(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/load(fromByteOffset:as:)"
+        },
+        {
+          "description" : "Returns a new instance of the given type, constructed from the raw memory at the specified offset.",
+          "name" : "loadUnaligned(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/loadUnaligned(fromByteOffset:as:)-7883k"
+        },
+        {
+          "description" : "",
+          "name" : "loadUnaligned(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/loadUnaligned(fromByteOffset:as:)-q4sv"
+        },
+        {
+          "description" : "Moves every element of an initialized source buffer into the uninitialized memory referenced by this buffer, leaving the source memory uninitialized and this buffer’s memory initialized.",
+          "name" : "moveInitializeMemory(as:fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/moveInitializeMemory(as:fromContentsOf:)-3gs5r"
+        },
+        {
+          "description" : "Moves every element of an initialized source buffer slice into the uninitialized memory referenced by this buffer, leaving the source memory uninitialized and this buffer’s memory initialized.",
+          "name" : "moveInitializeMemory(as:fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/moveInitializeMemory(as:fromContentsOf:)-8gjm9"
+        },
+        {
+          "description" : "Stores a value’s bytes into the buffer pointer’s raw memory at the specified byte offset.",
+          "name" : "storeBytes(of:toByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/storeBytes(of:toByteOffset:as:)"
+        },
+        {
+          "description" : "Executes the given closure while temporarily binding the buffer to instances of type `T`.",
+          "name" : "withMemoryRebound(to:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/withMemoryRebound(to:_:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Allocates uninitialized memory with the specified size and alignment.",
+          "name" : "allocate(byteCount:alignment:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/allocate(byteCount:alignment:)"
+        },
+        {
+          "description" : "",
+          "name" : "allocate(count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/allocate(count:)"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "AtomicRepresentable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/AtomicRepresentable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "BidirectionalCollection Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/BidirectionalCollection-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Collection Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/Collection-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "CustomDebugStringConvertible Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/CustomDebugStringConvertible-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "MutableCollection Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/MutableCollection-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "RandomAccessCollection Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/RandomAccessCollection-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Sequence Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawBufferPointer\/Sequence-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A raw pointer for accessing untyped data.",
+          "name" : "UnsafeRawPointer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawPointer"
+        },
+        {
+          "description" : "A raw pointer for accessing and manipulating untyped data.",
+          "name" : "UnsafeMutableRawPointer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableRawPointer"
+        },
+        {
+          "description" : "A  nonowning collection interface to the bytes in a region of memory.",
+          "name" : "UnsafeRawBufferPointer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeRawBufferPointer"
+        }
+      ],
+      "title" : "Raw Pointers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "UnsafeMutableRawBufferPointer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/swift\/unsafemutablerawbufferpointer"
+}

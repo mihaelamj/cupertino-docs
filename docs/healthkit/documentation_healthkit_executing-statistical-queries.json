@@ -1,0 +1,80 @@
+{
+  "abstract" : "Create and run statistical queries.",
+  "codeExamples" : [
+    {
+      "code" : "guard let energyConsumed = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryEnergyConsumed) else {\n    \/\/ This should never fail when using a defined constant.\n    fatalError(\"*** Unable to get the dietary energy consumed type ***\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let calendar = NSCalendar.current\nlet now = Date()\nlet components = calendar.dateComponents([.year, .month, .day], from: now)\n\nguard let startDate = calendar.date(from: components) else {\n    fatalError(\"*** Unable to create the start date ***\")\n}\n \nguard let endDate = calendar.date(byAdding: .day, value: 1, to: startDate) else {\n    fatalError(\"*** Unable to create the end date ***\")\n}\n\nlet today = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [])",
+      "language" : "swift"
+    },
+    {
+      "code" : "let query = HKStatisticsQuery(quantityType: energyConsumed, quantitySamplePredicate: today, options: .cumulativeSum) { (query, statisticsOrNil, errorOrNil) in\n    \n    guard let statistics = statisticsOrNil else {\n        \/\/ Handle any errors here.\n        return\n    }\n    \n    let sum = statistics.sumQuantity()\n    let totalCaloriesConsumed = sum?.doubleValue(for: HKUnit.largeCalorie())\n    \n    \/\/ Update your app here.\n    \n    \/\/ The results come back on an anonymous background queue.\n    \/\/ Dispatch to the main queue before modifying the UI.\n    \n    DispatchQueue.main.async {\n        \/\/ Update the UI here.\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "store.execute(query)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "762515e5c8d94a907aab2f4b910cd94daf1f43043d9d934dc98b663901f2a16b",
+  "crawledAt" : "2025-12-02T18:11:36Z",
+  "id" : "2F410A6F-5D42-4F10-98C1-346CF2DE61AE",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "HealthKit",
+  "overview" : "## Overview\n\nStatistical queries calculate common statistics  over a matching set of samples, for example by returning the minimum value, the maximum value, or the sum of all the values.\n\n### Create the Object Type and Predicate\n\nStart by creating the type object for the desired samples. The following example creates a type object for energy consumed.\n\nNext, create a predicate for samples created between midnight last night and midnight tonight.\n\nYou use these values to create the query.\n\n### Create the Query\n\nTo create the statistical query, call the [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKStatisticsQuery\/init(quantityType:quantitySamplePredicate:options:completionHandler:)] initializer. The following code creates a statistical query that calculates the total energy consumed during the specified time period.\n\nThe query returns a statistics object that contains the values calculated by the query. The callback handler should check for errors before accessing the statistics. It should also dispatch updates to the user interface back to the main thread.\n\n### Run the Query\n\nAfter the query is instantiated, you run it by calling the HealthKit store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/execute(_:)] method on the HealthKit store.\n\nThis method runs the query on an anonymous background queue. When the query is complete, it executes the results handler on the same background queue (but not necessarily on the same thread).",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/HealthKit\/executing-statistical-queries\ncrawled: 2025-12-02T18:11:36Z\n---\n\n# Executing Statistical Queries\n\n**Article**\n\nCreate and run statistical queries.\n\n## Overview\n\nStatistical queries calculate common statistics  over a matching set of samples, for example by returning the minimum value, the maximum value, or the sum of all the values.\n\n### Create the Object Type and Predicate\n\nStart by creating the type object for the desired samples. The following example creates a type object for energy consumed.\n\n```swift\nguard let energyConsumed = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.dietaryEnergyConsumed) else {\n    \/\/ This should never fail when using a defined constant.\n    fatalError(\"*** Unable to get the dietary energy consumed type ***\")\n}\n```\n\nNext, create a predicate for samples created between midnight last night and midnight tonight.\n\n```swift\nlet calendar = NSCalendar.current\nlet now = Date()\nlet components = calendar.dateComponents([.year, .month, .day], from: now)\n\nguard let startDate = calendar.date(from: components) else {\n    fatalError(\"*** Unable to create the start date ***\")\n}\n \nguard let endDate = calendar.date(byAdding: .day, value: 1, to: startDate) else {\n    fatalError(\"*** Unable to create the end date ***\")\n}\n\nlet today = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [])\n```\n\nYou use these values to create the query.\n\n### Create the Query\n\nTo create the statistical query, call the [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKStatisticsQuery\/init(quantityType:quantitySamplePredicate:options:completionHandler:)] initializer. The following code creates a statistical query that calculates the total energy consumed during the specified time period.\n\n```swift\nlet query = HKStatisticsQuery(quantityType: energyConsumed, quantitySamplePredicate: today, options: .cumulativeSum) { (query, statisticsOrNil, errorOrNil) in\n    \n    guard let statistics = statisticsOrNil else {\n        \/\/ Handle any errors here.\n        return\n    }\n    \n    let sum = statistics.sumQuantity()\n    let totalCaloriesConsumed = sum?.doubleValue(for: HKUnit.largeCalorie())\n    \n    \/\/ Update your app here.\n    \n    \/\/ The results come back on an anonymous background queue.\n    \/\/ Dispatch to the main queue before modifying the UI.\n    \n    DispatchQueue.main.async {\n        \/\/ Update the UI here.\n    }\n}\n```\n\nThe query returns a statistics object that contains the values calculated by the query. The callback handler should check for errors before accessing the statistics. It should also dispatch updates to the user interface back to the main thread.\n\n### Run the Query\n\nAfter the query is instantiated, you run it by calling the HealthKit store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/execute(_:)] method on the HealthKit store.\n\n```swift\nstore.execute(query)\n```\n\nThis method runs the query on an anonymous background queue. When the query is complete, it executes the results handler on the same background queue (but not necessarily on the same thread).\n\n## Statistics\n\n- **Executing Statistics Collection Queries**: Calculate statistical data for graphs and charts.\n- **HKStatisticsQueryDescriptor**: A query descriptor that calculates the minimum, maximum, average, or sum over a set of samples from the HealthKit store.\n- **HKStatisticsQuery**: A query that performs statistical calculations over a set of matching quantity samples, and returns the results.\n- **HKStatisticsCollectionQueryDescriptor**: A query descriptor that gathers a collection of statistics calculated over a series of fixed-length time intervals.\n- **HKStatisticsCollectionQuery**: A query that performs multiple statistics queries over a series of fixed-length time intervals.\n- **HKStatistics**: An object that represents the result of calculating the minimum, maximum, average, or sum over a set of samples from the HealthKit store.\n- **HKStatisticsCollection**: An object that manages a collection of statistics, representing the results calculated over separate time intervals.\n- **HKStatisticsOptions**: Options for specifying the statistic to calculate.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Calculate statistical data for graphs and charts.",
+          "name" : "Executing Statistics Collection Queries",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/executing-statistics-collection-queries"
+        },
+        {
+          "description" : "A query descriptor that calculates the minimum, maximum, average, or sum over a set of samples from the HealthKit store.",
+          "name" : "HKStatisticsQueryDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKStatisticsQueryDescriptor"
+        },
+        {
+          "description" : "A query that performs statistical calculations over a set of matching quantity samples, and returns the results.",
+          "name" : "HKStatisticsQuery",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKStatisticsQuery"
+        },
+        {
+          "description" : "A query descriptor that gathers a collection of statistics calculated over a series of fixed-length time intervals.",
+          "name" : "HKStatisticsCollectionQueryDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKStatisticsCollectionQueryDescriptor"
+        },
+        {
+          "description" : "A query that performs multiple statistics queries over a series of fixed-length time intervals.",
+          "name" : "HKStatisticsCollectionQuery",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKStatisticsCollectionQuery"
+        },
+        {
+          "description" : "An object that represents the result of calculating the minimum, maximum, average, or sum over a set of samples from the HealthKit store.",
+          "name" : "HKStatistics",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKStatistics"
+        },
+        {
+          "description" : "An object that manages a collection of statistics, representing the results calculated over separate time intervals.",
+          "name" : "HKStatisticsCollection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKStatisticsCollection"
+        },
+        {
+          "description" : "Options for specifying the statistic to calculate.",
+          "name" : "HKStatisticsOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKStatisticsOptions"
+        }
+      ],
+      "title" : "Statistics"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Executing Statistical Queries",
+  "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/executing-statistical-queries"
+}

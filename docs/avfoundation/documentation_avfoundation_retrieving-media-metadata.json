@@ -1,0 +1,75 @@
+{
+  "abstract" : "Load descriptive metadata for media assets and their tracks.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ A local or remote asset to inspect.\nlet asset = AVURLAsset(url: url)\nfor format in try await asset.load(.availableMetadataFormats) {\n    let metadata = try await asset.loadMetadata(for: format)\n    \/\/ Process the format-specific metadata collection.\n    print(\"The available metadata format is \\(metadata)\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Load the asset's metadata.\nlet metadata = try await asset.load(.metadata)\n        \n\/\/ Find the title in the common key space.\nlet titleItems = AVMetadataItem.metadataItems(from: metadata,\n                                              filteredByIdentifier: .commonIdentifierTitle)\nguard let item = titleItems.first else { return }\n\/\/ Process the title item.",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ The collection of iTunes metadata.\nlet iTunesMetadata = try await asset.loadMetadata(for: .iTunesMetadata)\n\n\/\/ Filter metadata to find the asset's artwork.\nguard let artworkItem = AVMetadataItem.metadataItems(from: iTunesMetadata,\n                                                     filteredByIdentifier: .iTunesMetadataCoverArt).first else { return }\n\n\/\/ Retrieve a Data object that contains the image data.\nguard let imageData = try await artworkItem.load(.dataValue) else { return }",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "3242082f2c54362a1037e9c4ccd62a8eef5f4918eff262114d5bb2194437b991",
+  "crawledAt" : "2025-12-01T16:55:20Z",
+  "id" : "931542D7-5C9C-4B16-815D-F2C52532B396",
+  "kind" : "article",
+  "module" : "AVFoundation",
+  "overview" : "## Overview\n\nMedia container formats provide metadata that describe their content. You can retrieve it to access information about the media such as the title, artwork, and creation date. AVFoundation models metadata values using the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataItem] class. A metadata item represents a single value like a movie’s description or poster image. This class provides a simple, consistent interface to work with metadata, regardless of the underlying container and metadata formats.\n\n### Load an asset’s metadata\n\n[doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAsset] provides several ways to access its metadata. You can retrieve all of its metadata by loading the value of its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/metadata-16qej] property. Alternatively, you can retrieve a subset of items that are common to all of the metadata formats it holds by loading the value of its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/commonMetadata-3j3n4] property.\n\nTo retrieve format-specific collections of metadata, like [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataFormat\/iTunesMetadata] or [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataFormat\/quickTimeMetadata], call an asset’s [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAsset\/loadMetadata(for:completionHandler:)] method, passing it a specific [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataFormat] to load. The example below iterates over the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/availableMetadataFormats-4yiq8] an asset contains, and loads each format’s metadata items to process their values.\n\n### Filter a metadata collection\n\nAfter you load a collection of metadata, you can filter it to specific values using the class methods of [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataItem]. The example below shows how to use the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataItem\/metadataItems(from:filteredByIdentifier:)] method to find items with an identifier of [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataIdentifier\/commonIdentifierTitle].\n\nA metadata item’s filtering methods return collections of items instead of a single instance. In many cases, the returned collection contains a single element, but if the media contains localized metadata, or if you’re retrieving data from the common key space and the same value exists in multiple key spaces, the item returns a distinct value for each.\n\n### Find specific values\n\nRetrieve the data a metadata item holds by loading its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/value] property, which is an object that adopts the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSCopying] and [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol] protocols. You can manually cast the value to an appropriate type, but it’s safer and more convenient to use the metadata item’s type conversion properties. Instead of loading the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/value] property, load its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/stringValue], [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/numberValue], [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/dateValue], or [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/dataValue] properties as appropriate to convert it to a specific type. For example, the code listing below shows how to retrieve the artwork associated with an iTunes music track as a data value:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AVFoundation\/retrieving-media-metadata\ncrawled: 2025-12-01T16:55:20Z\n---\n\n# Retrieving media metadata\n\n**Article**\n\nLoad descriptive metadata for media assets and their tracks.\n\n## Overview\n\nMedia container formats provide metadata that describe their content. You can retrieve it to access information about the media such as the title, artwork, and creation date. AVFoundation models metadata values using the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataItem] class. A metadata item represents a single value like a movie’s description or poster image. This class provides a simple, consistent interface to work with metadata, regardless of the underlying container and metadata formats.\n\n### Load an asset’s metadata\n\n[doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAsset] provides several ways to access its metadata. You can retrieve all of its metadata by loading the value of its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/metadata-16qej] property. Alternatively, you can retrieve a subset of items that are common to all of the metadata formats it holds by loading the value of its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/commonMetadata-3j3n4] property.\n\nTo retrieve format-specific collections of metadata, like [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataFormat\/iTunesMetadata] or [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataFormat\/quickTimeMetadata], call an asset’s [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAsset\/loadMetadata(for:completionHandler:)] method, passing it a specific [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataFormat] to load. The example below iterates over the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/availableMetadataFormats-4yiq8] an asset contains, and loads each format’s metadata items to process their values.\n\n```swift\n\/\/ A local or remote asset to inspect.\nlet asset = AVURLAsset(url: url)\nfor format in try await asset.load(.availableMetadataFormats) {\n    let metadata = try await asset.loadMetadata(for: format)\n    \/\/ Process the format-specific metadata collection.\n    print(\"The available metadata format is \\(metadata)\")\n}\n```\n\n### Filter a metadata collection\n\nAfter you load a collection of metadata, you can filter it to specific values using the class methods of [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataItem]. The example below shows how to use the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataItem\/metadataItems(from:filteredByIdentifier:)] method to find items with an identifier of [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVMetadataIdentifier\/commonIdentifierTitle].\n\n```swift\n\/\/ Load the asset's metadata.\nlet metadata = try await asset.load(.metadata)\n        \n\/\/ Find the title in the common key space.\nlet titleItems = AVMetadataItem.metadataItems(from: metadata,\n                                              filteredByIdentifier: .commonIdentifierTitle)\nguard let item = titleItems.first else { return }\n\/\/ Process the title item.\n```\n\nA metadata item’s filtering methods return collections of items instead of a single instance. In many cases, the returned collection contains a single element, but if the media contains localized metadata, or if you’re retrieving data from the common key space and the same value exists in multiple key spaces, the item returns a distinct value for each.\n\n### Find specific values\n\nRetrieve the data a metadata item holds by loading its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/value] property, which is an object that adopts the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSCopying] and [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol] protocols. You can manually cast the value to an appropriate type, but it’s safer and more convenient to use the metadata item’s type conversion properties. Instead of loading the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/value] property, load its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/stringValue], [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/numberValue], [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/dateValue], or [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/dataValue] properties as appropriate to convert it to a specific type. For example, the code listing below shows how to retrieve the artwork associated with an iTunes music track as a data value:\n\n```swift\n\/\/ The collection of iTunes metadata.\nlet iTunesMetadata = try await asset.loadMetadata(for: .iTunesMetadata)\n\n\/\/ Filter metadata to find the asset's artwork.\nguard let artworkItem = AVMetadataItem.metadataItems(from: iTunesMetadata,\n                                                     filteredByIdentifier: .iTunesMetadataCoverArt).first else { return }\n\n\/\/ Retrieve a Data object that contains the image data.\nguard let imageData = try await artworkItem.load(.dataValue) else { return }\n```\n\n## Metadata\n\n- **AVMetadataItem**: A metadata item for an audiovisual asset or one of its tracks.\n- **AVMutableMetadataItem**: A mutable metadata item for an audiovisual asset or for one of its tracks.\n- **AVMetadataIdentifier**: A structure that defines identifiers for metadata formats.\n- **AVMetadataKey**: A structure that defines a metadata key.\n- **AVMetadataKeySpace**: A structure that defines a metadata key space.\n- **AVMetadataExtraAttributeKey**: A structure that defines keys for extra metadata attributes.\n- **AVMetadataFormat**: A structure that defines metadata formats.\n- **AVMetadataItemFilter**: An object that filters selected information from a metadata item.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A metadata item for an audiovisual asset or one of its tracks.",
+          "name" : "AVMetadataItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVMetadataItem"
+        },
+        {
+          "description" : "A mutable metadata item for an audiovisual asset or for one of its tracks.",
+          "name" : "AVMutableMetadataItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVMutableMetadataItem"
+        },
+        {
+          "description" : "A structure that defines identifiers for metadata formats.",
+          "name" : "AVMetadataIdentifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVMetadataIdentifier"
+        },
+        {
+          "description" : "A structure that defines a metadata key.",
+          "name" : "AVMetadataKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVMetadataKey"
+        },
+        {
+          "description" : "A structure that defines a metadata key space.",
+          "name" : "AVMetadataKeySpace",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVMetadataKeySpace"
+        },
+        {
+          "description" : "A structure that defines keys for extra metadata attributes.",
+          "name" : "AVMetadataExtraAttributeKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVMetadataExtraAttributeKey"
+        },
+        {
+          "description" : "A structure that defines metadata formats.",
+          "name" : "AVMetadataFormat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVMetadataFormat"
+        },
+        {
+          "description" : "An object that filters selected information from a metadata item.",
+          "name" : "AVMetadataItemFilter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVMetadataItemFilter"
+        }
+      ],
+      "title" : "Metadata"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Retrieving media metadata",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/retrieving-media-metadata"
+}

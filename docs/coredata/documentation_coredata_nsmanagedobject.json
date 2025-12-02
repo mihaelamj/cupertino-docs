@@ -1,0 +1,372 @@
+{
+  "abstract" : "The base class that all Core Data model objects inherit from.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSFetchRequestResult",
+    "NSObjectProtocol",
+    "ObservableObject"
+  ],
+  "contentHash" : "8f59fae956e5511a50640264f5b8b4e416f38bc7741f48f01aef96b935a47aea",
+  "crawledAt" : "2025-12-02T18:45:09Z",
+  "declaration" : {
+    "code" : "nonisolated class NSManagedObject",
+    "language" : "swift"
+  },
+  "id" : "2F04CAD1-1401-4C78-9694-C7ACE0ACD9B9",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Core Data",
+  "overview" : "## Overview\n\nA managed object has an associated entity description ([doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSEntityDescription]) that provides metadata about the object, including the name of the entity that the object represents and the names of its attributes and relationships. A managed object also has an associated managed object context that tracks changes to the object graph.\n\nYou can’t use instances of direct subclasses of [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class], or any other class that doesn’t inherit from [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject], with a managed object context. You may create custom subclasses of [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject], although this isn’t always necessary. If you don’t need custom logic, you can create a complete object graph with [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject] instances.\n\nIf you instantiate a managed object directly, you must call the designated initializer [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)].\n\n### Data Storage\n\nIn some respects, an `NSManagedObject` acts like a dictionary—it’s a generic container object that provides efficient storage for the properties defined by its associated `NSEntityDescription` instance. `NSManagedObject` supports a range of common types for attribute values, including string, date, and number (see [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSAttributeDescription] for full details). Therefore, typically you don’t need to define instance variables in subclasses. Sometimes, however, you want to use types that aren’t supported directly, such as colors and C structures. For example, in a graphics application you might want to define a Rectangle entity that has color and bounds attributes that are an instance of `NSColor` and an `NSRect` struct, respectively. For some types you can use a transformable attribute, for others this may require you to create a subclass of `NSManagedObject`.\n\n### Faulting\n\nManaged objects typically represent data held in a persistent store. In some situations a managed object may be a *fault*—an object whose property values haven’t yet been loaded from the external data store. When you access persistent property values, the fault “fires” and the data is retrieved from the store automatically. This can be a comparatively expensive process (potentially requiring a round trip to the persistent store), and you may wish to avoid unnecessarily firing a fault. See [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/CoreData\/FaultingandUniquing.html#\/\/apple_ref\/doc\/uid\/TP40001075-CH18] for more details on faults.\n\nYou can safely invoke the following methods and properties on a fault without causing it to fire: [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isEqual(_:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/hash], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/superclass], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-c.protocol\/class], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/self()], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isProxy()], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isKind(of:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isMember(of:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/conforms(to:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/responds(to:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/description], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/managedObjectContext], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/entity-swift.property], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/objectID], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isInserted], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isUpdated], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isDeleted], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/faultingState], and [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isFault]. Because `isEqual` and `hash` don’t cause a fault to fire, managed objects can typically be placed in collections without firing a fault. Note, however, that invoking key-value coding methods on the collection object might in turn result in an invocation of `valueForKey:` on a managed object, which would fire the fault.\n\nAlthough the `description` property doesn’t cause a fault to fire, if you implement a custom `description` that accesses the object’s persistent properties, this does cause a fault to fire. You are strongly discouraged from overriding `description` in this way.\n\n### Subclassing Notes\n\nIn combination with the entity description in the managed object model, `NSManagedObject` provides a rich set of default behaviors including support for arbitrary properties and value validation. If you decide to subclass `NSManagedObject` to implement custom features, make sure you don’t disrupt Core Data’s behavior.\n\n#### Methods and Properties You Must Not Override\n\n`NSManagedObject` itself customizes many features of `NSObject` so that managed objects can be properly integrated into the Core Data infrastructure. Core Data relies on the `NSManagedObject` implementation of the following methods and properties, which you therefore absolutely must not override: [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/primitiveValue(forKey:)], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/setPrimitiveValue(_:forKey:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isEqual(_:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/hash], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/superclass], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-c.protocol\/class], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/self()], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isProxy()], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isKind(of:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isMember(of:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/conforms(to:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/responds(to:)], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/managedObjectContext], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/entity-swift.property], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/objectID], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isInserted], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isUpdated], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isDeleted], and [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isFault], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/alloc], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/allocWithZone:], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/new],  [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/instancesRespond(to:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/instanceMethod(for:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/method(for:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/methodSignatureForSelector:], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/instanceMethodSignatureForSelector:], or [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/isSubclass(of:)].\n\n#### Methods and Properties You Shouldn’t Override\n\nAs with any class, you are strongly discouraged from overriding the key-value observing methods such as [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/willChangeValue(forKey:)] and [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/didChangeValue(forKey:withSetMutation:using:)]. Avoid overriding `description`—if this method fires a fault during a debugging operation, the results may be unpredictable. Also avoid overriding [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)], or `dealloc`. Changing values in the [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)] method won’t be noticed by the context, and if you aren’t careful, those changes may not be saved. Perform most initialization customization in one of the `awake…` methods. If you do override [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)], make sure you adhere to the requirements set out in the method description. See [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)].\n\nDon’t override `dealloc` because [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/didTurnIntoFault()] is usually a better time to clear values—a managed object may not be reclaimed for some time after it has been turned into a fault. Core Data doesn’t guarantee that `dealloc` will be called in all scenarios (such as when the application quits). Therefore, don’t include required side effects (like saving or changes to the file system, user preferences, and so on) in these methods.\n\nIn summary, for [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)] and `dealloc`, Core Data reserves exclusive control over the life cycle of the managed object (that is, raw memory management). This is so that the framework can provide features such as uniquing and by consequence, relationship maintenance, as well as much better performance than would be possible otherwise.\n\n#### Additional Override Considerations\n\nThe following methods are intended to be fine grained and aren’t suitable for large-scale operations. Don’t fetch or save in these methods. In particular, they shouldn’t have side effects on the managed object context.\n\nIn addition, if you plan to override `awakeFromInsert`, `awakeFromFetch`, and validation methods, first invoke `super.method()`, the superclass’s implementation. Don’t modify relationships in [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/awakeFromFetch()]—see the method description for details.\n\n#### Custom Accessor Methods\n\nTypically, you don’t need to write custom accessor methods for properties that are defined in the entity of a managed object’s corresponding managed object model. If you need to do so, follow the implementation patterns described in Managed Object Accessor Methods in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/CoreData\/index.html#\/\/apple_ref\/doc\/uid\/TP40001075].\n\nCore Data automatically generates accessor methods (and primitive accessor methods) for you. For attributes and to-one relationships, Core Data generates the standard get and set accessor methods; for to-many relationships, Core Data generates the indexed accessor methods as described in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/KeyValueCoding\/AccessorConventions.html#\/\/apple_ref\/doc\/uid\/20002174] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/KeyValueCoding\/index.html#\/\/apple_ref\/doc\/uid\/10000107i]. You do however need to declare the accessor methods or use Objective-C properties to suppress compiler warnings. For a full discussion, see Managed Object Accessor Methods in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/CoreData\/index.html#\/\/apple_ref\/doc\/uid\/TP40001075].\n\n#### Custom Instance Variables\n\nBy default, `NSManagedObject` stores its properties in an internal structure as objects, and in general Core Data is more efficient working with storage under its own control rather than by using custom instance variables.\n\n`NSManagedObject` provides support for a range of common types for attribute values, including string, date, and number (see [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSAttributeDescription] for full details). If you want to use types that aren’t supported directly, like colors and C structures, you can either use transformable attributes or create a subclass of `NSManagedObject`.\n\nSometimes it’s convenient to represent variables as scalars—in drawing applications, for example, where variables represent dimensions and x and y coordinates and are frequently used in calculations. To represent attributes as scalars, you declare instance variables as you do in any other class. You also need to implement suitable accessor methods as described in Managed Object Accessor Methods.\n\nIf you define custom instance variables for example to store derived attributes or other transient properties, clean up these variables in [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/didTurnIntoFault()] rather than `dealloc`.\n\n#### Validation Methods\n\n`NSManagedObject` provides consistent hooks for validating property and inter-property values. You typically shouldn’t override [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/validateValue(_:forKey:)]. Instead implement methods of the form `validate<Key>:error:`, as defined by the NSKeyValueCoding protocol. If you want to validate inter-property values, you can override [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/validateForUpdate()] and\/or related validation methods.\n\nDon’t call `validateValue:forKey:error:` within custom property validation methods—if you do, you create an infinite loop when `validateValue:forKey:error:` is invoked at runtime. If you do implement custom validation methods, don’t call them directly. Instead, call `validateValue:forKey:error:` with the appropriate key. This ensures that any constraints defined in the managed object model are applied.\n\nIf you implement custom inter-property validation methods like [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/validateForUpdate()], call the superclass’s implementation first. This ensures that individual property validation methods are also invoked. If there are multiple validation failures in one operation, collect them in an array and add the array—using the key `NSDetailedErrorsKey`—to the userInfo dictionary in the `NSError` object you return. For an example, see Managed Object Validation.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\ncrawled: 2025-12-02T18:45:09Z\n---\n\n# NSManagedObject\n\n**Class**\n\nThe base class that all Core Data model objects inherit from.\n\n## Declaration\n\n```swift\nnonisolated class NSManagedObject\n```\n\n## Overview\n\nA managed object has an associated entity description ([doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSEntityDescription]) that provides metadata about the object, including the name of the entity that the object represents and the names of its attributes and relationships. A managed object also has an associated managed object context that tracks changes to the object graph.\n\nYou can’t use instances of direct subclasses of [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class], or any other class that doesn’t inherit from [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject], with a managed object context. You may create custom subclasses of [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject], although this isn’t always necessary. If you don’t need custom logic, you can create a complete object graph with [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject] instances.\n\nIf you instantiate a managed object directly, you must call the designated initializer [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)].\n\n### Data Storage\n\nIn some respects, an `NSManagedObject` acts like a dictionary—it’s a generic container object that provides efficient storage for the properties defined by its associated `NSEntityDescription` instance. `NSManagedObject` supports a range of common types for attribute values, including string, date, and number (see [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSAttributeDescription] for full details). Therefore, typically you don’t need to define instance variables in subclasses. Sometimes, however, you want to use types that aren’t supported directly, such as colors and C structures. For example, in a graphics application you might want to define a Rectangle entity that has color and bounds attributes that are an instance of `NSColor` and an `NSRect` struct, respectively. For some types you can use a transformable attribute, for others this may require you to create a subclass of `NSManagedObject`.\n\n\n\n### Faulting\n\nManaged objects typically represent data held in a persistent store. In some situations a managed object may be a *fault*—an object whose property values haven’t yet been loaded from the external data store. When you access persistent property values, the fault “fires” and the data is retrieved from the store automatically. This can be a comparatively expensive process (potentially requiring a round trip to the persistent store), and you may wish to avoid unnecessarily firing a fault. See [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/CoreData\/FaultingandUniquing.html#\/\/apple_ref\/doc\/uid\/TP40001075-CH18] for more details on faults.\n\nYou can safely invoke the following methods and properties on a fault without causing it to fire: [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isEqual(_:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/hash], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/superclass], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-c.protocol\/class], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/self()], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isProxy()], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isKind(of:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isMember(of:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/conforms(to:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/responds(to:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/description], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/managedObjectContext], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/entity-swift.property], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/objectID], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isInserted], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isUpdated], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isDeleted], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/faultingState], and [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isFault]. Because `isEqual` and `hash` don’t cause a fault to fire, managed objects can typically be placed in collections without firing a fault. Note, however, that invoking key-value coding methods on the collection object might in turn result in an invocation of `valueForKey:` on a managed object, which would fire the fault.\n\nAlthough the `description` property doesn’t cause a fault to fire, if you implement a custom `description` that accesses the object’s persistent properties, this does cause a fault to fire. You are strongly discouraged from overriding `description` in this way.\n\n### Subclassing Notes\n\nIn combination with the entity description in the managed object model, `NSManagedObject` provides a rich set of default behaviors including support for arbitrary properties and value validation. If you decide to subclass `NSManagedObject` to implement custom features, make sure you don’t disrupt Core Data’s behavior.\n\n#### Methods and Properties You Must Not Override\n\n`NSManagedObject` itself customizes many features of `NSObject` so that managed objects can be properly integrated into the Core Data infrastructure. Core Data relies on the `NSManagedObject` implementation of the following methods and properties, which you therefore absolutely must not override: [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/primitiveValue(forKey:)], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/setPrimitiveValue(_:forKey:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isEqual(_:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/hash], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/superclass], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-c.protocol\/class], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/self()], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isProxy()], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isKind(of:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/isMember(of:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/conforms(to:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObjectProtocol\/responds(to:)], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/managedObjectContext], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/entity-swift.property], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/objectID], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isInserted], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isUpdated], [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isDeleted], and [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/isFault], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/alloc], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/allocWithZone:], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/new],  [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/instancesRespond(to:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/instanceMethod(for:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/method(for:)], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/methodSignatureForSelector:], [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/instanceMethodSignatureForSelector:], or [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/isSubclass(of:)].\n\n#### Methods and Properties You Shouldn’t Override\n\nAs with any class, you are strongly discouraged from overriding the key-value observing methods such as [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/willChangeValue(forKey:)] and [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/didChangeValue(forKey:withSetMutation:using:)]. Avoid overriding `description`—if this method fires a fault during a debugging operation, the results may be unpredictable. Also avoid overriding [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)], or `dealloc`. Changing values in the [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)] method won’t be noticed by the context, and if you aren’t careful, those changes may not be saved. Perform most initialization customization in one of the `awake…` methods. If you do override [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)], make sure you adhere to the requirements set out in the method description. See [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)].\n\nDon’t override `dealloc` because [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/didTurnIntoFault()] is usually a better time to clear values—a managed object may not be reclaimed for some time after it has been turned into a fault. Core Data doesn’t guarantee that `dealloc` will be called in all scenarios (such as when the application quits). Therefore, don’t include required side effects (like saving or changes to the file system, user preferences, and so on) in these methods.\n\nIn summary, for [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)] and `dealloc`, Core Data reserves exclusive control over the life cycle of the managed object (that is, raw memory management). This is so that the framework can provide features such as uniquing and by consequence, relationship maintenance, as well as much better performance than would be possible otherwise.\n\n#### Additional Override Considerations\n\nThe following methods are intended to be fine grained and aren’t suitable for large-scale operations. Don’t fetch or save in these methods. In particular, they shouldn’t have side effects on the managed object context.\n\n- [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)]\n- [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/didTurnIntoFault()]\n- [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/willTurnIntoFault()]\n- `dealloc`\n\nIn addition, if you plan to override `awakeFromInsert`, `awakeFromFetch`, and validation methods, first invoke `super.method()`, the superclass’s implementation. Don’t modify relationships in [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/awakeFromFetch()]—see the method description for details.\n\n#### Custom Accessor Methods\n\nTypically, you don’t need to write custom accessor methods for properties that are defined in the entity of a managed object’s corresponding managed object model. If you need to do so, follow the implementation patterns described in Managed Object Accessor Methods in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/CoreData\/index.html#\/\/apple_ref\/doc\/uid\/TP40001075].\n\nCore Data automatically generates accessor methods (and primitive accessor methods) for you. For attributes and to-one relationships, Core Data generates the standard get and set accessor methods; for to-many relationships, Core Data generates the indexed accessor methods as described in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/KeyValueCoding\/AccessorConventions.html#\/\/apple_ref\/doc\/uid\/20002174] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/KeyValueCoding\/index.html#\/\/apple_ref\/doc\/uid\/10000107i]. You do however need to declare the accessor methods or use Objective-C properties to suppress compiler warnings. For a full discussion, see Managed Object Accessor Methods in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/CoreData\/index.html#\/\/apple_ref\/doc\/uid\/TP40001075].\n\n#### Custom Instance Variables\n\nBy default, `NSManagedObject` stores its properties in an internal structure as objects, and in general Core Data is more efficient working with storage under its own control rather than by using custom instance variables.\n\n`NSManagedObject` provides support for a range of common types for attribute values, including string, date, and number (see [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSAttributeDescription] for full details). If you want to use types that aren’t supported directly, like colors and C structures, you can either use transformable attributes or create a subclass of `NSManagedObject`.\n\nSometimes it’s convenient to represent variables as scalars—in drawing applications, for example, where variables represent dimensions and x and y coordinates and are frequently used in calculations. To represent attributes as scalars, you declare instance variables as you do in any other class. You also need to implement suitable accessor methods as described in Managed Object Accessor Methods.\n\nIf you define custom instance variables for example to store derived attributes or other transient properties, clean up these variables in [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/didTurnIntoFault()] rather than `dealloc`.\n\n#### Validation Methods\n\n`NSManagedObject` provides consistent hooks for validating property and inter-property values. You typically shouldn’t override [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/validateValue(_:forKey:)]. Instead implement methods of the form `validate<Key>:error:`, as defined by the NSKeyValueCoding protocol. If you want to validate inter-property values, you can override [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/validateForUpdate()] and\/or related validation methods.\n\nDon’t call `validateValue:forKey:error:` within custom property validation methods—if you do, you create an infinite loop when `validateValue:forKey:error:` is invoked at runtime. If you do implement custom validation methods, don’t call them directly. Instead, call `validateValue:forKey:error:` with the appropriate key. This ensures that any constraints defined in the managed object model are applied.\n\nIf you implement custom inter-property validation methods like [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSManagedObject\/validateForUpdate()], call the superclass’s implementation first. This ensures that individual property validation methods are also invoked. If there are multiple validation failures in one operation, collect them in an array and add the array—using the key `NSDetailedErrorsKey`—to the userInfo dictionary in the `NSError` object you return. For an example, see Managed Object Validation.\n\n## Creating a Managed Object\n\n- **init(entity:insertInto:)**: Initializes a managed object from an entity description and inserts it into the specified managed object context.\n- **init(context:)**: Initializes a managed object subclass and inserts it into the specified managed object context.\n\n## Getting a Managed Object’s Identity\n\n- **entity**: The entity description of the managed object.\n- **objectID**: The object ID of the managed object.\n- **entity()**: Returns the entity description that is associated with this subclass.\n\n## Getting State Information\n\n- **managedObjectContext**: The managed object context with which the managed object is registered.\n- **hasChanges**: A Boolean value that indicates whether the managed object has been inserted, has been deleted, or has unsaved changes.\n- **isInserted**: A Boolean value that indicates whether the managed object has been inserted in a managed object context.\n- **isUpdated**: A Boolean value that indicates whether the managed object has unsaved changes.\n- **isDeleted**: A Boolean value that indicates whether the managed object will be deleted during the next save.\n- **isFault**: A Boolean value that indicates whether the managed object is a fault.\n- **faultingState**: The faulting state of the managed object.\n- **hasFault(forRelationshipNamed:)**: Returns a Boolean value that indicates whether the relationship for a given key is a fault.\n- **hasPersistentChangedValues**: A Boolean value that indicates whether the managed object has persistent changes.\n\n## Managing Change Events\n\n- **contextShouldIgnoreUnmodeledPropertyChanges**: A Boolean value that indicates whether to mark instances of the class as having changes when an unmodeled property changes.\n- **awakeFromFetch()**: Provides an opportunity to add code into the life cycle of the managed object when fufilling it from a fault.\n- **awakeFromInsert()**: Provides an opportunity to add code into the life cycle of the managed object when initially creating it.\n- **awake(fromSnapshotEvents:)**: Provides an opportunity to add code into the life cycle of the managed object when fulfilling it from a snapshot.\n- **changedValues()**: Returns a dictionary containing the keys and new values of persistent properties with changes since the last fetching or saving of the managed object.\n- **changedValuesForCurrentEvent()**: Returns a dictionary containing the keys and new values of persistent properties with changes since the last fetching or saving of the managed object.\n- **committedValues(forKeys:)**: Returns a dictionary of the most recent fetched or saved values of the managed object for the properties of the specified keys.\n- **prepareForDeletion()**: Provides an opportunity to add code into the life cycle of the managed object before deleting it.\n- **willSave()**: Provides an opportunity to add code into the life cycle of the managed object before saving it.\n- **didSave()**: Provides an opportunity to add code into the life cycle of the managed object after the managed object’s context completes a save operation.\n- **willTurnIntoFault()**: Provides an opportunity to add code into the life cycle of the managed object before converting it to a fault.\n- **didTurnIntoFault()**: Provides an opportunity to add code into the life cycle of the managed object after converting it to a fault.\n- **fetchRequest()**: Returns an initialized fetch request with the entity this subclass represents.\n\n## Supporting Key-Value Coding\n\n- **value(forKey:)**: Returns the value for the property specified by `key`.\n- **setValue(_:forKey:)**: Sets the specified property of the managed object to the specified value.\n- **primitiveValue(forKey:)**: Returns the value for the specified property from the managed object’s private internal storage .\n- **setPrimitiveValue(_:forKey:)**: Sets the value of a given property in the managed object’s private internal storage.\n- **objectIDs(forRelationshipNamed:)**: Returns the object IDs for all of the managed objects that are in the named relationship.\n\n## Managing Data Validation\n\n- **validateValue(_:forKey:)**: Validates a property value for a given key.\n- **validateForDelete()**: Determines whether the managed object can be deleted in its current state.\n- **validateForInsert()**: Determines whether the managed object can be inserted in its current state.\n- **validateForUpdate()**: Determines whether the managed object’s current state is valid.\n- **Validation error codes**: Error codes relating to the validation of managed objects.\n- **NSValidationKeyErrorKey**: The error key for the attribute that failed to validate.\n- **NSValidationObjectErrorKey**: The error key for the object that failed to validate.\n- **NSValidationPredicateErrorKey**: The error key for the predicate that failed to validate.\n- **NSValidationValueErrorKey**: The error key for the value that failed to validate.\n\n## Supporting Key-Value Observing\n\n- **didAccessValue(forKey:)**: Provides support for key-value observing access notification.\n- **observationInfo()**: Returns the observation info of the managed object.\n- **setObservationInfo(_:)**: Sets the observation info of the managed object.\n- **willAccessValue(forKey:)**: Provides support for key-value observing access notification.\n- **didChangeValue(forKey:)**: Provides an opportunity to respond when a value of a given property has changed.\n- **didChangeValue(forKey:withSetMutation:using:)**: Provides an opportunity to respond when a change was made to a specified to-many relationship.\n- **willChangeValue(forKey:)**: Provides an opportunity to respond when a value of a given property is about to change.\n- **willChangeValue(forKey:withSetMutation:using:)**: Provides an opportunity to respond when a change is about to be made to a specified to-many relationship.\n\n## Reinitializing Values\n\n- **NSSnapshotEventType**: Constants that specify the reason the managed object may need to reinitialize its values.\n\n## Subscripts\n\n- **subscript(_:)**\n\n## Objects and entities\n\n- **NSEntityDescription**: A description of a Core Data entity.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- Copyable\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSFetchRequestResult\n- NSObjectProtocol\n- ObservableObject\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a managed object from an entity description and inserts it into the specified managed object context.",
+          "name" : "init(entity:insertInto:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/init(entity:insertInto:)"
+        },
+        {
+          "description" : "Initializes a managed object subclass and inserts it into the specified managed object context.",
+          "name" : "init(context:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/init(context:)"
+        }
+      ],
+      "title" : "Creating a Managed Object"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The entity description of the managed object.",
+          "name" : "entity",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/entity-swift.property"
+        },
+        {
+          "description" : "The object ID of the managed object.",
+          "name" : "objectID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/objectID"
+        },
+        {
+          "description" : "Returns the entity description that is associated with this subclass.",
+          "name" : "entity()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/entity()"
+        }
+      ],
+      "title" : "Getting a Managed Object’s Identity"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The managed object context with which the managed object is registered.",
+          "name" : "managedObjectContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/managedObjectContext"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the managed object has been inserted, has been deleted, or has unsaved changes.",
+          "name" : "hasChanges",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/hasChanges"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the managed object has been inserted in a managed object context.",
+          "name" : "isInserted",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/isInserted"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the managed object has unsaved changes.",
+          "name" : "isUpdated",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/isUpdated"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the managed object will be deleted during the next save.",
+          "name" : "isDeleted",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/isDeleted"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the managed object is a fault.",
+          "name" : "isFault",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/isFault"
+        },
+        {
+          "description" : "The faulting state of the managed object.",
+          "name" : "faultingState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/faultingState"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether the relationship for a given key is a fault.",
+          "name" : "hasFault(forRelationshipNamed:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/hasFault(forRelationshipNamed:)"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the managed object has persistent changes.",
+          "name" : "hasPersistentChangedValues",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/hasPersistentChangedValues"
+        }
+      ],
+      "title" : "Getting State Information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether to mark instances of the class as having changes when an unmodeled property changes.",
+          "name" : "contextShouldIgnoreUnmodeledPropertyChanges",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/contextShouldIgnoreUnmodeledPropertyChanges"
+        },
+        {
+          "description" : "Provides an opportunity to add code into the life cycle of the managed object when fufilling it from a fault.",
+          "name" : "awakeFromFetch()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/awakeFromFetch()"
+        },
+        {
+          "description" : "Provides an opportunity to add code into the life cycle of the managed object when initially creating it.",
+          "name" : "awakeFromInsert()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/awakeFromInsert()"
+        },
+        {
+          "description" : "Provides an opportunity to add code into the life cycle of the managed object when fulfilling it from a snapshot.",
+          "name" : "awake(fromSnapshotEvents:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/awake(fromSnapshotEvents:)"
+        },
+        {
+          "description" : "Returns a dictionary containing the keys and new values of persistent properties with changes since the last fetching or saving of the managed object.",
+          "name" : "changedValues()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/changedValues()"
+        },
+        {
+          "description" : "Returns a dictionary containing the keys and new values of persistent properties with changes since the last fetching or saving of the managed object.",
+          "name" : "changedValuesForCurrentEvent()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/changedValuesForCurrentEvent()"
+        },
+        {
+          "description" : "Returns a dictionary of the most recent fetched or saved values of the managed object for the properties of the specified keys.",
+          "name" : "committedValues(forKeys:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/committedValues(forKeys:)"
+        },
+        {
+          "description" : "Provides an opportunity to add code into the life cycle of the managed object before deleting it.",
+          "name" : "prepareForDeletion()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/prepareForDeletion()"
+        },
+        {
+          "description" : "Provides an opportunity to add code into the life cycle of the managed object before saving it.",
+          "name" : "willSave()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/willSave()"
+        },
+        {
+          "description" : "Provides an opportunity to add code into the life cycle of the managed object after the managed object’s context completes a save operation.",
+          "name" : "didSave()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/didSave()"
+        },
+        {
+          "description" : "Provides an opportunity to add code into the life cycle of the managed object before converting it to a fault.",
+          "name" : "willTurnIntoFault()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/willTurnIntoFault()"
+        },
+        {
+          "description" : "Provides an opportunity to add code into the life cycle of the managed object after converting it to a fault.",
+          "name" : "didTurnIntoFault()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/didTurnIntoFault()"
+        },
+        {
+          "description" : "Returns an initialized fetch request with the entity this subclass represents.",
+          "name" : "fetchRequest()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/fetchRequest()"
+        }
+      ],
+      "title" : "Managing Change Events"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the value for the property specified by `key`.",
+          "name" : "value(forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/value(forKey:)"
+        },
+        {
+          "description" : "Sets the specified property of the managed object to the specified value.",
+          "name" : "setValue(_:forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/setValue(_:forKey:)"
+        },
+        {
+          "description" : "Returns the value for the specified property from the managed object’s private internal storage .",
+          "name" : "primitiveValue(forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/primitiveValue(forKey:)"
+        },
+        {
+          "description" : "Sets the value of a given property in the managed object’s private internal storage.",
+          "name" : "setPrimitiveValue(_:forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/setPrimitiveValue(_:forKey:)"
+        },
+        {
+          "description" : "Returns the object IDs for all of the managed objects that are in the named relationship.",
+          "name" : "objectIDs(forRelationshipNamed:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/objectIDs(forRelationshipNamed:)"
+        }
+      ],
+      "title" : "Supporting Key-Value Coding"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Validates a property value for a given key.",
+          "name" : "validateValue(_:forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/validateValue(_:forKey:)"
+        },
+        {
+          "description" : "Determines whether the managed object can be deleted in its current state.",
+          "name" : "validateForDelete()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/validateForDelete()"
+        },
+        {
+          "description" : "Determines whether the managed object can be inserted in its current state.",
+          "name" : "validateForInsert()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/validateForInsert()"
+        },
+        {
+          "description" : "Determines whether the managed object’s current state is valid.",
+          "name" : "validateForUpdate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/validateForUpdate()"
+        },
+        {
+          "description" : "Error codes relating to the validation of managed objects.",
+          "name" : "Validation error codes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/1535452-validation-error-codes"
+        },
+        {
+          "description" : "The error key for the attribute that failed to validate.",
+          "name" : "NSValidationKeyErrorKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSValidationKeyErrorKey"
+        },
+        {
+          "description" : "The error key for the object that failed to validate.",
+          "name" : "NSValidationObjectErrorKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSValidationObjectErrorKey"
+        },
+        {
+          "description" : "The error key for the predicate that failed to validate.",
+          "name" : "NSValidationPredicateErrorKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSValidationPredicateErrorKey"
+        },
+        {
+          "description" : "The error key for the value that failed to validate.",
+          "name" : "NSValidationValueErrorKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSValidationValueErrorKey"
+        }
+      ],
+      "title" : "Managing Data Validation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Provides support for key-value observing access notification.",
+          "name" : "didAccessValue(forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/didAccessValue(forKey:)"
+        },
+        {
+          "description" : "Returns the observation info of the managed object.",
+          "name" : "observationInfo()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/observationInfo()"
+        },
+        {
+          "description" : "Sets the observation info of the managed object.",
+          "name" : "setObservationInfo(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/setObservationInfo(_:)"
+        },
+        {
+          "description" : "Provides support for key-value observing access notification.",
+          "name" : "willAccessValue(forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/willAccessValue(forKey:)"
+        },
+        {
+          "description" : "Provides an opportunity to respond when a value of a given property has changed.",
+          "name" : "didChangeValue(forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/didChangeValue(forKey:)"
+        },
+        {
+          "description" : "Provides an opportunity to respond when a change was made to a specified to-many relationship.",
+          "name" : "didChangeValue(forKey:withSetMutation:using:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/didChangeValue(forKey:withSetMutation:using:)"
+        },
+        {
+          "description" : "Provides an opportunity to respond when a value of a given property is about to change.",
+          "name" : "willChangeValue(forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/willChangeValue(forKey:)"
+        },
+        {
+          "description" : "Provides an opportunity to respond when a change is about to be made to a specified to-many relationship.",
+          "name" : "willChangeValue(forKey:withSetMutation:using:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/willChangeValue(forKey:withSetMutation:using:)"
+        }
+      ],
+      "title" : "Supporting Key-Value Observing"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Constants that specify the reason the managed object may need to reinitialize its values.",
+          "name" : "NSSnapshotEventType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSSnapshotEventType"
+        }
+      ],
+      "title" : "Reinitializing Values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "subscript(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject\/subscript(_:)"
+        }
+      ],
+      "title" : "Subscripts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A description of a Core Data entity.",
+          "name" : "NSEntityDescription",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSEntityDescription"
+        }
+      ],
+      "title" : "Objects and entities"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSManagedObject",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSManagedObject"
+}

@@ -1,0 +1,73 @@
+{
+  "abstract" : "The protocol to which all classes implicitly conform.",
+  "codeExamples" : [
+    {
+      "code" : "class FloatRef {\n    let value: Float\n    init(_ value: Float) {\n        self.value = value\n    }\n}\n\nlet x = FloatRef(2.3)\nlet y: AnyObject = x\nlet z: AnyObject = FloatRef.self",
+      "language" : "swift"
+    },
+    {
+      "code" : "let s: AnyObject = \"This is a bridged string.\" as NSString\nprint(s is NSString)\n\/\/ Prints \"true\"\n\nlet v: AnyObject = 100 as NSNumber\nprint(type(of: v))\n\/\/ Prints \"__NSCFNumber\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "if let message = s as? String {\n    print(\"Successful cast to String: \\(message)\")\n}\n\/\/ Prints \"Successful cast to String: This is a bridged string.\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let message = s as! String\nprint(\"Successful cast to String: \\(message)\")\n\/\/ Prints \"Successful cast to String: This is a bridged string.\"\n\nlet badCase = v as! String\n\/\/ Runtime error",
+      "language" : "swift"
+    },
+    {
+      "code" : "let mixedArray: [AnyObject] = [s, v]\nfor object in mixedArray {\n    switch object {\n    case let x as String:\n        print(\"'\\(x)' is a String\")\n    default:\n        print(\"'\\(object)' is not a String\")\n    }\n}\n\/\/ Prints \"'This is a bridged string.' is a String\"\n\/\/ Prints \"'100' is not a String\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "class IntegerRef {\n    let value: Int\n    init(_ value: Int) {\n        self.value = value\n    }\n\n    @objc func getIntegerValue() -> Int {\n        return value\n    }\n}\n\nfunc getObject() -> AnyObject {\n    return IntegerRef(100)\n}\n\nlet obj: AnyObject = getObject()",
+      "language" : "swift"
+    },
+    {
+      "code" : "let possibleValue = obj.getIntegerValue?()\nprint(possibleValue)\n\/\/ Prints \"Optional(100)\"\n\nlet certainValue = obj.getIntegerValue()\nprint(certainValue)\n\/\/ Prints \"100\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "if let f = obj.getIntegerValue {\n    print(\"The value of 'obj' is \\(f())\")\n} else {\n    print(\"'obj' does not have a 'getIntegerValue()' method\")\n}\n\/\/ Prints \"The value of 'obj' is 100\"",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "7822d4f4cc2becd85bd5e534dda2a9303bf38b3fc9104793027980057c4723c3",
+  "crawledAt" : "2025-12-01T21:57:56Z",
+  "declaration" : {
+    "code" : "typealias AnyObject",
+    "language" : "swift"
+  },
+  "id" : "B0491872-727C-48CD-9079-12F9204D8A4E",
+  "kind" : "typealias",
+  "module" : "Swift",
+  "overview" : "## Discussion\n\nYou use `AnyObject` when you need the flexibility of an untyped object or when you use bridged Objective-C methods and properties that return an untyped result. `AnyObject` can be used as the concrete type for an instance of any class, class type, or class-only protocol. For example:\n\n`AnyObject` can also be used as the concrete type for an instance of a type that bridges to an Objective-C class. Many value types in Swift bridge to Objective-C counterparts, like `String` and `Int`.\n\nThe flexible behavior of the `AnyObject` protocol is similar to Objective-C’s `id` type. For this reason, imported Objective-C types frequently use `AnyObject` as the type for properties, method parameters, and return values.\n\n# Casting AnyObject Instances to a Known Type\n\nObjects with a concrete type of `AnyObject` maintain a specific dynamic type and can be cast to that type using one of the type-cast operators (`as`, `as?`, or `as!`).\n\nThis example uses the conditional downcast operator (`as?`) to conditionally cast the `s` constant declared above to an instance of Swift’s `String` type.\n\nIf you have prior knowledge that an `AnyObject` instance has a particular type, you can use the unconditional downcast operator (`as!`). Performing an invalid cast triggers a runtime error.\n\nCasting is always safe in the context of a `switch` statement.\n\n# Accessing Objective-C Methods and Properties\n\nWhen you use `AnyObject` as a concrete type, you have at your disposal every `@objc` method and property—that is, methods and properties imported from Objective-C or marked with the `@objc` attribute. Because Swift can’t guarantee at compile time that these methods and properties are actually available on an `AnyObject` instance’s underlying type, these `@objc` symbols are available as implicitly unwrapped optional methods and properties, respectively.\n\nThis example defines an `IntegerRef` type with an `@objc` method named `getIntegerValue()`.\n\nIn the example, `obj` has a static type of `AnyObject` and a dynamic type of `IntegerRef`. You can use optional chaining to call the `@objc` method `getIntegerValue()` on `obj` safely. If you’re sure of the dynamic type of `obj`, you can call `getIntegerValue()` directly.\n\nIf the dynamic type of `obj` doesn’t implement a `getIntegerValue()` method, the system returns a runtime error when you initialize `certainValue`.\n\nAlternatively, if you need to test whether `obj.getIntegerValue()` exists, use optional binding before calling the method.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/AnyObject\ncrawled: 2025-12-01T21:57:56Z\n---\n\n# AnyObject\n\n**Type Alias**\n\nThe protocol to which all classes implicitly conform.\n\n## Declaration\n\n```swift\ntypealias AnyObject\n```\n\n## Discussion\n\nYou use `AnyObject` when you need the flexibility of an untyped object or when you use bridged Objective-C methods and properties that return an untyped result. `AnyObject` can be used as the concrete type for an instance of any class, class type, or class-only protocol. For example:\n\n```swift\nclass FloatRef {\n    let value: Float\n    init(_ value: Float) {\n        self.value = value\n    }\n}\n\nlet x = FloatRef(2.3)\nlet y: AnyObject = x\nlet z: AnyObject = FloatRef.self\n```\n\n`AnyObject` can also be used as the concrete type for an instance of a type that bridges to an Objective-C class. Many value types in Swift bridge to Objective-C counterparts, like `String` and `Int`.\n\n```swift\nlet s: AnyObject = \"This is a bridged string.\" as NSString\nprint(s is NSString)\n\/\/ Prints \"true\"\n\nlet v: AnyObject = 100 as NSNumber\nprint(type(of: v))\n\/\/ Prints \"__NSCFNumber\"\n```\n\nThe flexible behavior of the `AnyObject` protocol is similar to Objective-C’s `id` type. For this reason, imported Objective-C types frequently use `AnyObject` as the type for properties, method parameters, and return values.\n\n# Casting AnyObject Instances to a Known Type\n\nObjects with a concrete type of `AnyObject` maintain a specific dynamic type and can be cast to that type using one of the type-cast operators (`as`, `as?`, or `as!`).\n\nThis example uses the conditional downcast operator (`as?`) to conditionally cast the `s` constant declared above to an instance of Swift’s `String` type.\n\n```swift\nif let message = s as? String {\n    print(\"Successful cast to String: \\(message)\")\n}\n\/\/ Prints \"Successful cast to String: This is a bridged string.\"\n```\n\nIf you have prior knowledge that an `AnyObject` instance has a particular type, you can use the unconditional downcast operator (`as!`). Performing an invalid cast triggers a runtime error.\n\n```swift\nlet message = s as! String\nprint(\"Successful cast to String: \\(message)\")\n\/\/ Prints \"Successful cast to String: This is a bridged string.\"\n\nlet badCase = v as! String\n\/\/ Runtime error\n```\n\nCasting is always safe in the context of a `switch` statement.\n\n```swift\nlet mixedArray: [AnyObject] = [s, v]\nfor object in mixedArray {\n    switch object {\n    case let x as String:\n        print(\"'\\(x)' is a String\")\n    default:\n        print(\"'\\(object)' is not a String\")\n    }\n}\n\/\/ Prints \"'This is a bridged string.' is a String\"\n\/\/ Prints \"'100' is not a String\"\n```\n\n# Accessing Objective-C Methods and Properties\n\nWhen you use `AnyObject` as a concrete type, you have at your disposal every `@objc` method and property—that is, methods and properties imported from Objective-C or marked with the `@objc` attribute. Because Swift can’t guarantee at compile time that these methods and properties are actually available on an `AnyObject` instance’s underlying type, these `@objc` symbols are available as implicitly unwrapped optional methods and properties, respectively.\n\nThis example defines an `IntegerRef` type with an `@objc` method named `getIntegerValue()`.\n\n```swift\nclass IntegerRef {\n    let value: Int\n    init(_ value: Int) {\n        self.value = value\n    }\n\n    @objc func getIntegerValue() -> Int {\n        return value\n    }\n}\n\nfunc getObject() -> AnyObject {\n    return IntegerRef(100)\n}\n\nlet obj: AnyObject = getObject()\n```\n\nIn the example, `obj` has a static type of `AnyObject` and a dynamic type of `IntegerRef`. You can use optional chaining to call the `@objc` method `getIntegerValue()` on `obj` safely. If you’re sure of the dynamic type of `obj`, you can call `getIntegerValue()` directly.\n\n```swift\nlet possibleValue = obj.getIntegerValue?()\nprint(possibleValue)\n\/\/ Prints \"Optional(100)\"\n\nlet certainValue = obj.getIntegerValue()\nprint(certainValue)\n\/\/ Prints \"100\"\n```\n\nIf the dynamic type of `obj` doesn’t implement a `getIntegerValue()` method, the system returns a runtime error when you initialize `certainValue`.\n\nAlternatively, if you need to test whether `obj.getIntegerValue()` exists, use optional binding before calling the method.\n\n```swift\nif let f = obj.getIntegerValue {\n    print(\"The value of 'obj' is \\(f())\")\n} else {\n    print(\"'obj' does not have a 'getIntegerValue()' method\")\n}\n\/\/ Prints \"The value of 'obj' is 100\"\n```\n\n## Existential Types\n\n- **AnyClass**: The protocol to which all class types implicitly conform.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The protocol to which all class types implicitly conform.",
+          "name" : "AnyClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AnyClass"
+        }
+      ],
+      "title" : "Existential Types"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AnyObject",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AnyObject"
+}

@@ -1,0 +1,127 @@
+{
+  "abstract" : "A type-erased list of data representing the content of a navigation stack.",
+  "codeExamples" : [
+    {
+      "code" : "class MyModelObject: ObservableObject {\n    @Published var path: NavigationPath\n\n    static func readSerializedData() -> Data? {\n        \/\/ Read data representing the path from app's persistent storage.\n    }\n\n    static func writeSerializedData(_ data: Data) {\n        \/\/ Write data representing the path to app's persistent storage.\n    }\n\n    init() {\n        if let data = Self.readSerializedData() {\n            do {\n                let representation = try JSONDecoder().decode(\n                    NavigationPath.CodableRepresentation.self,\n                    from: data)\n                self.path = NavigationPath(representation)\n            } catch {\n                self.path = NavigationPath()\n            }\n        } else {\n            self.path = NavigationPath()\n        }\n    }\n\n    func save() {\n        guard let representation = path.codable else { return }\n        do {\n            let encoder = JSONEncoder()\n            let data = try encoder.encode(representation)\n            Self.writeSerializedData(data)\n        } catch {\n            \/\/ Handle error.\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@StateObject private var pathState = MyModelObject()\n@Environment(\\.scenePhase) private var scenePhase\n\nvar body: some View {\n    NavigationStack(path: $pathState.path) {\n        \/\/ Add a root view here.\n    }\n    .onChange(of: scenePhase) { phase in\n        if phase == .background {\n            pathState.save()\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "Equatable"
+  ],
+  "contentHash" : "37a6a7f5e516f4741048912dab7968ac0810092e357a3300ee89656ba7500f16",
+  "crawledAt" : "2025-12-02T17:29:30Z",
+  "declaration" : {
+    "code" : "struct NavigationPath",
+    "language" : "swift"
+  },
+  "id" : "CD2D925C-F0D4-4B6A-A83F-37A6BBA4C36C",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nYou can manage the state of a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationStack] by initializing the stack with a binding to a collection of data. The stack stores data items in the collection for each view on the stack. You also can read and write the collection to observe and alter the stack’s state.\n\nWhen a stack displays views that rely on only one kind of data, you can use a standard collection, like an array, to hold the data. If you need to present different kinds of data in a single stack, use a navigation path instead. The path uses type erasure so you can manage a collection of heterogeneous elements. The path also provides the usual collection controls for adding, counting, and removing data elements.\n\n### Serialize the path\n\nWhen the values you present on the navigation stack conform to the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Codable] protocol, you can use the path’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationPath\/codable] property to get a serializable representation of the path. Use that representation to save and restore the contents of the stack. For example, you can define an [doc:\/\/com.apple.documentation\/documentation\/Combine\/ObservableObject] that handles serializing and deserializing the path:\n\nThen, using that object in your view, you can save the state of the navigation path when the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Scene] enters the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ScenePhase\/background] state:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath\ncrawled: 2025-12-02T17:29:30Z\n---\n\n# NavigationPath\n\n**Structure**\n\nA type-erased list of data representing the content of a navigation stack.\n\n## Declaration\n\n```swift\nstruct NavigationPath\n```\n\n## Overview\n\nYou can manage the state of a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationStack] by initializing the stack with a binding to a collection of data. The stack stores data items in the collection for each view on the stack. You also can read and write the collection to observe and alter the stack’s state.\n\nWhen a stack displays views that rely on only one kind of data, you can use a standard collection, like an array, to hold the data. If you need to present different kinds of data in a single stack, use a navigation path instead. The path uses type erasure so you can manage a collection of heterogeneous elements. The path also provides the usual collection controls for adding, counting, and removing data elements.\n\n### Serialize the path\n\nWhen the values you present on the navigation stack conform to the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Codable] protocol, you can use the path’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationPath\/codable] property to get a serializable representation of the path. Use that representation to save and restore the contents of the stack. For example, you can define an [doc:\/\/com.apple.documentation\/documentation\/Combine\/ObservableObject] that handles serializing and deserializing the path:\n\n```swift\nclass MyModelObject: ObservableObject {\n    @Published var path: NavigationPath\n\n    static func readSerializedData() -> Data? {\n        \/\/ Read data representing the path from app's persistent storage.\n    }\n\n    static func writeSerializedData(_ data: Data) {\n        \/\/ Write data representing the path to app's persistent storage.\n    }\n\n    init() {\n        if let data = Self.readSerializedData() {\n            do {\n                let representation = try JSONDecoder().decode(\n                    NavigationPath.CodableRepresentation.self,\n                    from: data)\n                self.path = NavigationPath(representation)\n            } catch {\n                self.path = NavigationPath()\n            }\n        } else {\n            self.path = NavigationPath()\n        }\n    }\n\n    func save() {\n        guard let representation = path.codable else { return }\n        do {\n            let encoder = JSONEncoder()\n            let data = try encoder.encode(representation)\n            Self.writeSerializedData(data)\n        } catch {\n            \/\/ Handle error.\n        }\n    }\n}\n```\n\nThen, using that object in your view, you can save the state of the navigation path when the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Scene] enters the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ScenePhase\/background] state:\n\n```swift\n@StateObject private var pathState = MyModelObject()\n@Environment(\\.scenePhase) private var scenePhase\n\nvar body: some View {\n    NavigationStack(path: $pathState.path) {\n        \/\/ Add a root view here.\n    }\n    .onChange(of: scenePhase) { phase in\n        if phase == .background {\n            pathState.save()\n        }\n    }\n}\n```\n\n## Creating a navigation path\n\n- **init()**: Creates a new, empty navigation path.\n- **init(_:)**: Creates a new navigation path from a serializable version.\n\n## Managing path contents\n\n- **isEmpty**: A Boolean that indicates whether this path is empty.\n- **count**: The number of elements in this path.\n- **append(_:)**: Appends a new codable value to the end of this path.\n- **removeLast(_:)**: Removes values from the end of this path.\n\n## Encoding a path\n\n- **codable**: A value that describes the contents of this path in a serializable format.\n- **NavigationPath.CodableRepresentation**: A serializable representation of a navigation path.\n\n## Stacking views in one column\n\n- **NavigationStack**: A view that displays a root view and enables you to present additional views over the root view.\n- **navigationDestination(for:destination:)**: Associates a destination view with a presented data type for use within a navigation stack.\n- **navigationDestination(isPresented:destination:)**: Associates a destination view with a binding that can be used to push the view onto a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationStack].\n- **navigationDestination(item:destination:)**: Associates a destination view with a bound value for use within a navigation stack or navigation split view\n\n## Conforms To\n\n- Copyable\n- Equatable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new, empty navigation path.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath\/init()"
+        },
+        {
+          "description" : "Creates a new navigation path from a serializable version.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath\/init(_:)"
+        }
+      ],
+      "title" : "Creating a navigation path"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean that indicates whether this path is empty.",
+          "name" : "isEmpty",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath\/isEmpty"
+        },
+        {
+          "description" : "The number of elements in this path.",
+          "name" : "count",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath\/count"
+        },
+        {
+          "description" : "Appends a new codable value to the end of this path.",
+          "name" : "append(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath\/append(_:)"
+        },
+        {
+          "description" : "Removes values from the end of this path.",
+          "name" : "removeLast(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath\/removeLast(_:)"
+        }
+      ],
+      "title" : "Managing path contents"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A value that describes the contents of this path in a serializable format.",
+          "name" : "codable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath\/codable"
+        },
+        {
+          "description" : "A serializable representation of a navigation path.",
+          "name" : "NavigationPath.CodableRepresentation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath\/CodableRepresentation"
+        }
+      ],
+      "title" : "Encoding a path"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A view that displays a root view and enables you to present additional views over the root view.",
+          "name" : "NavigationStack",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationStack"
+        },
+        {
+          "description" : "Associates a destination view with a presented data type for use within a navigation stack.",
+          "name" : "navigationDestination(for:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/navigationDestination(for:destination:)"
+        },
+        {
+          "description" : "Associates a destination view with a binding that can be used to push the view onto a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationStack].",
+          "name" : "navigationDestination(isPresented:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/navigationDestination(isPresented:destination:)"
+        },
+        {
+          "description" : "Associates a destination view with a bound value for use within a navigation stack or navigation split view",
+          "name" : "navigationDestination(item:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/navigationDestination(item:destination:)"
+        }
+      ],
+      "title" : "Stacking views in one column"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NavigationPath",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath"
+}

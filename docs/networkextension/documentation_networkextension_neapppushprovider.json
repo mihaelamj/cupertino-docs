@@ -1,0 +1,134 @@
+{
+  "abstract" : "An object that creates and maintains a persistent network connection to a local push server.",
+  "codeExamples" : [
+    {
+      "code" : "<key>NSExtension<\/key>\n<dict>\n    <key>NSExtensionPointIdentifier<\/key>\n    <string>com.apple.networkextension.app-push<\/string>\n    <key>NSExtensionPrincipalClass<\/key>\n    <string>$(PRODUCT_MODULE_NAME).MyPushProvider<\/string>\n<\/dict>\n",
+      "language" : "xml"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "3f60a56d68e5f15e9ef0e6a0a9a62b29853ed5311ce751fdde7959f267afad44",
+  "crawledAt" : "2025-12-02T16:17:09Z",
+  "declaration" : {
+    "code" : "class NEAppPushProvider",
+    "language" : "swift"
+  },
+  "id" : "5D575DBC-AAAC-4A27-A278-8C8FE02F09AC",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Network Extension",
+  "overview" : "## Overview\n\nSubclass [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushProvider] to provide the connection to your local push server. A [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushManager] creates instances of your provider class based on the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushManager\/providerBundleIdentifier] in the manager’s configuration. The manager then calls methods on your provider to start and stop communication with the server, and periodically check the provider’s status. When your provider receives an incoming call from your server, call the provider’s [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushProvider\/reportIncomingCall(userInfo:)] method to alert the manager’s [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushManager\/delegate].\n\n### Creating a Local Push Provider Extension\n\nLocal Push Providers run as App Extensions for the `app-push-provider` extension point, which is a possible value the [doc:\/\/com.apple.documentation\/documentation\/BundleResources\/Entitlements\/com.apple.developer.networking.networkextension].\n\nTo create a Local Push Provider extension, first create a new App Extension target in your project.\n\nFor an example of an Xcode build target for this app extension, see the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/receiving-voice-and-text-communications-on-a-local-network] sample code project.\n\nOnce you have an extension target, create a subclass of [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushProvider]. Then set the `NSExtensionPrincipalClass` key in the extension’s `Info.plist` to the name of your subclass. Set the `NSExtensionPointIdentifier` key in the extension’s `Info.plist` to `com.apple.networkextension.app-push`, if it’s not set already.\n\nHere’s an example of the `NSExtension` dictionary in a Local Push Provider extension’s `Info.plist`:\n\nFinally, add your Local Push Provider extension target to your app’s Embed App Extensions build phase.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushProvider\ncrawled: 2025-12-02T16:17:09Z\n---\n\n# NEAppPushProvider\n\n**Class**\n\nAn object that creates and maintains a persistent network connection to a local push server.\n\n## Declaration\n\n```swift\nclass NEAppPushProvider\n```\n\n## Overview\n\nSubclass [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushProvider] to provide the connection to your local push server. A [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushManager] creates instances of your provider class based on the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushManager\/providerBundleIdentifier] in the manager’s configuration. The manager then calls methods on your provider to start and stop communication with the server, and periodically check the provider’s status. When your provider receives an incoming call from your server, call the provider’s [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushProvider\/reportIncomingCall(userInfo:)] method to alert the manager’s [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushManager\/delegate].\n\n### Creating a Local Push Provider Extension\n\nLocal Push Providers run as App Extensions for the `app-push-provider` extension point, which is a possible value the [doc:\/\/com.apple.documentation\/documentation\/BundleResources\/Entitlements\/com.apple.developer.networking.networkextension].\n\nTo create a Local Push Provider extension, first create a new App Extension target in your project.\n\nFor an example of an Xcode build target for this app extension, see the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/receiving-voice-and-text-communications-on-a-local-network] sample code project.\n\nOnce you have an extension target, create a subclass of [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEAppPushProvider]. Then set the `NSExtensionPrincipalClass` key in the extension’s `Info.plist` to the name of your subclass. Set the `NSExtensionPointIdentifier` key in the extension’s `Info.plist` to `com.apple.networkextension.app-push`, if it’s not set already.\n\nHere’s an example of the `NSExtension` dictionary in a Local Push Provider extension’s `Info.plist`:\n\n```xml\n<key>NSExtension<\/key>\n<dict>\n    <key>NSExtensionPointIdentifier<\/key>\n    <string>com.apple.networkextension.app-push<\/string>\n    <key>NSExtensionPrincipalClass<\/key>\n    <string>$(PRODUCT_MODULE_NAME).MyPushProvider<\/string>\n<\/dict>\n\n```\n\nFinally, add your Local Push Provider extension target to your app’s Embed App Extensions build phase.\n\n## Inspecting provider properties\n\n- **providerConfiguration**: A dictionary that contains current vendor-specific configuration parameters.\n\n## Implementing provider life cycle\n\n- **start()**: Indicates that the framework has started the provider.\n- **start(completionHandler:)**: Indicates that the framework has started the provider, and provides a completion handler for subclasses to signal their readiness.\n- **stop(with:completionHandler:)**: Indicates that the framework needs to stop the provider.\n- **handleTimerEvent()**: Indicates a periodic status check from the framework to the provider.\n\n## Receiving local events\n\n- **reportIncomingCall(userInfo:)**: Informs the manager about an incoming call.\n- **reportPushToTalkMessage(userInfo:)**: Informs the manager about a push-to-talk message on the connection.\n\n## Operating over Ethernet\n\n- **unmatchEthernet()**: Tells the framework not to use the provider with an active Ethernet connection.\n\n## Essentials\n\n- **NEAppPushManager**: An object that configures a push provider and manages its life cycle.\n- **Maintaining a Reliable Network Connection**: Implement your Local Push Connectivity app to ensure delivery of notifications.\n- **Receiving Voice and Text Communications on a Local Network**: Provide voice and text communication on a local network isolated from Apple Push Notification service by adopting Local Push Connectivity.\n\n## Inherits From\n\n- NEProvider\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A dictionary that contains current vendor-specific configuration parameters.",
+          "name" : "providerConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushProvider\/providerConfiguration"
+        }
+      ],
+      "title" : "Inspecting provider properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Indicates that the framework has started the provider.",
+          "name" : "start()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushProvider\/start()"
+        },
+        {
+          "description" : "Indicates that the framework has started the provider, and provides a completion handler for subclasses to signal their readiness.",
+          "name" : "start(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushProvider\/start(completionHandler:)"
+        },
+        {
+          "description" : "Indicates that the framework needs to stop the provider.",
+          "name" : "stop(with:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushProvider\/stop(with:completionHandler:)"
+        },
+        {
+          "description" : "Indicates a periodic status check from the framework to the provider.",
+          "name" : "handleTimerEvent()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushProvider\/handleTimerEvent()"
+        }
+      ],
+      "title" : "Implementing provider life cycle"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Informs the manager about an incoming call.",
+          "name" : "reportIncomingCall(userInfo:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushProvider\/reportIncomingCall(userInfo:)"
+        },
+        {
+          "description" : "Informs the manager about a push-to-talk message on the connection.",
+          "name" : "reportPushToTalkMessage(userInfo:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushProvider\/reportPushToTalkMessage(userInfo:)"
+        }
+      ],
+      "title" : "Receiving local events"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells the framework not to use the provider with an active Ethernet connection.",
+          "name" : "unmatchEthernet()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushProvider\/unmatchEthernet()"
+        }
+      ],
+      "title" : "Operating over Ethernet"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that configures a push provider and manages its life cycle.",
+          "name" : "NEAppPushManager",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushManager"
+        },
+        {
+          "description" : "Implement your Local Push Connectivity app to ensure delivery of notifications.",
+          "name" : "Maintaining a Reliable Network Connection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/maintaining-a-reliable-network-connection"
+        },
+        {
+          "description" : "Provide voice and text communication on a local network isolated from Apple Push Notification service by adopting Local Push Connectivity.",
+          "name" : "Receiving Voice and Text Communications on a Local Network",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/receiving-voice-and-text-communications-on-a-local-network"
+        }
+      ],
+      "title" : "Essentials"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NEProvider"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NEAppPushProvider",
+  "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEAppPushProvider"
+}

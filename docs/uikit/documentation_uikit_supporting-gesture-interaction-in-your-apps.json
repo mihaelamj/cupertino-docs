@@ -1,0 +1,111 @@
+{
+  "abstract" : "Enrich your app’s user experience by supporting standard and custom gesture interaction.",
+  "codeExamples" : [
+    {
+      "code" : "let resetGestureRecognizer = ResetGestureRecognizer(target: self, action: #selector(resetPieces(_:)))\nview.addGestureRecognizer(resetGestureRecognizer)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let translation = panGestureRecognizer.translation(in: piece.superview)\npiece.center = CGPoint(x: piece.center.x + translation.x, y: piece.center.y + translation.y)\npanGestureRecognizer.setTranslation(.zero, in: piece.superview)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let scale = pinchGestureRecognizer.scale\npiece.transform = piece.transform.scaledBy(x: scale, y: scale)\npinchGestureRecognizer.scale = 1 \/\/ Clear scale so that it is the right delta next time.",
+      "language" : "swift"
+    },
+    {
+      "code" : "piece.transform = piece.transform.rotated(by: rotationGestureRecognizer.rotation)\nrotationGestureRecognizer.rotation = 0 \/\/ Clear rotation so that it is the right delta next time.",
+      "language" : "swift"
+    },
+    {
+      "code" : "let locationInPiece = gestureRecognizer.location(in: piece)\nlet locationInSuperview = gestureRecognizer.location(in: piece.superview)\nlet anchorX = locationInPiece.x \/ piece.bounds.size.width\nlet anchorY = locationInPiece.y \/ piece.bounds.size.height\npiece.layer.anchorPoint = CGPoint(x: anchorX, y: anchorY)\npiece.center = locationInSuperview",
+      "language" : "swift"
+    },
+    {
+      "code" : "func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,\n                       shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {\n    return true\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "resetGestureRecognizer.delegate = self",
+      "language" : "swift"
+    },
+    {
+      "code" : "let count = countHorizontalTurning(touchedPoints: touchedPoints)\nstate = count > 2 ? .ended : .failed",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "6908892b9819f504aa6a75c854822d2873f4b9476a45aee627c8ccc7c08a4f8d",
+  "crawledAt" : "2025-12-02T15:52:28Z",
+  "id" : "2771A0F6-8C0D-4B0C-A0A6-081BBA11F708",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "UIKit",
+  "overview" : "## Overview\n\nGesture interaction is one of the most intuitive user experiences on iOS, and gesture recognizers provide an easy way for apps to implement it. iOS defines some [https:\/\/developer.apple.com\/design\/human-interface-guidelines\/ios\/user-interaction\/gestures\/], and apps can use system-provided recognizers to support these standard gestures, or create custom ones for non-standard gestures. This sample demonstrates how to use standard gesture recognizers by adding pan, pinch, and rotation support for three colored views, which this sample calls *pieces*, and how to implement a custom recognizer to reset the pieces to their initial state.\n\n### Set up a gesture recognizer\n\nTo support gesture interaction on a view, create an appropriate gesture recognizer and associate it with the view by calling the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView\/addGestureRecognizer(_:)] method, as shown below.\n\nXcode includes UIKit’s standard gesture recognizers in its Objects library so developers can use them in storyboards. To associate a recognizer with a view in a storyboard:\n\nWith these steps, Xcode automatically adds the recognizer into the storyboard and associates it with the view. Developers can then add an action for the recognizer the same way they do for other UI elements.\n\n### Handle pan, pinch, and rotation gestures\n\nThis sample uses pan, pinch, and rotation gestures to move, scale, and rotate the views. When users pan a view, UIKit triggers the associated action method, which is `panPiece(_:)` in this sample, passing in a [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIPanGestureRecognizer] instance that carries a translation. The method then calculates and moves the view to the new position, and clears the translation by setting it to `.zero` so next time, its value is still the delta relative to the current position.\n\nSimilarly, when users pinch and rotate a view, this sample uses the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIPinchGestureRecognizer\/scale] and [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIRotationGestureRecognizer\/rotation] properties of `UIPinchGestureRecognizer` and `UIRotationGestureRecognizer` to calculate and apply a new [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView\/transform], and then clears the properties.\n\nThe `scale` and `rotation` properties are relative to the [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayer\/anchorPoint] property of the view’s [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView\/layer]. To be more intuitive when scaling or rotating a view, this sample moves the anchor point to the location of the gestures, which is usually the centroid of the touches involved in the gestures.\n\n### Allow recognizing multiple gestures simultaneously\n\nUsers sometimes intuitively expect multiple gestures to work simultaneously, like pinching and rotating a view at the same time. This sample allows that by implementing the following [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizerDelegate] method, which returns `true` to allow all gesture recognizers in this sample to work together.\n\nFor the delegate method to take effect, this sample sets the gesture recognizer’s [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/delegate] property to `self`, which is the view controller that implements the method.\n\nFor gesture recognizers that are in the storyboard, this sample sets up their `delegate` property by Control-dragging the gesture recognizers onto the view controller and selecting `delegate`.\n\n`UIGestureRecognizerDelegate` provides methods for apps to control the order in which gestures are recognized as well. For more information on gesture recognition order, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/preferring-one-gesture-over-another].\n\n### Create a custom gesture recognizer\n\nThis sample creates a custom gesture recognizer, `ResetGestureRecognizer`, which recognizes a gesture that contains at least three horizontal turnings. Users can use the gesture to easily reset the views to their initial state. To do that, move the views away from their initial positions, then put one finger on the area the colored views don’t cover, and move right, left, right, and left (or vice versa), like shaking the finger on the screen.\n\nTo recognize the gesture, this sample picks up a valid touch in [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/touchesBegan(_:with:)], and gathers the touched locations in [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/touchesMoved(_:with:)]. When a user lifts their finger, which triggers [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/touchesEnded(_:with:)], this sample counts the horizontal turnings in the touched path, and recognizes the gesture by setting the `state` property to `.ended` if the path has more than two turnings.\n\nNote that this sample doesn’t go further to eliminate the location noise or validate the segments by checking their distance. Real-world apps might consider doing that to improve the gesture recognition accuracy and avoid recognizing false positive gestures.\n\nFor more details about custom gesture recognizers, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/implementing-a-custom-gesture-recognizer].",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/UIKit\/supporting-gesture-interaction-in-your-apps\ncrawled: 2025-12-02T15:52:28Z\n---\n\n# Supporting gesture interaction in your apps\n\n**Sample Code**\n\nEnrich your app’s user experience by supporting standard and custom gesture interaction.\n\n## Overview\n\nGesture interaction is one of the most intuitive user experiences on iOS, and gesture recognizers provide an easy way for apps to implement it. iOS defines some [https:\/\/developer.apple.com\/design\/human-interface-guidelines\/ios\/user-interaction\/gestures\/], and apps can use system-provided recognizers to support these standard gestures, or create custom ones for non-standard gestures. This sample demonstrates how to use standard gesture recognizers by adding pan, pinch, and rotation support for three colored views, which this sample calls *pieces*, and how to implement a custom recognizer to reset the pieces to their initial state.\n\n### Set up a gesture recognizer\n\nTo support gesture interaction on a view, create an appropriate gesture recognizer and associate it with the view by calling the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView\/addGestureRecognizer(_:)] method, as shown below.\n\n```swift\nlet resetGestureRecognizer = ResetGestureRecognizer(target: self, action: #selector(resetPieces(_:)))\nview.addGestureRecognizer(resetGestureRecognizer)\n```\n\nXcode includes UIKit’s standard gesture recognizers in its Objects library so developers can use them in storyboards. To associate a recognizer with a view in a storyboard:\n\n1. Select the storyboard in Xcode to open the storyboard view.\n2. Find the gesture recognizer in Xcode’s Objects library.\n3. Control-drag the recognizer onto the view.\n\nWith these steps, Xcode automatically adds the recognizer into the storyboard and associates it with the view. Developers can then add an action for the recognizer the same way they do for other UI elements.\n\n### Handle pan, pinch, and rotation gestures\n\nThis sample uses pan, pinch, and rotation gestures to move, scale, and rotate the views. When users pan a view, UIKit triggers the associated action method, which is `panPiece(_:)` in this sample, passing in a [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIPanGestureRecognizer] instance that carries a translation. The method then calculates and moves the view to the new position, and clears the translation by setting it to `.zero` so next time, its value is still the delta relative to the current position.\n\n```swift\nlet translation = panGestureRecognizer.translation(in: piece.superview)\npiece.center = CGPoint(x: piece.center.x + translation.x, y: piece.center.y + translation.y)\npanGestureRecognizer.setTranslation(.zero, in: piece.superview)\n```\n\nSimilarly, when users pinch and rotate a view, this sample uses the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIPinchGestureRecognizer\/scale] and [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIRotationGestureRecognizer\/rotation] properties of `UIPinchGestureRecognizer` and `UIRotationGestureRecognizer` to calculate and apply a new [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView\/transform], and then clears the properties.\n\n```swift\nlet scale = pinchGestureRecognizer.scale\npiece.transform = piece.transform.scaledBy(x: scale, y: scale)\npinchGestureRecognizer.scale = 1 \/\/ Clear scale so that it is the right delta next time.\n```\n\n```swift\npiece.transform = piece.transform.rotated(by: rotationGestureRecognizer.rotation)\nrotationGestureRecognizer.rotation = 0 \/\/ Clear rotation so that it is the right delta next time.\n```\n\nThe `scale` and `rotation` properties are relative to the [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayer\/anchorPoint] property of the view’s [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView\/layer]. To be more intuitive when scaling or rotating a view, this sample moves the anchor point to the location of the gestures, which is usually the centroid of the touches involved in the gestures.\n\n```swift\nlet locationInPiece = gestureRecognizer.location(in: piece)\nlet locationInSuperview = gestureRecognizer.location(in: piece.superview)\nlet anchorX = locationInPiece.x \/ piece.bounds.size.width\nlet anchorY = locationInPiece.y \/ piece.bounds.size.height\npiece.layer.anchorPoint = CGPoint(x: anchorX, y: anchorY)\npiece.center = locationInSuperview\n```\n\n### Allow recognizing multiple gestures simultaneously\n\nUsers sometimes intuitively expect multiple gestures to work simultaneously, like pinching and rotating a view at the same time. This sample allows that by implementing the following [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizerDelegate] method, which returns `true` to allow all gesture recognizers in this sample to work together.\n\n```swift\nfunc gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,\n                       shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {\n    return true\n}\n```\n\nFor the delegate method to take effect, this sample sets the gesture recognizer’s [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/delegate] property to `self`, which is the view controller that implements the method.\n\n```swift\nresetGestureRecognizer.delegate = self\n```\n\nFor gesture recognizers that are in the storyboard, this sample sets up their `delegate` property by Control-dragging the gesture recognizers onto the view controller and selecting `delegate`.\n\n`UIGestureRecognizerDelegate` provides methods for apps to control the order in which gestures are recognized as well. For more information on gesture recognition order, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/preferring-one-gesture-over-another].\n\n### Create a custom gesture recognizer\n\nThis sample creates a custom gesture recognizer, `ResetGestureRecognizer`, which recognizes a gesture that contains at least three horizontal turnings. Users can use the gesture to easily reset the views to their initial state. To do that, move the views away from their initial positions, then put one finger on the area the colored views don’t cover, and move right, left, right, and left (or vice versa), like shaking the finger on the screen.\n\nTo recognize the gesture, this sample picks up a valid touch in [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/touchesBegan(_:with:)], and gathers the touched locations in [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/touchesMoved(_:with:)]. When a user lifts their finger, which triggers [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/touchesEnded(_:with:)], this sample counts the horizontal turnings in the touched path, and recognizes the gesture by setting the `state` property to `.ended` if the path has more than two turnings.\n\n```swift\nlet count = countHorizontalTurning(touchedPoints: touchedPoints)\nstate = count > 2 ? .ended : .failed\n```\n\nNote that this sample doesn’t go further to eliminate the location noise or validate the segments by checking their distance. Real-world apps might consider doing that to improve the gesture recognition accuracy and avoid recognizing false positive gestures.\n\nFor more details about custom gesture recognizers, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/implementing-a-custom-gesture-recognizer].\n\n## Standard gestures\n\n- **Handling UIKit gestures**: Use gesture recognizers to simplify touch handling and create a consistent user experience.\n- **Coordinating multiple gesture recognizers**: Discover how to use multiple gesture recognizers on the same view.\n- **Adopting hover support for Apple Pencil**: Enhance user feedback for your iPadOS app with a hover preview for Apple Pencil input.\n- **UIHoverGestureRecognizer**: A continuous gesture recognizer that interprets pointer movement over a view.\n- **UILongPressGestureRecognizer**: A continuous gesture recognizer that interprets long-press gestures.\n- **UIPanGestureRecognizer**: A continuous gesture recognizer that interprets panning gestures.\n- **UIPinchGestureRecognizer**: A continuous gesture recognizer that interprets pinching gestures involving two touches.\n- **UIRotationGestureRecognizer**: A continuous gesture recognizer that interprets rotation gestures involving two touches.\n- **UIScreenEdgePanGestureRecognizer**: A continuous gesture recognizer that interprets panning gestures that start near an edge of the screen.\n- **UISwipeGestureRecognizer**: A discrete gesture recognizer that interprets swiping gestures in one or more directions.\n- **UITapGestureRecognizer**: A discrete gesture recognizer that interprets single or multiple taps.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Use gesture recognizers to simplify touch handling and create a consistent user experience.",
+          "name" : "Handling UIKit gestures",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/handling-uikit-gestures"
+        },
+        {
+          "description" : "Discover how to use multiple gesture recognizers on the same view.",
+          "name" : "Coordinating multiple gesture recognizers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/coordinating-multiple-gesture-recognizers"
+        },
+        {
+          "description" : "Enhance user feedback for your iPadOS app with a hover preview for Apple Pencil input.",
+          "name" : "Adopting hover support for Apple Pencil",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/adopting-hover-support-for-apple-pencil"
+        },
+        {
+          "description" : "A continuous gesture recognizer that interprets pointer movement over a view.",
+          "name" : "UIHoverGestureRecognizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIHoverGestureRecognizer"
+        },
+        {
+          "description" : "A continuous gesture recognizer that interprets long-press gestures.",
+          "name" : "UILongPressGestureRecognizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UILongPressGestureRecognizer"
+        },
+        {
+          "description" : "A continuous gesture recognizer that interprets panning gestures.",
+          "name" : "UIPanGestureRecognizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIPanGestureRecognizer"
+        },
+        {
+          "description" : "A continuous gesture recognizer that interprets pinching gestures involving two touches.",
+          "name" : "UIPinchGestureRecognizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIPinchGestureRecognizer"
+        },
+        {
+          "description" : "A continuous gesture recognizer that interprets rotation gestures involving two touches.",
+          "name" : "UIRotationGestureRecognizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIRotationGestureRecognizer"
+        },
+        {
+          "description" : "A continuous gesture recognizer that interprets panning gestures that start near an edge of the screen.",
+          "name" : "UIScreenEdgePanGestureRecognizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIScreenEdgePanGestureRecognizer"
+        },
+        {
+          "description" : "A discrete gesture recognizer that interprets swiping gestures in one or more directions.",
+          "name" : "UISwipeGestureRecognizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UISwipeGestureRecognizer"
+        },
+        {
+          "description" : "A discrete gesture recognizer that interprets single or multiple taps.",
+          "name" : "UITapGestureRecognizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITapGestureRecognizer"
+        }
+      ],
+      "title" : "Standard gestures"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Supporting gesture interaction in your apps",
+  "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/supporting-gesture-interaction-in-your-apps"
+}

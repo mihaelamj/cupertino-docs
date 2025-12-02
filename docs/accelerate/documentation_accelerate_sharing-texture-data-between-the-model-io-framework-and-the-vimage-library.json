@@ -1,0 +1,82 @@
+{
+  "abstract" : "Use Model I\/O and vImage to composite a photograph over a computer-generated sky.",
+  "codeExamples" : [
+    {
+      "code" : "let width: Int\nvar height: Int\n\nlet skyGenerator: MDLSkyCubeTexture",
+      "language" : "swift"
+    },
+    {
+      "code" : "width = foregroundImage.width\nheight = foregroundImage.height\n\nskyGenerator = MDLSkyCubeTexture(name: nil,\n                                 channelEncoding: .uInt8,\n                                 textureDimensions: .init(x: Int32(width),\n                                                          y: Int32(height)),\n                                 turbidity: 0,\n                                 sunElevation: 0,\n                                 upperAtmosphereScattering: 0,\n                                 groundAlbedo: 0)",
+      "language" : "swift"
+    },
+    {
+      "code" : "skyGenerator.turbidity = turbidity\nskyGenerator.sunElevation = sunElevation\nskyGenerator.upperAtmosphereScattering = upperAtmosphereScattering\nskyGenerator.groundAlbedo = groundAlbedo\n\nskyGenerator.update()",
+      "language" : "swift"
+    },
+    {
+      "code" : "let img = skyGenerator.texelDataWithTopLeftOrigin()?.withUnsafeBytes { skyData in",
+      "language" : "swift"
+    },
+    {
+      "code" : "let imageIndex = ImageProvider.views.firstIndex(of: view) ?? 0\nlet imagePixelCount = width * height * format.componentCount\n\nlet range = imageIndex * imagePixelCount ..< (imageIndex + 1) * imagePixelCount\n\nlet values = skyData.bindMemory(to: Pixel_8.self)[ range ]",
+      "language" : "swift"
+    },
+    {
+      "code" : "let buffer = vImage.PixelBuffer(pixelValues: values,\n                                size: .init(width: width, height: height),\n                                pixelFormat: vImage.Interleaved8x4.self)\n\nbuffer.permuteChannels(to: (3, 0, 1, 2), destination: buffer)",
+      "language" : "swift"
+    },
+    {
+      "code" : "    buffer.alphaComposite(.nonpremultiplied,\n                          topLayer: foregroundBuffer,\n                          destination: buffer)\n    \n    return buffer.makeCGImage(cgImageFormat: format)\n} \/\/ Ends `skyGenerator.texelDataWithTopLeftOrigin()?.withUnsafeBytes`.",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "ee674c1087d51c490739fe2db193cc211205d8502f7afbdf40bb0c2f47a7d632",
+  "crawledAt" : "2025-12-02T15:46:09Z",
+  "id" : "A9B871FB-19A5-41B4-A483-BF3D02A8AFD1",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nThe [doc:\/\/com.apple.documentation\/documentation\/ModelIO] framework provides the [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLTexture] class and its subclasses to generate procedural textures such as noise, normal maps, and realistic sky boxes.  This sample code project uses an [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLSkyCubeTexture] instance to generate a physically realistic simulation of a sunlit sky. The code uses the generated sky image as the background and a photograph of a building as the foreground.\n\nThe image below shows the final composition:\n\n\n\nUsing the UI, someone can define the parameters that control the sky simulation such as upper atmosphere scattering and sun elevation. Before exploring the code, try building and running the app to get familiar with the effect of the different parameters on the image.\n\n### Create the sky texture generator\n\nThe `ImageProvider` class declares constants for the source image’s dimensions and the [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLSkyCubeTexture] instance named `skyGenerator`:\n\nThe initializer creates the sky generator instance that’s the same size as the top layer image of the skyscraper:\n\n### Update the sky texture generator parameters\n\nWith each change to the SwiftUI [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/Picker] controls that define the sky generator parameters, the app calls the `renderSky()` function. The function sets the sky generator parameters and calls [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLSkyCubeTexture\/update()] to generate new texel data:\n\n### Create the composite image\n\nThe [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLTexture\/texelDataWithTopLeftOrigin()] method returns the sky generator’s image data organized such that its first pixel represents the top-left corner of the image. This layout matches the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] layout. The code passes the texel data to the doc:\/\/com.apple.documentation\/foundation\/data\/3139154-withunsafebytes function to work with the underlying bytes of the data’s contiguous storage.\n\nThe [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLSkyCubeTexture] instance generates a cube texture that’s represented as six sides, vertically stacked.\n\n\n\nThe code below calculates the range texels that correspond to the selected side (one of `[\"+X\", \"-X\", \"+Y\", \"-Y\", \"+Z\", \"-Z\"]`) and binds those to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/Pixel_8] values:\n\nThe code below creates a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] structure from the values and, because the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/alphaComposite(_:topLayer:destination:)-fybo] method expects ARGB data, permutes the channel order so that alpha channel is first:\n\nFinally, the sample code project composites the skyscraper image, represented by `foregroundBuffer`, over the sky image and returns a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance that contains the result:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/sharing-texture-data-between-the-model-io-framework-and-the-vimage-library\ncrawled: 2025-12-02T15:46:09Z\n---\n\n# Sharing texture data between the Model I\/O framework and the vImage library\n\n**Sample Code**\n\nUse Model I\/O and vImage to composite a photograph over a computer-generated sky.\n\n## Overview\n\nThe [doc:\/\/com.apple.documentation\/documentation\/ModelIO] framework provides the [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLTexture] class and its subclasses to generate procedural textures such as noise, normal maps, and realistic sky boxes.  This sample code project uses an [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLSkyCubeTexture] instance to generate a physically realistic simulation of a sunlit sky. The code uses the generated sky image as the background and a photograph of a building as the foreground.\n\nThe image below shows the final composition:\n\n\n\nUsing the UI, someone can define the parameters that control the sky simulation such as upper atmosphere scattering and sun elevation. Before exploring the code, try building and running the app to get familiar with the effect of the different parameters on the image.\n\n### Create the sky texture generator\n\nThe `ImageProvider` class declares constants for the source image’s dimensions and the [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLSkyCubeTexture] instance named `skyGenerator`:\n\n```swift\nlet width: Int\nvar height: Int\n\nlet skyGenerator: MDLSkyCubeTexture\n```\n\nThe initializer creates the sky generator instance that’s the same size as the top layer image of the skyscraper:\n\n```swift\nwidth = foregroundImage.width\nheight = foregroundImage.height\n\nskyGenerator = MDLSkyCubeTexture(name: nil,\n                                 channelEncoding: .uInt8,\n                                 textureDimensions: .init(x: Int32(width),\n                                                          y: Int32(height)),\n                                 turbidity: 0,\n                                 sunElevation: 0,\n                                 upperAtmosphereScattering: 0,\n                                 groundAlbedo: 0)\n```\n\n### Update the sky texture generator parameters\n\nWith each change to the SwiftUI [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/Picker] controls that define the sky generator parameters, the app calls the `renderSky()` function. The function sets the sky generator parameters and calls [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLSkyCubeTexture\/update()] to generate new texel data:\n\n```swift\nskyGenerator.turbidity = turbidity\nskyGenerator.sunElevation = sunElevation\nskyGenerator.upperAtmosphereScattering = upperAtmosphereScattering\nskyGenerator.groundAlbedo = groundAlbedo\n\nskyGenerator.update()\n```\n\n### Create the composite image\n\nThe [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLTexture\/texelDataWithTopLeftOrigin()] method returns the sky generator’s image data organized such that its first pixel represents the top-left corner of the image. This layout matches the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] layout. The code passes the texel data to the doc:\/\/com.apple.documentation\/foundation\/data\/3139154-withunsafebytes function to work with the underlying bytes of the data’s contiguous storage.\n\n```swift\nlet img = skyGenerator.texelDataWithTopLeftOrigin()?.withUnsafeBytes { skyData in\n```\n\nThe [doc:\/\/com.apple.documentation\/documentation\/ModelIO\/MDLSkyCubeTexture] instance generates a cube texture that’s represented as six sides, vertically stacked.\n\n\n\nThe code below calculates the range texels that correspond to the selected side (one of `[\"+X\", \"-X\", \"+Y\", \"-Y\", \"+Z\", \"-Z\"]`) and binds those to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/Pixel_8] values:\n\n```swift\nlet imageIndex = ImageProvider.views.firstIndex(of: view) ?? 0\nlet imagePixelCount = width * height * format.componentCount\n\nlet range = imageIndex * imagePixelCount ..< (imageIndex + 1) * imagePixelCount\n\nlet values = skyData.bindMemory(to: Pixel_8.self)[ range ]\n```\n\nThe code below creates a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] structure from the values and, because the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/alphaComposite(_:topLayer:destination:)-fybo] method expects ARGB data, permutes the channel order so that alpha channel is first:\n\n```swift\nlet buffer = vImage.PixelBuffer(pixelValues: values,\n                                size: .init(width: width, height: height),\n                                pixelFormat: vImage.Interleaved8x4.self)\n\nbuffer.permuteChannels(to: (3, 0, 1, 2), destination: buffer)\n```\n\nFinally, the sample code project composites the skyscraper image, represented by `foregroundBuffer`, over the sky image and returns a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance that contains the result:\n\n```swift\n    buffer.alphaComposite(.nonpremultiplied,\n                          topLayer: foregroundBuffer,\n                          destination: buffer)\n    \n    return buffer.makeCGImage(cgImageFormat: format)\n} \/\/ Ends `skyGenerator.texelDataWithTopLeftOrigin()?.withUnsafeBytes`.\n```\n\n## vImage Pixel Buffers\n\n- **Using vImage pixel buffers to generate video effects**: Render real-time video effects with the vImage Pixel Buffer.\n- **Applying tone curve adjustments to images**: Use the vImage library’s polynomial transform to apply tone curve adjustments to images.\n- **Adjusting the brightness and contrast of an image**: Use a gamma function to apply a linear or exponential curve.\n- **Adjusting the hue of an image**: Convert an image to L*a*b* color space and apply hue adjustment.\n- **Calculating the dominant colors in an image**: Find the main colors in an image by implementing k-means clustering using the Accelerate framework.\n- **vImage.PixelBuffer**: An image buffer that stores an image’s pixel data, dimensions, bit depth, and number of channels.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Render real-time video effects with the vImage Pixel Buffer.",
+          "name" : "Using vImage pixel buffers to generate video effects",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/using-vimage-pixel-buffers-to-generate-video-effects"
+        },
+        {
+          "description" : "Use the vImage library’s polynomial transform to apply tone curve adjustments to images.",
+          "name" : "Applying tone curve adjustments to images",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-tone-curve-adjustments-to-images"
+        },
+        {
+          "description" : "Use a gamma function to apply a linear or exponential curve.",
+          "name" : "Adjusting the brightness and contrast of an image",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/adjusting-the-brightness-and-contrast-of-an-image"
+        },
+        {
+          "description" : "Convert an image to L*a*b* color space and apply hue adjustment.",
+          "name" : "Adjusting the hue of an image",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/adjusting-the-hue-of-an-image"
+        },
+        {
+          "description" : "Find the main colors in an image by implementing k-means clustering using the Accelerate framework.",
+          "name" : "Calculating the dominant colors in an image",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/calculating-the-dominant-colors-in-an-image"
+        },
+        {
+          "description" : "An image buffer that stores an image’s pixel data, dimensions, bit depth, and number of channels.",
+          "name" : "vImage.PixelBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer"
+        }
+      ],
+      "title" : "vImage Pixel Buffers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Sharing texture data between the Model I\/O framework and the vImage library",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/sharing-texture-data-between-the-model-io-framework-and-the-vimage-library"
+}

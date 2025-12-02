@@ -1,0 +1,90 @@
+{
+  "abstract" : "A key for accessing animation state values.",
+  "codeExamples" : [
+    {
+      "code" : "private struct PausableState<Value: VectorArithmetic>: AnimationStateKey {\n    var paused = false\n    var pauseTime: TimeInterval = 0.0\n\n    static var defaultValue: Self { .init() }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension AnimationContext {\n    fileprivate var pausableState: PausableState<Value> {\n        get { state[PausableState<Value>.self] }\n        set { state[PausableState<Value>.self] = newValue }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct PausableAnimation: CustomAnimation {\n    let base: Animation\n\n    func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {\n        let paused = context.environment.animationPaused\n\n        let pausableState = context.pausableState\n        var pauseTime = pausableState.pauseTime\n        if pausableState.paused != paused {\n            pauseTime = time - pauseTime\n            context.pausableState = PausableState(paused: paused, pauseTime: pauseTime)\n        }\n\n        let effectiveTime = paused ? pauseTime : time - pauseTime\n        let result = base.animate(value: value, time: effectiveTime, context: &context)\n        return result\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "8528b8e2968cc93474d745c4c94af5bcecde44be2408701d04ab36439d423dbd",
+  "crawledAt" : "2025-12-02T17:34:01Z",
+  "declaration" : {
+    "code" : "protocol AnimationStateKey",
+    "language" : "swift"
+  },
+  "id" : "A9F57B74-41C1-4573-9117-A48D9D78C5EA",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nTo access animation state from an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext] in a custom animation, create an `AnimationStateKey`. For example, the following code creates an animation state key named `PausableState` and sets the value for the required [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationStateKey\/defaultValue] property. The code also defines properties for state values that the custom animation needs when calculating animation values. Keeping the state values in the animation state key makes it more convenient to read and write those values in the implementation of a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/CustomAnimation].\n\nTo make accessing the value of the animation state key more convenient, define a property for it by extending [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext]:\n\nThen, you can read and write your state in an instance of `CustomAnimation` using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext]:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationStateKey\ncrawled: 2025-12-02T17:34:01Z\n---\n\n# AnimationStateKey\n\n**Protocol**\n\nA key for accessing animation state values.\n\n## Declaration\n\n```swift\nprotocol AnimationStateKey\n```\n\n## Overview\n\nTo access animation state from an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext] in a custom animation, create an `AnimationStateKey`. For example, the following code creates an animation state key named `PausableState` and sets the value for the required [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationStateKey\/defaultValue] property. The code also defines properties for state values that the custom animation needs when calculating animation values. Keeping the state values in the animation state key makes it more convenient to read and write those values in the implementation of a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/CustomAnimation].\n\n```swift\nprivate struct PausableState<Value: VectorArithmetic>: AnimationStateKey {\n    var paused = false\n    var pauseTime: TimeInterval = 0.0\n\n    static var defaultValue: Self { .init() }\n}\n```\n\nTo make accessing the value of the animation state key more convenient, define a property for it by extending [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext]:\n\n```swift\nextension AnimationContext {\n    fileprivate var pausableState: PausableState<Value> {\n        get { state[PausableState<Value>.self] }\n        set { state[PausableState<Value>.self] = newValue }\n    }\n}\n```\n\nThen, you can read and write your state in an instance of `CustomAnimation` using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext]:\n\n```swift\nstruct PausableAnimation: CustomAnimation {\n    let base: Animation\n\n    func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {\n        let paused = context.environment.animationPaused\n\n        let pausableState = context.pausableState\n        var pauseTime = pausableState.pauseTime\n        if pausableState.paused != paused {\n            pauseTime = time - pauseTime\n            context.pausableState = PausableState(paused: paused, pauseTime: pauseTime)\n        }\n\n        let effectiveTime = paused ? pauseTime : time - pauseTime\n        let result = base.animate(value: value, time: effectiveTime, context: &context)\n        return result\n    }\n}\n```\n\n## Setting the default value\n\n- **defaultValue**: The default value for the animation state key.\n- **Value**: The associated type representing the type of the animation state key’s value.\n\n## Creating custom animations\n\n- **CustomAnimation**: A type that defines how an animatable value changes over time.\n- **AnimationContext**: Contextual values that a custom animation can use to manage state and access a view’s environment.\n- **AnimationState**: A container that stores the state for a custom animation.\n- **UnitCurve**: A  function defined by a two-dimensional curve that maps an input progress in the range [0,1] to an output progress that is also in the range [0,1]. By changing the shape of the curve, the effective speed of an animation or other interpolation can be changed.\n- **Spring**: A representation of a spring’s motion.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The default value for the animation state key.",
+          "name" : "defaultValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationStateKey\/defaultValue"
+        },
+        {
+          "description" : "The associated type representing the type of the animation state key’s value.",
+          "name" : "Value",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationStateKey\/Value"
+        }
+      ],
+      "title" : "Setting the default value"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A type that defines how an animatable value changes over time.",
+          "name" : "CustomAnimation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/CustomAnimation"
+        },
+        {
+          "description" : "Contextual values that a custom animation can use to manage state and access a view’s environment.",
+          "name" : "AnimationContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationContext"
+        },
+        {
+          "description" : "A container that stores the state for a custom animation.",
+          "name" : "AnimationState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationState"
+        },
+        {
+          "description" : "A  function defined by a two-dimensional curve that maps an input progress in the range [0,1] to an output progress that is also in the range [0,1]. By changing the shape of the curve, the effective speed of an animation or other interpolation can be changed.",
+          "name" : "UnitCurve",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/UnitCurve"
+        },
+        {
+          "description" : "A representation of a spring’s motion.",
+          "name" : "Spring",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Spring"
+        }
+      ],
+      "title" : "Creating custom animations"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AnimationStateKey",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationStateKey"
+}

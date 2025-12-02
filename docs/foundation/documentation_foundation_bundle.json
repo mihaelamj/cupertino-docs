@@ -1,0 +1,556 @@
+{
+  "abstract" : "A representation of the code and resources stored in a bundle directory on disk.",
+  "codeExamples" : [
+    {
+      "code" : "NSBundle *main = [NSBundle mainBundle];\nNSString *resourcePath = [main pathForResource:@\"Seagull\" ofType:@\"jpg\"];",
+      "language" : "objc"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "c991b7295ea6f3e931a8bdfa41f06e39c802e25f86edce245a19f31fcb863bea",
+  "crawledAt" : "2025-12-02T12:41:26Z",
+  "declaration" : {
+    "code" : "class Bundle",
+    "language" : "swift"
+  },
+  "id" : "6483A0BB-5357-4CCD-939E-3CB67228430C",
+  "kind" : "class",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nApple uses bundles to represent apps, frameworks, plug-ins, and many other specific types of content. Bundles organize their contained resources into well-defined subdirectories, and bundle structures vary depending on the platform and the type of the bundle. By using a bundle object, you can access a bundle’s resources without knowing the structure of the bundle. The bundle object provides a single interface for locating items, taking into account the bundle structure, user preferences, available localizations, and other relevant factors.\n\nAny executable can use a bundle object to locate resources, either inside an app’s bundle or in a known bundle located elsewhere. You don’t use a bundle object to locate files in a container directory or in other parts of the file system.\n\nThe general pattern for using a bundle object is as follows:\n\nSome types of frequently used resources can be located and opened without a bundle. For example, when loading images, you store images in asset catalogs and load them using the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIImage\/init(named:)] methods of [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIImage] or [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSImage]. Similarly, for string resources, you use [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSLocalizedString] to load individual strings instead of loading the entire `.strings` file yourself.\n\n### Finding and Opening a Bundle\n\nBefore you can locate a resource, you must first specify which bundle contains it. The [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle] class has many constructors, but the one you use most often is [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle\/main]. The main bundle represents the bundle directory that contains the currently executing code. So for an app, the main bundle object gives you access to the resources that shipped with your app.\n\nIf your app interacts directly with plug-ins, frameworks, or other bundled content, you can use other methods of this class to create appropriate bundle objects. You can always create bundle objects from a known URL or path, but other methods make it easier to access bundles your app is already using. For example, if you link to a framework, you can use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle\/init(for:)] method to locate the framework bundle based on a class defined in that framework.\n\nIn Swift, use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/bundle()] macro to insert a bundle instance appropriate to the current execution context, whether an app, app extension, framework, or Swift package.\n\n### Locating Resources in a Bundle\n\nYou use [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle] objects to obtain the location of specific resources inside the bundle. When looking for resources, you provide the name of the resource and its type at a minimum. For resources in a specific subdirectory, you can also specify that directory. After locating the resource, the bundle routines return a path string or URL that you can use to open the file.\n\nLocating a single resource in a bundle\n\nBundle objects follow a specific search pattern when looking for resources on disk. Global resources—that is, resources not in a language-specific `.lproj` directory—are returned first, followed by region- and language-specific resources. This search pattern means that the bundle looks for resources in the following order:\n\nBecause global resources take precedence over language-specific resources, you should never include both a global and localized version of a given resource in your app. When a global version of a resource exists, language-specific versions are never returned. The reason for this precedence is performance. If localized resources were searched first, the bundle object might waste time searching for a nonexistent localized resource before returning the global resource.\n\nWhen locating resource files, the bundle object automatically considers many standard filename modifiers when determining which file to return. Resources may be tagged for a specific device (`~iphone`, `~ipad`) or for a specific screen resolution (`@2x`, `@3x`). Do not include these modifiers when specifying the name of the resource you want. The bundle object selects the file that is most appropriate for the underlying device. For more information, see [https:\/\/developer.apple.com\/library\/archive\/qa\/qa1686\/_index.html#\/\/apple_ref\/doc\/uid\/DTS40009882].\n\n### Understanding Bundle Structures\n\nBundle structures vary depending on the target platform and the type of bundle you are building. The [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle] class hides this underlying structure in most (but not all) cases. Many of the methods you use to load resources from a bundle automatically locate the appropriate starting directory and look for resources in known places. You can also use the methods and properties of this class to get the location of known bundle directories and to retrieve resources specifically from those directories.\n\nFor information about the bundle structure of iOS and macOS apps, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/CoreFoundation\/Conceptual\/CFBundles\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/10000123i]. For information about the structure of framework bundles, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/MacOSX\/Conceptual\/BPFrameworks\/Frameworks.html#\/\/apple_ref\/doc\/uid\/10000183i]. For information about the structure of macOS plug-ins, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/LoadingCode\/LoadingCode.html#\/\/apple_ref\/doc\/uid\/10000052i].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/foundation\/bundle\ncrawled: 2025-12-02T12:41:26Z\n---\n\n# Bundle\n\n**Class**\n\nA representation of the code and resources stored in a bundle directory on disk.\n\n## Declaration\n\n```swift\nclass Bundle\n```\n\n## Overview\n\nApple uses bundles to represent apps, frameworks, plug-ins, and many other specific types of content. Bundles organize their contained resources into well-defined subdirectories, and bundle structures vary depending on the platform and the type of the bundle. By using a bundle object, you can access a bundle’s resources without knowing the structure of the bundle. The bundle object provides a single interface for locating items, taking into account the bundle structure, user preferences, available localizations, and other relevant factors.\n\nAny executable can use a bundle object to locate resources, either inside an app’s bundle or in a known bundle located elsewhere. You don’t use a bundle object to locate files in a container directory or in other parts of the file system.\n\nThe general pattern for using a bundle object is as follows:\n\n1. Create a bundle object for the intended bundle directory.\n2. Use the methods of the bundle object to locate or load the needed resource.\n3. Use other system APIs to interact with the resource.\n\nSome types of frequently used resources can be located and opened without a bundle. For example, when loading images, you store images in asset catalogs and load them using the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIImage\/init(named:)] methods of [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIImage] or [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSImage]. Similarly, for string resources, you use [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSLocalizedString] to load individual strings instead of loading the entire `.strings` file yourself.\n\n\n\n### Finding and Opening a Bundle\n\nBefore you can locate a resource, you must first specify which bundle contains it. The [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle] class has many constructors, but the one you use most often is [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle\/main]. The main bundle represents the bundle directory that contains the currently executing code. So for an app, the main bundle object gives you access to the resources that shipped with your app.\n\nIf your app interacts directly with plug-ins, frameworks, or other bundled content, you can use other methods of this class to create appropriate bundle objects. You can always create bundle objects from a known URL or path, but other methods make it easier to access bundles your app is already using. For example, if you link to a framework, you can use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle\/init(for:)] method to locate the framework bundle based on a class defined in that framework.\n\n\n\nIn Swift, use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/bundle()] macro to insert a bundle instance appropriate to the current execution context, whether an app, app extension, framework, or Swift package.\n\n### Locating Resources in a Bundle\n\nYou use [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle] objects to obtain the location of specific resources inside the bundle. When looking for resources, you provide the name of the resource and its type at a minimum. For resources in a specific subdirectory, you can also specify that directory. After locating the resource, the bundle routines return a path string or URL that you can use to open the file.\n\nLocating a single resource in a bundle\n\n```objc\nNSBundle *main = [NSBundle mainBundle];\nNSString *resourcePath = [main pathForResource:@\"Seagull\" ofType:@\"jpg\"];\n```\n\nBundle objects follow a specific search pattern when looking for resources on disk. Global resources—that is, resources not in a language-specific `.lproj` directory—are returned first, followed by region- and language-specific resources. This search pattern means that the bundle looks for resources in the following order:\n\n1. Global (nonlocalized) resources\n2. Region-specific localized resources (based on the user’s region preferences)\n3. Language-specific localized resources (based on the user’s language preferences)\n4. Development language resources (as specified by the [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Reference\/InfoPlistKeyReference\/Articles\/CoreFoundationKeys.html#\/\/apple_ref\/doc\/uid\/20001431-130430] key in the bundle’s Info.plist file)\n\nBecause global resources take precedence over language-specific resources, you should never include both a global and localized version of a given resource in your app. When a global version of a resource exists, language-specific versions are never returned. The reason for this precedence is performance. If localized resources were searched first, the bundle object might waste time searching for a nonexistent localized resource before returning the global resource.\n\n\n\nWhen locating resource files, the bundle object automatically considers many standard filename modifiers when determining which file to return. Resources may be tagged for a specific device (`~iphone`, `~ipad`) or for a specific screen resolution (`@2x`, `@3x`). Do not include these modifiers when specifying the name of the resource you want. The bundle object selects the file that is most appropriate for the underlying device. For more information, see [https:\/\/developer.apple.com\/library\/archive\/qa\/qa1686\/_index.html#\/\/apple_ref\/doc\/uid\/DTS40009882].\n\n### Understanding Bundle Structures\n\nBundle structures vary depending on the target platform and the type of bundle you are building. The [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle] class hides this underlying structure in most (but not all) cases. Many of the methods you use to load resources from a bundle automatically locate the appropriate starting directory and look for resources in known places. You can also use the methods and properties of this class to get the location of known bundle directories and to retrieve resources specifically from those directories.\n\nFor information about the bundle structure of iOS and macOS apps, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/CoreFoundation\/Conceptual\/CFBundles\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/10000123i]. For information about the structure of framework bundles, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/MacOSX\/Conceptual\/BPFrameworks\/Frameworks.html#\/\/apple_ref\/doc\/uid\/10000183i]. For information about the structure of macOS plug-ins, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/LoadingCode\/LoadingCode.html#\/\/apple_ref\/doc\/uid\/10000052i].\n\n## Getting Standard Bundle Objects\n\n- **main**: Returns the bundle object that contains the current executable.\n- **allFrameworks**: Returns an array of all of the application’s bundles that represent frameworks.\n- **allBundles**: Returns an array of all the application’s non-framework bundles.\n\n## Creating and Initializing a Bundle\n\n- **init(for:)**: Returns the `NSBundle` object with which the specified class is associated.\n- **init(identifier:)**: Returns the `NSBundle` instance that has the specified bundle identifier.\n- **init(url:)**: Returns an `NSBundle` object initialized to correspond to the specified file URL.\n- **init(path:)**: Returns an `NSBundle` object initialized to correspond to the specified directory.\n\n## Loading Nib Files\n\n- **loadNibNamed(_:owner:options:)**: Unarchives the contents of a nib file located in the receiver’s bundle.\n- **loadNibNamed(_:owner:topLevelObjects:)**: Loads a nib from the bundle with the specified file name and owner.\n\n## Finding Resource Files\n\n- **url(forResource:withExtension:subdirectory:)**: Returns the file URL for the resource file identified by the specified name and extension and residing in a given bundle directory.\n- **url(forResource:withExtension:)**: Returns the file URL for the resource identified by the specified name and file extension.\n- **urls(forResourcesWithExtension:subdirectory:)**: Returns an array of file URLs for all resources identified by the specified file extension and located in the specified bundle subdirectory.\n- **url(forResource:withExtension:subdirectory:localization:)**: Returns the file URL for the resource identified by the specified name and file extension, located in the specified bundle subdirectory, and limited to global resources and those associated with the specified localization.\n- **urls(forResourcesWithExtension:subdirectory:localization:)**: Returns an array containing the file URLs for all bundle resources having the specified filename extension, residing in the specified resource subdirectory, and limited to global resources and those associated with the specified localization.\n- **url(forResource:withExtension:subdirectory:in:)**: Creates and returns a file URL for the resource with the specified name and extension in the specified bundle.\n- **urls(forResourcesWithExtension:subdirectory:in:)**: Returns an array containing the file URLs for all bundle resources having the specified filename extension, residing in the specified resource subdirectory, within the specified bundle.\n- **path(forResource:ofType:)**: Returns the full pathname for the resource identified by the specified name and file extension.\n- **path(forResource:ofType:inDirectory:)**: Returns the full pathname for the resource identified by the specified name and file extension and located in the specified bundle subdirectory.\n- **path(forResource:ofType:inDirectory:forLocalization:)**: Returns the full pathname for the resource identified by the specified name and file extension, located in the specified bundle subdirectory, and limited to global resources and those associated with the specified localization.\n- **paths(forResourcesOfType:inDirectory:)**: Returns an array containing the pathnames for all bundle resources having the specified filename extension and residing in the resource subdirectory.\n- **paths(forResourcesOfType:inDirectory:forLocalization:)**: Returns an array containing the file for all bundle resources having the specified filename extension, residing in the specified resource subdirectory, and limited to global resources and those associated with the specified localization.\n- **path(forResource:ofType:inDirectory:)**: Returns the full pathname for the resource file identified by the specified name and extension and residing in a given bundle directory.\n- **paths(forResourcesOfType:inDirectory:)**: Returns an array containing the pathnames for all bundle resources having the specified extension and residing in the bundle directory at the specified path.\n\n## Finding Image Resources\n\n- **urlForImageResource(_:)**: Returns the location of the specified image resource as an NSURL.\n- **pathForImageResource(_:)**: Returns the location of the specified image resource file.\n- **image(forResource:)**: Returns an `NSImage` instance associated with the specified name, which can be backed by multiple files representing different resolution versions of the image.\n\n## Finding Sound Resources\n\n- **path(forSoundResource:)**: Returns the location of the specified sound resource file.\n\n## Fetching Localized Strings\n\n- **localizedString(forKey:value:table:)**: Returns a localized version of the string designated by the specified key and residing in the specified table.\n\n## Fetching Context Help Resources\n\n- **contextHelp(forKey:)**: Returns the context-sensitive help for the specified key from the bundle’s help file.\n\n## Getting the Standard Bundle Directories\n\n- **resourceURL**: The file URL of the bundle’s subdirectory containing resource files.\n- **executableURL**: The file URL of the receiver’s executable file.\n- **privateFrameworksURL**: The file URL of the bundle’s subdirectory containing private frameworks.\n- **sharedFrameworksURL**: The file URL of the receiver’s subdirectory containing shared frameworks.\n- **builtInPlugInsURL**: The file URL of the receiver’s subdirectory containing plug-ins.\n- **url(forAuxiliaryExecutable:)**: Returns the file URL of the executable with the specified name in the receiver’s bundle.\n- **sharedSupportURL**: The file URL of the bundle’s subdirectory containing shared support files.\n- **appStoreReceiptURL**: The file URL for the bundle’s App Store receipt.\n- **resourcePath**: The full pathname of the bundle’s subdirectory containing resources.\n- **executablePath**: The full pathname of the receiver’s executable file.\n- **privateFrameworksPath**: The full pathname of the bundle’s subdirectory containing private frameworks.\n- **sharedFrameworksPath**: The full pathname of the bundle’s subdirectory containing shared frameworks.\n- **builtInPlugInsPath**: The full pathname of the receiver’s subdirectory containing plug-ins.\n- **path(forAuxiliaryExecutable:)**: Returns the full pathname of the executable with the specified name in the receiver’s bundle.\n- **sharedSupportPath**: The full pathname of the bundle’s subdirectory containing shared support files.\n\n## Getting Bundle Information\n\n- **bundleURL**: The full URL of the receiver’s bundle directory.\n- **bundlePath**: The full pathname of the receiver’s bundle directory.\n- **bundleIdentifier**: The receiver’s bundle identifier.\n- **infoDictionary**: A dictionary, constructed from the bundle’s `Info.plist` file, that contains information about the receiver.\n- **object(forInfoDictionaryKey:)**: Returns the value associated with the specified key in the receiver’s information property list.\n\n## Getting Localization Information\n\n- **localizations**: A list of all the localizations contained in the bundle.\n- **preferredLocalizations**: An ordered list of preferred localizations contained in the bundle.\n- **developmentLocalization**: The localization for the development language.\n- **localizedInfoDictionary**: A dictionary with the keys from the bundle’s localized property list.\n- **preferredLocalizations(from:)**: Returns one or more localizations from the specified list that a bundle object would use to locate resources for the current user.\n- **preferredLocalizations(from:forPreferences:)**: Returns locale identifiers for which a bundle would provide localized content, given a specified list of candidates for a user’s language preferences.\n\n## Managing Preservation Priority for On Demand Resources\n\n- **setPreservationPriority(_:forTags:)**: A hint to the system of the relative order for purging tagged sets of resources in the bundle.\n- **preservationPriority(forTag:)**: Returns the current preservation priority for the specified tag.\n\n## Getting Classes from a Bundle\n\n- **classNamed(_:)**: Returns the `Class` object for the specified name.\n- **principalClass**: The bundle’s principal class.\n- **didLoadNotification**: A notification that lets observers know when classes are dynamically loaded.\n- **NSLoadedClasses**: A constant used as a key for the `userInfo` dictionary of a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle\/didLoadNotification] notification that corresponds to an array of names of each class that was loaded.\n\n## Loading Code from a Bundle\n\n- **executableArchitectures**: An array of numbers indicating the architecture types supported by the bundle’s executable.\n- **preflight()**: Returns a Boolean value indicating whether the bundle’s executable code could be loaded successfully.\n- **load()**: Dynamically loads the bundle’s executable code into a running program, if the code has not already been loaded.\n- **loadAndReturnError()**: Loads the bundle’s executable code and returns any errors.\n- **unload()**: Unloads the code associated with the receiver.\n- **isLoaded**: The load status of a bundle.\n- **Mach-O Architecture**: Constants that describe the CPU types that a bundle’s executable code supports.\n\n## Errors\n\n- **NSExecutableErrorMinimum**: The beginning of the range of error codes reserved for errors related to executable files.\n- **NSExecutableNotLoadableError**: The executable type isn’t loadable in the current process.\n- **NSExecutableArchitectureMismatchError**: The executable doesn’t provide an architecture compatible with the current process.\n- **NSExecutableRuntimeMismatchError**: The executable has Objective-C runtime information that’s incompatible with the current process.\n- **NSExecutableLoadError**: Executable cannot be loaded for an otherwise-unspecified reason.\n- **NSExecutableLinkError**: The executable failed due to linking issues.\n- **NSExecutableErrorMaximum**: The end of the range of error codes reserved for errors related to executable files.\n\n## Structures\n\n- **Bundle.DidLoadMessage**\n\n## Instance Methods\n\n- **loadAppleScriptObjectiveCScripts()**\n- **localizedString(forKey:value:table:localizations:)**: Look up a localized string given a list of available languages.\n\n## Bundle Resources\n\n- **bundle()**: Expands to a bundle instance that’s most likely to contain resources for the calling code.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the bundle object that contains the current executable.",
+          "name" : "main",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/main"
+        },
+        {
+          "description" : "Returns an array of all of the application’s bundles that represent frameworks.",
+          "name" : "allFrameworks",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/allFrameworks"
+        },
+        {
+          "description" : "Returns an array of all the application’s non-framework bundles.",
+          "name" : "allBundles",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/allBundles"
+        }
+      ],
+      "title" : "Getting Standard Bundle Objects"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the `NSBundle` object with which the specified class is associated.",
+          "name" : "init(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/init(for:)"
+        },
+        {
+          "description" : "Returns the `NSBundle` instance that has the specified bundle identifier.",
+          "name" : "init(identifier:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/init(identifier:)"
+        },
+        {
+          "description" : "Returns an `NSBundle` object initialized to correspond to the specified file URL.",
+          "name" : "init(url:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/init(url:)"
+        },
+        {
+          "description" : "Returns an `NSBundle` object initialized to correspond to the specified directory.",
+          "name" : "init(path:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/init(path:)"
+        }
+      ],
+      "title" : "Creating and Initializing a Bundle"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Unarchives the contents of a nib file located in the receiver’s bundle.",
+          "name" : "loadNibNamed(_:owner:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/loadNibNamed(_:owner:options:)"
+        },
+        {
+          "description" : "Loads a nib from the bundle with the specified file name and owner.",
+          "name" : "loadNibNamed(_:owner:topLevelObjects:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/loadNibNamed(_:owner:topLevelObjects:)"
+        }
+      ],
+      "title" : "Loading Nib Files"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the file URL for the resource file identified by the specified name and extension and residing in a given bundle directory.",
+          "name" : "url(forResource:withExtension:subdirectory:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/url(forResource:withExtension:subdirectory:)"
+        },
+        {
+          "description" : "Returns the file URL for the resource identified by the specified name and file extension.",
+          "name" : "url(forResource:withExtension:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/url(forResource:withExtension:)"
+        },
+        {
+          "description" : "Returns an array of file URLs for all resources identified by the specified file extension and located in the specified bundle subdirectory.",
+          "name" : "urls(forResourcesWithExtension:subdirectory:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/urls(forResourcesWithExtension:subdirectory:)"
+        },
+        {
+          "description" : "Returns the file URL for the resource identified by the specified name and file extension, located in the specified bundle subdirectory, and limited to global resources and those associated with the specified localization.",
+          "name" : "url(forResource:withExtension:subdirectory:localization:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/url(forResource:withExtension:subdirectory:localization:)"
+        },
+        {
+          "description" : "Returns an array containing the file URLs for all bundle resources having the specified filename extension, residing in the specified resource subdirectory, and limited to global resources and those associated with the specified localization.",
+          "name" : "urls(forResourcesWithExtension:subdirectory:localization:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/urls(forResourcesWithExtension:subdirectory:localization:)"
+        },
+        {
+          "description" : "Creates and returns a file URL for the resource with the specified name and extension in the specified bundle.",
+          "name" : "url(forResource:withExtension:subdirectory:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/url(forResource:withExtension:subdirectory:in:)"
+        },
+        {
+          "description" : "Returns an array containing the file URLs for all bundle resources having the specified filename extension, residing in the specified resource subdirectory, within the specified bundle.",
+          "name" : "urls(forResourcesWithExtension:subdirectory:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/urls(forResourcesWithExtension:subdirectory:in:)"
+        },
+        {
+          "description" : "Returns the full pathname for the resource identified by the specified name and file extension.",
+          "name" : "path(forResource:ofType:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/path(forResource:ofType:)"
+        },
+        {
+          "description" : "Returns the full pathname for the resource identified by the specified name and file extension and located in the specified bundle subdirectory.",
+          "name" : "path(forResource:ofType:inDirectory:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/path(forResource:ofType:inDirectory:)-swift.method"
+        },
+        {
+          "description" : "Returns the full pathname for the resource identified by the specified name and file extension, located in the specified bundle subdirectory, and limited to global resources and those associated with the specified localization.",
+          "name" : "path(forResource:ofType:inDirectory:forLocalization:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/path(forResource:ofType:inDirectory:forLocalization:)"
+        },
+        {
+          "description" : "Returns an array containing the pathnames for all bundle resources having the specified filename extension and residing in the resource subdirectory.",
+          "name" : "paths(forResourcesOfType:inDirectory:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/paths(forResourcesOfType:inDirectory:)-swift.method"
+        },
+        {
+          "description" : "Returns an array containing the file for all bundle resources having the specified filename extension, residing in the specified resource subdirectory, and limited to global resources and those associated with the specified localization.",
+          "name" : "paths(forResourcesOfType:inDirectory:forLocalization:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/paths(forResourcesOfType:inDirectory:forLocalization:)"
+        },
+        {
+          "description" : "Returns the full pathname for the resource file identified by the specified name and extension and residing in a given bundle directory.",
+          "name" : "path(forResource:ofType:inDirectory:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/path(forResource:ofType:inDirectory:)-swift.type.method"
+        },
+        {
+          "description" : "Returns an array containing the pathnames for all bundle resources having the specified extension and residing in the bundle directory at the specified path.",
+          "name" : "paths(forResourcesOfType:inDirectory:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/paths(forResourcesOfType:inDirectory:)-swift.type.method"
+        }
+      ],
+      "title" : "Finding Resource Files"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the location of the specified image resource as an NSURL.",
+          "name" : "urlForImageResource(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/urlForImageResource(_:)"
+        },
+        {
+          "description" : "Returns the location of the specified image resource file.",
+          "name" : "pathForImageResource(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/pathForImageResource(_:)"
+        },
+        {
+          "description" : "Returns an `NSImage` instance associated with the specified name, which can be backed by multiple files representing different resolution versions of the image.",
+          "name" : "image(forResource:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/image(forResource:)"
+        }
+      ],
+      "title" : "Finding Image Resources"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the location of the specified sound resource file.",
+          "name" : "path(forSoundResource:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/path(forSoundResource:)"
+        }
+      ],
+      "title" : "Finding Sound Resources"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a localized version of the string designated by the specified key and residing in the specified table.",
+          "name" : "localizedString(forKey:value:table:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/localizedString(forKey:value:table:)"
+        }
+      ],
+      "title" : "Fetching Localized Strings"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the context-sensitive help for the specified key from the bundle’s help file.",
+          "name" : "contextHelp(forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/contextHelp(forKey:)"
+        }
+      ],
+      "title" : "Fetching Context Help Resources"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The file URL of the bundle’s subdirectory containing resource files.",
+          "name" : "resourceURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/resourceURL"
+        },
+        {
+          "description" : "The file URL of the receiver’s executable file.",
+          "name" : "executableURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/executableURL"
+        },
+        {
+          "description" : "The file URL of the bundle’s subdirectory containing private frameworks.",
+          "name" : "privateFrameworksURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/privateFrameworksURL"
+        },
+        {
+          "description" : "The file URL of the receiver’s subdirectory containing shared frameworks.",
+          "name" : "sharedFrameworksURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/sharedFrameworksURL"
+        },
+        {
+          "description" : "The file URL of the receiver’s subdirectory containing plug-ins.",
+          "name" : "builtInPlugInsURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/builtInPlugInsURL"
+        },
+        {
+          "description" : "Returns the file URL of the executable with the specified name in the receiver’s bundle.",
+          "name" : "url(forAuxiliaryExecutable:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/url(forAuxiliaryExecutable:)"
+        },
+        {
+          "description" : "The file URL of the bundle’s subdirectory containing shared support files.",
+          "name" : "sharedSupportURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/sharedSupportURL"
+        },
+        {
+          "description" : "The file URL for the bundle’s App Store receipt.",
+          "name" : "appStoreReceiptURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/appStoreReceiptURL"
+        },
+        {
+          "description" : "The full pathname of the bundle’s subdirectory containing resources.",
+          "name" : "resourcePath",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/resourcePath"
+        },
+        {
+          "description" : "The full pathname of the receiver’s executable file.",
+          "name" : "executablePath",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/executablePath"
+        },
+        {
+          "description" : "The full pathname of the bundle’s subdirectory containing private frameworks.",
+          "name" : "privateFrameworksPath",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/privateFrameworksPath"
+        },
+        {
+          "description" : "The full pathname of the bundle’s subdirectory containing shared frameworks.",
+          "name" : "sharedFrameworksPath",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/sharedFrameworksPath"
+        },
+        {
+          "description" : "The full pathname of the receiver’s subdirectory containing plug-ins.",
+          "name" : "builtInPlugInsPath",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/builtInPlugInsPath"
+        },
+        {
+          "description" : "Returns the full pathname of the executable with the specified name in the receiver’s bundle.",
+          "name" : "path(forAuxiliaryExecutable:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/path(forAuxiliaryExecutable:)"
+        },
+        {
+          "description" : "The full pathname of the bundle’s subdirectory containing shared support files.",
+          "name" : "sharedSupportPath",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/sharedSupportPath"
+        }
+      ],
+      "title" : "Getting the Standard Bundle Directories"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The full URL of the receiver’s bundle directory.",
+          "name" : "bundleURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/bundleURL"
+        },
+        {
+          "description" : "The full pathname of the receiver’s bundle directory.",
+          "name" : "bundlePath",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/bundlePath"
+        },
+        {
+          "description" : "The receiver’s bundle identifier.",
+          "name" : "bundleIdentifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/bundleIdentifier"
+        },
+        {
+          "description" : "A dictionary, constructed from the bundle’s `Info.plist` file, that contains information about the receiver.",
+          "name" : "infoDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/infoDictionary"
+        },
+        {
+          "description" : "Returns the value associated with the specified key in the receiver’s information property list.",
+          "name" : "object(forInfoDictionaryKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/object(forInfoDictionaryKey:)"
+        }
+      ],
+      "title" : "Getting Bundle Information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A list of all the localizations contained in the bundle.",
+          "name" : "localizations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/localizations"
+        },
+        {
+          "description" : "An ordered list of preferred localizations contained in the bundle.",
+          "name" : "preferredLocalizations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/preferredLocalizations"
+        },
+        {
+          "description" : "The localization for the development language.",
+          "name" : "developmentLocalization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/developmentLocalization"
+        },
+        {
+          "description" : "A dictionary with the keys from the bundle’s localized property list.",
+          "name" : "localizedInfoDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/localizedInfoDictionary"
+        },
+        {
+          "description" : "Returns one or more localizations from the specified list that a bundle object would use to locate resources for the current user.",
+          "name" : "preferredLocalizations(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/preferredLocalizations(from:)"
+        },
+        {
+          "description" : "Returns locale identifiers for which a bundle would provide localized content, given a specified list of candidates for a user’s language preferences.",
+          "name" : "preferredLocalizations(from:forPreferences:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/preferredLocalizations(from:forPreferences:)"
+        }
+      ],
+      "title" : "Getting Localization Information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A hint to the system of the relative order for purging tagged sets of resources in the bundle.",
+          "name" : "setPreservationPriority(_:forTags:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/setPreservationPriority(_:forTags:)"
+        },
+        {
+          "description" : "Returns the current preservation priority for the specified tag.",
+          "name" : "preservationPriority(forTag:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/preservationPriority(forTag:)"
+        }
+      ],
+      "title" : "Managing Preservation Priority for On Demand Resources"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the `Class` object for the specified name.",
+          "name" : "classNamed(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/classNamed(_:)"
+        },
+        {
+          "description" : "The bundle’s principal class.",
+          "name" : "principalClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/principalClass"
+        },
+        {
+          "description" : "A notification that lets observers know when classes are dynamically loaded.",
+          "name" : "didLoadNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/didLoadNotification"
+        },
+        {
+          "description" : "A constant used as a key for the `userInfo` dictionary of a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Bundle\/didLoadNotification] notification that corresponds to an array of names of each class that was loaded.",
+          "name" : "NSLoadedClasses",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSLoadedClasses"
+        }
+      ],
+      "title" : "Getting Classes from a Bundle"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An array of numbers indicating the architecture types supported by the bundle’s executable.",
+          "name" : "executableArchitectures",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/executableArchitectures"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the bundle’s executable code could be loaded successfully.",
+          "name" : "preflight()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/preflight()"
+        },
+        {
+          "description" : "Dynamically loads the bundle’s executable code into a running program, if the code has not already been loaded.",
+          "name" : "load()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/load()"
+        },
+        {
+          "description" : "Loads the bundle’s executable code and returns any errors.",
+          "name" : "loadAndReturnError()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/loadAndReturnError()"
+        },
+        {
+          "description" : "Unloads the code associated with the receiver.",
+          "name" : "unload()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/unload()"
+        },
+        {
+          "description" : "The load status of a bundle.",
+          "name" : "isLoaded",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/isLoaded"
+        },
+        {
+          "description" : "Constants that describe the CPU types that a bundle’s executable code supports.",
+          "name" : "Mach-O Architecture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/1495005-mach-o-architecture"
+        }
+      ],
+      "title" : "Loading Code from a Bundle"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The beginning of the range of error codes reserved for errors related to executable files.",
+          "name" : "NSExecutableErrorMinimum",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSExecutableErrorMinimum-swift.var"
+        },
+        {
+          "description" : "The executable type isn’t loadable in the current process.",
+          "name" : "NSExecutableNotLoadableError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSExecutableNotLoadableError-swift.var"
+        },
+        {
+          "description" : "The executable doesn’t provide an architecture compatible with the current process.",
+          "name" : "NSExecutableArchitectureMismatchError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSExecutableArchitectureMismatchError-swift.var"
+        },
+        {
+          "description" : "The executable has Objective-C runtime information that’s incompatible with the current process.",
+          "name" : "NSExecutableRuntimeMismatchError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSExecutableRuntimeMismatchError-swift.var"
+        },
+        {
+          "description" : "Executable cannot be loaded for an otherwise-unspecified reason.",
+          "name" : "NSExecutableLoadError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSExecutableLoadError-swift.var"
+        },
+        {
+          "description" : "The executable failed due to linking issues.",
+          "name" : "NSExecutableLinkError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSExecutableLinkError-swift.var"
+        },
+        {
+          "description" : "The end of the range of error codes reserved for errors related to executable files.",
+          "name" : "NSExecutableErrorMaximum",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSExecutableErrorMaximum-swift.var"
+        }
+      ],
+      "title" : "Errors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Bundle.DidLoadMessage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/DidLoadMessage"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "loadAppleScriptObjectiveCScripts()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/loadAppleScriptObjectiveCScripts()"
+        },
+        {
+          "description" : "Look up a localized string given a list of available languages.",
+          "name" : "localizedString(forKey:value:table:localizations:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Bundle\/localizedString(forKey:value:table:localizations:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Expands to a bundle instance that’s most likely to contain resources for the calling code.",
+          "name" : "bundle()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/bundle()"
+        }
+      ],
+      "title" : "Bundle Resources"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Bundle",
+  "url" : "https:\/\/developer.apple.com\/documentation\/foundation\/bundle"
+}

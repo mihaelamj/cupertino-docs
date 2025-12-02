@@ -1,0 +1,98 @@
+{
+  "abstract" : "A view that displays a root view and enables you to present additional views over the root view.",
+  "codeExamples" : [
+    {
+      "code" : "NavigationStack {\n    List(parks) { park in\n        NavigationLink(park.name, value: park)\n    }\n    .navigationDestination(for: Park.self) { park in\n        ParkDetails(park: park)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@State private var presentedParks: [Park] = []",
+      "language" : "swift"
+    },
+    {
+      "code" : "NavigationStack(path: $presentedParks) {\n    List(parks) { park in\n        NavigationLink(park.name, value: park)\n    }\n    .navigationDestination(for: Park.self) { park in\n        ParkDetails(park: park)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func showParks() {\n    presentedParks = [Park(\"Yosemite\"), Park(\"Sequoia\")]\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "View"
+  ],
+  "contentHash" : "0db254c3bd1c3c280c34f07c1bc12392264054832d074b8b131a874190fd6587",
+  "crawledAt" : "2025-12-02T16:24:11Z",
+  "declaration" : {
+    "code" : "@MainActor @preconcurrency struct NavigationStack<Data, Root> where Root : View",
+    "language" : "swift"
+  },
+  "id" : "B39F27AE-A7A2-4ABB-BFE3-A0F480598A8F",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nUse a navigation stack to present a stack of views over a root view. People can add views to the top of the stack by clicking or tapping a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationLink], and remove views using built-in, platform-appropriate controls, like a Back button or a swipe gesture. The stack always displays the most recently added view that hasn’t been removed, and doesn’t allow the root view to be removed.\n\nTo create navigation links, associate a view with a data type by adding a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/navigationDestination(for:destination:)] modifier inside the stack’s view hierarchy. Then initialize a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationLink] that presents an instance of the same kind of data. The following stack displays a `ParkDetails` view for navigation links that present data of type `Park`:\n\nIn this example, the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/List] acts as the root view and is always present. Selecting a navigation link from the list adds a `ParkDetails` view to the stack, so that it covers the list. Navigating back removes the detail view and reveals the list again. The system disables backward navigation controls when the stack is empty and the root view, namely the list, is visible.\n\n### Manage navigation state\n\nBy default, a navigation stack manages state to keep track of the views on the stack. However, your code can share control of the state by initializing the stack with a binding to a collection of data values that you create. The stack adds items to the collection as it adds views to the stack and removes items when it removes views. For example, you can create a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/State] property to manage the navigation for the park detail view:\n\nInitializing the state as an empty array indicates a stack with no views. Provide a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Binding] to this state property using the dollar sign (`$`) prefix when you create a stack using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationStack\/init(path:root:)] initializer:\n\nLike before, when someone taps or clicks the navigation link for a park, the stack displays the `ParkDetails` view using the associated park data. However, now the stack also puts the park data in the `presentedParks` array. Your code can observe this array to read the current stack state. It can also modify the array to change the views on the stack. For example, you can create a method that configures the stack with a specific set of parks:\n\nThe `showParks` method replaces the stack’s display with a view that shows details for Sequoia, the last item in the new `presentedParks` array. Navigating back from that view removes Sequoia from the array, which reveals a view that shows details for Yosemite. Use a path to support deep links, state restoration, or other kinds of programmatic navigation.\n\n### Navigate to different view types\n\nTo create a stack that can present more than one kind of view, you can add multiple [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/navigationDestination(for:destination:)] modifiers inside the stack’s view hierarchy, with each modifier presenting a different data type. The stack matches navigation links with navigation destinations based on their respective data types.\n\nTo create a path for programmatic navigation that contains more than one kind of data, you can use a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationPath] instance as the path.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationStack\ncrawled: 2025-12-02T16:24:11Z\n---\n\n# NavigationStack\n\n**Structure**\n\nA view that displays a root view and enables you to present additional views over the root view.\n\n## Declaration\n\n```swift\n@MainActor @preconcurrency struct NavigationStack<Data, Root> where Root : View\n```\n\n## Overview\n\nUse a navigation stack to present a stack of views over a root view. People can add views to the top of the stack by clicking or tapping a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationLink], and remove views using built-in, platform-appropriate controls, like a Back button or a swipe gesture. The stack always displays the most recently added view that hasn’t been removed, and doesn’t allow the root view to be removed.\n\nTo create navigation links, associate a view with a data type by adding a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/navigationDestination(for:destination:)] modifier inside the stack’s view hierarchy. Then initialize a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationLink] that presents an instance of the same kind of data. The following stack displays a `ParkDetails` view for navigation links that present data of type `Park`:\n\n```swift\nNavigationStack {\n    List(parks) { park in\n        NavigationLink(park.name, value: park)\n    }\n    .navigationDestination(for: Park.self) { park in\n        ParkDetails(park: park)\n    }\n}\n```\n\nIn this example, the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/List] acts as the root view and is always present. Selecting a navigation link from the list adds a `ParkDetails` view to the stack, so that it covers the list. Navigating back removes the detail view and reveals the list again. The system disables backward navigation controls when the stack is empty and the root view, namely the list, is visible.\n\n### Manage navigation state\n\nBy default, a navigation stack manages state to keep track of the views on the stack. However, your code can share control of the state by initializing the stack with a binding to a collection of data values that you create. The stack adds items to the collection as it adds views to the stack and removes items when it removes views. For example, you can create a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/State] property to manage the navigation for the park detail view:\n\n```swift\n@State private var presentedParks: [Park] = []\n```\n\nInitializing the state as an empty array indicates a stack with no views. Provide a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Binding] to this state property using the dollar sign (`$`) prefix when you create a stack using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationStack\/init(path:root:)] initializer:\n\n```swift\nNavigationStack(path: $presentedParks) {\n    List(parks) { park in\n        NavigationLink(park.name, value: park)\n    }\n    .navigationDestination(for: Park.self) { park in\n        ParkDetails(park: park)\n    }\n}\n```\n\nLike before, when someone taps or clicks the navigation link for a park, the stack displays the `ParkDetails` view using the associated park data. However, now the stack also puts the park data in the `presentedParks` array. Your code can observe this array to read the current stack state. It can also modify the array to change the views on the stack. For example, you can create a method that configures the stack with a specific set of parks:\n\n```swift\nfunc showParks() {\n    presentedParks = [Park(\"Yosemite\"), Park(\"Sequoia\")]\n}\n```\n\nThe `showParks` method replaces the stack’s display with a view that shows details for Sequoia, the last item in the new `presentedParks` array. Navigating back from that view removes Sequoia from the array, which reveals a view that shows details for Yosemite. Use a path to support deep links, state restoration, or other kinds of programmatic navigation.\n\n### Navigate to different view types\n\nTo create a stack that can present more than one kind of view, you can add multiple [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/navigationDestination(for:destination:)] modifiers inside the stack’s view hierarchy, with each modifier presenting a different data type. The stack matches navigation links with navigation destinations based on their respective data types.\n\nTo create a path for programmatic navigation that contains more than one kind of data, you can use a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationPath] instance as the path.\n\n## Creating a navigation stack\n\n- **init(root:)**: Creates a navigation stack that manages its own navigation state.\n\n## Creating a navigation stack with a path\n\n- **init(path:root:)**: Creates a navigation stack with homogeneous navigation state that you can control.\n\n## Stacking views in one column\n\n- **NavigationPath**: A type-erased list of data representing the content of a navigation stack.\n- **navigationDestination(for:destination:)**: Associates a destination view with a presented data type for use within a navigation stack.\n- **navigationDestination(isPresented:destination:)**: Associates a destination view with a binding that can be used to push the view onto a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationStack].\n- **navigationDestination(item:destination:)**: Associates a destination view with a bound value for use within a navigation stack or navigation split view\n\n## Conforms To\n\n- View\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a navigation stack that manages its own navigation state.",
+          "name" : "init(root:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationStack\/init(root:)"
+        }
+      ],
+      "title" : "Creating a navigation stack"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a navigation stack with homogeneous navigation state that you can control.",
+          "name" : "init(path:root:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationStack\/init(path:root:)"
+        }
+      ],
+      "title" : "Creating a navigation stack with a path"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A type-erased list of data representing the content of a navigation stack.",
+          "name" : "NavigationPath",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationPath"
+        },
+        {
+          "description" : "Associates a destination view with a presented data type for use within a navigation stack.",
+          "name" : "navigationDestination(for:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/navigationDestination(for:destination:)"
+        },
+        {
+          "description" : "Associates a destination view with a binding that can be used to push the view onto a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationStack].",
+          "name" : "navigationDestination(isPresented:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/navigationDestination(isPresented:destination:)"
+        },
+        {
+          "description" : "Associates a destination view with a bound value for use within a navigation stack or navigation split view",
+          "name" : "navigationDestination(item:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/navigationDestination(item:destination:)"
+        }
+      ],
+      "title" : "Stacking views in one column"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NavigationStack",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NavigationStack"
+}

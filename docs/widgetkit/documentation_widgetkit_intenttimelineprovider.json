@@ -1,0 +1,145 @@
+{
+  "abstract" : "A type that advises WidgetKit when to update a user-configurable widget’s display.",
+  "codeExamples" : [
+    {
+      "code" : "public class SelectCharacterIntent: INIntent {\n    @NSManaged public var characterName: String?\n    @NSManaged public var avatar: String?\n    @NSManaged public var alliances: [String]?\n    @NSManaged public var healthLevel: NSNumber?\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct CharacterDetailEntry: TimelineEntry {\n    var date: Date\n    var name: String?\n    var avatar: String?\n    var alliances: [String]?\n    var healthLevel: Double?\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct CharacterDetailProvider: IntentTimelineProvider {\n    func getSnapshot(for configuration: SelectCharacterIntent, in context: Context, completion: @escaping (CharacterDetailEntry) -> Void) {\n        let entry = CharacterDetailEntry(\n            date: Date(),\n            name: configuration.characterName,\n            avatar: configuration.avatar,\n            alliances: configuration.alliances,\n            healthLevel: configuration.healthLevel?.doubleValue\n        )\n        completion(entry)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "9a1f7d5b361c3f638960662c4fead8c35ec1014d2d2c7d0ac6254c0a6bcfb369",
+  "crawledAt" : "2025-12-01T08:55:30Z",
+  "declaration" : {
+    "code" : "protocol IntentTimelineProvider",
+    "language" : "swift"
+  },
+  "id" : "43C555CC-99C5-4785-9FD9-18E1373B35D7",
+  "kind" : "protocol",
+  "module" : "WidgetKit",
+  "overview" : "## Overview\n\nAn Intent timeline provider performs the same function as [doc:\/\/com.apple.WidgetKit\/documentation\/WidgetKit\/TimelineProvider], but it also incorporates user-configured details into timeline entries.\n\nFor example, in a widget that displays the health status of a game character the user has chosen, the provider receives a custom intent specifying the character to display. In your Xcode project, you then define a custom SiriKit Intent Definition file. The intent definition can include the character’s details such as its name, avatar, strategic alliances, and so on.\n\n\n\nXcode generates the following [doc:\/\/com.apple.documentation\/documentation\/Intents\/INIntent] custom intent:\n\nBecause users can add multiple instances of a particular widget, your provider needs a way to differentiate which instance WidgetKit is asking about. When WidgetKit calls [doc:\/\/com.apple.WidgetKit\/documentation\/WidgetKit\/IntentTimelineProvider\/getSnapshot(for:in:completion:)] or [doc:\/\/com.apple.WidgetKit\/documentation\/WidgetKit\/IntentTimelineProvider\/getTimeline(for:in:completion:)], it passes an instance of your custom `INIntent`, configured with the user-selected details. The game widget provider accesses the properties of the intent and includes them in the [doc:\/\/com.apple.WidgetKit\/documentation\/WidgetKit\/TimelineEntry]. WidgetKit then invokes the widget configuration’s content closure, passing the timeline entry to allow the views to access the user-configured properties. For example, the provider might implement a `TimelineEntry` with properties corresponding to those in the custom intent:\n\nTo generate a snapshot, the game widget provider initializes the character detail entry using the properties from the intent.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/WidgetKit\/IntentTimelineProvider\ncrawled: 2025-12-01T08:55:30Z\n---\n\n# IntentTimelineProvider\n\n**Protocol**\n\nA type that advises WidgetKit when to update a user-configurable widget’s display.\n\n## Declaration\n\n```swift\nprotocol IntentTimelineProvider\n```\n\n## Overview\n\nAn Intent timeline provider performs the same function as [doc:\/\/com.apple.WidgetKit\/documentation\/WidgetKit\/TimelineProvider], but it also incorporates user-configured details into timeline entries.\n\nFor example, in a widget that displays the health status of a game character the user has chosen, the provider receives a custom intent specifying the character to display. In your Xcode project, you then define a custom SiriKit Intent Definition file. The intent definition can include the character’s details such as its name, avatar, strategic alliances, and so on.\n\n\n\nXcode generates the following [doc:\/\/com.apple.documentation\/documentation\/Intents\/INIntent] custom intent:\n\n```swift\npublic class SelectCharacterIntent: INIntent {\n    @NSManaged public var characterName: String?\n    @NSManaged public var avatar: String?\n    @NSManaged public var alliances: [String]?\n    @NSManaged public var healthLevel: NSNumber?\n}\n```\n\nBecause users can add multiple instances of a particular widget, your provider needs a way to differentiate which instance WidgetKit is asking about. When WidgetKit calls [doc:\/\/com.apple.WidgetKit\/documentation\/WidgetKit\/IntentTimelineProvider\/getSnapshot(for:in:completion:)] or [doc:\/\/com.apple.WidgetKit\/documentation\/WidgetKit\/IntentTimelineProvider\/getTimeline(for:in:completion:)], it passes an instance of your custom `INIntent`, configured with the user-selected details. The game widget provider accesses the properties of the intent and includes them in the [doc:\/\/com.apple.WidgetKit\/documentation\/WidgetKit\/TimelineEntry]. WidgetKit then invokes the widget configuration’s content closure, passing the timeline entry to allow the views to access the user-configured properties. For example, the provider might implement a `TimelineEntry` with properties corresponding to those in the custom intent:\n\n```swift\nstruct CharacterDetailEntry: TimelineEntry {\n    var date: Date\n    var name: String?\n    var avatar: String?\n    var alliances: [String]?\n    var healthLevel: Double?\n}\n```\n\nTo generate a snapshot, the game widget provider initializes the character detail entry using the properties from the intent.\n\n```swift\nstruct CharacterDetailProvider: IntentTimelineProvider {\n    func getSnapshot(for configuration: SelectCharacterIntent, in context: Context, completion: @escaping (CharacterDetailEntry) -> Void) {\n        let entry = CharacterDetailEntry(\n            date: Date(),\n            name: configuration.characterName,\n            avatar: configuration.avatar,\n            alliances: configuration.alliances,\n            healthLevel: configuration.healthLevel?.doubleValue\n        )\n        completion(entry)\n    }\n}\n```\n\n## Generating Timelines\n\n- **getSnapshot(for:in:completion:)**: Provides a timeline entry representing the current time and state of a widget.\n- **getTimeline(for:in:completion:)**: Provides an array of timeline entries for the current time and, optionally, any future times to update a widget.\n- **placeholder(in:)**: Provides a timeline entry representing a placeholder version of the widget.\n- **Entry**: A type that specifies the date to display a widget, and, optionally, indicates the current relevance of the widget’s content.\n- **Intent**: The intent that contains user-customized values.\n- **recommendations()**: Returns a set of intent recommendations you use to offer pre-configured widgets on platforms that don’t offer a dedicated user interface for customizing widget intents.\n- **IntentTimelineProvider.Context**: An object that contains details about how a widget is rendered, including its size and whether it appears in the widget gallery.\n\n## Instance Methods\n\n- **relevance()**: Provides an object containing attributes that describe when a specific widget is relevant.\n\n## Related Documentation\n\n- **INIntent**: A request to fulfill in your app or Intents extension.\n\n## Timeline updates\n\n- **Keeping a widget up to date**: Plan your widget’s timeline to show timely, relevant information using dynamic views, and update the timeline when things change.\n- **TimelineProvider**: A type that advises WidgetKit when to update a widget’s display.\n- **AppIntentTimelineProvider**: A type that advises WidgetKit when to update a user-configurable widget’s display.\n- **TimelineProviderContext**: An object that contains details about how a widget is rendered, including its size and whether it appears in the widget gallery.\n- **TimelineEntry**: A type that specifies the date to display a widget, and, optionally, indicates the current relevance of the widget’s content.\n- **Timeline**: An object that specifies a date for WidgetKit to update a widget’s view.\n- **WidgetCenter**: An object that contains a list of user-configured widgets and is used for reloading widget timelines.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Provides a timeline entry representing the current time and state of a widget.",
+          "name" : "getSnapshot(for:in:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/IntentTimelineProvider\/getSnapshot(for:in:completion:)"
+        },
+        {
+          "description" : "Provides an array of timeline entries for the current time and, optionally, any future times to update a widget.",
+          "name" : "getTimeline(for:in:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/IntentTimelineProvider\/getTimeline(for:in:completion:)"
+        },
+        {
+          "description" : "Provides a timeline entry representing a placeholder version of the widget.",
+          "name" : "placeholder(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/IntentTimelineProvider\/placeholder(in:)"
+        },
+        {
+          "description" : "A type that specifies the date to display a widget, and, optionally, indicates the current relevance of the widget’s content.",
+          "name" : "Entry",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/IntentTimelineProvider\/Entry"
+        },
+        {
+          "description" : "The intent that contains user-customized values.",
+          "name" : "Intent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/IntentTimelineProvider\/Intent"
+        },
+        {
+          "description" : "Returns a set of intent recommendations you use to offer pre-configured widgets on platforms that don’t offer a dedicated user interface for customizing widget intents.",
+          "name" : "recommendations()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/IntentTimelineProvider\/recommendations()"
+        },
+        {
+          "description" : "An object that contains details about how a widget is rendered, including its size and whether it appears in the widget gallery.",
+          "name" : "IntentTimelineProvider.Context",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/IntentTimelineProvider\/Context"
+        }
+      ],
+      "title" : "Generating Timelines"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Provides an object containing attributes that describe when a specific widget is relevant.",
+          "name" : "relevance()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/IntentTimelineProvider\/relevance()"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A request to fulfill in your app or Intents extension.",
+          "name" : "INIntent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Intents\/INIntent"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Plan your widget’s timeline to show timely, relevant information using dynamic views, and update the timeline when things change.",
+          "name" : "Keeping a widget up to date",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/Keeping-a-Widget-Up-To-Date"
+        },
+        {
+          "description" : "A type that advises WidgetKit when to update a widget’s display.",
+          "name" : "TimelineProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/TimelineProvider"
+        },
+        {
+          "description" : "A type that advises WidgetKit when to update a user-configurable widget’s display.",
+          "name" : "AppIntentTimelineProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/AppIntentTimelineProvider"
+        },
+        {
+          "description" : "An object that contains details about how a widget is rendered, including its size and whether it appears in the widget gallery.",
+          "name" : "TimelineProviderContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/TimelineProviderContext"
+        },
+        {
+          "description" : "A type that specifies the date to display a widget, and, optionally, indicates the current relevance of the widget’s content.",
+          "name" : "TimelineEntry",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/TimelineEntry"
+        },
+        {
+          "description" : "An object that specifies a date for WidgetKit to update a widget’s view.",
+          "name" : "Timeline",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/Timeline"
+        },
+        {
+          "description" : "An object that contains a list of user-configured widgets and is used for reloading widget timelines.",
+          "name" : "WidgetCenter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/WidgetCenter"
+        }
+      ],
+      "title" : "Timeline updates"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "IntentTimelineProvider",
+  "url" : "https:\/\/developer.apple.com\/documentation\/WidgetKit\/IntentTimelineProvider"
+}

@@ -1,0 +1,50 @@
+{
+  "abstract" : "Detects when you use an uninitialized mutex.",
+  "codeExamples" : [
+    {
+      "code" : "static pthread_mutex_t mutex;\nvoid performWork() {\n    pthread_mutex_lock(&mutex); \/\/ Error: uninitialized mutex\n    \/\/ ...\n    pthread_mutex_unlock(&mutex);\n}",
+      "language" : "occ"
+    },
+    {
+      "code" : "static pthread_once_t once = PTHREAD_ONCE_INIT;\nstatic pthread_mutex_t mutex;\nvoid init() {    \n    pthread_mutex_init(&mutex, NULL);\n}\nvoid performWork() {\n    pthread_once(&once, init); \/\/ Correct\n    pthread_mutex_lock(&mutex);\n    \/\/ ...\n    pthread_mutex_unlock(&mutex);\n}",
+      "language" : "occ"
+    }
+  ],
+  "contentHash" : "25c3b3395e7baa342f527360703e524f3ee321737f8f5cac1f7706be849f11be",
+  "crawledAt" : "2025-12-02T06:11:01Z",
+  "id" : "6570169E-18F6-4456-9115-707D9CF596FC",
+  "kind" : "article",
+  "overview" : "## Overview\n\nUse this check to detect when you call `pthread_mutex_lock(_:)` or `pthread_mutex_unlock(_:)` with an uninitialized `pthread_mutex_t` variable. Attempting to use an uninitialized mutex results in an error, and bypasses ordering conditions that exist on a locked mutex. Available in Xcode 8 and later.\n\n### Use of uninitialized mutex in C\n\nIn the following example, the `pthread_mutex_lock(_:)` function executes with an uninitialized `pthread_mutex_t` variable:\n\n#### Solution\n\nUse the `pthread_once(_:_:)` function to initialize a mutex before you use it.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Xcode\/uninitialized-mutexes\ncrawled: 2025-12-02T06:11:01Z\n---\n\n# Uninitialized mutexes\n\n**Article**\n\nDetects when you use an uninitialized mutex.\n\n## Overview\n\nUse this check to detect when you call `pthread_mutex_lock(_:)` or `pthread_mutex_unlock(_:)` with an uninitialized `pthread_mutex_t` variable. Attempting to use an uninitialized mutex results in an error, and bypasses ordering conditions that exist on a locked mutex. Available in Xcode 8 and later.\n\n### Use of uninitialized mutex in C\n\nIn the following example, the `pthread_mutex_lock(_:)` function executes with an uninitialized `pthread_mutex_t` variable:\n\n```occ\nstatic pthread_mutex_t mutex;\nvoid performWork() {\n    pthread_mutex_lock(&mutex); \/\/ Error: uninitialized mutex\n    \/\/ ...\n    pthread_mutex_unlock(&mutex);\n}\n```\n\n#### Solution\n\nUse the `pthread_once(_:_:)` function to initialize a mutex before you use it.\n\n```occ\nstatic pthread_once_t once = PTHREAD_ONCE_INIT;\nstatic pthread_mutex_t mutex;\nvoid init() {    \n    pthread_mutex_init(&mutex, NULL);\n}\nvoid performWork() {\n    pthread_once(&once, init); \/\/ Correct\n    pthread_mutex_lock(&mutex);\n    \/\/ ...\n    pthread_mutex_unlock(&mutex);\n}\n```\n\n## Thread Sanitizer\n\n- **Data races**: Detects unsynchronized access to mutable state across multiple threads.\n- **Swift access races**: Detects unsynchronized access to mutable state across multiple threads in Swift.\n- **Races on collections and other APIs**: Detects when one thread accesses a mutable object while another thread is writing to it.\n- **Thread leaks**: Detects when you don’t close threads after use.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Detects unsynchronized access to mutable state across multiple threads.",
+          "name" : "Data races",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/data-races"
+        },
+        {
+          "description" : "Detects unsynchronized access to mutable state across multiple threads in Swift.",
+          "name" : "Swift access races",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/swift-access-races"
+        },
+        {
+          "description" : "Detects when one thread accesses a mutable object while another thread is writing to it.",
+          "name" : "Races on collections and other APIs",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/races-on-collections-and-other-apis"
+        },
+        {
+          "description" : "Detects when you don’t close threads after use.",
+          "name" : "Thread leaks",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/thread-leaks"
+        }
+      ],
+      "title" : "Thread Sanitizer"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Uninitialized mutexes",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/uninitialized-mutexes"
+}

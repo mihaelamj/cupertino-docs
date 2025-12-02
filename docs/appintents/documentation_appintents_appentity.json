@@ -1,0 +1,160 @@
+{
+  "abstract" : "An interface for exposing a custom type or app-specific concept to system experiences like Siri and the Shortcuts app.",
+  "codeExamples" : [
+    {
+      "code" : "struct TrailEntity: AppEntity {\n    \/\/ Provide the system with the interface required to query `TrailEntity` structures.\n    static let defaultQuery = TrailEntityQuery()\n\n    \/\/ The system requires the `AppEntity` identifier to be unique and persistant because the system may save it in a shortcut.\n    var id: Trail.ID\n\n    @Property var name: String\n\n    @Property(title: \"Region\")\n    var regionDescription: String\n\n    @Property var trailLength: Measurement<UnitLength>\n\n    var imageName: String\n\n    var currentConditions: String\n\n    \/**\n    Information on how to display the entity to people — for example, a string like the trail name. Include the optional subtitle\n    and image for a visually rich display.\n    *\/\n    var displayRepresentation: DisplayRepresentation {\n        DisplayRepresentation(title: \"\\(name)\",\n                              subtitle: \"\\(regionDescription)\",\n                              image: DisplayRepresentation.Image(named: imageName))\n    }\n\n    init(trail: Trail) {\n        self.id = trail.id\n        self.imageName = trail.featuredImage\n        self.currentConditions = trail.currentConditions\n        self.name = trail.name\n        self.regionDescription = trail.regionDescription\n        self.trailLength = trail.trailLength\n    }\n}\n\nextension TrailEntity: URLRepresentableEntity {\n    static var urlRepresentation: URLRepresentation {\n        \/\/ Use string interpolation to fill values from your entity necessary for constructing the universal link URL.\n        \/\/ This example URL uses the unique and persistant identifier for the `TrailEntity` in the URL.\n        \"https:\/\/example.com\/trail\/\\(.id)\/details\"\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "8389e437eb6249d4faaa588a623cebf28ca2a5377a4ad207128cedf4da51a9e4",
+  "crawledAt" : "2025-12-01T13:19:36Z",
+  "declaration" : {
+    "code" : "protocol AppEntity : AppValue, DisplayRepresentable, Identifiable where Self == Self.ValueType, Self.ID : EntityIdentifierConvertible, Self.ID : Sendable",
+    "language" : "swift"
+  },
+  "id" : "F5E7AA18-B410-4C81-8A09-8CF07A401A8D",
+  "inheritedBy" : [
+    "AssistantEntity",
+    "AssistantSchemaEntity",
+    "FileEntity",
+    "IndexedEntity",
+    "TransientAppEntity",
+    "URLRepresentableEntity",
+    "UniqueAppEntity"
+  ],
+  "kind" : "protocol",
+  "module" : "App Intents",
+  "overview" : "## Overview\n\nTo use a data model object to app intents, update it to conform to the `AppEntity` protocol. Declare properties using the `@Property` property wrapper to make them visible to the system. The following example from the [doc:\/\/com.apple.AppIntents\/documentation\/AppIntents\/AcceleratingAppInteractionsWithAppIntents] sample app shows a data model for a trail:\n\nFor additional property types, see [doc:\/\/com.apple.AppIntents\/documentation\/AppIntents\/EntityProperty].\n\nIt is up to you whether you want to conform to the `AppEntity` protocol directly on the data models of your app, or if you create data models specific to your app intents implementation. In many cases, it’s a good idea to create models specific to app intents that shadow your app data models to keep entities separate from the rest of your app’s logic.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/appintents\/appentity\ncrawled: 2025-12-01T13:19:36Z\n---\n\n# AppEntity\n\n**Protocol**\n\nAn interface for exposing a custom type or app-specific concept to system experiences like Siri and the Shortcuts app.\n\n## Declaration\n\n```swift\nprotocol AppEntity : AppValue, DisplayRepresentable, Identifiable where Self == Self.ValueType, Self.ID : EntityIdentifierConvertible, Self.ID : Sendable\n```\n\n## Overview\n\nTo use a data model object to app intents, update it to conform to the `AppEntity` protocol. Declare properties using the `@Property` property wrapper to make them visible to the system. The following example from the [doc:\/\/com.apple.AppIntents\/documentation\/AppIntents\/AcceleratingAppInteractionsWithAppIntents] sample app shows a data model for a trail:\n\n```swift\nstruct TrailEntity: AppEntity {\n    \/\/ Provide the system with the interface required to query `TrailEntity` structures.\n    static let defaultQuery = TrailEntityQuery()\n\n    \/\/ The system requires the `AppEntity` identifier to be unique and persistant because the system may save it in a shortcut.\n    var id: Trail.ID\n\n    @Property var name: String\n\n    @Property(title: \"Region\")\n    var regionDescription: String\n\n    @Property var trailLength: Measurement<UnitLength>\n\n    var imageName: String\n\n    var currentConditions: String\n\n    \/**\n    Information on how to display the entity to people — for example, a string like the trail name. Include the optional subtitle\n    and image for a visually rich display.\n    *\/\n    var displayRepresentation: DisplayRepresentation {\n        DisplayRepresentation(title: \"\\(name)\",\n                              subtitle: \"\\(regionDescription)\",\n                              image: DisplayRepresentation.Image(named: imageName))\n    }\n\n    init(trail: Trail) {\n        self.id = trail.id\n        self.imageName = trail.featuredImage\n        self.currentConditions = trail.currentConditions\n        self.name = trail.name\n        self.regionDescription = trail.regionDescription\n        self.trailLength = trail.trailLength\n    }\n}\n\nextension TrailEntity: URLRepresentableEntity {\n    static var urlRepresentation: URLRepresentation {\n        \/\/ Use string interpolation to fill values from your entity necessary for constructing the universal link URL.\n        \/\/ This example URL uses the unique and persistant identifier for the `TrailEntity` in the URL.\n        \"https:\/\/example.com\/trail\/\\(.id)\/details\"\n    }\n}\n```\n\nFor additional property types, see [doc:\/\/com.apple.AppIntents\/documentation\/AppIntents\/EntityProperty].\n\nIt is up to you whether you want to conform to the `AppEntity` protocol directly on the data models of your app, or if you create data models specific to your app intents implementation. In many cases, it’s a good idea to create models specific to app intents that shadow your app data models to keep entities separate from the rest of your app’s logic.\n\n## Specifying properties\n\n- **AppEntity.Property**\n\n## Making the entity queryable\n\n- **defaultQuery**: The default query to use to retrieve entity property instances.\n- **DefaultQuery**\n- **defaultResolverSpecification**\n- **defaultResolverSpecification**\n\n## Default Implementations\n\n- **Identifiable Implementations**\n\n## Entities\n\n- **Integrating custom data types into your intents**: Provide the system with information about the types your app uses to model its data so that your intents can use those types as parameters.\n- **FileEntity**: An entity that refers to a document or other file.\n- **IndexedEntity**: `IndexedEntity` represents an App Entity decorated with an attribute set. A set of attributes that enable the system to perform structured indexing  and queries of entities.\n- **TransientAppEntity**: A type that represents a transient model object which exposes its interface to App Intents via properties. Note that `TransientAppEntity` types are not meant to be queried.\n- **UniqueAppEntity**: An entity that will only ever have one value, such as global settings.\n- **URLRepresentableEntity**: An app entity with a URL representation.\n\n## Inherits From\n\n- AppValue\n- CustomLocalizedStringResourceConvertible\n- DisplayRepresentable\n- Identifiable\n- InstanceDisplayRepresentable\n- PersistentlyIdentifiable\n- Sendable\n- SendableMetatype\n- TypeDisplayRepresentable\n\n## Inherited By\n\n- AssistantEntity\n- AssistantSchemaEntity\n- FileEntity\n- IndexedEntity\n- TransientAppEntity\n- URLRepresentableEntity\n- UniqueAppEntity\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "AppEntity.Property",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/AppEntity\/Property"
+        }
+      ],
+      "title" : "Specifying properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The default query to use to retrieve entity property instances.",
+          "name" : "defaultQuery",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/AppEntity\/defaultQuery-4khg7"
+        },
+        {
+          "description" : "",
+          "name" : "DefaultQuery",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/AppEntity\/DefaultQuery-swift.associatedtype"
+        },
+        {
+          "description" : "",
+          "name" : "defaultResolverSpecification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/AppEntity\/defaultResolverSpecification-2dpf2"
+        },
+        {
+          "description" : "",
+          "name" : "defaultResolverSpecification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/AppEntity\/defaultResolverSpecification-589eq"
+        }
+      ],
+      "title" : "Making the entity queryable"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Identifiable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/AppEntity\/Identifiable-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Provide the system with information about the types your app uses to model its data so that your intents can use those types as parameters.",
+          "name" : "Integrating custom data types into your intents",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/Integrating-custom-types-into-your-intents"
+        },
+        {
+          "description" : "An entity that refers to a document or other file.",
+          "name" : "FileEntity",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/FileEntity"
+        },
+        {
+          "description" : "`IndexedEntity` represents an App Entity decorated with an attribute set. A set of attributes that enable the system to perform structured indexing  and queries of entities.",
+          "name" : "IndexedEntity",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/IndexedEntity"
+        },
+        {
+          "description" : "A type that represents a transient model object which exposes its interface to App Intents via properties. Note that `TransientAppEntity` types are not meant to be queried.",
+          "name" : "TransientAppEntity",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/TransientAppEntity"
+        },
+        {
+          "description" : "An entity that will only ever have one value, such as global settings.",
+          "name" : "UniqueAppEntity",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/UniqueAppEntity"
+        },
+        {
+          "description" : "An app entity with a URL representation.",
+          "name" : "URLRepresentableEntity",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppIntents\/URLRepresentableEntity"
+        }
+      ],
+      "title" : "Entities"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "AppValue"
+        },
+        {
+          "name" : "CustomLocalizedStringResourceConvertible"
+        },
+        {
+          "name" : "DisplayRepresentable"
+        },
+        {
+          "name" : "Identifiable"
+        },
+        {
+          "name" : "InstanceDisplayRepresentable"
+        },
+        {
+          "name" : "PersistentlyIdentifiable"
+        },
+        {
+          "name" : "Sendable"
+        },
+        {
+          "name" : "SendableMetatype"
+        },
+        {
+          "name" : "TypeDisplayRepresentable"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AppEntity",
+  "url" : "https:\/\/developer.apple.com\/documentation\/appintents\/appentity"
+}

@@ -1,0 +1,108 @@
+{
+  "abstract" : "A tool that a model can call to gather information at runtime or perform side effects.",
+  "codeExamples" : [
+    {
+      "code" : "struct FindContacts: Tool {\n    let name = \"findContacts\"\n    let description = \"Find a specific number of contacts\"\n\n    @Generable\n    struct Arguments {\n        @Guide(description: \"The number of contacts to get\", .range(1...10))\n        let count: Int\n    }\n\n    func call(arguments: Arguments) async throws -> [String] {\n        var contacts: [CNContact] = []\n        \/\/ Fetch a number of contacts using the arguments.\n        let formattedContacts = contacts.map {\n            \"\\($0.givenName) \\($0.familyName)\"\n        }\n        return formattedContacts\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "79f7b7243ed7afd569c5a3fb22f60201d67d36a06f199379ebef056afba2dc71",
+  "crawledAt" : "2025-12-02T16:04:48Z",
+  "declaration" : {
+    "code" : "protocol Tool<Arguments, Output> : Sendable",
+    "language" : "swift"
+  },
+  "id" : "5D8F25C0-D60C-4DDF-89DB-71996BA9F601",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "Foundation Models",
+  "overview" : "## Overview\n\nTool calling gives the model the ability to call your code to incorporate up-to-date information like recent events and data from your app. A tool includes a name and a description that the framework puts in the prompt to let the model decide when and how often to call your tool.\n\nA `Tool` defines a [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/Tool\/call(arguments:)] method that takes arguments that conforms to [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/ConvertibleFromGeneratedContent], and returns an output of any type that conforms to [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/PromptRepresentable], allowing the model to understand and reason about in subsequent interactions. Typically, [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/Tool\/Output] is a `String` or any [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/Generable] types.\n\nTools must conform to [doc:\/\/com.apple.documentation\/documentation\/Swift\/Sendable] so the framework can run them concurrently. If the model needs to pass the output of one tool as the input to another, it executes back-to-back tool calls.\n\nYou control the life cycle of your tool, so you can track the state of it between calls to the model. For example, you might store a list of database records that you don’t want to reuse between tool calls.\n\nPrompting the model with tools contributes to the available context window size. When you provide a tool in your generation request, the framework puts the tool definitions — name, description, parameter information — in the prompt so the model can decide when and how often to call the tool. After calling your tool, the framework returns the tool’s output back to the model for further processing.\n\nTo efficiently use tool calling:\n\nIf your session exceeds the available context size, it throws [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/LanguageModelSession\/GenerationError\/exceededContextWindowSize(_:)]. When you encounter the context window limit, consider breaking up tool calls across new [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/LanguageModelSession] instances. For more information on managing the context window size, see [doc:\/\/com.apple.documentation\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/FoundationModels\/Tool\ncrawled: 2025-12-02T16:04:48Z\n---\n\n# Tool\n\n**Protocol**\n\nA tool that a model can call to gather information at runtime or perform side effects.\n\n## Declaration\n\n```swift\nprotocol Tool<Arguments, Output> : Sendable\n```\n\n## Overview\n\nTool calling gives the model the ability to call your code to incorporate up-to-date information like recent events and data from your app. A tool includes a name and a description that the framework puts in the prompt to let the model decide when and how often to call your tool.\n\nA `Tool` defines a [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/Tool\/call(arguments:)] method that takes arguments that conforms to [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/ConvertibleFromGeneratedContent], and returns an output of any type that conforms to [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/PromptRepresentable], allowing the model to understand and reason about in subsequent interactions. Typically, [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/Tool\/Output] is a `String` or any [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/Generable] types.\n\n```swift\nstruct FindContacts: Tool {\n    let name = \"findContacts\"\n    let description = \"Find a specific number of contacts\"\n\n    @Generable\n    struct Arguments {\n        @Guide(description: \"The number of contacts to get\", .range(1...10))\n        let count: Int\n    }\n\n    func call(arguments: Arguments) async throws -> [String] {\n        var contacts: [CNContact] = []\n        \/\/ Fetch a number of contacts using the arguments.\n        let formattedContacts = contacts.map {\n            \"\\($0.givenName) \\($0.familyName)\"\n        }\n        return formattedContacts\n    }\n}\n```\n\nTools must conform to [doc:\/\/com.apple.documentation\/documentation\/Swift\/Sendable] so the framework can run them concurrently. If the model needs to pass the output of one tool as the input to another, it executes back-to-back tool calls.\n\nYou control the life cycle of your tool, so you can track the state of it between calls to the model. For example, you might store a list of database records that you don’t want to reuse between tool calls.\n\nPrompting the model with tools contributes to the available context window size. When you provide a tool in your generation request, the framework puts the tool definitions — name, description, parameter information — in the prompt so the model can decide when and how often to call the tool. After calling your tool, the framework returns the tool’s output back to the model for further processing.\n\nTo efficiently use tool calling:\n\n- Reduce [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/Guide(description:)] descriptions to a short phrase each.\n- Limit the number of tools you use to three to five.\n- Include a tool only when its necessary for the task you want to perform.\n- Run an essential tool before calling the model and integrate the tool’s output in the prompt directly.\n\nIf your session exceeds the available context size, it throws [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/LanguageModelSession\/GenerationError\/exceededContextWindowSize(_:)]. When you encounter the context window limit, consider breaking up tool calls across new [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/LanguageModelSession] instances. For more information on managing the context window size, see [doc:\/\/com.apple.documentation\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window].\n\n## Invoking a tool\n\n- **call(arguments:)**: A language model will call this method when it wants to leverage this tool.\n- **Arguments**: The arguments that this tool should accept.\n- **Output**: The output that this tool produces for the language model to reason about in subsequent interactions.\n\n## Getting the tool properties\n\n- **description**: A natural language description of when and how to use the tool.\n- **includesSchemaInInstructions**: If true, the model’s name, description, and parameters schema will be injected into the instructions of sessions that leverage this tool.\n- **name**: A unique name for the tool, such as “get_weather”, “toggleDarkMode”, or “search contacts”.\n- **parameters**: A schema for the parameters this tool accepts.\n\n## Tool calling\n\n- **Expanding generation with tool calling**: Build tools that enable the model to perform tasks that are specific to your use case.\n- **Generate dynamic game content with guided generation and tools**: Make gameplay more lively with AI generated dialog and encounters personalized to the player.\n\n## Inherits From\n\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A language model will call this method when it wants to leverage this tool.",
+          "name" : "call(arguments:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Tool\/call(arguments:)"
+        },
+        {
+          "description" : "The arguments that this tool should accept.",
+          "name" : "Arguments",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Tool\/Arguments"
+        },
+        {
+          "description" : "The output that this tool produces for the language model to reason about in subsequent interactions.",
+          "name" : "Output",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Tool\/Output"
+        }
+      ],
+      "title" : "Invoking a tool"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A natural language description of when and how to use the tool.",
+          "name" : "description",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Tool\/description"
+        },
+        {
+          "description" : "If true, the model’s name, description, and parameters schema will be injected into the instructions of sessions that leverage this tool.",
+          "name" : "includesSchemaInInstructions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Tool\/includesSchemaInInstructions"
+        },
+        {
+          "description" : "A unique name for the tool, such as “get_weather”, “toggleDarkMode”, or “search contacts”.",
+          "name" : "name",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Tool\/name"
+        },
+        {
+          "description" : "A schema for the parameters this tool accepts.",
+          "name" : "parameters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Tool\/parameters"
+        }
+      ],
+      "title" : "Getting the tool properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Build tools that enable the model to perform tasks that are specific to your use case.",
+          "name" : "Expanding generation with tool calling",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/expanding-generation-with-tool-calling"
+        },
+        {
+          "description" : "Make gameplay more lively with AI generated dialog and encounters personalized to the player.",
+          "name" : "Generate dynamic game content with guided generation and tools",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/generate-dynamic-game-content-with-guided-generation-and-tools"
+        }
+      ],
+      "title" : "Tool calling"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "Sendable"
+        },
+        {
+          "name" : "SendableMetatype"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Tool",
+  "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Tool"
+}

@@ -1,0 +1,72 @@
+{
+  "abstract" : "Computes the Euclidean norm and writes the result to the output tensor.",
+  "codeExamples" : [
+    {
+      "code" : "let inputValues: [Float] = [1, 2, 3,\n                            4, 5, 6,\n                            \n                            10, 20, 30,\n                            40, 50, 60,\n                            \n                            100, 200, 300,\n                            400, 500, 600,\n                            \n                            1000, 2000, 3000,\n                            4000, 5000, 6000]\n\nlet input = BNNSNDArrayDescriptor.allocate(\n    initializingFrom: inputValues,\n    shape: .imageCHW(3, 2, 4))",
+      "language" : "swift"
+    },
+    {
+      "code" : "let output = BNNSNDArrayDescriptor.allocateUninitialized(\n    scalarType: Float.self,\n    shape: .vector(1))\n\ntry? BNNS.computeNorm(input: input,\n                     output: output,\n                     axes: [0, 1, 2])\n\n\/\/ Prints `[9587.45]`.\nprint(output.makeArray(of: Float.self)!)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let output = BNNSNDArrayDescriptor.allocateUninitialized(\n    scalarType: Float.self,\n    shape: .matrixColumnMajor(3, 2))\n\ntry? BNNS.computeNorm(input: input,\n                     output: output,\n                     axes: [2])\n\n\/\/ Prints\n\/\/      [1005.0378, 2010.075, 3015.113,\n\/\/       4020.1511, 5025.189, 6030.227]\nprint(output.makeArray(of: Float.self)!)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let output = BNNSNDArrayDescriptor.allocateUninitialized(\n    scalarType: Float.self,\n    shape: .vector(2))\n\ntry? BNNS.computeNorm(input: input,\n                     output: output,\n                     axes: [0, 2])\n\n\/\/ Prints `[3760.507, 8819.171]`\nprint(output.makeArray(of: Float.self)!)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "513891293f82331ffb7d86840df4245b0e6791865947c5a123cae5ffe9636eab",
+  "crawledAt" : "2025-12-01T03:03:51Z",
+  "declaration" : {
+    "code" : "static func computeNorm(input: BNNSNDArrayDescriptor, output: BNNSNDArrayDescriptor, axes: [Int]? = nil) throws",
+    "language" : "swift"
+  },
+  "id" : "3B7712D4-5A37-4382-A423-DA2845BB9997",
+  "kind" : "method",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to compute the norm of either an entire tensor or an axis or axes of a tensor.\n\nFor example, the following code defines a 3D tensor:\n\nDefine the `axes` parameter as either `[0, 1, 2]` or `nil` to specify that the operation computes the norm of the entire tensor. In this case, the norm is a scalar value, and the destination’s data layout must be a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNS\/DataLayout\/vector] with a size of `1`.\n\nOn return, the output descriptor contains a single value that is the square root of the sum of squares of each element in the tensor:\n\n\n\nSpecify an `axes` of `[2]` to compute the norms along the second axis. In this case, the destination must be a matrix with a size that matches the zeroth and first dimensions of the source tensor:\n\nOn return, the output descriptor contains six values that are the norms of the slices along the second axis of the input tensor:\n\n\n\nTo compute the norm along more that one dimension, define the destination tensor with a size of the dimensions you’re not calculating over. For example, the following code defines an `axes` with a value of `[0, 2]` to compute the norm of dimensions zero and two:\n\nOn return, the output descriptor contains two values that are the norms of the top and bottom slices of the input tensor:\n\n",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/accelerate\/bnns\/computenorm(input:output:axes:)\ncrawled: 2025-12-01T03:03:51Z\n---\n\n# computeNorm(input:output:axes:)\n\n**Type Method**\n\nComputes the Euclidean norm and writes the result to the output tensor.\n\n## Declaration\n\n```swift\nstatic func computeNorm(input: BNNSNDArrayDescriptor, output: BNNSNDArrayDescriptor, axes: [Int]? = nil) throws\n```\n\n## Parameters\n\n- **input**: The descriptor of the input.\n- **output**: The descriptor of the output.\n- **axes**: The indices of the axes over which the function computes the norm. Set to `nil` to specify that the function computes the norm over the entire tensor.\n\n## Discussion\n\nUse this function to compute the norm of either an entire tensor or an axis or axes of a tensor.\n\nFor example, the following code defines a 3D tensor:\n\n```swift\nlet inputValues: [Float] = [1, 2, 3,\n                            4, 5, 6,\n                            \n                            10, 20, 30,\n                            40, 50, 60,\n                            \n                            100, 200, 300,\n                            400, 500, 600,\n                            \n                            1000, 2000, 3000,\n                            4000, 5000, 6000]\n\nlet input = BNNSNDArrayDescriptor.allocate(\n    initializingFrom: inputValues,\n    shape: .imageCHW(3, 2, 4))\n```\n\nDefine the `axes` parameter as either `[0, 1, 2]` or `nil` to specify that the operation computes the norm of the entire tensor. In this case, the norm is a scalar value, and the destination’s data layout must be a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNS\/DataLayout\/vector] with a size of `1`.\n\n```swift\nlet output = BNNSNDArrayDescriptor.allocateUninitialized(\n    scalarType: Float.self,\n    shape: .vector(1))\n\ntry? BNNS.computeNorm(input: input,\n                     output: output,\n                     axes: [0, 1, 2])\n\n\/\/ Prints `[9587.45]`.\nprint(output.makeArray(of: Float.self)!)\n```\n\nOn return, the output descriptor contains a single value that is the square root of the sum of squares of each element in the tensor:\n\n\n\nSpecify an `axes` of `[2]` to compute the norms along the second axis. In this case, the destination must be a matrix with a size that matches the zeroth and first dimensions of the source tensor:\n\n```swift\nlet output = BNNSNDArrayDescriptor.allocateUninitialized(\n    scalarType: Float.self,\n    shape: .matrixColumnMajor(3, 2))\n\ntry? BNNS.computeNorm(input: input,\n                     output: output,\n                     axes: [2])\n\n\/\/ Prints\n\/\/      [1005.0378, 2010.075, 3015.113,\n\/\/       4020.1511, 5025.189, 6030.227]\nprint(output.makeArray(of: Float.self)!)\n```\n\nOn return, the output descriptor contains six values that are the norms of the slices along the second axis of the input tensor:\n\n\n\nTo compute the norm along more that one dimension, define the destination tensor with a size of the dimensions you’re not calculating over. For example, the following code defines an `axes` with a value of `[0, 2]` to compute the norm of dimensions zero and two:\n\n```swift\nlet output = BNNSNDArrayDescriptor.allocateUninitialized(\n    scalarType: Float.self,\n    shape: .vector(2))\n\ntry? BNNS.computeNorm(input: input,\n                     output: output,\n                     axes: [0, 2])\n\n\/\/ Prints `[3760.507, 8819.171]`\nprint(output.makeArray(of: Float.self)!)\n```\n\nOn return, the output descriptor contains two values that are the norms of the top and bottom slices of the input tensor:\n\n\n\n## Compute norm functions\n\n- **computeNormBackward(input:output:axes:outputGradient:generatingInputGradient:)**: Backpropogates gradients for the compute norm function.\n- **BNNSComputeNorm(_:_:_:_:)**: Computes the specified norm over an entire tensor or the specified axes.\n- **BNNSComputeNormBackward(_:_:_:_:_:_:)**: Backpropogates gradients for the compute norm function.\n- **BNNSNormType**: Constants that describe norm types.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Backpropogates gradients for the compute norm function.",
+          "name" : "computeNormBackward(input:output:axes:outputGradient:generatingInputGradient:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/computeNormBackward(input:output:axes:outputGradient:generatingInputGradient:)"
+        },
+        {
+          "description" : "Computes the specified norm over an entire tensor or the specified axes.",
+          "name" : "BNNSComputeNorm(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSComputeNorm(_:_:_:_:)"
+        },
+        {
+          "description" : "Backpropogates gradients for the compute norm function.",
+          "name" : "BNNSComputeNormBackward(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSComputeNormBackward(_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Constants that describe norm types.",
+          "name" : "BNNSNormType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNormType"
+        }
+      ],
+      "title" : "Compute norm functions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "computeNorm(input:output:axes:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/accelerate\/bnns\/computenorm(input:output:axes:)"
+}

@@ -1,0 +1,46 @@
+{
+  "abstract" : "Detect and respond to user activity information from Handoff or a complication.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Create a list of the user's favorite cities.\nList(favoriteCities) { city in\n    \n    \/\/ Create a navigation link for each city.\n    \/\/ Activate the link if it is for the selected city.\n    NavigationLink(city.name,\n                   destination: CityDetailView(city: city),\n                   isActive: checkActive(city: city))\n        \n        .onContinueUserActivity(viewCityFromComplication) { activity in\n            \n            \/\/ App received a user activity object.\n            \/\/ Check to see whether it has a city index in the userInfo dictionary.\n            if let id = activity.userInfo?[cityIDKey] as? String {\n                \n                \/\/ Navigate to the specified city.\n                selectedCity = allCities[id]\n            }\n            else {\n                \n                \/\/ Display the favorite city list.\n                selectedCity = nil\n            }\n        }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@State var selectedCity: City? = nil\n\n\/\/ Returns a binding that determines whether a given\n\/\/ city is the currently selected city.\nfunc checkActive(city: City) -> Binding<Bool> {\n    Binding {\n        selectedCity == city\n    }\n    set: {\n        \/\/ If the binding is set to true, set the selected city\n        \/\/ to the provided city.\n        if $0 {\n            selectedCity = city\n        }\n        \/\/ if the binding is set to false,\n        \/\/ and the selected city is set to the provided city,\n        \/\/ clear the selected city.\n        else if selectedCity == city {\n            selectedCity = nil\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "ab45feab6776393d987d0d2e39712c1a1600c089e263ae193970a996c8a3bea5",
+  "crawledAt" : "2025-12-01T02:50:18Z",
+  "id" : "2E97A15F-519D-420C-AED2-36D7EB4D07EF",
+  "kind" : "article",
+  "module" : "WatchKit",
+  "overview" : "## Overview\n\nSwiftUI provides the [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/View\/onContinueUserActivity(_:perform:)] modifier to handle incoming [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSUserActivity] objects. This replaces the WatchKit extension delegate’s [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKExtensionDelegate\/handle(_:)-5pyj1] method.\n\nFor example, if you create a complication descriptor using the [doc:\/\/com.apple.documentation\/documentation\/ClockKit\/CLKComplicationDescriptor\/init(identifier:displayName:supportedFamilies:userActivity:)] initializer to pass in an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSUserActivity] object, when the user taps the corresponding complication, the system activates your app and passes the activity object to your [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/View\/onContinueUserActivity(_:perform:)] modifiers. You can use the activity object to navigate to the corresponding content in your app.\n\nNote that in this example, `selectedCity` is a state variable that holds a `City` instance. The `checkActive(city:)` method creates a binding that indicates whether the given city is the currently selected city.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/WatchKit\/handling-user-activity\ncrawled: 2025-12-01T02:50:18Z\n---\n\n# Handling User Activity\n\n**Article**\n\nDetect and respond to user activity information from Handoff or a complication.\n\n## Overview\n\nSwiftUI provides the [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/View\/onContinueUserActivity(_:perform:)] modifier to handle incoming [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSUserActivity] objects. This replaces the WatchKit extension delegate’s [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKExtensionDelegate\/handle(_:)-5pyj1] method.\n\nFor example, if you create a complication descriptor using the [doc:\/\/com.apple.documentation\/documentation\/ClockKit\/CLKComplicationDescriptor\/init(identifier:displayName:supportedFamilies:userActivity:)] initializer to pass in an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSUserActivity] object, when the user taps the corresponding complication, the system activates your app and passes the activity object to your [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/View\/onContinueUserActivity(_:perform:)] modifiers. You can use the activity object to navigate to the corresponding content in your app.\n\n```swift\n\/\/ Create a list of the user's favorite cities.\nList(favoriteCities) { city in\n    \n    \/\/ Create a navigation link for each city.\n    \/\/ Activate the link if it is for the selected city.\n    NavigationLink(city.name,\n                   destination: CityDetailView(city: city),\n                   isActive: checkActive(city: city))\n        \n        .onContinueUserActivity(viewCityFromComplication) { activity in\n            \n            \/\/ App received a user activity object.\n            \/\/ Check to see whether it has a city index in the userInfo dictionary.\n            if let id = activity.userInfo?[cityIDKey] as? String {\n                \n                \/\/ Navigate to the specified city.\n                selectedCity = allCities[id]\n            }\n            else {\n                \n                \/\/ Display the favorite city list.\n                selectedCity = nil\n            }\n        }\n}\n```\n\nNote that in this example, `selectedCity` is a state variable that holds a `City` instance. The `checkActive(city:)` method creates a binding that indicates whether the given city is the currently selected city.\n\n```swift\n@State var selectedCity: City? = nil\n\n\/\/ Returns a binding that determines whether a given\n\/\/ city is the currently selected city.\nfunc checkActive(city: City) -> Binding<Bool> {\n    Binding {\n        selectedCity == city\n    }\n    set: {\n        \/\/ If the binding is set to true, set the selected city\n        \/\/ to the provided city.\n        if $0 {\n            selectedCity = city\n        }\n        \/\/ if the binding is set to false,\n        \/\/ and the selected city is set to the provided city,\n        \/\/ clear the selected city.\n        else if selectedCity == city {\n            selectedCity = nil\n        }\n    }\n}\n```\n\n## Responding to life cycle events\n\n- **Handling Common State Transitions**: Detect and respond to common state transitions.\n- **Working with the watchOS app life cycle**: Learn how the watchOS app life cycle operates and responds to life cycle notification methods.\n- **Taking Advantage of Frontmost App State**: Understand the frontmost app state, and the features it provides to your app.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Detect and respond to common state transitions.",
+          "name" : "Handling Common State Transitions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/handling-common-state-transitions"
+        },
+        {
+          "description" : "Learn how the watchOS app life cycle operates and responds to life cycle notification methods.",
+          "name" : "Working with the watchOS app life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/working-with-the-watchos-app-life-cycle"
+        },
+        {
+          "description" : "Understand the frontmost app state, and the features it provides to your app.",
+          "name" : "Taking Advantage of Frontmost App State",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/taking-advantage-of-frontmost-app-state"
+        }
+      ],
+      "title" : "Responding to life cycle events"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Handling User Activity",
+  "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/handling-user-activity"
+}

@@ -1,0 +1,152 @@
+{
+  "abstract" : "A convolution kernel with binary weights and an input image using binary approximations.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCoding",
+    "NSCopying",
+    "NSObjectProtocol",
+    "NSSecureCoding"
+  ],
+  "contentHash" : "c8bdae8347a0b899c88b0f0d4a44283420756340e354a8af25e43d2e003f76f8",
+  "crawledAt" : "2025-12-02T20:02:05Z",
+  "declaration" : {
+    "code" : "class MPSCNNBinaryConvolution",
+    "language" : "swift"
+  },
+  "id" : "6556C8FA-01F5-4A9F-9B9E-011D1791BA58",
+  "inheritedBy" : [
+    "MPSCNNBinaryFullyConnected"
+  ],
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Metal Performance Shaders",
+  "overview" : "## Overview\n\nThe [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolution] optionally first binarizes the input image and then convolves the result with a set of binary-valued filters, each producing one feature map in the output image (which is a normal image).\n\nThe output is computed as follows:\n\n\n\nwhere the *sum over* *dx,dy* is over the spatial filter kernel window defined by [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionDescriptor\/kernelWidth] and [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionDescriptor\/kernelHeight], *sum over* *f* is over the input feature channel indices within group, *B* contains the binary weights, interpreted as `{-1, 1}` or `{0, 1}` and *scale[c]* is the `outputScaleTerms` array and bias is the `outputBiasTerms` array. Above *i* is the image index in batch the sum over input channels *f* runs through the group indices. The convolution operator ⊗ is defined by [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolutionType] passed in at initialization time of the filter:\n\n`!(x ^ y) = delta_xy = { (x == y) ? 1 : 0 }`\n\nand scaled according to the optional scaling operations.\n\nNote that we output the values of the bitwise convolutions to interval `{-1, 1}`, which means that the output of the XNOR-operator is scaled implicitly as follows:\n\n`r = 2 * ( !(x ^ y) ) - 1 = { -1, 1 }`\n\nThis means that for a dot-product of two 32-bit words the result is:\n\n`r = 2 * popcount(!(x ^ y) ) - 32 = 32 - 2 * popcount( x ^ y ) = { -32, -30, ..., 30, 32 }`\n\n`(x & y) = delta_xy * delta_x1 = { (x == y == 1) ? 1 : 0 }`\n\nand scaled according to the optional scaling operations.\n\nNote that we output the values of the AND-operation is assumed to lie in `{0, 1}` interval and hence no more implicit scaling takes place.\n\nThis means that for a dot-product of two 32-bit words the result is:\n\n`r = popcount(x & y) = { 0, ..., 31, 32 }`\n\nThe input data can be pre-offset and scaled by providing the `inputBiasTerms` and `inputScaleTerms` parameters for the initialization functions and this can be used for example to accomplish batch normalization of the data. The scaling of input values happens before possible beta-image computation.\n\nThe parameter `beta` above is an optional image which is used to compute scaling factors for each spatial position and image index. For the XNOR-Net based networks this is computed as follows:\n\n\n\nwhere *(dx,dy)* are summed over the convolution filter window.\n\n\n\nwhere *in* is the original input image (in full precision) and *Nc* is the number of input channels in the input image. Parameter `beta` is not passed as input and to enable beta-scaling the user can provide [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolutionFlags\/useBetaScaling] in the flags parameter in the initialization functions.\n\nFinally the normal activation neuron is applied and the result is written to the output image.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolution\ncrawled: 2025-12-02T20:02:05Z\n---\n\n# MPSCNNBinaryConvolution\n\n**Class**\n\nA convolution kernel with binary weights and an input image using binary approximations.\n\n## Declaration\n\n```swift\nclass MPSCNNBinaryConvolution\n```\n\n## Overview\n\nThe [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolution] optionally first binarizes the input image and then convolves the result with a set of binary-valued filters, each producing one feature map in the output image (which is a normal image).\n\nThe output is computed as follows:\n\n\n\nwhere the *sum over* *dx,dy* is over the spatial filter kernel window defined by [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionDescriptor\/kernelWidth] and [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionDescriptor\/kernelHeight], *sum over* *f* is over the input feature channel indices within group, *B* contains the binary weights, interpreted as `{-1, 1}` or `{0, 1}` and *scale[c]* is the `outputScaleTerms` array and bias is the `outputBiasTerms` array. Above *i* is the image index in batch the sum over input channels *f* runs through the group indices. The convolution operator ⊗ is defined by [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolutionType] passed in at initialization time of the filter:\n\n\n\n`!(x ^ y) = delta_xy = { (x == y) ? 1 : 0 }`\n\nand scaled according to the optional scaling operations.\n\nNote that we output the values of the bitwise convolutions to interval `{-1, 1}`, which means that the output of the XNOR-operator is scaled implicitly as follows:\n\n`r = 2 * ( !(x ^ y) ) - 1 = { -1, 1 }`\n\nThis means that for a dot-product of two 32-bit words the result is:\n\n`r = 2 * popcount(!(x ^ y) ) - 32 = 32 - 2 * popcount( x ^ y ) = { -32, -30, ..., 30, 32 }`\n\n\n\n`(x & y) = delta_xy * delta_x1 = { (x == y == 1) ? 1 : 0 }`\n\nand scaled according to the optional scaling operations.\n\nNote that we output the values of the AND-operation is assumed to lie in `{0, 1}` interval and hence no more implicit scaling takes place.\n\nThis means that for a dot-product of two 32-bit words the result is:\n\n`r = popcount(x & y) = { 0, ..., 31, 32 }`\n\nThe input data can be pre-offset and scaled by providing the `inputBiasTerms` and `inputScaleTerms` parameters for the initialization functions and this can be used for example to accomplish batch normalization of the data. The scaling of input values happens before possible beta-image computation.\n\nThe parameter `beta` above is an optional image which is used to compute scaling factors for each spatial position and image index. For the XNOR-Net based networks this is computed as follows:\n\n\n\nwhere *(dx,dy)* are summed over the convolution filter window.\n\n\n\nwhere *in* is the original input image (in full precision) and *Nc* is the number of input channels in the input image. Parameter `beta` is not passed as input and to enable beta-scaling the user can provide [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolutionFlags\/useBetaScaling] in the flags parameter in the initialization functions.\n\nFinally the normal activation neuron is applied and the result is written to the output image.\n\n\n\n## Initializers\n\n- **init(coder:device:)**\n- **init(device:convolutionData:outputBiasTerms:outputScaleTerms:inputBiasTerms:inputScaleTerms:type:flags:)**: Initializes a binary convolution kernel.\n- **init(device:convolutionData:scaleValue:type:flags:)**: Initializes a binary convolution kernel.\n- **MPSCNNConvolutionDataSource**: The protocol that provides convolution filter weights and bias terms.\n- **MPSCNNBinaryConvolutionType**: Options that defines what operations are used to perform binary convolution.\n- **MPSCNNBinaryConvolutionFlags**: Options used to control binary convolution kernels.\n\n## Instance Properties\n\n- **inputFeatureChannels**\n- **outputFeatureChannels**\n\n## Convolution Layers\n\n- **MPSCNNConvolution**: A convolution kernel that convolves the input image with a set of filters, with each producing one feature map in the output image.\n- **MPSCNNDepthWiseConvolutionDescriptor**: A description of a convolution object that does depthwise convolution.\n- **MPSCNNSubPixelConvolutionDescriptor**: A description of a convolution object that does subpixel upsampling and reshaping.\n- **MPSCNNConvolutionTranspose**: A transposed convolution kernel.\n- **MPSCNNConvolutionGradient**: A gradient convolution kernel.\n- **MPSCNNConvolutionGradientState**: An object that exposes a gradient convolution kernel’s gradient with respect to weights and biases.\n- **MPSImageSizeEncodingState**: A protocol for objects that contain information about an image size elsewhere in the graph.\n- **MPSCNNConvolutionWeightsAndBiasesState**: A class that stores weights and biases.\n\n## Inherits From\n\n- MPSCNNKernel\n\n## Inherited By\n\n- MPSCNNBinaryFullyConnected\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCoding\n- NSCopying\n- NSObjectProtocol\n- NSSecureCoding\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "init(coder:device:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolution\/init(coder:device:)"
+        },
+        {
+          "description" : "Initializes a binary convolution kernel.",
+          "name" : "init(device:convolutionData:outputBiasTerms:outputScaleTerms:inputBiasTerms:inputScaleTerms:type:flags:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolution\/init(device:convolutionData:outputBiasTerms:outputScaleTerms:inputBiasTerms:inputScaleTerms:type:flags:)"
+        },
+        {
+          "description" : "Initializes a binary convolution kernel.",
+          "name" : "init(device:convolutionData:scaleValue:type:flags:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolution\/init(device:convolutionData:scaleValue:type:flags:)"
+        },
+        {
+          "description" : "The protocol that provides convolution filter weights and bias terms.",
+          "name" : "MPSCNNConvolutionDataSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionDataSource"
+        },
+        {
+          "description" : "Options that defines what operations are used to perform binary convolution.",
+          "name" : "MPSCNNBinaryConvolutionType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolutionType"
+        },
+        {
+          "description" : "Options used to control binary convolution kernels.",
+          "name" : "MPSCNNBinaryConvolutionFlags",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolutionFlags"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "inputFeatureChannels",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolution\/inputFeatureChannels"
+        },
+        {
+          "description" : "",
+          "name" : "outputFeatureChannels",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolution\/outputFeatureChannels"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A convolution kernel that convolves the input image with a set of filters, with each producing one feature map in the output image.",
+          "name" : "MPSCNNConvolution",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolution"
+        },
+        {
+          "description" : "A description of a convolution object that does depthwise convolution.",
+          "name" : "MPSCNNDepthWiseConvolutionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNDepthWiseConvolutionDescriptor"
+        },
+        {
+          "description" : "A description of a convolution object that does subpixel upsampling and reshaping.",
+          "name" : "MPSCNNSubPixelConvolutionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNSubPixelConvolutionDescriptor"
+        },
+        {
+          "description" : "A transposed convolution kernel.",
+          "name" : "MPSCNNConvolutionTranspose",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionTranspose"
+        },
+        {
+          "description" : "A gradient convolution kernel.",
+          "name" : "MPSCNNConvolutionGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionGradient"
+        },
+        {
+          "description" : "An object that exposes a gradient convolution kernel’s gradient with respect to weights and biases.",
+          "name" : "MPSCNNConvolutionGradientState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionGradientState"
+        },
+        {
+          "description" : "A protocol for objects that contain information about an image size elsewhere in the graph.",
+          "name" : "MPSImageSizeEncodingState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSImageSizeEncodingState"
+        },
+        {
+          "description" : "A class that stores weights and biases.",
+          "name" : "MPSCNNConvolutionWeightsAndBiasesState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionWeightsAndBiasesState"
+        }
+      ],
+      "title" : "Convolution Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "MPSCNNKernel"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MPSCNNBinaryConvolution",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolution"
+}

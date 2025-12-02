@@ -1,0 +1,711 @@
+{
+  "abstract" : "Build neural networks with layers.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "204434b72026e6b9eec80b8f3097b7f7eada543c149e6bc7c3984bfc8c7b4ef6",
+  "crawledAt" : "2025-12-02T16:13:22Z",
+  "id" : "932BB9F3-7DC8-4B4F-908D-33589D4BCB98",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Metal Performance Shaders",
+  "overview" : "## Overview\n\n[doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects can reduce the amount of memory used by the CNN by several folds, and similarly reduce the amount of CPU time spent allocating storage and latency between the time a command buffer is committed and when it is actually executed on the GPU.\n\nYou cannot read or write to a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] object using the CPU. Generally, [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects should be created as needed and thrown away promptly. Persistent objects should not retain them.\n\nPlease be sure to understand the purpose of the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/readCount] property.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/convolutional-neural-network-kernels\ncrawled: 2025-12-02T16:13:22Z\n---\n\n# Convolutional Neural Network Kernels\n\n**API Collection**\n\nBuild neural networks with layers.\n\n## Overview\n\n- Think carefully about the edge mode requested for pooling layers. The default value is [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImageEdgeMode\/zero], but there are times when a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImageEdgeMode\/clamp] value may be better.\n- To avoid reading off the edge of an image for filters that have a filter area (convolution, pooling), set `MPSCNNKernel.offset = (MPSOffset){ .x = kernelWidth\/2, .y = kernelHeight\/2, .z = 0}` and reduce the size of the output image by `{kernelWidth-1, kernelHeight-1, 0}`. The filter area stretches up and to the left of the kernel offset by `{kernelWidth\/2, kernelHeight\/2}`.\n- Always remember the following distinction:\n- The [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNConvolution] class takes weights in the order `weight[outputChannels][kernelHeight][kernelWidth][inputChannels\/groups]`.\n- The [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNFullyConnected] class takes weights in the order `weight[outputChannels][sourceWidth][sourceHeight][inputChannels]`.\n- Initialize [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNKernel] objects once and reuse them.\n- You can use [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNNeuron] objects and similar to perform pre-processing of images, such as scaling and resizing.\n- Specify a neuron filter with an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionDescriptor] object to combine the convolution and neuron operations.\n- Use [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects for intermediate images that live for a short period of time (one [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] object).\n\n[doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects can reduce the amount of memory used by the CNN by several folds, and similarly reduce the amount of CPU time spent allocating storage and latency between the time a command buffer is committed and when it is actually executed on the GPU.\n\nYou cannot read or write to a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] object using the CPU. Generally, [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects should be created as needed and thrown away promptly. Persistent objects should not retain them.\n\nPlease be sure to understand the purpose of the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/readCount] property.\n\n- Because the Metal Performance Shaders framework encodes its work in place in your command buffer, you always have the option to insert your own code in between [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNKernel] encodings as a Metal function for tasks not covered by the framework. You do not need to use the Metal Performance Shaders framework for everything.\n\n## Arithmetic Layers\n\n- **MPSCNNAdd**: An addition operator.\n- **MPSCNNAddGradient**: A gradient addition operator.\n- **MPSCNNSubtract**: A subtraction operator.\n- **MPSCNNSubtractGradient**: A gradient subtraction operator.\n- **MPSCNNMultiply**: A multiply operator.\n- **MPSCNNMultiplyGradient**: A gradient multiply operator.\n- **MPSCNNDivide**: A division operator.\n- **MPSCNNArithmetic**: The base class for arithmetic operators.\n- **MPSCNNArithmeticGradient**: The base class for gradient arithmetic operators.\n- **MPSCNNArithmeticGradientState**: An object that stores the clamp mask used by gradient arithmetic operators.\n\n## Convolution Layers\n\n- **MPSCNNBinaryConvolution**: A convolution kernel with binary weights and an input image using binary approximations.\n- **MPSCNNConvolution**: A convolution kernel that convolves the input image with a set of filters, with each producing one feature map in the output image.\n- **MPSCNNDepthWiseConvolutionDescriptor**: A description of a convolution object that does depthwise convolution.\n- **MPSCNNSubPixelConvolutionDescriptor**: A description of a convolution object that does subpixel upsampling and reshaping.\n- **MPSCNNConvolutionTranspose**: A transposed convolution kernel.\n- **MPSCNNConvolutionGradient**: A gradient convolution kernel.\n- **MPSCNNConvolutionGradientState**: An object that exposes a gradient convolution kernel’s gradient with respect to weights and biases.\n- **MPSImageSizeEncodingState**: A protocol for objects that contain information about an image size elsewhere in the graph.\n- **MPSCNNConvolutionWeightsAndBiasesState**: A class that stores weights and biases.\n\n## Pooling Layers\n\n- **MPSCNNPoolingAverage**: An average pooling filter.\n- **MPSCNNPoolingAverageGradient**: A gradient average pooling filter.\n- **MPSCNNPoolingL2Norm**: An L2-norm pooling filter.\n- **MPSCNNPoolingMax**: A max pooling filter.\n- **MPSCNNDilatedPoolingMax**: A dilated max pooling filter.\n- **MPSCNNPooling**: A pooling kernel.\n- **MPSCNNPoolingGradient**: A gradient pooling kernel.\n- **MPSCNNDilatedPoolingMaxGradient**: A gradient dilated max pooling filter.\n- **MPSCNNPoolingL2NormGradient**: A gradient L2-norm pooling filter.\n- **MPSCNNPoolingMaxGradient**: A gradient max pooling filter.\n\n## Fully Connected Layers\n\n- **MPSCNNBinaryFullyConnected**: A fully connected convolution layer with binary weights and optionally binarized input image.\n- **MPSCNNFullyConnected**: A fully connected convolution layer, also known as an inner product layer.\n- **MPSCNNFullyConnectedGradient**: A gradient fully connected convolution layer.\n\n## Neuron Layers\n\n- **MPSCNNNeuronAbsolute**: An absolute neuron filter.\n- **MPSCNNNeuronELU**: A parametric ELU neuron filter.\n- **MPSCNNNeuronHardSigmoid**: A hard sigmoid neuron filter.\n- **MPSCNNNeuronLinear**: A linear neuron filter.\n- **MPSCNNNeuronPReLU**: A parametric ReLU (Rectified Linear Unit) neuron filter.\n- **MPSCNNNeuronReLUN**: A ReLUN neuron filter.\n- **MPSCNNNeuronReLU**: A ReLU (Rectified Linear Unit) neuron filter.\n- **MPSCNNNeuronSigmoid**: A sigmoid neuron filter.\n- **MPSCNNNeuronSoftPlus**: A parametric softplus neuron filter.\n- **MPSCNNNeuronSoftSign**: A softsign neuron filter.\n- **MPSCNNNeuronTanH**: A hyperbolic tangent neuron filter.\n- **MPSCNNNeuron**: A filter that applies a neuron activation function.\n- **MPSCNNNeuronExponential**: An exponential neuron filter.\n- **MPSCNNNeuronGradient**: A gradient neuron filter.\n- **MPSCNNNeuronLogarithm**: A logarithm neuron filter.\n- **MPSCNNNeuronPower**: A power neuron filter.\n- **MPSNNNeuronDescriptor**: An object that specifies properties used by a neuron kernel.\n\n## Softmax Layers\n\n- **MPSCNNSoftMax**: A neural transfer function that is useful for classification tasks.\n- **MPSCNNLogSoftMax**: A neural transfer function that  is useful for constructing a loss function to be minimized when training neural networks.\n- **MPSCNNLogSoftMaxGradient**: A gradient logarithmic softmax filter.\n- **MPSCNNSoftMaxGradient**: A gradient softmax filter.\n\n## Normalization Layers\n\n- **MPSCNNCrossChannelNormalization**: A normalization kernel applied across feature channels.\n- **MPSCNNCrossChannelNormalizationGradient**: A gradient normalization kernel applied across feature channels.\n- **MPSCNNLocalContrastNormalization**: A local-contrast normalization kernel.\n- **MPSCNNLocalContrastNormalizationGradient**: A gradient local-contrast normalization kernel.\n- **MPSCNNSpatialNormalization**: A spatial normalization kernel.\n- **MPSCNNSpatialNormalizationGradient**: A gradient spatial normalization kernel.\n- **MPSCNNBatchNormalization**: A batch normalization kernel.\n- **MPSCNNBatchNormalizationGradient**: A gradient batch normalization kernel.\n- **MPSCNNBatchNormalizationState**: An object that stores data required to execute batch normalization.\n- **MPSCNNNormalizationMeanAndVarianceState**: An object that stores mean and variance terms used to execute batch normalization.\n- **MPSCNNBatchNormalizationStatistics**: An object that stores statistics required to execute batch normalization.\n- **MPSCNNBatchNormalizationStatisticsGradient**: An object that stores the gradient of the loss function with respect to the batch statistics and batch normalization weights.\n- **MPSCNNInstanceNormalization**: An instance normalization kernel.\n- **MPSCNNInstanceNormalizationGradient**: A gradient instance normalization kernel.\n- **MPSCNNInstanceNormalizationGradientState**: An object that stores information required to execute a gradient pass for instance normalization.\n- **MPSCNNNormalizationGammaAndBetaState**: An object that stores gamma and beta terms used to apply a scale and bias in instance- or batch-normalization operations.\n\n## Upsampling Layers\n\n- **MPSCNNUpsampling**: A filter that resamples an existing MPS image.\n- **MPSCNNUpsamplingBilinear**: A bilinear spatial upsampling filter.\n- **MPSCNNUpsamplingNearest**: A nearest spatial upsampling filter.\n- **MPSCNNUpsamplingBilinearGradient**: A gradient bilinear spatial upsampling filter.\n- **MPSCNNUpsamplingGradient**: A gradient filter that upsamples an existing Metal Performance Shaders image.\n- **MPSCNNUpsamplingNearestGradient**: A gradient upsampling filter that samples the pixel nearest to the source when upsampling to the destination pixel.\n\n## Dropout Layers\n\n- **MPSCNNDropout**: A dropout filter.\n- **MPSCNNDropoutGradient**: A gradient dropout filter.\n- **MPSCNNDropoutGradientState**: A class that stores the mask used by dropout and gradient dropout filters.\n\n## Loss Layers\n\n- **MPSCNNLoss**: A kernel that computes the loss and loss gradient between specified predictions and labels.\n- **MPSCNNLossDataDescriptor**: An object that specifies properties used by a loss data descriptor.\n- **MPSCNNLossDescriptor**: An object that specifies properties used by a loss kernel.\n- **MPSCNNLossLabels**: A class that stores the per-element weight buffer used by loss and gradient loss kernels.\n- **MPSCNNYOLOLoss**: A kernel that computes the YOLO loss and loss gradient between specified predictions and labels.\n- **MPSCNNYOLOLossDescriptor**: An object that specifies properties used by a YOLO loss kernel.\n\n## Reduction Layers\n\n- **MPSNNReduceRowMax**: A reduction filter that returns the maximum value for each row in an image.\n- **MPSNNReduceRowMin**: A reduction filter that returns the minimum value for each row in an image.\n- **MPSNNReduceRowSum**: A reduction filter that returns the sum of all values for each row in an image.\n- **MPSNNReduceRowMean**: A reduction filter that returns the mean value for each row in an image.\n- **MPSNNReduceColumnMax**: A reduction filter that returns the maximum value for each column in an image.\n- **MPSNNReduceColumnMin**: A reduction filter that returns the minimum value for each column in an image.\n- **MPSNNReduceColumnSum**: A reduction filter that returns the sum of all values for each column in an image.\n- **MPSNNReduceColumnMean**: A reduction filter that returns the mean value for each column in an image.\n- **MPSNNReduceFeatureChannelsMax**: A reduction filter that returns the maximum value for each feature channel in an image.\n- **MPSNNReduceFeatureChannelsMin**: A reduction filter that returns the minimum value for each feature channel in an image.\n- **MPSNNReduceFeatureChannelsSum**: A reduction filter that returns the sum of all values for each feature channel in an image.\n- **MPSNNReduceFeatureChannelsMean**: A reduction filter that returns the mean value for each feature channel in an image.\n- **MPSNNReduceFeatureChannelsArgumentMax**: A reduction filter that returns the index of the location of the maximum value for each feature channel in an image.\n- **MPSNNReduceFeatureChannelsArgumentMin**: A reduction filter that returns the index of the location of the minimum value for each feature channel in an image.\n- **MPSNNReduceFeatureChannelsAndWeightsSum**: A reduction filter that returns the weighted sum of all values for each feature channel in an image.\n- **MPSNNReduceFeatureChannelsAndWeightsMean**: A reduction filter that returns the weighted sum for each feature channel in an image.\n- **MPSNNReduceUnary**: The base class for unary reduction filters.\n- **MPSNNReduceBinary**: The base class for binary reduction filters.\n\n## Reshape Layer\n\n- **MPSNNReshape**: The base class for reshape operations.\n\n## Slice Layer\n\n- **MPSNNSlice**: A kernel that extracts a slice from an image.\n\n## Optimization Layers\n\n- **MPSNNOptimizerAdam**: An optimization layer that performs an Adam pdate.\n- **MPSNNOptimizerRMSProp**: An optimization layer that performs a root mean square propagation update.\n- **MPSNNOptimizerStochasticGradientDescent**: An optimization layer that performs a gradient descent with an optional momentum update.\n- **MPSNNOptimizer**: The base class for optimization layers.\n- **MPSNNOptimizerDescriptor**: An object that specifies properties used by an optimizer kernel.\n\n## Layer Base Classes\n\n- **MPSCNNKernel**: Base class for neural network layers.\n- **MPSCNNBinaryKernel**: A convolution neural network kernel.\n- **MPSCNNGradientKernel**: The base class for gradient layers.\n\n## Predefined Padding Policies\n\n- **MPSNNDefaultPadding**: A class that provides predefined padding policies for common tasks.\n\n## Neural Networks\n\n- **Training a Neural Network with Metal Performance Shaders**: Use an MPS neural network graph to train a simple neural network digit classifier.\n- **MPSImage**: A texture that may have more than four channels for use in convolutional neural networks.\n- **MPSTemporaryImage**: A texture for use in convolutional neural networks that stores transient data to be used and discarded promptly.\n- **Objects that Simplify the Creation of Neural Networks**: Simplify the creation of neural networks using networks of filter, image, and state nodes.\n- **Recurrent Neural Networks**: Create recurrent neural networks.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An addition operator.",
+          "name" : "MPSCNNAdd",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNAdd"
+        },
+        {
+          "description" : "A gradient addition operator.",
+          "name" : "MPSCNNAddGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNAddGradient"
+        },
+        {
+          "description" : "A subtraction operator.",
+          "name" : "MPSCNNSubtract",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNSubtract"
+        },
+        {
+          "description" : "A gradient subtraction operator.",
+          "name" : "MPSCNNSubtractGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNSubtractGradient"
+        },
+        {
+          "description" : "A multiply operator.",
+          "name" : "MPSCNNMultiply",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNMultiply"
+        },
+        {
+          "description" : "A gradient multiply operator.",
+          "name" : "MPSCNNMultiplyGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNMultiplyGradient"
+        },
+        {
+          "description" : "A division operator.",
+          "name" : "MPSCNNDivide",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNDivide"
+        },
+        {
+          "description" : "The base class for arithmetic operators.",
+          "name" : "MPSCNNArithmetic",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNArithmetic"
+        },
+        {
+          "description" : "The base class for gradient arithmetic operators.",
+          "name" : "MPSCNNArithmeticGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNArithmeticGradient"
+        },
+        {
+          "description" : "An object that stores the clamp mask used by gradient arithmetic operators.",
+          "name" : "MPSCNNArithmeticGradientState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNArithmeticGradientState"
+        }
+      ],
+      "title" : "Arithmetic Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A convolution kernel with binary weights and an input image using binary approximations.",
+          "name" : "MPSCNNBinaryConvolution",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryConvolution"
+        },
+        {
+          "description" : "A convolution kernel that convolves the input image with a set of filters, with each producing one feature map in the output image.",
+          "name" : "MPSCNNConvolution",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolution"
+        },
+        {
+          "description" : "A description of a convolution object that does depthwise convolution.",
+          "name" : "MPSCNNDepthWiseConvolutionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNDepthWiseConvolutionDescriptor"
+        },
+        {
+          "description" : "A description of a convolution object that does subpixel upsampling and reshaping.",
+          "name" : "MPSCNNSubPixelConvolutionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNSubPixelConvolutionDescriptor"
+        },
+        {
+          "description" : "A transposed convolution kernel.",
+          "name" : "MPSCNNConvolutionTranspose",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionTranspose"
+        },
+        {
+          "description" : "A gradient convolution kernel.",
+          "name" : "MPSCNNConvolutionGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionGradient"
+        },
+        {
+          "description" : "An object that exposes a gradient convolution kernel’s gradient with respect to weights and biases.",
+          "name" : "MPSCNNConvolutionGradientState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionGradientState"
+        },
+        {
+          "description" : "A protocol for objects that contain information about an image size elsewhere in the graph.",
+          "name" : "MPSImageSizeEncodingState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSImageSizeEncodingState"
+        },
+        {
+          "description" : "A class that stores weights and biases.",
+          "name" : "MPSCNNConvolutionWeightsAndBiasesState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionWeightsAndBiasesState"
+        }
+      ],
+      "title" : "Convolution Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An average pooling filter.",
+          "name" : "MPSCNNPoolingAverage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingAverage"
+        },
+        {
+          "description" : "A gradient average pooling filter.",
+          "name" : "MPSCNNPoolingAverageGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingAverageGradient"
+        },
+        {
+          "description" : "An L2-norm pooling filter.",
+          "name" : "MPSCNNPoolingL2Norm",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingL2Norm"
+        },
+        {
+          "description" : "A max pooling filter.",
+          "name" : "MPSCNNPoolingMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingMax"
+        },
+        {
+          "description" : "A dilated max pooling filter.",
+          "name" : "MPSCNNDilatedPoolingMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNDilatedPoolingMax"
+        },
+        {
+          "description" : "A pooling kernel.",
+          "name" : "MPSCNNPooling",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPooling"
+        },
+        {
+          "description" : "A gradient pooling kernel.",
+          "name" : "MPSCNNPoolingGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingGradient"
+        },
+        {
+          "description" : "A gradient dilated max pooling filter.",
+          "name" : "MPSCNNDilatedPoolingMaxGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNDilatedPoolingMaxGradient"
+        },
+        {
+          "description" : "A gradient L2-norm pooling filter.",
+          "name" : "MPSCNNPoolingL2NormGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingL2NormGradient"
+        },
+        {
+          "description" : "A gradient max pooling filter.",
+          "name" : "MPSCNNPoolingMaxGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingMaxGradient"
+        }
+      ],
+      "title" : "Pooling Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A fully connected convolution layer with binary weights and optionally binarized input image.",
+          "name" : "MPSCNNBinaryFullyConnected",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryFullyConnected"
+        },
+        {
+          "description" : "A fully connected convolution layer, also known as an inner product layer.",
+          "name" : "MPSCNNFullyConnected",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNFullyConnected"
+        },
+        {
+          "description" : "A gradient fully connected convolution layer.",
+          "name" : "MPSCNNFullyConnectedGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNFullyConnectedGradient"
+        }
+      ],
+      "title" : "Fully Connected Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An absolute neuron filter.",
+          "name" : "MPSCNNNeuronAbsolute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronAbsolute"
+        },
+        {
+          "description" : "A parametric ELU neuron filter.",
+          "name" : "MPSCNNNeuronELU",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronELU"
+        },
+        {
+          "description" : "A hard sigmoid neuron filter.",
+          "name" : "MPSCNNNeuronHardSigmoid",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronHardSigmoid"
+        },
+        {
+          "description" : "A linear neuron filter.",
+          "name" : "MPSCNNNeuronLinear",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronLinear"
+        },
+        {
+          "description" : "A parametric ReLU (Rectified Linear Unit) neuron filter.",
+          "name" : "MPSCNNNeuronPReLU",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronPReLU"
+        },
+        {
+          "description" : "A ReLUN neuron filter.",
+          "name" : "MPSCNNNeuronReLUN",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronReLUN"
+        },
+        {
+          "description" : "A ReLU (Rectified Linear Unit) neuron filter.",
+          "name" : "MPSCNNNeuronReLU",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronReLU"
+        },
+        {
+          "description" : "A sigmoid neuron filter.",
+          "name" : "MPSCNNNeuronSigmoid",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronSigmoid"
+        },
+        {
+          "description" : "A parametric softplus neuron filter.",
+          "name" : "MPSCNNNeuronSoftPlus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronSoftPlus"
+        },
+        {
+          "description" : "A softsign neuron filter.",
+          "name" : "MPSCNNNeuronSoftSign",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronSoftSign"
+        },
+        {
+          "description" : "A hyperbolic tangent neuron filter.",
+          "name" : "MPSCNNNeuronTanH",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronTanH"
+        },
+        {
+          "description" : "A filter that applies a neuron activation function.",
+          "name" : "MPSCNNNeuron",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuron"
+        },
+        {
+          "description" : "An exponential neuron filter.",
+          "name" : "MPSCNNNeuronExponential",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronExponential"
+        },
+        {
+          "description" : "A gradient neuron filter.",
+          "name" : "MPSCNNNeuronGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronGradient"
+        },
+        {
+          "description" : "A logarithm neuron filter.",
+          "name" : "MPSCNNNeuronLogarithm",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronLogarithm"
+        },
+        {
+          "description" : "A power neuron filter.",
+          "name" : "MPSCNNNeuronPower",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronPower"
+        },
+        {
+          "description" : "An object that specifies properties used by a neuron kernel.",
+          "name" : "MPSNNNeuronDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNNeuronDescriptor"
+        }
+      ],
+      "title" : "Neuron Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A neural transfer function that is useful for classification tasks.",
+          "name" : "MPSCNNSoftMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNSoftMax"
+        },
+        {
+          "description" : "A neural transfer function that  is useful for constructing a loss function to be minimized when training neural networks.",
+          "name" : "MPSCNNLogSoftMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLogSoftMax"
+        },
+        {
+          "description" : "A gradient logarithmic softmax filter.",
+          "name" : "MPSCNNLogSoftMaxGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLogSoftMaxGradient"
+        },
+        {
+          "description" : "A gradient softmax filter.",
+          "name" : "MPSCNNSoftMaxGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNSoftMaxGradient"
+        }
+      ],
+      "title" : "Softmax Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A normalization kernel applied across feature channels.",
+          "name" : "MPSCNNCrossChannelNormalization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNCrossChannelNormalization"
+        },
+        {
+          "description" : "A gradient normalization kernel applied across feature channels.",
+          "name" : "MPSCNNCrossChannelNormalizationGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNCrossChannelNormalizationGradient"
+        },
+        {
+          "description" : "A local-contrast normalization kernel.",
+          "name" : "MPSCNNLocalContrastNormalization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization"
+        },
+        {
+          "description" : "A gradient local-contrast normalization kernel.",
+          "name" : "MPSCNNLocalContrastNormalizationGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalizationGradient"
+        },
+        {
+          "description" : "A spatial normalization kernel.",
+          "name" : "MPSCNNSpatialNormalization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNSpatialNormalization"
+        },
+        {
+          "description" : "A gradient spatial normalization kernel.",
+          "name" : "MPSCNNSpatialNormalizationGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNSpatialNormalizationGradient"
+        },
+        {
+          "description" : "A batch normalization kernel.",
+          "name" : "MPSCNNBatchNormalization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBatchNormalization"
+        },
+        {
+          "description" : "A gradient batch normalization kernel.",
+          "name" : "MPSCNNBatchNormalizationGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBatchNormalizationGradient"
+        },
+        {
+          "description" : "An object that stores data required to execute batch normalization.",
+          "name" : "MPSCNNBatchNormalizationState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBatchNormalizationState"
+        },
+        {
+          "description" : "An object that stores mean and variance terms used to execute batch normalization.",
+          "name" : "MPSCNNNormalizationMeanAndVarianceState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNormalizationMeanAndVarianceState"
+        },
+        {
+          "description" : "An object that stores statistics required to execute batch normalization.",
+          "name" : "MPSCNNBatchNormalizationStatistics",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBatchNormalizationStatistics"
+        },
+        {
+          "description" : "An object that stores the gradient of the loss function with respect to the batch statistics and batch normalization weights.",
+          "name" : "MPSCNNBatchNormalizationStatisticsGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBatchNormalizationStatisticsGradient"
+        },
+        {
+          "description" : "An instance normalization kernel.",
+          "name" : "MPSCNNInstanceNormalization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNInstanceNormalization"
+        },
+        {
+          "description" : "A gradient instance normalization kernel.",
+          "name" : "MPSCNNInstanceNormalizationGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNInstanceNormalizationGradient"
+        },
+        {
+          "description" : "An object that stores information required to execute a gradient pass for instance normalization.",
+          "name" : "MPSCNNInstanceNormalizationGradientState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNInstanceNormalizationGradientState"
+        },
+        {
+          "description" : "An object that stores gamma and beta terms used to apply a scale and bias in instance- or batch-normalization operations.",
+          "name" : "MPSCNNNormalizationGammaAndBetaState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNormalizationGammaAndBetaState"
+        }
+      ],
+      "title" : "Normalization Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A filter that resamples an existing MPS image.",
+          "name" : "MPSCNNUpsampling",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNUpsampling"
+        },
+        {
+          "description" : "A bilinear spatial upsampling filter.",
+          "name" : "MPSCNNUpsamplingBilinear",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNUpsamplingBilinear"
+        },
+        {
+          "description" : "A nearest spatial upsampling filter.",
+          "name" : "MPSCNNUpsamplingNearest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNUpsamplingNearest"
+        },
+        {
+          "description" : "A gradient bilinear spatial upsampling filter.",
+          "name" : "MPSCNNUpsamplingBilinearGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNUpsamplingBilinearGradient"
+        },
+        {
+          "description" : "A gradient filter that upsamples an existing Metal Performance Shaders image.",
+          "name" : "MPSCNNUpsamplingGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNUpsamplingGradient"
+        },
+        {
+          "description" : "A gradient upsampling filter that samples the pixel nearest to the source when upsampling to the destination pixel.",
+          "name" : "MPSCNNUpsamplingNearestGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNUpsamplingNearestGradient"
+        }
+      ],
+      "title" : "Upsampling Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A dropout filter.",
+          "name" : "MPSCNNDropout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNDropout"
+        },
+        {
+          "description" : "A gradient dropout filter.",
+          "name" : "MPSCNNDropoutGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNDropoutGradient"
+        },
+        {
+          "description" : "A class that stores the mask used by dropout and gradient dropout filters.",
+          "name" : "MPSCNNDropoutGradientState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNDropoutGradientState"
+        }
+      ],
+      "title" : "Dropout Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A kernel that computes the loss and loss gradient between specified predictions and labels.",
+          "name" : "MPSCNNLoss",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLoss"
+        },
+        {
+          "description" : "An object that specifies properties used by a loss data descriptor.",
+          "name" : "MPSCNNLossDataDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLossDataDescriptor"
+        },
+        {
+          "description" : "An object that specifies properties used by a loss kernel.",
+          "name" : "MPSCNNLossDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLossDescriptor"
+        },
+        {
+          "description" : "A class that stores the per-element weight buffer used by loss and gradient loss kernels.",
+          "name" : "MPSCNNLossLabels",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLossLabels"
+        },
+        {
+          "description" : "A kernel that computes the YOLO loss and loss gradient between specified predictions and labels.",
+          "name" : "MPSCNNYOLOLoss",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNYOLOLoss"
+        },
+        {
+          "description" : "An object that specifies properties used by a YOLO loss kernel.",
+          "name" : "MPSCNNYOLOLossDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNYOLOLossDescriptor"
+        }
+      ],
+      "title" : "Loss Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A reduction filter that returns the maximum value for each row in an image.",
+          "name" : "MPSNNReduceRowMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceRowMax"
+        },
+        {
+          "description" : "A reduction filter that returns the minimum value for each row in an image.",
+          "name" : "MPSNNReduceRowMin",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceRowMin"
+        },
+        {
+          "description" : "A reduction filter that returns the sum of all values for each row in an image.",
+          "name" : "MPSNNReduceRowSum",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceRowSum"
+        },
+        {
+          "description" : "A reduction filter that returns the mean value for each row in an image.",
+          "name" : "MPSNNReduceRowMean",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceRowMean"
+        },
+        {
+          "description" : "A reduction filter that returns the maximum value for each column in an image.",
+          "name" : "MPSNNReduceColumnMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceColumnMax"
+        },
+        {
+          "description" : "A reduction filter that returns the minimum value for each column in an image.",
+          "name" : "MPSNNReduceColumnMin",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceColumnMin"
+        },
+        {
+          "description" : "A reduction filter that returns the sum of all values for each column in an image.",
+          "name" : "MPSNNReduceColumnSum",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceColumnSum"
+        },
+        {
+          "description" : "A reduction filter that returns the mean value for each column in an image.",
+          "name" : "MPSNNReduceColumnMean",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceColumnMean"
+        },
+        {
+          "description" : "A reduction filter that returns the maximum value for each feature channel in an image.",
+          "name" : "MPSNNReduceFeatureChannelsMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceFeatureChannelsMax"
+        },
+        {
+          "description" : "A reduction filter that returns the minimum value for each feature channel in an image.",
+          "name" : "MPSNNReduceFeatureChannelsMin",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceFeatureChannelsMin"
+        },
+        {
+          "description" : "A reduction filter that returns the sum of all values for each feature channel in an image.",
+          "name" : "MPSNNReduceFeatureChannelsSum",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceFeatureChannelsSum"
+        },
+        {
+          "description" : "A reduction filter that returns the mean value for each feature channel in an image.",
+          "name" : "MPSNNReduceFeatureChannelsMean",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceFeatureChannelsMean"
+        },
+        {
+          "description" : "A reduction filter that returns the index of the location of the maximum value for each feature channel in an image.",
+          "name" : "MPSNNReduceFeatureChannelsArgumentMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceFeatureChannelsArgumentMax"
+        },
+        {
+          "description" : "A reduction filter that returns the index of the location of the minimum value for each feature channel in an image.",
+          "name" : "MPSNNReduceFeatureChannelsArgumentMin",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceFeatureChannelsArgumentMin"
+        },
+        {
+          "description" : "A reduction filter that returns the weighted sum of all values for each feature channel in an image.",
+          "name" : "MPSNNReduceFeatureChannelsAndWeightsSum",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceFeatureChannelsAndWeightsSum"
+        },
+        {
+          "description" : "A reduction filter that returns the weighted sum for each feature channel in an image.",
+          "name" : "MPSNNReduceFeatureChannelsAndWeightsMean",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceFeatureChannelsAndWeightsMean"
+        },
+        {
+          "description" : "The base class for unary reduction filters.",
+          "name" : "MPSNNReduceUnary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceUnary"
+        },
+        {
+          "description" : "The base class for binary reduction filters.",
+          "name" : "MPSNNReduceBinary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReduceBinary"
+        }
+      ],
+      "title" : "Reduction Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The base class for reshape operations.",
+          "name" : "MPSNNReshape",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNReshape"
+        }
+      ],
+      "title" : "Reshape Layer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A kernel that extracts a slice from an image.",
+          "name" : "MPSNNSlice",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNSlice"
+        }
+      ],
+      "title" : "Slice Layer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An optimization layer that performs an Adam pdate.",
+          "name" : "MPSNNOptimizerAdam",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNOptimizerAdam"
+        },
+        {
+          "description" : "An optimization layer that performs a root mean square propagation update.",
+          "name" : "MPSNNOptimizerRMSProp",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNOptimizerRMSProp"
+        },
+        {
+          "description" : "An optimization layer that performs a gradient descent with an optional momentum update.",
+          "name" : "MPSNNOptimizerStochasticGradientDescent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNOptimizerStochasticGradientDescent"
+        },
+        {
+          "description" : "The base class for optimization layers.",
+          "name" : "MPSNNOptimizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNOptimizer"
+        },
+        {
+          "description" : "An object that specifies properties used by an optimizer kernel.",
+          "name" : "MPSNNOptimizerDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNOptimizerDescriptor"
+        }
+      ],
+      "title" : "Optimization Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Base class for neural network layers.",
+          "name" : "MPSCNNKernel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNKernel"
+        },
+        {
+          "description" : "A convolution neural network kernel.",
+          "name" : "MPSCNNBinaryKernel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBinaryKernel"
+        },
+        {
+          "description" : "The base class for gradient layers.",
+          "name" : "MPSCNNGradientKernel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNGradientKernel"
+        }
+      ],
+      "title" : "Layer Base Classes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A class that provides predefined padding policies for common tasks.",
+          "name" : "MPSNNDefaultPadding",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNDefaultPadding"
+        }
+      ],
+      "title" : "Predefined Padding Policies"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Use an MPS neural network graph to train a simple neural network digit classifier.",
+          "name" : "Training a Neural Network with Metal Performance Shaders",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/training-a-neural-network-with-metal-performance-shaders"
+        },
+        {
+          "description" : "A texture that may have more than four channels for use in convolutional neural networks.",
+          "name" : "MPSImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSImage"
+        },
+        {
+          "description" : "A texture for use in convolutional neural networks that stores transient data to be used and discarded promptly.",
+          "name" : "MPSTemporaryImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage"
+        },
+        {
+          "description" : "Simplify the creation of neural networks using networks of filter, image, and state nodes.",
+          "name" : "Objects that Simplify the Creation of Neural Networks",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/objects-that-simplify-the-creation-of-neural-networks"
+        },
+        {
+          "description" : "Create recurrent neural networks.",
+          "name" : "Recurrent Neural Networks",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/recurrent-neural-networks"
+        }
+      ],
+      "title" : "Neural Networks"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Convolutional Neural Network Kernels",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/convolutional-neural-network-kernels"
+}

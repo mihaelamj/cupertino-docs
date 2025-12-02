@@ -1,0 +1,204 @@
+{
+  "abstract" : "A description of a long short-term memory block or layer.",
+  "codeExamples" : [
+    {
+      "code" : "I_i = gi(  Wi_ij * x_j  +  Ui_ij * h0_j  +  Vi_ij * c0_j  + bi_i  )\nF_i = gf(  Wf_ij * x_j  +  Uf_ij * h0_j  +  Vf_ij * c0_j  + bf_i  )\nC_i = gc(  Wc_ij * x_j  +  Uc_ij * h0_j  +  Vc_ij * c0_j  + bc_i  )\n\nc1_i = F_i c0_i  +  I_i C_i\n\nO_i = go(  Wo_ij * x_j  +  Uo_ij * h0_j  +  Vo_ij * c1_j  + bo_i  )\nh1_i = O_i gh( c1_i )",
+      "language" : "other"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "d5397834d6a98a064b2f07dcc3e0dac11b0fc317ec53393502fdc1f29b35069b",
+  "crawledAt" : "2025-12-02T20:03:27Z",
+  "declaration" : {
+    "code" : "class MPSLSTMDescriptor",
+    "language" : "swift"
+  },
+  "id" : "1CC70391-F713-418D-9E99-494B75B5C7B2",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Metal Performance Shaders",
+  "overview" : "## Overview\n\nThe recurrent neural network (RNN) layer initialized with [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor] transforms the input data (image or matrix), the memory cell data, and previous output with a set of filters. Each produces one feature map in the output data and memory cell according to the long short-term memory (LSTM) formula detailed below.\n\nYou may provide the LSTM unit with a single input or a sequence of inputs.\n\n### Description of Operation\n\nThe output of the LSTM layer is computed as follows:\n\nThe `*` stands for convolution (see [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSRNNImageInferenceLayer]) or matrix-vector\/matrix multiplication (see [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSRNNMatrixInferenceLayer]).\n\nSummation is over index `j` (except for the batch index), but there’s no summation over repeated index `i` (the output index).\n\nNote that for validity, all intermediate images must be of same size, and all `U` and `V` matrices must be square (that is, [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSRNNDescriptor\/outputFeatureChannels] == [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSRNNDescriptor\/inputFeatureChannels]). Also, the bias terms are scalars with regard to spatial dimensions.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\ncrawled: 2025-12-02T20:03:27Z\n---\n\n# MPSLSTMDescriptor\n\n**Class**\n\nA description of a long short-term memory block or layer.\n\n## Declaration\n\n```swift\nclass MPSLSTMDescriptor\n```\n\n## Overview\n\nThe recurrent neural network (RNN) layer initialized with [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor] transforms the input data (image or matrix), the memory cell data, and previous output with a set of filters. Each produces one feature map in the output data and memory cell according to the long short-term memory (LSTM) formula detailed below.\n\nYou may provide the LSTM unit with a single input or a sequence of inputs.\n\n### Description of Operation\n\n1. Let `x_j` be the input data (at time index `t` of sequence, `j` index containing quadruplet: batch index, `x`,`y` and feature index (`x = y = 0` for matrices)).\n2. Let `h0_j` be the recurrent input (previous output) data from previous time step (at time index `t-1` of sequence).\n3. Let `h1_i` be the output data produced at this time step.\n4. Let `c0_j` be the previous memory cell data (at time index `t-1` of sequence).\n5. Let `c1_i` be the new memory cell data (at time index `t-1` of sequence).\n6. Let `Wi_ij`, `Ui_ij`, `Vi_ij` be the input gate weights for input, recurrent input, and memory cell (peephole) data, respectively.\n7. Let `bi_i` be the bias for the input gate.\n8. Let `Wf_ij`, `Uf_ij`, `Vf_ij` be the forget gate weights for input, recurrent input, and memory cell data, respectively.\n9. Let `bf_i` be the bias for the forget gate.\n10. Let `Wo_ij`, `Uo_ij`, `Vo_ij` be the output gate weights for input, recurrent input, and memory cell data, respectively.\n11. Let `bo_i` be the bias for the output gate.\n12. Let `Wc_ij`, `Uc_ij`, `Vc_ij` be the memory cell gate weights for input, recurrent input, and memory cell data, respectively.\n13. Let `bc_i` be the bias for the memory cell gate.\n14. Let `gi(x)`, `gf(x)`, `go(x)`, `gc(x)` be the neuron activation function for the input, forget, output gate, and memory cell gate.\n15. Let `gh(x)` be the activation function applied to result memory cell data.\n\nThe output of the LSTM layer is computed as follows:\n\n```other\nI_i = gi(  Wi_ij * x_j  +  Ui_ij * h0_j  +  Vi_ij * c0_j  + bi_i  )\nF_i = gf(  Wf_ij * x_j  +  Uf_ij * h0_j  +  Vf_ij * c0_j  + bf_i  )\nC_i = gc(  Wc_ij * x_j  +  Uc_ij * h0_j  +  Vc_ij * c0_j  + bc_i  )\n\nc1_i = F_i c0_i  +  I_i C_i\n\nO_i = go(  Wo_ij * x_j  +  Uo_ij * h0_j  +  Vo_ij * c1_j  + bo_i  )\nh1_i = O_i gh( c1_i )\n```\n\nThe `*` stands for convolution (see [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSRNNImageInferenceLayer]) or matrix-vector\/matrix multiplication (see [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSRNNMatrixInferenceLayer]).\n\nSummation is over index `j` (except for the batch index), but there’s no summation over repeated index `i` (the output index).\n\nNote that for validity, all intermediate images must be of same size, and all `U` and `V` matrices must be square (that is, [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSRNNDescriptor\/outputFeatureChannels] == [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSRNNDescriptor\/inputFeatureChannels]). Also, the bias terms are scalars with regard to spatial dimensions.\n\n## Instance Properties\n\n- **cellGateInputWeights**\n- **cellGateMemoryWeights**\n- **cellGateRecurrentWeights**\n- **cellToOutputNeuronParamA**\n- **cellToOutputNeuronParamB**\n- **cellToOutputNeuronType**\n- **MPSCNNNeuronType**: The types of neuron filter to append to a convolution.\n- **forgetGateInputWeights**\n- **forgetGateMemoryWeights**\n- **forgetGateRecurrentWeights**\n- **inputGateInputWeights**\n- **inputGateMemoryWeights**\n- **inputGateRecurrentWeights**\n- **memoryWeightsAreDiagonal**\n- **outputGateInputWeights**\n- **outputGateMemoryWeights**\n- **outputGateRecurrentWeights**\n- **MPSCNNConvolutionDataSource**: The protocol that provides convolution filter weights and bias terms.\n- **cellToOutputNeuronParamC**\n\n## Type Methods\n\n- **createLSTMDescriptor(withInputFeatureChannels:outputFeatureChannels:)**\n\n## Recurrent Neural Networks\n\n- **MPSRNNImageInferenceLayer**: A recurrent neural network layer for inference on Metal Performance Shaders images.\n- **MPSRNNMatrixInferenceLayer**: A recurrent neural network layer for inference on Metal Performance Shaders matrices.\n- **MPSRNNSingleGateDescriptor**: A description of a simple recurrent block or layer.\n- **MPSGRUDescriptor**: A description of a gated recurrent unit block or layer.\n- **MPSRNNSequenceDirection**: Directions that a sequence of inputs can be processed by a recurrent neural network layer.\n- **MPSRNNMatrixTrainingLayer**: A layer for training recurrent neural networks on Metal Performance Shaders matrices.\n- **MPSRNNMatrixTrainingState**: A class that holds data from a forward pass to be used in a backward pass.\n\n## Inherits From\n\n- MPSRNNDescriptor\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "cellGateInputWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/cellGateInputWeights"
+        },
+        {
+          "description" : "",
+          "name" : "cellGateMemoryWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/cellGateMemoryWeights"
+        },
+        {
+          "description" : "",
+          "name" : "cellGateRecurrentWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/cellGateRecurrentWeights"
+        },
+        {
+          "description" : "",
+          "name" : "cellToOutputNeuronParamA",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/cellToOutputNeuronParamA"
+        },
+        {
+          "description" : "",
+          "name" : "cellToOutputNeuronParamB",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/cellToOutputNeuronParamB"
+        },
+        {
+          "description" : "",
+          "name" : "cellToOutputNeuronType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/cellToOutputNeuronType"
+        },
+        {
+          "description" : "The types of neuron filter to append to a convolution.",
+          "name" : "MPSCNNNeuronType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNeuronType"
+        },
+        {
+          "description" : "",
+          "name" : "forgetGateInputWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/forgetGateInputWeights"
+        },
+        {
+          "description" : "",
+          "name" : "forgetGateMemoryWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/forgetGateMemoryWeights"
+        },
+        {
+          "description" : "",
+          "name" : "forgetGateRecurrentWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/forgetGateRecurrentWeights"
+        },
+        {
+          "description" : "",
+          "name" : "inputGateInputWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/inputGateInputWeights"
+        },
+        {
+          "description" : "",
+          "name" : "inputGateMemoryWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/inputGateMemoryWeights"
+        },
+        {
+          "description" : "",
+          "name" : "inputGateRecurrentWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/inputGateRecurrentWeights"
+        },
+        {
+          "description" : "",
+          "name" : "memoryWeightsAreDiagonal",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/memoryWeightsAreDiagonal"
+        },
+        {
+          "description" : "",
+          "name" : "outputGateInputWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/outputGateInputWeights"
+        },
+        {
+          "description" : "",
+          "name" : "outputGateMemoryWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/outputGateMemoryWeights"
+        },
+        {
+          "description" : "",
+          "name" : "outputGateRecurrentWeights",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/outputGateRecurrentWeights"
+        },
+        {
+          "description" : "The protocol that provides convolution filter weights and bias terms.",
+          "name" : "MPSCNNConvolutionDataSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNConvolutionDataSource"
+        },
+        {
+          "description" : "",
+          "name" : "cellToOutputNeuronParamC",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/cellToOutputNeuronParamC"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "createLSTMDescriptor(withInputFeatureChannels:outputFeatureChannels:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor\/createLSTMDescriptor(withInputFeatureChannels:outputFeatureChannels:)"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A recurrent neural network layer for inference on Metal Performance Shaders images.",
+          "name" : "MPSRNNImageInferenceLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSRNNImageInferenceLayer"
+        },
+        {
+          "description" : "A recurrent neural network layer for inference on Metal Performance Shaders matrices.",
+          "name" : "MPSRNNMatrixInferenceLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSRNNMatrixInferenceLayer"
+        },
+        {
+          "description" : "A description of a simple recurrent block or layer.",
+          "name" : "MPSRNNSingleGateDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSRNNSingleGateDescriptor"
+        },
+        {
+          "description" : "A description of a gated recurrent unit block or layer.",
+          "name" : "MPSGRUDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSGRUDescriptor"
+        },
+        {
+          "description" : "Directions that a sequence of inputs can be processed by a recurrent neural network layer.",
+          "name" : "MPSRNNSequenceDirection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSRNNSequenceDirection"
+        },
+        {
+          "description" : "A layer for training recurrent neural networks on Metal Performance Shaders matrices.",
+          "name" : "MPSRNNMatrixTrainingLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSRNNMatrixTrainingLayer"
+        },
+        {
+          "description" : "A class that holds data from a forward pass to be used in a backward pass.",
+          "name" : "MPSRNNMatrixTrainingState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSRNNMatrixTrainingState"
+        }
+      ],
+      "title" : "Recurrent Neural Networks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "MPSRNNDescriptor"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MPSLSTMDescriptor",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSLSTMDescriptor"
+}

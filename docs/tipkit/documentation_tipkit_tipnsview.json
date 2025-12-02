@@ -1,0 +1,113 @@
+{
+  "abstract" : "A user interface element that represents a tip in AppKit applications.",
+  "codeExamples" : [
+    {
+      "code" : "import Cocoa\nimport TipKit\n\nstruct CatTracksFeatureTip: Tip {\n    var title: Text {\n        Text(\"Sample tip title\")\n    }\n\n    var message: Text? {\n        Text(\"Sample tip message\")\n    }\n\n    var image: Image? {\n        Image(systemName: \"globe\")\n    }\n}\n\nclass CatTracksViewController: NSViewController {\n    private var catTracksFeatureTip = CatTracksFeatureTip()\n    private var tipObservationTask: Task<Void, Never>?\n    private weak var tipView: TipNSView?\n\n    override func viewDidAppear() {\n        super.viewDidAppear()\n\n        tipObservationTask = tipObservationTask ?? Task { @MainActor in\n            for await shouldDisplay in catTracksFeatureTip.shouldDisplayUpdates {\n                if shouldDisplay {\n                    let tipHostingView = TipNSView(catTracksFeatureTip)\n                    view.addSubview(tipHostingView)\n\n                    view.addConstraints([\n                        tipHostingView.centerYAnchor.constraint(equalTo: view.centerYAnchor),\n                        tipHostingView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20.0),\n                        tipHostingView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20.0)\n                    ])\n\n                    tipView = tipHostingView\n                }\n                else {\n                    tipView?.removeFromSuperview()\n                    tipView = nil\n                }\n            }\n        }\n    }\n\n    override func viewDidDisappear() {\n        super.viewDidDisappear()\n\n        tipObservationTask?.cancel()\n        tipObservationTask = nil\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSAccessibilityElementProtocol",
+    "NSAccessibilityProtocol",
+    "NSAnimatablePropertyContainer",
+    "NSAppearanceCustomization",
+    "NSCoding",
+    "NSDraggingDestination",
+    "NSObjectProtocol",
+    "NSStandardKeyBindingResponding",
+    "NSTouchBarProvider",
+    "NSUserActivityRestoring",
+    "NSUserInterfaceItemIdentification"
+  ],
+  "contentHash" : "f673e254887e8d19acc184072ad5f1e211c57eff24505c6e4fb34cf0999be81c",
+  "crawledAt" : "2025-12-02T06:09:22Z",
+  "declaration" : {
+    "code" : "@MainActor @objc @preconcurrency final class TipNSView",
+    "language" : "swift"
+  },
+  "id" : "5A166AC6-68F4-4F02-AA28-4D95ED0D59E2",
+  "kind" : "class",
+  "module" : "TipKit",
+  "overview" : "## Overview\n\nYou create a tip view by providing a tip and an optional arrow edge. The tip is a type that conforms to the [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tip] protocol. The arrow edge is a directional arrow pointing away from the tip.\n\nUse this view to create a tip you want to display and lay out as a [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSView].\n\nAdding and removing TipNSView from your app is done by listening to a tip’s [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tip\/shouldDisplayUpdates] or [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tip\/statusUpdates].",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/TipKit\/TipNSView\ncrawled: 2025-12-02T06:09:22Z\n---\n\n# TipNSView\n\n**Class**\n\nA user interface element that represents a tip in AppKit applications.\n\n## Declaration\n\n```swift\n@MainActor @objc @preconcurrency final class TipNSView\n```\n\n## Overview\n\nYou create a tip view by providing a tip and an optional arrow edge. The tip is a type that conforms to the [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tip] protocol. The arrow edge is a directional arrow pointing away from the tip.\n\nUse this view to create a tip you want to display and lay out as a [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSView].\n\nAdding and removing TipNSView from your app is done by listening to a tip’s [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tip\/shouldDisplayUpdates] or [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tip\/statusUpdates].\n\n```swift\nimport Cocoa\nimport TipKit\n\nstruct CatTracksFeatureTip: Tip {\n    var title: Text {\n        Text(\"Sample tip title\")\n    }\n\n    var message: Text? {\n        Text(\"Sample tip message\")\n    }\n\n    var image: Image? {\n        Image(systemName: \"globe\")\n    }\n}\n\nclass CatTracksViewController: NSViewController {\n    private var catTracksFeatureTip = CatTracksFeatureTip()\n    private var tipObservationTask: Task<Void, Never>?\n    private weak var tipView: TipNSView?\n\n    override func viewDidAppear() {\n        super.viewDidAppear()\n\n        tipObservationTask = tipObservationTask ?? Task { @MainActor in\n            for await shouldDisplay in catTracksFeatureTip.shouldDisplayUpdates {\n                if shouldDisplay {\n                    let tipHostingView = TipNSView(catTracksFeatureTip)\n                    view.addSubview(tipHostingView)\n\n                    view.addConstraints([\n                        tipHostingView.centerYAnchor.constraint(equalTo: view.centerYAnchor),\n                        tipHostingView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20.0),\n                        tipHostingView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20.0)\n                    ])\n\n                    tipView = tipHostingView\n                }\n                else {\n                    tipView?.removeFromSuperview()\n                    tipView = nil\n                }\n            }\n        }\n    }\n\n    override func viewDidDisappear() {\n        super.viewDidDisappear()\n\n        tipObservationTask?.cancel()\n        tipObservationTask = nil\n    }\n}\n```\n\n## Initializers\n\n- **init(_:arrowEdge:actionHandler:)**: Creates a tip view with an optional arrow.\n\n## Instance Properties\n\n- **backgroundColor**: The background color to use for the tip view.\n- **backgroundStyle**: The background style to use for the tip view.\n- **cornerRadius**: Corner radius for the tip view.\n- **imageSize**: Size of the image displayed in the tip view.\n- **imageStyle**: Foreground style for the tip’s image.\n- **viewStyle**: The given style for TipView within the view hierarchy\n\n## AppKit Views\n\n- **TipNSPopover**: A subclass of NSPopover that displays a popover tip in AppKit applications.\n\n## Inherits From\n\n- NSView\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSAccessibilityElementProtocol\n- NSAccessibilityProtocol\n- NSAnimatablePropertyContainer\n- NSAppearanceCustomization\n- NSCoding\n- NSDraggingDestination\n- NSObjectProtocol\n- NSStandardKeyBindingResponding\n- NSTouchBarProvider\n- NSUserActivityRestoring\n- NSUserInterfaceItemIdentification\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a tip view with an optional arrow.",
+          "name" : "init(_:arrowEdge:actionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipNSView\/init(_:arrowEdge:actionHandler:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The background color to use for the tip view.",
+          "name" : "backgroundColor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipNSView\/backgroundColor"
+        },
+        {
+          "description" : "The background style to use for the tip view.",
+          "name" : "backgroundStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipNSView\/backgroundStyle"
+        },
+        {
+          "description" : "Corner radius for the tip view.",
+          "name" : "cornerRadius",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipNSView\/cornerRadius"
+        },
+        {
+          "description" : "Size of the image displayed in the tip view.",
+          "name" : "imageSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipNSView\/imageSize"
+        },
+        {
+          "description" : "Foreground style for the tip’s image.",
+          "name" : "imageStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipNSView\/imageStyle"
+        },
+        {
+          "description" : "The given style for TipView within the view hierarchy",
+          "name" : "viewStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipNSView\/viewStyle"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A subclass of NSPopover that displays a popover tip in AppKit applications.",
+          "name" : "TipNSPopover",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipNSPopover"
+        }
+      ],
+      "title" : "AppKit Views"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSView"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TipNSView",
+  "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/TipNSView"
+}

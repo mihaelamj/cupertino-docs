@@ -1,0 +1,432 @@
+{
+  "abstract" : "An item provider for conveying data or a file between processes during drag-and-drop or copy-and-paste activities, or from a host app to an app extension.",
+  "codeExamples" : [
+    {
+      "code" : "DispatchQueue.main.async {\n    \/\/ Work that impacts the user interface.\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCopying",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "2ae42f04cd190c565a60f53b575ff290724c00d25dcee6b8095f638073024cee",
+  "crawledAt" : "2025-12-02T16:19:13Z",
+  "declaration" : {
+    "code" : "class NSItemProvider",
+    "language" : "swift"
+  },
+  "id" : "F7980C72-D35F-4AB9-8702-EA49265CB4F2",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nStarting in iOS 11, item providers play a central role in drag and drop, and in copy and paste. They continue to play a role with app extensions.\n\nThe system uses an internal queue when calling the completion blocks for the `NSItemProvider` class. When using an item provider with drag and drop, ensure that UI updates take place on the main queue as follows:\n\n### App extension support\n\nAn app extension typically encounters item providers when examining the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSExtensionItem\/attachments] property of an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSExtensionItem] object. During that examination, the extension can use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSItemProvider\/hasItemConformingToTypeIdentifier(_:)] method to look for data that it recognizes. Item providers use [doc:\/\/com.apple.documentation\/documentation\/UniformTypeIdentifiers] values to identify the data they contain. After finding a type of data that your extension can use, it calls the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSItemProvider\/loadItem(forTypeIdentifier:options:completionHandler:)] method to load the actual data, which is delivered to the provided completion handler.\n\nYou can create item providers to vend data to another process. An extension that modifies an original data item can create a new `NSItemProvider` object to send back to the host app. When creating data items, you specify your data object and the type of that object. You can optionally use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSItemProvider\/previewImageHandler] property to generate a preview image for your data.\n\nA single item provider may use custom blocks to provide its data in many different formats. When configuring an item provider, use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSItemProvider\/registerItem(forTypeIdentifier:loadHandler:)] method to register your blocks and the formats each one supports. When a client requests data in a particular format, the item provider executes the corresponding block, which is then responsible for coercing the data to the appropriate type and returning it to the client.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\ncrawled: 2025-12-02T16:19:13Z\n---\n\n# NSItemProvider\n\n**Class**\n\nAn item provider for conveying data or a file between processes during drag-and-drop or copy-and-paste activities, or from a host app to an app extension.\n\n## Declaration\n\n```swift\nclass NSItemProvider\n```\n\n## Overview\n\nStarting in iOS 11, item providers play a central role in drag and drop, and in copy and paste. They continue to play a role with app extensions.\n\nThe system uses an internal queue when calling the completion blocks for the `NSItemProvider` class. When using an item provider with drag and drop, ensure that UI updates take place on the main queue as follows:\n\n```swift\nDispatchQueue.main.async {\n    \/\/ Work that impacts the user interface.\n}\n```\n\n### App extension support\n\nAn app extension typically encounters item providers when examining the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSExtensionItem\/attachments] property of an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSExtensionItem] object. During that examination, the extension can use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSItemProvider\/hasItemConformingToTypeIdentifier(_:)] method to look for data that it recognizes. Item providers use [doc:\/\/com.apple.documentation\/documentation\/UniformTypeIdentifiers] values to identify the data they contain. After finding a type of data that your extension can use, it calls the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSItemProvider\/loadItem(forTypeIdentifier:options:completionHandler:)] method to load the actual data, which is delivered to the provided completion handler.\n\nYou can create item providers to vend data to another process. An extension that modifies an original data item can create a new `NSItemProvider` object to send back to the host app. When creating data items, you specify your data object and the type of that object. You can optionally use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSItemProvider\/previewImageHandler] property to generate a preview image for your data.\n\nA single item provider may use custom blocks to provide its data in many different formats. When configuring an item provider, use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSItemProvider\/registerItem(forTypeIdentifier:loadHandler:)] method to register your blocks and the formats each one supports. When a client requests data in a particular format, the item provider executes the corresponding block, which is then responsible for coercing the data to the appropriate type and returning it to the client.\n\n## Creating an item provider\n\n- **init(contentsOf:)**: Provides data-backed content from an existing file.\n- **init(contentsOf:contentType:openInPlace:coordinated:visibility:)**: Provides data-backed content from an existing file with the specified parameters.\n- **init(item:typeIdentifier:)**: Creates an item provider with an object, according to the item provider type coercion policy.\n- **init()**: Creates an empty item provider to which you can later register a data or file representation.\n- **init(object:)**: Creates a new item provider, employing a specified object’s type identifiers to specify the data representations eligible for the provider to load.\n\n## Configuring the provider\n\n- **preferredPresentationSize**: The ideal presentation size of the item.\n- **preferredPresentationStyle**: The preferred style for presenting the item provider’s data.\n- **NSItemProvider.PreferredPresentationStyle**: The presentation styles that determine how a view shows an item provider’s data.\n- **suggestedName**: The filename to use when writing the provided data to a file on disk.\n- **teamData**: The collection of data an app uses to hold private team information during drag and drop.\n\n## Querying the provider’s contents\n\n- **canLoadObject(ofClass:)**: Returns a Boolean value indicating whether an item provider can load objects of a specified class.\n- **canLoadObject(ofClass:)**: Returns a Boolean value indicating whether an item provider can load objects of a specified class.\n- **hasItemConformingToTypeIdentifier(_:)**: Returns a Boolean value indicating whether an item provider contains a data representation conforming to a specified universal type identifier file options parameter with a value of zero.\n- **hasRepresentationConforming(toTypeIdentifier:fileOptions:)**: Returns a Boolean value indicating whether an item provider contains a data representation conforming to a specified universal type identifier and to specified open-in-place behavior.\n- **registeredTypeIdentifiers**: Returns the array of type identifiers for the item provider, in the same order they were registered.\n- **registeredTypeIdentifiers(fileOptions:)**: Returns an array with a subset of type identifiers for the item provider, according to the specified file options, in the same order they were registered.\n\n## Loading the provider’s contents\n\n- **loadItem(forTypeIdentifier:options:completionHandler:)**: Loads the item’s data and coerces it to the specified type.\n- **loadDataRepresentation(forTypeIdentifier:completionHandler:)**: Asynchronously copies the provided, typed data into a generic data object, returning a progress object.\n- **loadDataRepresentation(for:completionHandler:)**: Asynchronously copies the universal type data into a generic data object, returning a progress object.\n- **loadFileRepresentation(forTypeIdentifier:completionHandler:)**: Asynchronously writes a copy of the provided, typed data to a temporary file, returning a progress object.\n- **loadFileRepresentation(for:openInPlace:completionHandler:)**: Asynchronously writes a copy of the universal type data to a temporary file, returning a progress object.\n- **loadInPlaceFileRepresentation(forTypeIdentifier:completionHandler:)**: Asynchronously opens a file in place, if possible, returning a progress object.\n- **loadObject(ofClass:completionHandler:)**: Asynchronously loads an object of a specified class to an item provider, returning a progress object.\n- **loadObject(ofClass:completionHandler:)**: Asynchronously loads an object of a specified class to an item provider, returning a progress object.\n- **loadTransferable(type:completionHandler:)**: Asynchronously loads an object of a specified transferable type to an item provider, returning a progress object.\n\n## Loading a preview image\n\n- **loadPreviewImage(options:completionHandler:)**: Loads the preview image for the item that the item provider represents.\n- **previewImageHandler**: The custom preview image handler block for the item provider.\n\n## Registering CloudKit shares\n\n- **registerCloudKitShare(_:container:)**: Registers a CloudKit share for the user to modify.\n- **registerCloudKitShare(preparationHandler:)**: Registers a handler that prepares a new CloudKit share.\n- **registerCKShare(_:container:allowedSharingOptions:)**: Registers an existing collaboration object on a server.\n- **registerCKShare(container:allowedSharingOptions:preparationHandler:)**: Creates and registers a new collaboration object using a collection of records to share.\n\n## Registering content types\n\n- **registeredContentTypes**: Registered content types in the order the app registers each type.\n- **registeredContentTypesForOpenInPlace**: Registered content types that the system can load as open-in-place files.\n- **registeredContentTypes(conformingTo:)**: Returns an array of registered content types that conform to a specified content type.\n\n## Registering data\n\n- **registerDataRepresentation(forTypeIdentifier:visibility:loadHandler:)**: Registers a data-backed representation for an item, specifiying item visibility and a load handler.\n- **registerDataRepresentation(for:visibility:loadHandler:)**: Registers a data-backed representation for an item, specifiying item visibility and a load handler.\n- **registerItem(forTypeIdentifier:loadHandler:)**: Lazily registers an item, according to the item provider type coercion policy.\n\n## Registering files\n\n- **registerFileRepresentation(forTypeIdentifier:fileOptions:visibility:loadHandler:)**: Registers a file-backed representation for an item, specifying file options, item visibility, and a load handler.\n- **registerFileRepresentation(for:visibility:openInPlace:loadHandler:)**: Registers a file-backed representation for an item with item visibility, an open-in-place option, and a load handler.\n\n## Registering group activities\n\n- **registerGroupActivity(_:)**: Registers a group activity instance with the specificed options.\n- **registerGroupActivity(preparationHandler:)**: Registers a group activity instance asynchronously with the specified options.\n\n## Registering objects\n\n- **registerObject(_:visibility:)**: Adds representations of a specified object to an item provider, based on the object’s implementation of the item provider writing protocol, and adhering to a visibility specification.\n- **registerObject(ofClass:visibility:loadHandler:)**: Lazily adds representations of a specified object class to an item provider, based on the object’s implementation of the item provider writing protocol, and adhering to a visibility specification.\n- **registerObject(ofClass:visibility:loadHandler:)**: Lazily adds representations of a specified object type to an item provider, based on the object’s implementation of the item provider writing protocol, and adhering to a visibility specification.\n- **register(_:)**: Adds representations of a specified transferable type to an item provider.\n\n## Getting the provider’s frame\n\n- **sourceFrame**: The rectangle that the item occupies in the host app’s source window.\n- **containerFrame**: The rectangle of the item’s visible content.\n\n## Constants\n\n- **NSItemProvider.CompletionHandler**: A block that receives the item provider’s data.\n- **NSItemProvider.LoadHandler**: A block that loads the item provider’s data and coerces it to the specified type.\n- **Options Dictionary Key**: Keys indicating options to use when generating the item provider’s data.\n- **Keys for Items Accessed in JavaScript Code**: Keys in property list items that the system recieves from or sends to JavaScript code.\n- **errorDomain**: The error domain associated with the item provider.\n- **NSItemProviderFileOptions**: Data-access specifications that declare how to handle items.\n- **NSItemProviderReading**: The protocol for implementing a class to allow an item provider to create an instance of the class.\n- **NSItemProviderWriting**: The protocol for implementing a class to allow an item provider to retrieve data from an instance of the class.\n- **NSItemProviderRepresentationVisibility**: Specifications that control which categories of processes can see an item.\n- **NSItemProvider.ErrorCode**: The error codes that describe problems with consuming data from an item provider.\n\n## Attachments\n\n- **NSExtensionItem**: An immutable collection of values representing different aspects of an item for an extension to act upon.\n- **Add Functionality to Finder with Action Extensions**: Implement Action Extensions to provide quick access to commonly used features of your app.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCopying\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Provides data-backed content from an existing file.",
+          "name" : "init(contentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/init(contentsOf:)"
+        },
+        {
+          "description" : "Provides data-backed content from an existing file with the specified parameters.",
+          "name" : "init(contentsOf:contentType:openInPlace:coordinated:visibility:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/init(contentsOf:contentType:openInPlace:coordinated:visibility:)"
+        },
+        {
+          "description" : "Creates an item provider with an object, according to the item provider type coercion policy.",
+          "name" : "init(item:typeIdentifier:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/init(item:typeIdentifier:)"
+        },
+        {
+          "description" : "Creates an empty item provider to which you can later register a data or file representation.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/init()"
+        },
+        {
+          "description" : "Creates a new item provider, employing a specified object’s type identifiers to specify the data representations eligible for the provider to load.",
+          "name" : "init(object:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/init(object:)"
+        }
+      ],
+      "title" : "Creating an item provider"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The ideal presentation size of the item.",
+          "name" : "preferredPresentationSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/preferredPresentationSize"
+        },
+        {
+          "description" : "The preferred style for presenting the item provider’s data.",
+          "name" : "preferredPresentationStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/preferredPresentationStyle-swift.property"
+        },
+        {
+          "description" : "The presentation styles that determine how a view shows an item provider’s data.",
+          "name" : "NSItemProvider.PreferredPresentationStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/PreferredPresentationStyle-swift.enum"
+        },
+        {
+          "description" : "The filename to use when writing the provided data to a file on disk.",
+          "name" : "suggestedName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/suggestedName"
+        },
+        {
+          "description" : "The collection of data an app uses to hold private team information during drag and drop.",
+          "name" : "teamData",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/teamData"
+        }
+      ],
+      "title" : "Configuring the provider"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value indicating whether an item provider can load objects of a specified class.",
+          "name" : "canLoadObject(ofClass:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/canLoadObject(ofClass:)-3eig9"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether an item provider can load objects of a specified class.",
+          "name" : "canLoadObject(ofClass:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/canLoadObject(ofClass:)-40grc"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether an item provider contains a data representation conforming to a specified universal type identifier file options parameter with a value of zero.",
+          "name" : "hasItemConformingToTypeIdentifier(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/hasItemConformingToTypeIdentifier(_:)"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether an item provider contains a data representation conforming to a specified universal type identifier and to specified open-in-place behavior.",
+          "name" : "hasRepresentationConforming(toTypeIdentifier:fileOptions:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/hasRepresentationConforming(toTypeIdentifier:fileOptions:)"
+        },
+        {
+          "description" : "Returns the array of type identifiers for the item provider, in the same order they were registered.",
+          "name" : "registeredTypeIdentifiers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registeredTypeIdentifiers"
+        },
+        {
+          "description" : "Returns an array with a subset of type identifiers for the item provider, according to the specified file options, in the same order they were registered.",
+          "name" : "registeredTypeIdentifiers(fileOptions:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registeredTypeIdentifiers(fileOptions:)"
+        }
+      ],
+      "title" : "Querying the provider’s contents"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Loads the item’s data and coerces it to the specified type.",
+          "name" : "loadItem(forTypeIdentifier:options:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/loadItem(forTypeIdentifier:options:completionHandler:)"
+        },
+        {
+          "description" : "Asynchronously copies the provided, typed data into a generic data object, returning a progress object.",
+          "name" : "loadDataRepresentation(forTypeIdentifier:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/loadDataRepresentation(forTypeIdentifier:completionHandler:)"
+        },
+        {
+          "description" : "Asynchronously copies the universal type data into a generic data object, returning a progress object.",
+          "name" : "loadDataRepresentation(for:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/loadDataRepresentation(for:completionHandler:)"
+        },
+        {
+          "description" : "Asynchronously writes a copy of the provided, typed data to a temporary file, returning a progress object.",
+          "name" : "loadFileRepresentation(forTypeIdentifier:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/loadFileRepresentation(forTypeIdentifier:completionHandler:)"
+        },
+        {
+          "description" : "Asynchronously writes a copy of the universal type data to a temporary file, returning a progress object.",
+          "name" : "loadFileRepresentation(for:openInPlace:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/loadFileRepresentation(for:openInPlace:completionHandler:)"
+        },
+        {
+          "description" : "Asynchronously opens a file in place, if possible, returning a progress object.",
+          "name" : "loadInPlaceFileRepresentation(forTypeIdentifier:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/loadInPlaceFileRepresentation(forTypeIdentifier:completionHandler:)"
+        },
+        {
+          "description" : "Asynchronously loads an object of a specified class to an item provider, returning a progress object.",
+          "name" : "loadObject(ofClass:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/loadObject(ofClass:completionHandler:)-8ak5d"
+        },
+        {
+          "description" : "Asynchronously loads an object of a specified class to an item provider, returning a progress object.",
+          "name" : "loadObject(ofClass:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/loadObject(ofClass:completionHandler:)-6pysm"
+        },
+        {
+          "description" : "Asynchronously loads an object of a specified transferable type to an item provider, returning a progress object.",
+          "name" : "loadTransferable(type:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/loadTransferable(type:completionHandler:)"
+        }
+      ],
+      "title" : "Loading the provider’s contents"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Loads the preview image for the item that the item provider represents.",
+          "name" : "loadPreviewImage(options:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/loadPreviewImage(options:completionHandler:)"
+        },
+        {
+          "description" : "The custom preview image handler block for the item provider.",
+          "name" : "previewImageHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/previewImageHandler"
+        }
+      ],
+      "title" : "Loading a preview image"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Registers a CloudKit share for the user to modify.",
+          "name" : "registerCloudKitShare(_:container:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerCloudKitShare(_:container:)"
+        },
+        {
+          "description" : "Registers a handler that prepares a new CloudKit share.",
+          "name" : "registerCloudKitShare(preparationHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerCloudKitShare(preparationHandler:)"
+        },
+        {
+          "description" : "Registers an existing collaboration object on a server.",
+          "name" : "registerCKShare(_:container:allowedSharingOptions:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerCKShare(_:container:allowedSharingOptions:)"
+        },
+        {
+          "description" : "Creates and registers a new collaboration object using a collection of records to share.",
+          "name" : "registerCKShare(container:allowedSharingOptions:preparationHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerCKShare(container:allowedSharingOptions:preparationHandler:)"
+        }
+      ],
+      "title" : "Registering CloudKit shares"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Registered content types in the order the app registers each type.",
+          "name" : "registeredContentTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registeredContentTypes"
+        },
+        {
+          "description" : "Registered content types that the system can load as open-in-place files.",
+          "name" : "registeredContentTypesForOpenInPlace",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registeredContentTypesForOpenInPlace"
+        },
+        {
+          "description" : "Returns an array of registered content types that conform to a specified content type.",
+          "name" : "registeredContentTypes(conformingTo:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registeredContentTypes(conformingTo:)"
+        }
+      ],
+      "title" : "Registering content types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Registers a data-backed representation for an item, specifiying item visibility and a load handler.",
+          "name" : "registerDataRepresentation(forTypeIdentifier:visibility:loadHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerDataRepresentation(forTypeIdentifier:visibility:loadHandler:)"
+        },
+        {
+          "description" : "Registers a data-backed representation for an item, specifiying item visibility and a load handler.",
+          "name" : "registerDataRepresentation(for:visibility:loadHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerDataRepresentation(for:visibility:loadHandler:)"
+        },
+        {
+          "description" : "Lazily registers an item, according to the item provider type coercion policy.",
+          "name" : "registerItem(forTypeIdentifier:loadHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerItem(forTypeIdentifier:loadHandler:)"
+        }
+      ],
+      "title" : "Registering data"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Registers a file-backed representation for an item, specifying file options, item visibility, and a load handler.",
+          "name" : "registerFileRepresentation(forTypeIdentifier:fileOptions:visibility:loadHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerFileRepresentation(forTypeIdentifier:fileOptions:visibility:loadHandler:)"
+        },
+        {
+          "description" : "Registers a file-backed representation for an item with item visibility, an open-in-place option, and a load handler.",
+          "name" : "registerFileRepresentation(for:visibility:openInPlace:loadHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerFileRepresentation(for:visibility:openInPlace:loadHandler:)"
+        }
+      ],
+      "title" : "Registering files"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Registers a group activity instance with the specificed options.",
+          "name" : "registerGroupActivity(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerGroupActivity(_:)"
+        },
+        {
+          "description" : "Registers a group activity instance asynchronously with the specified options.",
+          "name" : "registerGroupActivity(preparationHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerGroupActivity(preparationHandler:)"
+        }
+      ],
+      "title" : "Registering group activities"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds representations of a specified object to an item provider, based on the object’s implementation of the item provider writing protocol, and adhering to a visibility specification.",
+          "name" : "registerObject(_:visibility:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerObject(_:visibility:)"
+        },
+        {
+          "description" : "Lazily adds representations of a specified object class to an item provider, based on the object’s implementation of the item provider writing protocol, and adhering to a visibility specification.",
+          "name" : "registerObject(ofClass:visibility:loadHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerObject(ofClass:visibility:loadHandler:)-9sndn"
+        },
+        {
+          "description" : "Lazily adds representations of a specified object type to an item provider, based on the object’s implementation of the item provider writing protocol, and adhering to a visibility specification.",
+          "name" : "registerObject(ofClass:visibility:loadHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/registerObject(ofClass:visibility:loadHandler:)-133rx"
+        },
+        {
+          "description" : "Adds representations of a specified transferable type to an item provider.",
+          "name" : "register(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/register(_:)"
+        }
+      ],
+      "title" : "Registering objects"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The rectangle that the item occupies in the host app’s source window.",
+          "name" : "sourceFrame",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/sourceFrame"
+        },
+        {
+          "description" : "The rectangle of the item’s visible content.",
+          "name" : "containerFrame",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/containerFrame"
+        }
+      ],
+      "title" : "Getting the provider’s frame"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A block that receives the item provider’s data.",
+          "name" : "NSItemProvider.CompletionHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/CompletionHandler"
+        },
+        {
+          "description" : "A block that loads the item provider’s data and coerces it to the specified type.",
+          "name" : "NSItemProvider.LoadHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/LoadHandler"
+        },
+        {
+          "description" : "Keys indicating options to use when generating the item provider’s data.",
+          "name" : "Options Dictionary Key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/options-dictionary-key"
+        },
+        {
+          "description" : "Keys in property list items that the system recieves from or sends to JavaScript code.",
+          "name" : "Keys for Items Accessed in JavaScript Code",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/keys-for-items-accessed-in-javascript-code"
+        },
+        {
+          "description" : "The error domain associated with the item provider.",
+          "name" : "errorDomain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/errorDomain"
+        },
+        {
+          "description" : "Data-access specifications that declare how to handle items.",
+          "name" : "NSItemProviderFileOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProviderFileOptions"
+        },
+        {
+          "description" : "The protocol for implementing a class to allow an item provider to create an instance of the class.",
+          "name" : "NSItemProviderReading",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProviderReading"
+        },
+        {
+          "description" : "The protocol for implementing a class to allow an item provider to retrieve data from an instance of the class.",
+          "name" : "NSItemProviderWriting",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProviderWriting"
+        },
+        {
+          "description" : "Specifications that control which categories of processes can see an item.",
+          "name" : "NSItemProviderRepresentationVisibility",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProviderRepresentationVisibility"
+        },
+        {
+          "description" : "The error codes that describe problems with consuming data from an item provider.",
+          "name" : "NSItemProvider.ErrorCode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider\/ErrorCode"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An immutable collection of values representing different aspects of an item for an extension to act upon.",
+          "name" : "NSExtensionItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSExtensionItem"
+        },
+        {
+          "description" : "Implement Action Extensions to provide quick access to commonly used features of your app.",
+          "name" : "Add Functionality to Finder with Action Extensions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/add-functionality-to-finder-with-action-extensions"
+        }
+      ],
+      "title" : "Attachments"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSItemProvider",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSItemProvider"
+}

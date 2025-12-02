@@ -1,0 +1,343 @@
+{
+  "abstract" : "The base class for concrete gesture recognizers.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol",
+    "Sendable"
+  ],
+  "contentHash" : "d6c291a5ffd413a3654f6dd10346123e742ec747ba6bbe87b2b7de3163a7c301",
+  "crawledAt" : "2025-12-02T21:18:13Z",
+  "declaration" : {
+    "code" : "@MainActor class UIGestureRecognizer",
+    "language" : "swift"
+  },
+  "id" : "3A50EF63-9DFC-458C-9E16-E1F4DA77FB11",
+  "inheritedBy" : [
+    "UIHoverGestureRecognizer",
+    "UILongPressGestureRecognizer",
+    "UIPanGestureRecognizer",
+    "UIPinchGestureRecognizer",
+    "UIRotationGestureRecognizer",
+    "UISwipeGestureRecognizer",
+    "UITapGestureRecognizer"
+  ],
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "UIKit",
+  "overview" : "## Overview\n\nA *gesture recognizer* decouples the logic for recognizing a sequence of touches (or other input) and acting on that recognition. When one of these objects recognizes a common gesture or, in some cases, a change in the gesture, it sends an action message to each designated target object.\n\nThe concrete subclasses of [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer] are the following:\n\nThe [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer] class defines a set of common behaviors that can be configured for all concrete gesture recognizers. It can also communicate with its delegate (an object that adopts the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizerDelegate] protocol), thereby enabling finer-grained customization of some behaviors.\n\nA gesture recognizer operates on touches hit-tested to a specific view and all of that view’s subviews. It thus must be associated with that view. To make that association you must call the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView] method [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView\/addGestureRecognizer(_:)]. A gesture recognizer doesn’t participate in the view’s responder chain.\n\nA gesture recognizer has one or more target-action pairs associated with it. If there are multiple target-action pairs, they’re discrete, and not cumulative. Recognition of a gesture results in the dispatch of an action message to a target for each of the associated pairs. The action methods invoked must conform to one of the following signatures:\n\nMethods conforming to the latter signature permit the target in some cases to query the gesture recognizer sending the message for additional information. For example, the target could ask a [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIRotationGestureRecognizer] object for the angle of rotation (in radians) since the last invocation of the action method for this gesture. Clients of gesture recognizers can also ask for the location of a gesture by calling [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/location(in:)] or [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/location(ofTouch:in:)].\n\nThe gesture interpreted by a gesture recognizer can be either discrete or continuous. A discrete gesture, such as a double tap, occurs but once in a multi-touch sequence and results in a single action sent. However, when a gesture recognizer interprets a continuous gesture such as a rotation gesture, it sends an action message for each incremental change until the multi-touch sequence concludes.\n\nA window delivers touch events to a gesture recognizer before it delivers them to the hit-tested view attached to the gesture recognizer. Generally, if a gesture recognizer analyzes the stream of touches in a multi-touch sequence and doesn’t recognize its gesture, the view receives the full complement of touches. If a gesture recognizer recognizes its gesture, the remaining touches for the view are canceled. The usual sequence of actions in gesture recognition follows a path determined by default values of the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/cancelsTouchesInView], [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/delaysTouchesBegan], [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/delaysTouchesEnded] properties:\n\nNote that “recognize” in the above descriptions doesn’t necessarily equate to a transition to the Recognized state.\n\n### Subclassing notes\n\nYou may create a subclass of [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer] that recognizes a distinctive gesture — for example, a “check mark” gesture. If you’re going to create such a concrete gesture recognizer, be sure to import the `UIGestureRecognizerSubclass.h` header file (for Objective-C) or the `UIKit.UIGestureRecognizerSubclass` module (for Swift). This file declares all the methods and properties a subclass must either override, call, or reset.\n\nGesture recognizers operate within a predefined state machine, transitioning to subsequent states as they handle multi-touch events. The states and their possible transitions differ for continuous and discrete gestures. All gesture recognizers begin a multi-touch sequence in the Possible state ([doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/State-swift.enum\/possible]). Discrete gestures transition from Possible to either Recognized ([doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/State-swift.enum\/recognized]) or Failed ([doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/State-swift.enum\/failed]), depending on whether they successfully interpret the gesture or not. If the gesture recognizer transitions to Recognized, it sends its action message to its target.\n\nFor continuous gestures, the state transitions a gesture recognizer might make are more numerous, as indicated in the following sequence:\n\nThe Changed state is optional and may occur multiple times before the Cancelled or Ended state is reached. The gesture recognizer sends action messages at each state transition. Thus for a continuous gesture such as a pinch, action messages are sent as the two fingers move toward or away from each other. The `enum` constants representing these states are of type [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/State-swift.enum]. (Note that the constants for Recognized and Ended states are synonymous.)\n\nSubclasses must set the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/state-swift.property] property to the appropriate value when they transition between states.\n\n#### Methods to override\n\nThe methods that subclasses must override are described in [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer#Implementing-subclasses]. Subclasses must also periodically reset the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/state-swift.property] property (as described above) and may call the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/ignore(_:for:)-5f685] method.\n\n#### Special considerations\n\nThe [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/state-swift.property] property is declared in `UIGestureRecognizer.h` as being read-only. This property declaration is intended for clients of gesture recognizers. Subclasses of `UIGestureRecognizer` must import the `UIGestureRecognizerSubclass.h` header file (for Objective-C) or the `UIKit.UIGestureRecognizerSubclass` module (for Swift). This file contains a redeclaration of `state` that makes it read-write.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\ncrawled: 2025-12-02T21:18:13Z\n---\n\n# UIGestureRecognizer\n\n**Class**\n\nThe base class for concrete gesture recognizers.\n\n## Declaration\n\n```swift\n@MainActor class UIGestureRecognizer\n```\n\n## Overview\n\nA *gesture recognizer* decouples the logic for recognizing a sequence of touches (or other input) and acting on that recognition. When one of these objects recognizes a common gesture or, in some cases, a change in the gesture, it sends an action message to each designated target object.\n\nThe concrete subclasses of [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer] are the following:\n\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITapGestureRecognizer]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIPinchGestureRecognizer]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIRotationGestureRecognizer]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UISwipeGestureRecognizer]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIPanGestureRecognizer]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIScreenEdgePanGestureRecognizer]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UILongPressGestureRecognizer]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIHoverGestureRecognizer]\n\nThe [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer] class defines a set of common behaviors that can be configured for all concrete gesture recognizers. It can also communicate with its delegate (an object that adopts the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizerDelegate] protocol), thereby enabling finer-grained customization of some behaviors.\n\nA gesture recognizer operates on touches hit-tested to a specific view and all of that view’s subviews. It thus must be associated with that view. To make that association you must call the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView] method [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView\/addGestureRecognizer(_:)]. A gesture recognizer doesn’t participate in the view’s responder chain.\n\nA gesture recognizer has one or more target-action pairs associated with it. If there are multiple target-action pairs, they’re discrete, and not cumulative. Recognition of a gesture results in the dispatch of an action message to a target for each of the associated pairs. The action methods invoked must conform to one of the following signatures:\n\n\n\nMethods conforming to the latter signature permit the target in some cases to query the gesture recognizer sending the message for additional information. For example, the target could ask a [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIRotationGestureRecognizer] object for the angle of rotation (in radians) since the last invocation of the action method for this gesture. Clients of gesture recognizers can also ask for the location of a gesture by calling [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/location(in:)] or [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/location(ofTouch:in:)].\n\nThe gesture interpreted by a gesture recognizer can be either discrete or continuous. A discrete gesture, such as a double tap, occurs but once in a multi-touch sequence and results in a single action sent. However, when a gesture recognizer interprets a continuous gesture such as a rotation gesture, it sends an action message for each incremental change until the multi-touch sequence concludes.\n\nA window delivers touch events to a gesture recognizer before it delivers them to the hit-tested view attached to the gesture recognizer. Generally, if a gesture recognizer analyzes the stream of touches in a multi-touch sequence and doesn’t recognize its gesture, the view receives the full complement of touches. If a gesture recognizer recognizes its gesture, the remaining touches for the view are canceled. The usual sequence of actions in gesture recognition follows a path determined by default values of the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/cancelsTouchesInView], [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/delaysTouchesBegan], [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/delaysTouchesEnded] properties:\n\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/cancelsTouchesInView] — If a gesture recognizer recognizes its gesture, it unbinds the remaining touches of that gesture from their view (so the window won’t deliver them). The window cancels the previously delivered touches with a ([doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/touchesCancelled(_:with:)]) message. If a gesture recognizer doesn’t recognize its gesture, the view receives all touches in the multi-touch sequence.\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/delaysTouchesBegan] — As long as a gesture recognizer, when analyzing touch events, hasn’t failed recognition of its gesture, the window withholds delivery of touch objects in the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITouch\/Phase-swift.enum\/began] phase to the attached view. If the gesture recognizer subsequently recognizes its gesture, the view doesn’t receive these touch objects. If the gesture recognizer doesn’t recognize its gesture, the window delivers these objects in an invocation of the view’s [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/touchesBegan(_:with:)] method (and possibly a follow-up [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/touchesMoved(_:with:)] invocation to inform it of the touches current location).\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/delaysTouchesEnded] — As long as a gesture recognizer, when analyzing touch events, hasn’t failed recognition of its gesture, the window withholds delivery of touch objects in the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITouch\/Phase-swift.enum\/ended] phase to the attached view. If the gesture recognizer subsequently recognizes its gesture, the touches are canceled (in a [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/touchesCancelled(_:with:)] message). If the gesture recognizer doesn’t recognize its gesture, the window delivers these objects in an invocation of the view’s [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/touchesEnded(_:with:)] method.\n\nNote that “recognize” in the above descriptions doesn’t necessarily equate to a transition to the Recognized state.\n\n### Subclassing notes\n\nYou may create a subclass of [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer] that recognizes a distinctive gesture — for example, a “check mark” gesture. If you’re going to create such a concrete gesture recognizer, be sure to import the `UIGestureRecognizerSubclass.h` header file (for Objective-C) or the `UIKit.UIGestureRecognizerSubclass` module (for Swift). This file declares all the methods and properties a subclass must either override, call, or reset.\n\nGesture recognizers operate within a predefined state machine, transitioning to subsequent states as they handle multi-touch events. The states and their possible transitions differ for continuous and discrete gestures. All gesture recognizers begin a multi-touch sequence in the Possible state ([doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/State-swift.enum\/possible]). Discrete gestures transition from Possible to either Recognized ([doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/State-swift.enum\/recognized]) or Failed ([doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/State-swift.enum\/failed]), depending on whether they successfully interpret the gesture or not. If the gesture recognizer transitions to Recognized, it sends its action message to its target.\n\nFor continuous gestures, the state transitions a gesture recognizer might make are more numerous, as indicated in the following sequence:\n\n- Possible —> Began —> [Changed] —> Cancelled\n- Possible —> Began —> [Changed] —> Ended\n\nThe Changed state is optional and may occur multiple times before the Cancelled or Ended state is reached. The gesture recognizer sends action messages at each state transition. Thus for a continuous gesture such as a pinch, action messages are sent as the two fingers move toward or away from each other. The `enum` constants representing these states are of type [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/State-swift.enum]. (Note that the constants for Recognized and Ended states are synonymous.)\n\nSubclasses must set the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/state-swift.property] property to the appropriate value when they transition between states.\n\n#### Methods to override\n\nThe methods that subclasses must override are described in [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer#Implementing-subclasses]. Subclasses must also periodically reset the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/state-swift.property] property (as described above) and may call the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/ignore(_:for:)-5f685] method.\n\n#### Special considerations\n\nThe [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIGestureRecognizer\/state-swift.property] property is declared in `UIGestureRecognizer.h` as being read-only. This property declaration is intended for clients of gesture recognizers. Subclasses of `UIGestureRecognizer` must import the `UIGestureRecognizerSubclass.h` header file (for Objective-C) or the `UIKit.UIGestureRecognizerSubclass` module (for Swift). This file contains a redeclaration of `state` that makes it read-write.\n\n## Initializing a gesture recognizer\n\n- **init(target:action:)**: Creates a gesture recognizer with a target and an action selector.\n- **init(coder:)**: Creates a gesture recognizer from data in an unarchiver.\n- **init()**: Creates a gesture recognizer.\n\n## Managing gesture-related interactions\n\n- **delegate**: The delegate of the gesture recognizer.\n- **UIGestureRecognizerDelegate**: A set of methods implemented by the delegate of a gesture recognizer to fine-tune an app’s gesture-recognition behavior.\n\n## Adding and removing targets and actions\n\n- **addTarget(_:action:)**: Adds a target and an action to a gesture-recognizer object.\n- **removeTarget(_:action:)**: Removes a target and an action from a gesture-recognizer object.\n\n## Getting the touches and location of a gesture\n\n- **location(in:)**: Returns the point computed as the location in a given view of the gesture represented by the gesture recognizer.\n- **location(ofTouch:in:)**: Returns the location of one of the gesture’s touches in the local coordinate system of a given view.\n- **numberOfTouches**: The number of touches involved in the gesture represented by the gesture recognizer.\n\n## Getting the recognizer’s state and view\n\n- **state**: The current state of the gesture recognizer.\n- **UIGestureRecognizer.State**: Constants that represent the current state a gesture recognizer is in.\n- **view**: The view the gesture recognizer is attached to.\n- **isEnabled**: A Boolean property that indicates whether the gesture recognizer is enabled.\n- **buttonMask**: A bit mask of the buttons in the gesture represented by the gesture recognizer.\n- **modifierFlags**: The bit mask of modifier flags in the gesture represented by the gesture recognizer.\n\n## Canceling and delaying touches\n\n- **cancelsTouchesInView**: A Boolean value that determines whether touches are delivered to a view when a gesture is recognized.\n- **delaysTouchesBegan**: A Boolean value that determines whether the gesture recognizer delays sending touches in a begin phase to its view.\n- **delaysTouchesEnded**: A Boolean value that determines whether the gesture recognizer delays sending touches in an end phase to its view.\n\n## Specifying dependencies between gesture recognizers\n\n- **require(toFail:)**: Creates a dependency relationship between the gesture recognizer and another gesture recognizer when the objects are created.\n\n## Recognizing different gestures\n\n- **allowedPressTypes**: An array of press types used to distinguish the type of button press.\n- **allowedTouchTypes**: An array of touch types used to distinguish type of touches.\n- **requiresExclusiveTouchType**: A Boolean value that indicates whether the gesture recognizer considers touches of different types simultaneously.\n\n## Debugging gesture recognizers\n\n- **name**: The unique name of the gesture recognizer.\n\n## Implementing subclasses\n\n- **touchesBegan(_:with:)**: Sent to the gesture recognizer when one or more fingers touch down in the associated view.\n- **touchesMoved(_:with:)**: Sent to the gesture recognizer when one or more fingers move in the associated view.\n- **touchesEnded(_:with:)**: Sent to the gesture recognizer when one or more fingers lift from the associated view.\n- **touchesCancelled(_:with:)**: Sent to the gesture recognizer when a system event (such as an incoming phone call) cancels a touch event.\n- **touchesEstimatedPropertiesUpdated(_:)**: Sent to the gesture recognizer when the estimated properties for a touch have changed so that they are no longer estimated, or an update is no longer expected.\n- **reset()**: Overridden to reset internal state when a gesture recognition attempt completes.\n- **ignore(_:for:)**: Tells the gesture recognizer to ignore a specific touch of the given event.\n- **canBePrevented(by:)**: Overridden to indicate that the specified gesture recognizer can prevent the receiver from recognizing a gesture.\n- **canPrevent(_:)**: Overridden to indicate that the receiver can prevent the specified gesture recognizer from recognizing its gesture.\n- **shouldReceive(_:)**\n- **shouldRequireFailure(of:)**: Overridden to indicate that the receiver requires the specified gesture recognizer to fail.\n- **shouldBeRequiredToFail(by:)**: Overridden to indicate that the receiver should be required to fail by the specified gesture recognizer.\n- **ignore(_:for:)**: Tells the gesture recognizer to ignore a specific press of the given event.\n- **pressesBegan(_:with:)**: Sent to the receiver when a physical button is pressed in the associated view.\n- **pressesChanged(_:with:)**: Sent to the receiver when the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIPress\/force] of the press has changed in the associated view.\n- **pressesEnded(_:with:)**: Sent to the receiver when a button is released from the associated view.\n- **pressesCancelled(_:with:)**: Sent to the receiver when a system event (such as a low-memory warning) cancels a press event.\n\n## Custom gestures\n\n- **Implementing a custom gesture recognizer**: Discover when and how to build your own gesture recognizers.\n- **UIGestureRecognizerDelegate**: A set of methods implemented by the delegate of a gesture recognizer to fine-tune an app’s gesture-recognition behavior.\n- **Supporting gesture interaction in your apps**: Enrich your app’s user experience by supporting standard and custom gesture interaction.\n\n## Inherits From\n\n- NSObject\n\n## Inherited By\n\n- UIHoverGestureRecognizer\n- UILongPressGestureRecognizer\n- UIPanGestureRecognizer\n- UIPinchGestureRecognizer\n- UIRotationGestureRecognizer\n- UISwipeGestureRecognizer\n- UITapGestureRecognizer\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n- Sendable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a gesture recognizer with a target and an action selector.",
+          "name" : "init(target:action:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/init(target:action:)"
+        },
+        {
+          "description" : "Creates a gesture recognizer from data in an unarchiver.",
+          "name" : "init(coder:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/init(coder:)"
+        },
+        {
+          "description" : "Creates a gesture recognizer.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/init()"
+        }
+      ],
+      "title" : "Initializing a gesture recognizer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The delegate of the gesture recognizer.",
+          "name" : "delegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/delegate"
+        },
+        {
+          "description" : "A set of methods implemented by the delegate of a gesture recognizer to fine-tune an app’s gesture-recognition behavior.",
+          "name" : "UIGestureRecognizerDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizerDelegate"
+        }
+      ],
+      "title" : "Managing gesture-related interactions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds a target and an action to a gesture-recognizer object.",
+          "name" : "addTarget(_:action:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/addTarget(_:action:)"
+        },
+        {
+          "description" : "Removes a target and an action from a gesture-recognizer object.",
+          "name" : "removeTarget(_:action:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/removeTarget(_:action:)"
+        }
+      ],
+      "title" : "Adding and removing targets and actions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the point computed as the location in a given view of the gesture represented by the gesture recognizer.",
+          "name" : "location(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/location(in:)"
+        },
+        {
+          "description" : "Returns the location of one of the gesture’s touches in the local coordinate system of a given view.",
+          "name" : "location(ofTouch:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/location(ofTouch:in:)"
+        },
+        {
+          "description" : "The number of touches involved in the gesture represented by the gesture recognizer.",
+          "name" : "numberOfTouches",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/numberOfTouches"
+        }
+      ],
+      "title" : "Getting the touches and location of a gesture"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The current state of the gesture recognizer.",
+          "name" : "state",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/state-swift.property"
+        },
+        {
+          "description" : "Constants that represent the current state a gesture recognizer is in.",
+          "name" : "UIGestureRecognizer.State",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/State-swift.enum"
+        },
+        {
+          "description" : "The view the gesture recognizer is attached to.",
+          "name" : "view",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/view"
+        },
+        {
+          "description" : "A Boolean property that indicates whether the gesture recognizer is enabled.",
+          "name" : "isEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/isEnabled"
+        },
+        {
+          "description" : "A bit mask of the buttons in the gesture represented by the gesture recognizer.",
+          "name" : "buttonMask",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/buttonMask"
+        },
+        {
+          "description" : "The bit mask of modifier flags in the gesture represented by the gesture recognizer.",
+          "name" : "modifierFlags",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/modifierFlags"
+        }
+      ],
+      "title" : "Getting the recognizer’s state and view"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that determines whether touches are delivered to a view when a gesture is recognized.",
+          "name" : "cancelsTouchesInView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/cancelsTouchesInView"
+        },
+        {
+          "description" : "A Boolean value that determines whether the gesture recognizer delays sending touches in a begin phase to its view.",
+          "name" : "delaysTouchesBegan",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/delaysTouchesBegan"
+        },
+        {
+          "description" : "A Boolean value that determines whether the gesture recognizer delays sending touches in an end phase to its view.",
+          "name" : "delaysTouchesEnded",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/delaysTouchesEnded"
+        }
+      ],
+      "title" : "Canceling and delaying touches"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a dependency relationship between the gesture recognizer and another gesture recognizer when the objects are created.",
+          "name" : "require(toFail:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/require(toFail:)"
+        }
+      ],
+      "title" : "Specifying dependencies between gesture recognizers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An array of press types used to distinguish the type of button press.",
+          "name" : "allowedPressTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/allowedPressTypes"
+        },
+        {
+          "description" : "An array of touch types used to distinguish type of touches.",
+          "name" : "allowedTouchTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/allowedTouchTypes"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the gesture recognizer considers touches of different types simultaneously.",
+          "name" : "requiresExclusiveTouchType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/requiresExclusiveTouchType"
+        }
+      ],
+      "title" : "Recognizing different gestures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The unique name of the gesture recognizer.",
+          "name" : "name",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/name"
+        }
+      ],
+      "title" : "Debugging gesture recognizers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sent to the gesture recognizer when one or more fingers touch down in the associated view.",
+          "name" : "touchesBegan(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/touchesBegan(_:with:)"
+        },
+        {
+          "description" : "Sent to the gesture recognizer when one or more fingers move in the associated view.",
+          "name" : "touchesMoved(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/touchesMoved(_:with:)"
+        },
+        {
+          "description" : "Sent to the gesture recognizer when one or more fingers lift from the associated view.",
+          "name" : "touchesEnded(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/touchesEnded(_:with:)"
+        },
+        {
+          "description" : "Sent to the gesture recognizer when a system event (such as an incoming phone call) cancels a touch event.",
+          "name" : "touchesCancelled(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/touchesCancelled(_:with:)"
+        },
+        {
+          "description" : "Sent to the gesture recognizer when the estimated properties for a touch have changed so that they are no longer estimated, or an update is no longer expected.",
+          "name" : "touchesEstimatedPropertiesUpdated(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/touchesEstimatedPropertiesUpdated(_:)"
+        },
+        {
+          "description" : "Overridden to reset internal state when a gesture recognition attempt completes.",
+          "name" : "reset()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/reset()"
+        },
+        {
+          "description" : "Tells the gesture recognizer to ignore a specific touch of the given event.",
+          "name" : "ignore(_:for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/ignore(_:for:)-5f685"
+        },
+        {
+          "description" : "Overridden to indicate that the specified gesture recognizer can prevent the receiver from recognizing a gesture.",
+          "name" : "canBePrevented(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/canBePrevented(by:)"
+        },
+        {
+          "description" : "Overridden to indicate that the receiver can prevent the specified gesture recognizer from recognizing its gesture.",
+          "name" : "canPrevent(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/canPrevent(_:)"
+        },
+        {
+          "description" : "",
+          "name" : "shouldReceive(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/shouldReceive(_:)"
+        },
+        {
+          "description" : "Overridden to indicate that the receiver requires the specified gesture recognizer to fail.",
+          "name" : "shouldRequireFailure(of:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/shouldRequireFailure(of:)"
+        },
+        {
+          "description" : "Overridden to indicate that the receiver should be required to fail by the specified gesture recognizer.",
+          "name" : "shouldBeRequiredToFail(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/shouldBeRequiredToFail(by:)"
+        },
+        {
+          "description" : "Tells the gesture recognizer to ignore a specific press of the given event.",
+          "name" : "ignore(_:for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/ignore(_:for:)-8qqor"
+        },
+        {
+          "description" : "Sent to the receiver when a physical button is pressed in the associated view.",
+          "name" : "pressesBegan(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/pressesBegan(_:with:)"
+        },
+        {
+          "description" : "Sent to the receiver when the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIPress\/force] of the press has changed in the associated view.",
+          "name" : "pressesChanged(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/pressesChanged(_:with:)"
+        },
+        {
+          "description" : "Sent to the receiver when a button is released from the associated view.",
+          "name" : "pressesEnded(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/pressesEnded(_:with:)"
+        },
+        {
+          "description" : "Sent to the receiver when a system event (such as a low-memory warning) cancels a press event.",
+          "name" : "pressesCancelled(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer\/pressesCancelled(_:with:)"
+        }
+      ],
+      "title" : "Implementing subclasses"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Discover when and how to build your own gesture recognizers.",
+          "name" : "Implementing a custom gesture recognizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/implementing-a-custom-gesture-recognizer"
+        },
+        {
+          "description" : "A set of methods implemented by the delegate of a gesture recognizer to fine-tune an app’s gesture-recognition behavior.",
+          "name" : "UIGestureRecognizerDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizerDelegate"
+        },
+        {
+          "description" : "Enrich your app’s user experience by supporting standard and custom gesture interaction.",
+          "name" : "Supporting gesture interaction in your apps",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/supporting-gesture-interaction-in-your-apps"
+        }
+      ],
+      "title" : "Custom gestures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "UIGestureRecognizer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIGestureRecognizer"
+}

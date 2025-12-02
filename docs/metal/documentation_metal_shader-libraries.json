@@ -1,0 +1,547 @@
+{
+  "abstract" : "Manage and load your app’s Metal shaders.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "20ae56995d209f9e8f56c6a3a3c50a0b241820d56da61a84bafaa4fe34cc79ca",
+  "crawledAt" : "2025-12-02T16:13:24Z",
+  "id" : "071FBF46-3B2C-45DF-A39A-4D590FD2C5CD",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Metal",
+  "overview" : "## Overview\n\nA Metal library represents a collection of one or more shaders. Xcode creates a library from the shader source files in a project, a Metal intermediate representation (IR) file, or a binary archive file. You can also create IR files from Metal source code by running the Metal compiler in a command-line environment.\n\nApps create the default library instance by calling a Metal device’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeDefaultLibrary()] method. The default library contains all the shaders from a project’s shader source files, which Xcode compiles at build time. Apps create additional libraries by passing an IR file to an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice] instance’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeLibrary(URL:)] method or one of its sibling methods. The device can also create a library directly from source code by passing it as a string to the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeLibrary(source:options:)] method. See [doc:\/\/com.apple.metal\/documentation\/Metal\/shader-library-and-archive-creation] for more information.\n\nYou can apply a shader from a library to a pipeline state’s entry point, such as the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLComputePipelineDescriptor\/computeFunction] property for a compute pass. Start by retrieving an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLFunction] instance from a library, which is a reference to the library’s shader, by calling its [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLLibrary\/makeFunction(name:)] method or a sibling method. Then set the function instance to the appropriate property of a pipeline descriptor. For example, an app can retrieve a vertex stage’s entry point shader from a library and assign it to the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPipelineDescriptor\/vertexFunction] property of an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPipelineDescriptor].\n\nDynamic libraries are a collection of other shaders, typically utility functions, that support the entry point shaders for a pipeline state. To create a dynamic library, pass an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLLibrary] instance to a device’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeDynamicLibrary(library:)] method, or pass a file URL to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeDynamicLibrary(url:)]. Add a dynamic library to a pipeline state by including it in an array of a pipeline descriptor’s preloaded libraries property. For example, if a vertex shader calls a shader in a dynamic library, directly or indirectly, add that dynamic library to the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPipelineDescriptor\/vertexPreloadedLibraries] property’s array. You can also build dynamic libraries with the Metal compiler in Terminal.\n\nBinary archives are precompiled static libraries for specific GPU architectures that allow you to avoid the cost of runtime shader compilation. Because Metal automatically builds and caches shaders on the device running an app, use binary archives as part of your distributed app, or deliver them through content updates. See [doc:\/\/com.apple.metal\/documentation\/Metal\/creating-binary-archives-from-device-built-pipeline-state-objects] for more information on how to build and distribute binary archives for any device that supports Metal.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/shader-libraries\ncrawled: 2025-12-02T16:13:24Z\n---\n\n# Shader libraries\n\n**API Collection**\n\nManage and load your app’s Metal shaders.\n\n## Overview\n\nA Metal library represents a collection of one or more shaders. Xcode creates a library from the shader source files in a project, a Metal intermediate representation (IR) file, or a binary archive file. You can also create IR files from Metal source code by running the Metal compiler in a command-line environment.\n\nApps create the default library instance by calling a Metal device’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeDefaultLibrary()] method. The default library contains all the shaders from a project’s shader source files, which Xcode compiles at build time. Apps create additional libraries by passing an IR file to an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice] instance’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeLibrary(URL:)] method or one of its sibling methods. The device can also create a library directly from source code by passing it as a string to the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeLibrary(source:options:)] method. See [doc:\/\/com.apple.metal\/documentation\/Metal\/shader-library-and-archive-creation] for more information.\n\nYou can apply a shader from a library to a pipeline state’s entry point, such as the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLComputePipelineDescriptor\/computeFunction] property for a compute pass. Start by retrieving an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLFunction] instance from a library, which is a reference to the library’s shader, by calling its [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLLibrary\/makeFunction(name:)] method or a sibling method. Then set the function instance to the appropriate property of a pipeline descriptor. For example, an app can retrieve a vertex stage’s entry point shader from a library and assign it to the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPipelineDescriptor\/vertexFunction] property of an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPipelineDescriptor].\n\nDynamic libraries are a collection of other shaders, typically utility functions, that support the entry point shaders for a pipeline state. To create a dynamic library, pass an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLLibrary] instance to a device’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeDynamicLibrary(library:)] method, or pass a file URL to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeDynamicLibrary(url:)]. Add a dynamic library to a pipeline state by including it in an array of a pipeline descriptor’s preloaded libraries property. For example, if a vertex shader calls a shader in a dynamic library, directly or indirectly, add that dynamic library to the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPipelineDescriptor\/vertexPreloadedLibraries] property’s array. You can also build dynamic libraries with the Metal compiler in Terminal.\n\nBinary archives are precompiled static libraries for specific GPU architectures that allow you to avoid the cost of runtime shader compilation. Because Metal automatically builds and caches shaders on the device running an app, use binary archives as part of your distributed app, or deliver them through content updates. See [doc:\/\/com.apple.metal\/documentation\/Metal\/creating-binary-archives-from-device-built-pipeline-state-objects] for more information on how to build and distribute binary archives for any device that supports Metal.\n\n## Shader compilation\n\n- **Metal libraries**: Compile and manage Metal libraries from the command line.\n- **Metal dynamic libraries**: Create a single Metal library containing reusable code to reduce library size and avoid repeated shader compilation at runtime.\n- **Metal binary archives**: Distribute precompiled GPU-specific binaries as part of your app to avoid runtime compilation of Metal shaders.\n- **MTL4Compiler**: A abstraction for a pipeline state and shader function compiler.\n- **MTL4CompilerDescriptor**: Groups together properties for creating a compiler context.\n- **MTL4CompilerTaskOptions**: The configuration options that control the behavior of a compilation task for a Metal 4 compiler instance.\n- **MTL4CompilerTaskStatus**: Represents the status of a compiler task.\n- **MTL4Archive**: A read-only container that stores pipeline states from a shader compiler.\n- **MTL4BinaryFunction**: Represents a binary function.\n- **MTL4BinaryFunctionDescriptor**: Base interface for other function-derived interfaces.\n- **MTL4BinaryFunctionOptions**: Options for configuring the creation of binary functions.\n- **MTL4PipelineStageDynamicLinkingDescriptor**: Groups together properties to drive the dynamic linking process of a pipeline stage.\n\n## Pipeline compilation\n\n- **MTL4BlendState**: Enumeration for controlling the blend state of a pipeline state object.\n- **MTL4FunctionDescriptor**: Base interface for describing a Metal 4 shader function.\n- **MTL4IndirectCommandBufferSupportState**: Enumeration for controlling support for [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLIndirectCommandBuffer].\n- **MTL4LibraryDescriptor**: Serves as the base descriptor for creating a Metal library.\n- **MTL4LibraryFunctionDescriptor**: Describes a shader function from a Metal library.\n- **MTL4LogicalToPhysicalColorAttachmentMappingState**: Enumerates possible behaviors of how a pipeline maps its logical outputs to its color attachments.\n- **MTL4NewBinaryFunctionCompletionHandler**: Provides a signature for a callback block that Metal calls when the compiler finishes a build task for a binary function.\n- **MTL4NewMachineLearningPipelineStateCompletionHandler**: Provides a signature for a callback block that Metal calls when the compiler finishes a build task for a machine learning pipeline state.\n- **MTL4ShaderReflection**: Option mask for requesting reflection information at pipeline build time.\n- **MTL4SpecializedFunctionDescriptor**: Groups together properties to configure and create a specialized function by passing it to a factory method.\n- **MTL4AlphaToCoverageState**: Enumeration for controlling alpha-to-coverage state of a pipeline state object.\n- **MTL4AlphaToOneState**: Enumeration for controlling alpha-to-one state of a pipeline state object.\n- **MTL4StaticLinkingDescriptor**: Groups together properties to drive a static linking process.\n- **MTL4StitchedFunctionDescriptor**: Groups together properties that describe a shader function suitable for stitching.\n- **MTLFunctionReflection**: Represents a reflection object containing information about a function in a Metal library.\n- **MTLNewDynamicLibraryCompletionHandler**\n\n## Pipeline harvesting\n\n- **MTL4PipelineDataSetSerializer**: A fast-addition container for collecting data during pipeline state creation.\n- **MTL4PipelineDataSetSerializerConfiguration**: Configuration options for pipeline dataset serializer objects.\n- **MTL4PipelineDataSetSerializerDescriptor**: Groups together properties to create a pipeline data set serializer.\n- **MTL4PipelineDescriptor**: Base type for descriptors you use for building pipeline state objects.\n- **MTL4PipelineOptions**: Provides options controlling how to compile a pipeline state.\n\n## Shader library management\n\n- **MTLLibrary**: A collection of Metal shader functions.\n- **MTLDynamicLibrary**: A dynamically linkable representation of compiled shader code for a specific Metal device object.\n- **MTLBinaryArchive**: A container for pipeline state descriptors and their associated compiled shader code.\n- **MTLCompileOptions**: Compilation settings for a Metal shader library.\n- **MTLLibraryType**: A set of options for Metal library types.\n- **MTLLanguageVersion**: Metal shading language versions.\n- **MTLCompileSymbolVisibility**\n- **MTLLibraryOptimizationLevel**: The optimization options for the Metal compiler.\n\n## Shader functions\n\n- **MTLFunctionDescriptor**: A description of a function object to create.\n- **MTLFunction**: A interface that represents a public shader function in a Metal library.\n- **MTLFunctionHandle**: An object representing a function that you can add to a visible function table.\n- **MTLVisibleFunctionTableDescriptor**: A specification of how to create a visible function table.\n- **MTLVisibleFunctionTable**: A table of shader functions visible to your app that you can pass into compute commands to customize the behavior of a shader.\n- **MTLIntersectionFunctionDescriptor**: A description of an intersection function that performs an intersection test.\n- **MTLIntersectionFunctionTableDescriptor**: A specification of how to create an intersection function table.\n- **MTLIntersectionFunctionTable**: A table of intersection functions that Metal calls to perform ray-tracing intersection tests.\n\n## Stitched function libraries\n\n- **Customizing shaders using function pointers and stitching**: Define custom shader behavior at runtime by creating functions from existing ones and preferentially linking to others in a dynamic library.\n- **MTLStitchedLibraryDescriptor**: A description of a new library of procedurally generated functions.\n- **MTLFunctionStitchingGraph**: A description of a new stitched function.\n- **MTLFunctionStitchingInputNode**: A call graph node that describes an input to the call graph.\n- **MTLFunctionStitchingFunctionNode**: A call graph node that describes a function call and its inputs.\n- **MTLFunctionStitchingNode**: A protocol to identify call graph nodes.\n- **MTLFunctionStitchingAttributeAlwaysInline**: An attribute to specify that Metal needs to inline all of the function calls when generating the stitched function.\n- **MTLFunctionStitchingAttribute**: A protocol to identify types that customize how the Metal compiler stitches a function together.\n\n## Compile-time variant functions\n\n- **MTLFunctionConstant**: A constant that specializes the behavior of a shader.\n- **MTLFunctionConstantValues**: A set of constant values that specialize a graphics or compute GPU function.\n\n## Introspection data\n\n- **MTLComputePipelineReflection**: Information about the arguments of a compute function.\n- **MTLAutoreleasedComputePipelineReflection**: A convenience type alias for an autoreleased compute pipeline reflection object.\n- **MTLRenderPipelineReflection**: Information about the arguments of a graphics function.\n- **MTLAutoreleasedRenderPipelineReflection**: A convenience type alias for an autoreleased pipeline reflection instance.\n- **MTLBindingType**\n- **MTLBinding**\n- **MTLBindingAccess**\n- **MTLBufferBinding**\n- **MTLTextureBinding**\n- **MTLThreadgroupBinding**\n- **MTLObjectPayloadBinding**\n\n## Function arguments\n\n- **MTLAttribute**: An object that describes an attribute defined in the stage-in argument for a shader.\n- **MTLVertexAttribute**: An instance that represents an attribute of a vertex function.\n- **MTLArgument**: Information about an argument of a graphics or compute function.\n- **MTLAutoreleasedArgument**: A convenience type alias for an autoreleased argument instance.\n- **MTLArgumentType**: The resource type for an argument of a function.\n- **MTLArgumentAccess**: Function access restrictions to argument data in the shading language code.\n\n## Shader types\n\n- **MTLType**: A description of a data type.\n- **MTLDataType**: The types of GPU functions, including shaders and compute kernels.\n- **MTLArrayType**: A description of an array.\n- **MTLStructType**: A description of a structure.\n- **MTLStructMember**: An instance that provides information about a field in a structure.\n- **MTLPointerType**: A description of a pointer.\n- **MTLTextureReferenceType**: A description of a texture.\n\n## Shader logging\n\n- **MTLLogStateDescriptor**: An interface that represents a log state configuration.\n- **MTLLogState**: A container for shader log messages.\n\n## Errors\n\n- **MTLLibraryError**: Metal errors related to libraries.\n- **MTLLibraryError.Code**: Error codes for Metal library errors.\n- **MTLLibraryErrorDomain**: The error domain for Metal libraries.\n\n## Shader compilation and libraries\n\n- **Using the Metal 4 compilation API**: Control when and how you compile an app’s shaders.\n- **Using function specialization to build pipeline variants**: Create pipelines for different levels of detail from a common shader source.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Compile and manage Metal libraries from the command line.",
+          "name" : "Metal libraries",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/metal-libraries"
+        },
+        {
+          "description" : "Create a single Metal library containing reusable code to reduce library size and avoid repeated shader compilation at runtime.",
+          "name" : "Metal dynamic libraries",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/metal-dynamic-libraries"
+        },
+        {
+          "description" : "Distribute precompiled GPU-specific binaries as part of your app to avoid runtime compilation of Metal shaders.",
+          "name" : "Metal binary archives",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/metal-binary-archives"
+        },
+        {
+          "description" : "A abstraction for a pipeline state and shader function compiler.",
+          "name" : "MTL4Compiler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4Compiler"
+        },
+        {
+          "description" : "Groups together properties for creating a compiler context.",
+          "name" : "MTL4CompilerDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4CompilerDescriptor"
+        },
+        {
+          "description" : "The configuration options that control the behavior of a compilation task for a Metal 4 compiler instance.",
+          "name" : "MTL4CompilerTaskOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4CompilerTaskOptions"
+        },
+        {
+          "description" : "Represents the status of a compiler task.",
+          "name" : "MTL4CompilerTaskStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4CompilerTaskStatus"
+        },
+        {
+          "description" : "A read-only container that stores pipeline states from a shader compiler.",
+          "name" : "MTL4Archive",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4Archive"
+        },
+        {
+          "description" : "Represents a binary function.",
+          "name" : "MTL4BinaryFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4BinaryFunction"
+        },
+        {
+          "description" : "Base interface for other function-derived interfaces.",
+          "name" : "MTL4BinaryFunctionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4BinaryFunctionDescriptor"
+        },
+        {
+          "description" : "Options for configuring the creation of binary functions.",
+          "name" : "MTL4BinaryFunctionOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4BinaryFunctionOptions"
+        },
+        {
+          "description" : "Groups together properties to drive the dynamic linking process of a pipeline stage.",
+          "name" : "MTL4PipelineStageDynamicLinkingDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4PipelineStageDynamicLinkingDescriptor"
+        }
+      ],
+      "title" : "Shader compilation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Enumeration for controlling the blend state of a pipeline state object.",
+          "name" : "MTL4BlendState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4BlendState"
+        },
+        {
+          "description" : "Base interface for describing a Metal 4 shader function.",
+          "name" : "MTL4FunctionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4FunctionDescriptor"
+        },
+        {
+          "description" : "Enumeration for controlling support for [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLIndirectCommandBuffer].",
+          "name" : "MTL4IndirectCommandBufferSupportState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4IndirectCommandBufferSupportState"
+        },
+        {
+          "description" : "Serves as the base descriptor for creating a Metal library.",
+          "name" : "MTL4LibraryDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4LibraryDescriptor"
+        },
+        {
+          "description" : "Describes a shader function from a Metal library.",
+          "name" : "MTL4LibraryFunctionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4LibraryFunctionDescriptor"
+        },
+        {
+          "description" : "Enumerates possible behaviors of how a pipeline maps its logical outputs to its color attachments.",
+          "name" : "MTL4LogicalToPhysicalColorAttachmentMappingState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4LogicalToPhysicalColorAttachmentMappingState"
+        },
+        {
+          "description" : "Provides a signature for a callback block that Metal calls when the compiler finishes a build task for a binary function.",
+          "name" : "MTL4NewBinaryFunctionCompletionHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4NewBinaryFunctionCompletionHandler"
+        },
+        {
+          "description" : "Provides a signature for a callback block that Metal calls when the compiler finishes a build task for a machine learning pipeline state.",
+          "name" : "MTL4NewMachineLearningPipelineStateCompletionHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4NewMachineLearningPipelineStateCompletionHandler"
+        },
+        {
+          "description" : "Option mask for requesting reflection information at pipeline build time.",
+          "name" : "MTL4ShaderReflection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4ShaderReflection"
+        },
+        {
+          "description" : "Groups together properties to configure and create a specialized function by passing it to a factory method.",
+          "name" : "MTL4SpecializedFunctionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4SpecializedFunctionDescriptor"
+        },
+        {
+          "description" : "Enumeration for controlling alpha-to-coverage state of a pipeline state object.",
+          "name" : "MTL4AlphaToCoverageState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4AlphaToCoverageState"
+        },
+        {
+          "description" : "Enumeration for controlling alpha-to-one state of a pipeline state object.",
+          "name" : "MTL4AlphaToOneState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4AlphaToOneState"
+        },
+        {
+          "description" : "Groups together properties to drive a static linking process.",
+          "name" : "MTL4StaticLinkingDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4StaticLinkingDescriptor"
+        },
+        {
+          "description" : "Groups together properties that describe a shader function suitable for stitching.",
+          "name" : "MTL4StitchedFunctionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4StitchedFunctionDescriptor"
+        },
+        {
+          "description" : "Represents a reflection object containing information about a function in a Metal library.",
+          "name" : "MTLFunctionReflection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionReflection"
+        },
+        {
+          "description" : "",
+          "name" : "MTLNewDynamicLibraryCompletionHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLNewDynamicLibraryCompletionHandler"
+        }
+      ],
+      "title" : "Pipeline compilation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A fast-addition container for collecting data during pipeline state creation.",
+          "name" : "MTL4PipelineDataSetSerializer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4PipelineDataSetSerializer"
+        },
+        {
+          "description" : "Configuration options for pipeline dataset serializer objects.",
+          "name" : "MTL4PipelineDataSetSerializerConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4PipelineDataSetSerializerConfiguration"
+        },
+        {
+          "description" : "Groups together properties to create a pipeline data set serializer.",
+          "name" : "MTL4PipelineDataSetSerializerDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4PipelineDataSetSerializerDescriptor"
+        },
+        {
+          "description" : "Base type for descriptors you use for building pipeline state objects.",
+          "name" : "MTL4PipelineDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4PipelineDescriptor"
+        },
+        {
+          "description" : "Provides options controlling how to compile a pipeline state.",
+          "name" : "MTL4PipelineOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4PipelineOptions"
+        }
+      ],
+      "title" : "Pipeline harvesting"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A collection of Metal shader functions.",
+          "name" : "MTLLibrary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLLibrary"
+        },
+        {
+          "description" : "A dynamically linkable representation of compiled shader code for a specific Metal device object.",
+          "name" : "MTLDynamicLibrary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLDynamicLibrary"
+        },
+        {
+          "description" : "A container for pipeline state descriptors and their associated compiled shader code.",
+          "name" : "MTLBinaryArchive",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLBinaryArchive"
+        },
+        {
+          "description" : "Compilation settings for a Metal shader library.",
+          "name" : "MTLCompileOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLCompileOptions"
+        },
+        {
+          "description" : "A set of options for Metal library types.",
+          "name" : "MTLLibraryType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLLibraryType"
+        },
+        {
+          "description" : "Metal shading language versions.",
+          "name" : "MTLLanguageVersion",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLLanguageVersion"
+        },
+        {
+          "description" : "",
+          "name" : "MTLCompileSymbolVisibility",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLCompileSymbolVisibility"
+        },
+        {
+          "description" : "The optimization options for the Metal compiler.",
+          "name" : "MTLLibraryOptimizationLevel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLLibraryOptimizationLevel"
+        }
+      ],
+      "title" : "Shader library management"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A description of a function object to create.",
+          "name" : "MTLFunctionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionDescriptor"
+        },
+        {
+          "description" : "A interface that represents a public shader function in a Metal library.",
+          "name" : "MTLFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunction"
+        },
+        {
+          "description" : "An object representing a function that you can add to a visible function table.",
+          "name" : "MTLFunctionHandle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionHandle"
+        },
+        {
+          "description" : "A specification of how to create a visible function table.",
+          "name" : "MTLVisibleFunctionTableDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLVisibleFunctionTableDescriptor"
+        },
+        {
+          "description" : "A table of shader functions visible to your app that you can pass into compute commands to customize the behavior of a shader.",
+          "name" : "MTLVisibleFunctionTable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLVisibleFunctionTable"
+        },
+        {
+          "description" : "A description of an intersection function that performs an intersection test.",
+          "name" : "MTLIntersectionFunctionDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLIntersectionFunctionDescriptor"
+        },
+        {
+          "description" : "A specification of how to create an intersection function table.",
+          "name" : "MTLIntersectionFunctionTableDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLIntersectionFunctionTableDescriptor"
+        },
+        {
+          "description" : "A table of intersection functions that Metal calls to perform ray-tracing intersection tests.",
+          "name" : "MTLIntersectionFunctionTable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLIntersectionFunctionTable"
+        }
+      ],
+      "title" : "Shader functions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Define custom shader behavior at runtime by creating functions from existing ones and preferentially linking to others in a dynamic library.",
+          "name" : "Customizing shaders using function pointers and stitching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/customizing-shaders-using-function-pointers-and-stitching"
+        },
+        {
+          "description" : "A description of a new library of procedurally generated functions.",
+          "name" : "MTLStitchedLibraryDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStitchedLibraryDescriptor"
+        },
+        {
+          "description" : "A description of a new stitched function.",
+          "name" : "MTLFunctionStitchingGraph",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionStitchingGraph"
+        },
+        {
+          "description" : "A call graph node that describes an input to the call graph.",
+          "name" : "MTLFunctionStitchingInputNode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionStitchingInputNode"
+        },
+        {
+          "description" : "A call graph node that describes a function call and its inputs.",
+          "name" : "MTLFunctionStitchingFunctionNode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionStitchingFunctionNode"
+        },
+        {
+          "description" : "A protocol to identify call graph nodes.",
+          "name" : "MTLFunctionStitchingNode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionStitchingNode"
+        },
+        {
+          "description" : "An attribute to specify that Metal needs to inline all of the function calls when generating the stitched function.",
+          "name" : "MTLFunctionStitchingAttributeAlwaysInline",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionStitchingAttributeAlwaysInline"
+        },
+        {
+          "description" : "A protocol to identify types that customize how the Metal compiler stitches a function together.",
+          "name" : "MTLFunctionStitchingAttribute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionStitchingAttribute"
+        }
+      ],
+      "title" : "Stitched function libraries"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A constant that specializes the behavior of a shader.",
+          "name" : "MTLFunctionConstant",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionConstant"
+        },
+        {
+          "description" : "A set of constant values that specialize a graphics or compute GPU function.",
+          "name" : "MTLFunctionConstantValues",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFunctionConstantValues"
+        }
+      ],
+      "title" : "Compile-time variant functions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Information about the arguments of a compute function.",
+          "name" : "MTLComputePipelineReflection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLComputePipelineReflection"
+        },
+        {
+          "description" : "A convenience type alias for an autoreleased compute pipeline reflection object.",
+          "name" : "MTLAutoreleasedComputePipelineReflection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLAutoreleasedComputePipelineReflection"
+        },
+        {
+          "description" : "Information about the arguments of a graphics function.",
+          "name" : "MTLRenderPipelineReflection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderPipelineReflection"
+        },
+        {
+          "description" : "A convenience type alias for an autoreleased pipeline reflection instance.",
+          "name" : "MTLAutoreleasedRenderPipelineReflection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLAutoreleasedRenderPipelineReflection"
+        },
+        {
+          "description" : "",
+          "name" : "MTLBindingType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLBindingType"
+        },
+        {
+          "description" : "",
+          "name" : "MTLBinding",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLBinding"
+        },
+        {
+          "description" : "",
+          "name" : "MTLBindingAccess",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLBindingAccess"
+        },
+        {
+          "description" : "",
+          "name" : "MTLBufferBinding",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLBufferBinding"
+        },
+        {
+          "description" : "",
+          "name" : "MTLTextureBinding",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLTextureBinding"
+        },
+        {
+          "description" : "",
+          "name" : "MTLThreadgroupBinding",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLThreadgroupBinding"
+        },
+        {
+          "description" : "",
+          "name" : "MTLObjectPayloadBinding",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLObjectPayloadBinding"
+        }
+      ],
+      "title" : "Introspection data"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that describes an attribute defined in the stage-in argument for a shader.",
+          "name" : "MTLAttribute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLAttribute"
+        },
+        {
+          "description" : "An instance that represents an attribute of a vertex function.",
+          "name" : "MTLVertexAttribute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLVertexAttribute"
+        },
+        {
+          "description" : "Information about an argument of a graphics or compute function.",
+          "name" : "MTLArgument",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLArgument"
+        },
+        {
+          "description" : "A convenience type alias for an autoreleased argument instance.",
+          "name" : "MTLAutoreleasedArgument",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLAutoreleasedArgument"
+        },
+        {
+          "description" : "The resource type for an argument of a function.",
+          "name" : "MTLArgumentType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLArgumentType"
+        },
+        {
+          "description" : "Function access restrictions to argument data in the shading language code.",
+          "name" : "MTLArgumentAccess",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLArgumentAccess"
+        }
+      ],
+      "title" : "Function arguments"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A description of a data type.",
+          "name" : "MTLType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLType"
+        },
+        {
+          "description" : "The types of GPU functions, including shaders and compute kernels.",
+          "name" : "MTLDataType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLDataType"
+        },
+        {
+          "description" : "A description of an array.",
+          "name" : "MTLArrayType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLArrayType"
+        },
+        {
+          "description" : "A description of a structure.",
+          "name" : "MTLStructType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStructType"
+        },
+        {
+          "description" : "An instance that provides information about a field in a structure.",
+          "name" : "MTLStructMember",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStructMember"
+        },
+        {
+          "description" : "A description of a pointer.",
+          "name" : "MTLPointerType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLPointerType"
+        },
+        {
+          "description" : "A description of a texture.",
+          "name" : "MTLTextureReferenceType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLTextureReferenceType"
+        }
+      ],
+      "title" : "Shader types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An interface that represents a log state configuration.",
+          "name" : "MTLLogStateDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLLogStateDescriptor"
+        },
+        {
+          "description" : "A container for shader log messages.",
+          "name" : "MTLLogState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLLogState"
+        }
+      ],
+      "title" : "Shader logging"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Metal errors related to libraries.",
+          "name" : "MTLLibraryError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLLibraryError-swift.struct"
+        },
+        {
+          "description" : "Error codes for Metal library errors.",
+          "name" : "MTLLibraryError.Code",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLLibraryError-swift.struct\/Code"
+        },
+        {
+          "description" : "The error domain for Metal libraries.",
+          "name" : "MTLLibraryErrorDomain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLLibraryErrorDomain"
+        }
+      ],
+      "title" : "Errors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Control when and how you compile an app’s shaders.",
+          "name" : "Using the Metal 4 compilation API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/using-the-metal-4-compilation-api"
+        },
+        {
+          "description" : "Create pipelines for different levels of detail from a common shader source.",
+          "name" : "Using function specialization to build pipeline variants",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/using-function-specialization-to-build-pipeline-variants"
+        }
+      ],
+      "title" : "Shader compilation and libraries"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Shader libraries",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/shader-libraries"
+}

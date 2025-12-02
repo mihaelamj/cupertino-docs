@@ -1,0 +1,115 @@
+{
+  "abstract" : "A protocol for objects that progress gameplay when players take actions.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "1b1068807a4c803ba0a55529893b8fa2a5fa5bdec4ea8cd8f82c24851b3db0cf",
+  "crawledAt" : "2025-12-02T17:55:01Z",
+  "declaration" : {
+    "code" : "protocol Observer : AnyObject",
+    "language" : "swift"
+  },
+  "id" : "01060941-11C2-444F-B6AE-B0744DADB74B",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "TabletopKit",
+  "platforms" : [
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer\ncrawled: 2025-12-02T17:55:01Z\n---\n\n# TabletopGame.Observer\n\n**Protocol**\n\nA protocol for objects that progress gameplay when players take actions.\n\n## Declaration\n\n```swift\nprotocol Observer : AnyObject\n```\n\n## Handling interaction updates\n\n- **interactionWasUpdated(_:snapshot:)**: Called whenever any interaction (local or remote) is updated. For local interactions, each `interactionWasUpdated` callback occurs immediately before the `TabletopInteraction.Delegate.update()` callback with the same `TabletopInteraction.Value` and the same snapshot as is accessed by `game.withCurrentSnapshot`. For remote interactions, `interactionWasUpdated` callbacks are only guaranteed to occur when the `phase` or `controlledEquipment` are updated and the `TabletopInteraction.Value` indicates only the limited information available about remote interactions viewed over the network. Due to network shared state resolution, remote interactions may not always present interactionWasUpdated callbacks with a completely coherent phase order (i.e. .started then .update(s) then .ended\/.cancelled) or present a final value matching the corresponding TableCursor API value.\n\n## Validating actions\n\n- **validateAction(_:snapshot:)**: Called to determine whether an action should be included as part of the table state based only on the action and the table state snapshot it is being applied to. Must be a pure function. Called for all actions multiple times between becoming pending and being confirmed (or rolled back) as necessary to determine an internally consistent speculative visible table state each update, and, finally, to resolve the internally consistent network shared table state. Potentially also called after confirmed if an interaction that added actions is cancelled to determine a new internally consistent shared network table state.\n- **actionIsPending(_:oldSnapshot:newSnapshot:)**: Called once for every action in the update in which it is provisionally accepted to begin contributing to the speculative visible table state, regardless of whether that action passes provisional validation. Local actions become pending in the update after they are added. Remote player actions become pending in the update in which the network request is received. The ordering of pending actions is ordered within each player, but each player in a network session may observe a different relative ordering of pending actions originating from different players. Most actions which pass initial validation create a difference in the state between `oldSnapshot` and `newSnapshot` that can be detected if needed. If the action did not pass validation on initial add to pending, the table state in `oldSnapshot` and `newSnapshot` will be identical. In a network session, the validity of an action may change one or more times between becoming pending and being confirmed or rolled back as the order of earlier actions is settled, if there are conflicts between actions. However, in practice, conflicting actions from different players should not be common.\n- **actionWasConfirmed(_:oldSnapshot:newSnapshot:)**: Called once for each action which passed validation in the update in which it is confirmed as a part of the shared network table state. All players in a network session are guaranteed to observe the same sequence of `actionWasConfirmed` and `actionWasRolledBack` callbacks. In a network session, these callbacks are delayed behind `actionIsPending` callbacks by approximately a network round trip time.\n- **actionWasRolledBack(_:snapshot:)**: Called once for each action which failed validation in the update in which it failed to be confirmed as a part of the shared network table state.\n- **actionWasDiscarded(_:)**: Called once for every local action that is discarded because there is insufficient space to enqueue and become pending. Every local action will, in order, generate either an `actionIsPending` or `actionWasDiscarded` callback in the next update after it was added.\n\n## Handling seat actions\n\n- **playerChangedSeats(_:oldSeat:newSeat:snapshot:)**: Called whenever the Seat for any player has changed in the shared network table state. `playerChandedSeats` callbacks are also reliably ordered with `actionWasConfirmed` and `actionWasRolledBack` callbacks, and are also network delayed behind any changes to the speculative visible table state.\n- **stateDidResetToBookmark(_:)**: Called whenever a `jumpToBookmark` is applied to the shared network table state. `stateDidResetToBookmark` callbacks are also reliably ordered with `actionWasConfirmed` and `actionWasRolledBack` callbacks, and are also network delayed behind any changes to the speculative visible table state.\n\n## Handling cancellations\n\n- **actionWasCancelled(_:reason:)**: Called once for each action which was later cancelled from the shared network table state after being confirmed due to the action of either a `jumpToBookmark` operation or due to an interaction that added it or an action it depended on being cancelled. `actionWasCancelled` callbacks are also reliably ordered with `actionWasConfirmed` and `actionWasRolledBack` callbacks.\n\n## Observing actions\n\n- **addObserver(_:)**\n- **removeObserver(_:)**\n- **TabletopGame.ActionCancellationReason**: The possible reasons for cancelling an action or an interaction.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Called whenever any interaction (local or remote) is updated. For local interactions, each `interactionWasUpdated` callback occurs immediately before the `TabletopInteraction.Delegate.update()` callback with the same `TabletopInteraction.Value` and the same snapshot as is accessed by `game.withCurrentSnapshot`. For remote interactions, `interactionWasUpdated` callbacks are only guaranteed to occur when the `phase` or `controlledEquipment` are updated and the `TabletopInteraction.Value` indicates only the limited information available about remote interactions viewed over the network. Due to network shared state resolution, remote interactions may not always present interactionWasUpdated callbacks with a completely coherent phase order (i.e. .started then .update(s) then .ended\/.cancelled) or present a final value matching the corresponding TableCursor API value.",
+          "name" : "interactionWasUpdated(_:snapshot:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer\/interactionWasUpdated(_:snapshot:)"
+        }
+      ],
+      "title" : "Handling interaction updates"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Called to determine whether an action should be included as part of the table state based only on the action and the table state snapshot it is being applied to. Must be a pure function. Called for all actions multiple times between becoming pending and being confirmed (or rolled back) as necessary to determine an internally consistent speculative visible table state each update, and, finally, to resolve the internally consistent network shared table state. Potentially also called after confirmed if an interaction that added actions is cancelled to determine a new internally consistent shared network table state.",
+          "name" : "validateAction(_:snapshot:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer\/validateAction(_:snapshot:)"
+        },
+        {
+          "description" : "Called once for every action in the update in which it is provisionally accepted to begin contributing to the speculative visible table state, regardless of whether that action passes provisional validation. Local actions become pending in the update after they are added. Remote player actions become pending in the update in which the network request is received. The ordering of pending actions is ordered within each player, but each player in a network session may observe a different relative ordering of pending actions originating from different players. Most actions which pass initial validation create a difference in the state between `oldSnapshot` and `newSnapshot` that can be detected if needed. If the action did not pass validation on initial add to pending, the table state in `oldSnapshot` and `newSnapshot` will be identical. In a network session, the validity of an action may change one or more times between becoming pending and being confirmed or rolled back as the order of earlier actions is settled, if there are conflicts between actions. However, in practice, conflicting actions from different players should not be common.",
+          "name" : "actionIsPending(_:oldSnapshot:newSnapshot:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer\/actionIsPending(_:oldSnapshot:newSnapshot:)"
+        },
+        {
+          "description" : "Called once for each action which passed validation in the update in which it is confirmed as a part of the shared network table state. All players in a network session are guaranteed to observe the same sequence of `actionWasConfirmed` and `actionWasRolledBack` callbacks. In a network session, these callbacks are delayed behind `actionIsPending` callbacks by approximately a network round trip time.",
+          "name" : "actionWasConfirmed(_:oldSnapshot:newSnapshot:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer\/actionWasConfirmed(_:oldSnapshot:newSnapshot:)"
+        },
+        {
+          "description" : "Called once for each action which failed validation in the update in which it failed to be confirmed as a part of the shared network table state.",
+          "name" : "actionWasRolledBack(_:snapshot:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer\/actionWasRolledBack(_:snapshot:)"
+        },
+        {
+          "description" : "Called once for every local action that is discarded because there is insufficient space to enqueue and become pending. Every local action will, in order, generate either an `actionIsPending` or `actionWasDiscarded` callback in the next update after it was added.",
+          "name" : "actionWasDiscarded(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer\/actionWasDiscarded(_:)"
+        }
+      ],
+      "title" : "Validating actions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Called whenever the Seat for any player has changed in the shared network table state. `playerChandedSeats` callbacks are also reliably ordered with `actionWasConfirmed` and `actionWasRolledBack` callbacks, and are also network delayed behind any changes to the speculative visible table state.",
+          "name" : "playerChangedSeats(_:oldSeat:newSeat:snapshot:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer\/playerChangedSeats(_:oldSeat:newSeat:snapshot:)"
+        },
+        {
+          "description" : "Called whenever a `jumpToBookmark` is applied to the shared network table state. `stateDidResetToBookmark` callbacks are also reliably ordered with `actionWasConfirmed` and `actionWasRolledBack` callbacks, and are also network delayed behind any changes to the speculative visible table state.",
+          "name" : "stateDidResetToBookmark(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer\/stateDidResetToBookmark(_:)"
+        }
+      ],
+      "title" : "Handling seat actions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Called once for each action which was later cancelled from the shared network table state after being confirmed due to the action of either a `jumpToBookmark` operation or due to an interaction that added it or an action it depended on being cancelled. `actionWasCancelled` callbacks are also reliably ordered with `actionWasConfirmed` and `actionWasRolledBack` callbacks.",
+          "name" : "actionWasCancelled(_:reason:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer\/actionWasCancelled(_:reason:)"
+        }
+      ],
+      "title" : "Handling cancellations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "addObserver(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/addObserver(_:)"
+        },
+        {
+          "description" : "",
+          "name" : "removeObserver(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/removeObserver(_:)"
+        },
+        {
+          "description" : "The possible reasons for cancelling an action or an interaction.",
+          "name" : "TabletopGame.ActionCancellationReason",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/ActionCancellationReason"
+        }
+      ],
+      "title" : "Observing actions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TabletopGame.Observer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/TabletopKit\/TabletopGame\/Observer"
+}

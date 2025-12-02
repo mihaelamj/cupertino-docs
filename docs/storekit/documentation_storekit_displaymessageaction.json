@@ -1,0 +1,62 @@
+{
+  "abstract" : "An instance that asks StoreKit to display an App Store message, if appropriate.",
+  "codeExamples" : [
+    {
+      "code" : "import SwiftUI\nimport StoreKit\n\nstruct MessageExampleView: View {\n    @Environment(\\.displayStoreKitMessage) private var displayStoreMessage\n    @State private var deferredMessages = [Message]()\n    \n    enum MessageBehavior {\n        \/\/ Display the message at a later time.\n        case displayLater\n        \/\/ Display the message immediately.\n        case displayNow\n        \/\/ Do not display the message.\n        case ignore\n    }\n\n    var body: some View {\n        Text(\"Hello World\")\n        .task {\n            for await message in StoreKit.Message.messages {\n                let behavior = processMessage(message)\n                switch behavior {\n                    case .displayNow:\n                        try? displayStoreMessage(message)\n                    case .displayLater:\n                        \/\/ Save the message to display it later.\n                        deferredMessages.append(message)\n                    case .ignore:\n                        \/\/ Suppresses the message.\n                        break\n                }\n            }\n        }\n    }\n        \n    private func processMessage(_ message: Message) -> MessageBehavior { \n        var messageBehavior: MessageBehavior\n\n        \/\/ Add your logic here to determine how your app should handle the message.\n\n        return messageBehavior\n    }\n    \n    \/\/ Call this function when the app is ready to display deferred messages.\n    @MainActor private func displayDeferredMessages() {\n        for message in deferredMessages {\n            try? displayStoreMessage(message)\n        }\n        deferredMessages.removeAll()\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "9035624e169b2723cfc2b43bfc15dfd87a46d5a5ddf4a013d565638aa6e1b24f",
+  "crawledAt" : "2025-12-01T20:36:19Z",
+  "declaration" : {
+    "code" : "@MainActor struct DisplayMessageAction",
+    "language" : "swift"
+  },
+  "id" : "A7FED874-B42A-4BC9-9FDB-B62905C7432C",
+  "kind" : "struct",
+  "module" : "StoreKit",
+  "overview" : "## Overview\n\nA StoreKit message represents a sheet that appears over your app to display important information from the App Store to the customer. Messages have a reason, indicated by the [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Message\/reason-swift.property] value. StoreKit retrieves any messages from the App Store each time your app launches, and presents them by default. Your app can optionally delay or suppress App Store messages by listening for the messages and determining the appropriate time to ask the system to display them.\n\nTo use this API, read the [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/EnvironmentValues\/displayStoreKitMessage] environment value to get an instance of the structure for a given [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/Environment]. Call the instance to ask StoreKit to display the App Store message. StoreKit displays a message only if it’s still pending. It doesn’t display expired messages. You call the instance directly because it defines a [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/DisplayMessageAction\/callAsFunction(_:)] method that Swift calls when you call the instance.\n\nThe following code example listens for App Store messages and decides whether to defer them by saving them to an array, display them immediately, or suppress them. A private function that the app calls according to its logic asks the system to display all the deferred messages.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/storekit\/displaymessageaction\ncrawled: 2025-12-01T20:36:19Z\n---\n\n# DisplayMessageAction\n\n**Structure**\n\nAn instance that asks StoreKit to display an App Store message, if appropriate.\n\n## Declaration\n\n```swift\n@MainActor struct DisplayMessageAction\n```\n\n## Overview\n\nA StoreKit message represents a sheet that appears over your app to display important information from the App Store to the customer. Messages have a reason, indicated by the [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Message\/reason-swift.property] value. StoreKit retrieves any messages from the App Store each time your app launches, and presents them by default. Your app can optionally delay or suppress App Store messages by listening for the messages and determining the appropriate time to ask the system to display them.\n\nTo use this API, read the [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/EnvironmentValues\/displayStoreKitMessage] environment value to get an instance of the structure for a given [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/Environment]. Call the instance to ask StoreKit to display the App Store message. StoreKit displays a message only if it’s still pending. It doesn’t display expired messages. You call the instance directly because it defines a [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/DisplayMessageAction\/callAsFunction(_:)] method that Swift calls when you call the instance.\n\n\n\nThe following code example listens for App Store messages and decides whether to defer them by saving them to an array, display them immediately, or suppress them. A private function that the app calls according to its logic asks the system to display all the deferred messages.\n\n```swift\nimport SwiftUI\nimport StoreKit\n\nstruct MessageExampleView: View {\n    @Environment(\\.displayStoreKitMessage) private var displayStoreMessage\n    @State private var deferredMessages = [Message]()\n    \n    enum MessageBehavior {\n        \/\/ Display the message at a later time.\n        case displayLater\n        \/\/ Display the message immediately.\n        case displayNow\n        \/\/ Do not display the message.\n        case ignore\n    }\n\n    var body: some View {\n        Text(\"Hello World\")\n        .task {\n            for await message in StoreKit.Message.messages {\n                let behavior = processMessage(message)\n                switch behavior {\n                    case .displayNow:\n                        try? displayStoreMessage(message)\n                    case .displayLater:\n                        \/\/ Save the message to display it later.\n                        deferredMessages.append(message)\n                    case .ignore:\n                        \/\/ Suppresses the message.\n                        break\n                }\n            }\n        }\n    }\n        \n    private func processMessage(_ message: Message) -> MessageBehavior { \n        var messageBehavior: MessageBehavior\n\n        \/\/ Add your logic here to determine how your app should handle the message.\n\n        return messageBehavior\n    }\n    \n    \/\/ Call this function when the app is ready to display deferred messages.\n    @MainActor private func displayDeferredMessages() {\n        for message in deferredMessages {\n            try? displayStoreMessage(message)\n        }\n        deferredMessages.removeAll()\n    }\n}\n```\n\n## Displaying the message\n\n- **callAsFunction(_:)**: Tells StoreKit to display the App Store message, if appropriate.\n\n## Messages\n\n- **Message**: An instance for receiving and displaying App Store messages in your app.\n- **Message.Reason**: Reasons for the App Store messages.\n\n## Conforms To\n\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells StoreKit to display the App Store message, if appropriate.",
+          "name" : "callAsFunction(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/DisplayMessageAction\/callAsFunction(_:)"
+        }
+      ],
+      "title" : "Displaying the message"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An instance for receiving and displaying App Store messages in your app.",
+          "name" : "Message",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Message"
+        },
+        {
+          "description" : "Reasons for the App Store messages.",
+          "name" : "Message.Reason",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Message\/Reason-swift.struct"
+        }
+      ],
+      "title" : "Messages"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "DisplayMessageAction",
+  "url" : "https:\/\/developer.apple.com\/documentation\/storekit\/displaymessageaction"
+}

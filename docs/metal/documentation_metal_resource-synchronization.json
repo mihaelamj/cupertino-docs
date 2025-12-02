@@ -1,0 +1,167 @@
+{
+  "abstract" : "Prevent multiple commands that can access the same resources simultaneously by coordinating those reads and writes with barriers, fences, or events.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "bd110b927802601c9a05b8d7ff0ac374138e96818f3ecddad7b0e31cd0d6c600",
+  "crawledAt" : "2025-12-02T17:01:53Z",
+  "id" : "5EAF9CF6-7E01-43AF-9200-FA4D23B2E784",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Metal",
+  "overview" : "## Overview\n\nBy design, GPUs can run multiple commands in parallel. Many of those commands access underlying memory of resources, including buffers and textures, with read and write operations. Commands can have an *access conflict* when one or more of them has a memory write, or *store*, operation and at least one other command has a memory read, or *load*, operation.\n\nSynchronize commands submitted to an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4CommandQueue] instance when they have an access conflict with a resource. Access conflicts can cause problems in your app, such as nondeterministic behavior. For example, without synchronization, a draw command that reads from a texture to get the results of an earlier draw command might start loading from the texture’s memory before the other command finishes writing its output to that texture.\n\n### Look for resources with access conflicts\n\nStart by identifying the commands that access the same resource, such as an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLBuffer] or an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTexture] instance. Consider any resource that multiple passes can access concurrently by any means, including:\n\nIt’s okay for multiple commands to load data from the same resource memory at the same time because they all read from memory without modifying it. For example, multiple commands can load segments of a buffer at the same time, even if those segments overlap, because none of them are writing to that memory.\n\n\n\nHowever, an app can introduce an access conflict when it encodes commands that both read and write to the same memory of a resource.\n\n\n\nLocate potential access conflicts by checking which resources apply to multiple commands, where at least one of those commands modifies the resource with a store operation. Commands with an access conflict that run concurrently create a race condition that can yield inconsistent results. This is because any overlapping memory load and store operations don’t always run in the same order relative to each other. Each time a GPU runs a batch of commands without synchronization, a load operation from one command can run before, during, or after a store operation.\n\n### Check render pass commands that access its attachments\n\nA render pass that writes to an attachment may introduce an access conflict because a render pass can have implicit load and store operations for that attachment. For render passes, look for potential conflicts with its attachment textures by:\n\nRender command encoders add a load operation, a store operation, or both for each applicable texture attachment of the render pass it encodes. You configure which attachments, if any, the GPU loads at the beginning of the pass when you configure the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPassAttachmentDescriptor\/loadAction] property of the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPassAttachmentDescriptor] instance that applies to each attachment. Similarly, you configure which attachments, if any, the GPU stores at the end of the pass by setting the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPassAttachmentDescriptor\/storeAction] property of the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPassAttachmentDescriptor] instance that applies to each attachment.\n\nNote which attachment textures that have a load action that’s equal to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLLoadAction\/load], or a store action that’s equal to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStoreAction\/store], then look for commands that also load and store those attachments.\n\n### Check compute pass commands that can run concurrently\n\nAn [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4ComputeCommandEncoder] instance creates a compute pass that runs commands concurrently on the GPU, which can introduce access conflicts.\n\nBy default, an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLComputeCommandEncoder] encodes a compute pass that runs its commands serially, However, you can create one that encodes a concurrent compute pass by configuring an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLComputePassDescriptor] instance’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLComputePassDescriptor\/dispatchType] property to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDispatchType\/concurrent].\n\n### Ignore memory operations the system already guarantees\n\nMetal provides several built-in resource ordering guarantees within compute and render passes, which your app doesn’t need to synchronize.\n\nFor example, you don’t need to synchronize compute or render passes when they access an instance of an atomic type because they serially access those instances. See section 2.6 *Atomic Data Types* in the [https:\/\/developer.apple.com\/metal\/Metal-Shading-Language-Specification.pdf] for more information.\n\nRender passes also order memory operations for specific cases, including:\n\n### Resolve access conflicts with synchronization\n\nYou can address access conflicts with one or more synchronization mechanisms. Each synchronization mechanism forces the GPU to pause before it runs a stage that accesses a resource, until another stage finishes. This means the memory operations from one stage completely finish before another stage can run its memory operations.\n\nYou can choose one of the following synchronization mechanisms, which are in order of increasing scope:\n\n### Track hazards with the framework prior to Metal 4\n\nThe Metal framework automatically synchronizes resource access conflicts for the commands you submit to an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLCommandQueue] instance, and only for the resources that:\n\nResources you create from an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice] instance default to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHazardTrackingMode\/tracked], and the resources you create from an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHeap] instance default to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHazardTrackingMode\/untracked]. For more information, see [doc:\/\/com.apple.metal\/documentation\/Metal\/resource-fundamentals] and [doc:\/\/com.apple.metal\/documentation\/Metal\/memory-heaps].",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/resource-synchronization\ncrawled: 2025-12-02T17:01:53Z\n---\n\n# Resource synchronization\n\n**API Collection**\n\nPrevent multiple commands that can access the same resources simultaneously by coordinating those reads and writes with barriers, fences, or events.\n\n## Overview\n\nBy design, GPUs can run multiple commands in parallel. Many of those commands access underlying memory of resources, including buffers and textures, with read and write operations. Commands can have an *access conflict* when one or more of them has a memory write, or *store*, operation and at least one other command has a memory read, or *load*, operation.\n\nSynchronize commands submitted to an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4CommandQueue] instance when they have an access conflict with a resource. Access conflicts can cause problems in your app, such as nondeterministic behavior. For example, without synchronization, a draw command that reads from a texture to get the results of an earlier draw command might start loading from the texture’s memory before the other command finishes writing its output to that texture.\n\n\n\n### Look for resources with access conflicts\n\nStart by identifying the commands that access the same resource, such as an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLBuffer] or an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTexture] instance. Consider any resource that multiple passes can access concurrently by any means, including:\n\n- Resource bindings, which you configure directly with the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLCommandEncoder] or [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4ArgumentTable] protocols\n- Argument buffers, which you create and configure (see [doc:\/\/com.apple.metal\/documentation\/Metal\/managing-groups-of-resources-with-argument-buffers])\n- Attachments for a render pass, which are textures that store rendering information, such as color, depth, or stencil data\n\nIt’s okay for multiple commands to load data from the same resource memory at the same time because they all read from memory without modifying it. For example, multiple commands can load segments of a buffer at the same time, even if those segments overlap, because none of them are writing to that memory.\n\n\n\nHowever, an app can introduce an access conflict when it encodes commands that both read and write to the same memory of a resource.\n\n\n\nLocate potential access conflicts by checking which resources apply to multiple commands, where at least one of those commands modifies the resource with a store operation. Commands with an access conflict that run concurrently create a race condition that can yield inconsistent results. This is because any overlapping memory load and store operations don’t always run in the same order relative to each other. Each time a GPU runs a batch of commands without synchronization, a load operation from one command can run before, during, or after a store operation.\n\n\n\n### Check render pass commands that access its attachments\n\nA render pass that writes to an attachment may introduce an access conflict because a render pass can have implicit load and store operations for that attachment. For render passes, look for potential conflicts with its attachment textures by:\n\n- Noting the attachments the pass loads and stores at the beginning and end of the pass, respectively\n- Finding any commands that read or modify those attachment textures\n\nRender command encoders add a load operation, a store operation, or both for each applicable texture attachment of the render pass it encodes. You configure which attachments, if any, the GPU loads at the beginning of the pass when you configure the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPassAttachmentDescriptor\/loadAction] property of the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPassAttachmentDescriptor] instance that applies to each attachment. Similarly, you configure which attachments, if any, the GPU stores at the end of the pass by setting the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPassAttachmentDescriptor\/storeAction] property of the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderPassAttachmentDescriptor] instance that applies to each attachment.\n\nNote which attachment textures that have a load action that’s equal to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLLoadAction\/load], or a store action that’s equal to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStoreAction\/store], then look for commands that also load and store those attachments.\n\n\n\n### Check compute pass commands that can run concurrently\n\nAn [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4ComputeCommandEncoder] instance creates a compute pass that runs commands concurrently on the GPU, which can introduce access conflicts.\n\nBy default, an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLComputeCommandEncoder] encodes a compute pass that runs its commands serially, However, you can create one that encodes a concurrent compute pass by configuring an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLComputePassDescriptor] instance’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLComputePassDescriptor\/dispatchType] property to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDispatchType\/concurrent].\n\n### Ignore memory operations the system already guarantees\n\nMetal provides several built-in resource ordering guarantees within compute and render passes, which your app doesn’t need to synchronize.\n\nFor example, you don’t need to synchronize compute or render passes when they access an instance of an atomic type because they serially access those instances. See section 2.6 *Atomic Data Types* in the [https:\/\/developer.apple.com\/metal\/Metal-Shading-Language-Specification.pdf] for more information.\n\nRender passes also order memory operations for specific cases, including:\n\n- A render-pass attachment’s load and store operations run in primitive order for each fragment, which is the order of your app’s draw commands and the order of each primitive within a draw call.\n- A fragment shader’s load and store operations for a raster-order group run in primitive order for each fragment.\n- A tile shader’s load and store operations run in the same order as your app’s tile dispatch calls and on a per-tile basis.\n\n### Resolve access conflicts with synchronization\n\nYou can address access conflicts with one or more synchronization mechanisms. Each synchronization mechanism forces the GPU to pause before it runs a stage that accesses a resource, until another stage finishes. This means the memory operations from one stage completely finish before another stage can run its memory operations.\n\nYou can choose one of the following synchronization mechanisms, which are in order of increasing scope:\n\n\n\n\n\n### Track hazards with the framework prior to Metal 4\n\nThe Metal framework automatically synchronizes resource access conflicts for the commands you submit to an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLCommandQueue] instance, and only for the resources that:\n\n- You configure its [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResource\/hazardTrackingMode] property to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHazardTrackingMode\/tracked]\n- You directly bind that resource to an encoder type that adopts the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLCommandEncoder] protocol\n\nResources you create from an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice] instance default to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHazardTrackingMode\/tracked], and the resources you create from an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHeap] instance default to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHazardTrackingMode\/untracked]. For more information, see [doc:\/\/com.apple.metal\/documentation\/Metal\/resource-fundamentals] and [doc:\/\/com.apple.metal\/documentation\/Metal\/memory-heaps].\n\n## Synchronizing with barriers and fences\n\n- **Synchronizing stages within a pass**: Block GPU stages in the a pass from running until other stages in the same pass finish.\n- **Synchronizing passes with a fence**: Block GPU stages in a pass until another pass unblocks it by signaling a fence.\n- **Synchronizing passes with consumer barriers**: Block GPU stages in a pass, and all subsequent passes, from running until stages from earlier passes finish.\n- **Synchronizing passes with producer barriers**: Block GPU stages in subsequent passes from running until stages in a pass, and earlier passes, finish.\n- **Synchronizing CPU and GPU work**: Avoid stalls between CPU and GPU work by using multiple instances of a resource.\n- **Implementing a multistage image filter using heaps and fences**: Use fences to synchronize access to resources allocated on a heap.\n- **MTLStages**: Describes stages of GPU work.\n- **MTLFence**: A synchronization mechanism that orders memory operations between GPU passes.\n- **MTLRenderStages**: The stages in a render pass that triggers a synchronization command.\n- **MTLBarrierScope**: Describes the types of resources that a barrier operates on.\n- **MTL4VisibilityOptions**: Memory consistency options for synchronization commands.\n\n## Synchronizing with events\n\n- **Implementing a multistage image filter using heaps and events**: Use events to synchronize access to resources allocated on a heap.\n- **About synchronization events**: Synchronize access to resources in your app by signaling events.\n- **Synchronizing events within a single device**: Use nonshareable events to synchronize your app’s work within a single device.\n- **Synchronizing events across multiple devices or processes**: Use shareable events to synchronize your app’s work across multiple devices or processes.\n- **Synchronizing events between a GPU and the CPU**: Use shareable events to synchronize your app’s work between a GPU and the CPU.\n- **MTLEvent**: A type that synchronizes memory operations to one or more resources within a single Metal device.\n- **MTLSharedEvent**: A type that synchronizes memory operations to one or more resources across multiple CPUs, GPUs, and processes.\n- **MTLSharedEventHandle**: An instance you use to recreate a shareable event.\n- **MTLSharedEventListener**: A listener for shareable event notifications.\n- **MTLSharedEventNotificationBlock**: A block of code invoked after a shareable event’s signal value equals or exceeds a given value.\n\n## Resources\n\n- **Resource fundamentals**: Control the common attributes of all Metal memory resources, including buffers and textures, and how to configure their underlying memory.\n- **Buffers**: Create and manage untyped data your app uses to exchange information with its shader functions.\n- **Textures**: Create and manage typed data your app uses to exchange information with its shader functions.\n- **Memory heaps**: Take control of your app’s GPU memory management by creating a large memory allocation for various buffers, textures, and other resources.\n- **Resource loading**: Load assets in your games and apps quickly by running a dedicated input\/output queue alongside your GPU tasks.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Block GPU stages in the a pass from running until other stages in the same pass finish.",
+          "name" : "Synchronizing stages within a pass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-stages-within-a-pass"
+        },
+        {
+          "description" : "Block GPU stages in a pass until another pass unblocks it by signaling a fence.",
+          "name" : "Synchronizing passes with a fence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-passes-with-a-fence"
+        },
+        {
+          "description" : "Block GPU stages in a pass, and all subsequent passes, from running until stages from earlier passes finish.",
+          "name" : "Synchronizing passes with consumer barriers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-passes-with-consumer-barriers"
+        },
+        {
+          "description" : "Block GPU stages in subsequent passes from running until stages in a pass, and earlier passes, finish.",
+          "name" : "Synchronizing passes with producer barriers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-passes-with-producer-barriers"
+        },
+        {
+          "description" : "Avoid stalls between CPU and GPU work by using multiple instances of a resource.",
+          "name" : "Synchronizing CPU and GPU work",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-cpu-and-gpu-work"
+        },
+        {
+          "description" : "Use fences to synchronize access to resources allocated on a heap.",
+          "name" : "Implementing a multistage image filter using heaps and fences",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/implementing-a-multistage-image-filter-using-heaps-and-fences"
+        },
+        {
+          "description" : "Describes stages of GPU work.",
+          "name" : "MTLStages",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages"
+        },
+        {
+          "description" : "A synchronization mechanism that orders memory operations between GPU passes.",
+          "name" : "MTLFence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFence"
+        },
+        {
+          "description" : "The stages in a render pass that triggers a synchronization command.",
+          "name" : "MTLRenderStages",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderStages"
+        },
+        {
+          "description" : "Describes the types of resources that a barrier operates on.",
+          "name" : "MTLBarrierScope",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLBarrierScope"
+        },
+        {
+          "description" : "Memory consistency options for synchronization commands.",
+          "name" : "MTL4VisibilityOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4VisibilityOptions"
+        }
+      ],
+      "title" : "Synchronizing with barriers and fences"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Use events to synchronize access to resources allocated on a heap.",
+          "name" : "Implementing a multistage image filter using heaps and events",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/implementing-a-multistage-image-filter-using-heaps-and-events"
+        },
+        {
+          "description" : "Synchronize access to resources in your app by signaling events.",
+          "name" : "About synchronization events",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/about-synchronization-events"
+        },
+        {
+          "description" : "Use nonshareable events to synchronize your app’s work within a single device.",
+          "name" : "Synchronizing events within a single device",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-events-within-a-single-device"
+        },
+        {
+          "description" : "Use shareable events to synchronize your app’s work across multiple devices or processes.",
+          "name" : "Synchronizing events across multiple devices or processes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-events-across-multiple-devices-or-processes"
+        },
+        {
+          "description" : "Use shareable events to synchronize your app’s work between a GPU and the CPU.",
+          "name" : "Synchronizing events between a GPU and the CPU",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-events-between-a-gpu-and-the-cpu"
+        },
+        {
+          "description" : "A type that synchronizes memory operations to one or more resources within a single Metal device.",
+          "name" : "MTLEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLEvent"
+        },
+        {
+          "description" : "A type that synchronizes memory operations to one or more resources across multiple CPUs, GPUs, and processes.",
+          "name" : "MTLSharedEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLSharedEvent"
+        },
+        {
+          "description" : "An instance you use to recreate a shareable event.",
+          "name" : "MTLSharedEventHandle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLSharedEventHandle"
+        },
+        {
+          "description" : "A listener for shareable event notifications.",
+          "name" : "MTLSharedEventListener",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLSharedEventListener"
+        },
+        {
+          "description" : "A block of code invoked after a shareable event’s signal value equals or exceeds a given value.",
+          "name" : "MTLSharedEventNotificationBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLSharedEventNotificationBlock"
+        }
+      ],
+      "title" : "Synchronizing with events"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Control the common attributes of all Metal memory resources, including buffers and textures, and how to configure their underlying memory.",
+          "name" : "Resource fundamentals",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/resource-fundamentals"
+        },
+        {
+          "description" : "Create and manage untyped data your app uses to exchange information with its shader functions.",
+          "name" : "Buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/buffers"
+        },
+        {
+          "description" : "Create and manage typed data your app uses to exchange information with its shader functions.",
+          "name" : "Textures",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/textures"
+        },
+        {
+          "description" : "Take control of your app’s GPU memory management by creating a large memory allocation for various buffers, textures, and other resources.",
+          "name" : "Memory heaps",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/memory-heaps"
+        },
+        {
+          "description" : "Load assets in your games and apps quickly by running a dedicated input\/output queue alongside your GPU tasks.",
+          "name" : "Resource loading",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/resource-loading"
+        }
+      ],
+      "title" : "Resources"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Resource synchronization",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/resource-synchronization"
+}

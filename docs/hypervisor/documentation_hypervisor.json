@@ -1,0 +1,135 @@
+{
+  "abstract" : "Build virtualization solutions on top of a lightweight hypervisor, without third-party kernel extensions.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "c54b7a9f64d0b83f299bd6d4a74a0bba249a45ecfec7afd0949491fb8c2ec700",
+  "crawledAt" : "2025-12-02T17:05:38Z",
+  "id" : "5F3DAACF-5E5E-452D-A733-AC71F3E10CD5",
+  "kind" : "framework",
+  "language" : "swift",
+  "module" : "Hypervisor",
+  "overview" : "## Overview\n\nHypervisor provides C APIs so you can interact with virtualization technologies in user space, without writing kernel extensions (KEXTs). As a result, the apps you create using this framework are suitable for distribution on the [https:\/\/www.appstore.com\/].\n\nUse this framework to create and control hardware-facilitated virtual machines and virtual processors (VMs and vCPUs) from your entitled, sandboxed, user-space process. Hypervisor abstracts virtual machines as processes, and virtual processors as threads.\n\n### Requirements\n\nThe Hypervisor framework has the following requirements:\n\nAt runtime, determine whether the Hypervisor APIs are available on a particular machine with the sysctl command, passing `kern.hv_support` as an argument.\n\n### Virtual Resource Mapping\n\nA guest is an operating system that runs on top of the virtual hardware. The operating system and processes that run the virtualized hardware are together called the host. Virtual hardware in the guest maps to specific resources on the host.\n\nEach virtual machine corresponds to a process on the host. There can only be one virtual machine at a time per process; the virtual machine creates it with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vm_create(_:)].\n\nVirtual CPUs (vCPUs) in a virtual machine map to POSIX threads. Create a new vCPU for the current thread with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_create(_:_:)]. The vCPU runs when the thread calls [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_run(_:)].\n\nHypervisor maps the physical memory in the guest to virtual memory of the host process. Create a new memory mapping with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vm_map(_:_:_:_:)]. Access to memory outside the mapped range causes [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_run(_:)] to exit. Emulate memory-mapped hardware by emulating the memory access on exit and re-enter the guest with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_run(_:)].\n\n### Example VM Life Cycle\n\nThe following figure illustrates a simplified life cycle of creating and running a virtual machine with one or more virtual CPUs using the Hypervisor API.\n\n\n\nAt the start of a task:\n\nIn each thread:\n\nWhen a thread receives an exit event:\n\nAfter all threads finish:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Hypervisor\ncrawled: 2025-12-02T17:05:38Z\n---\n\n# Hypervisor\n\n**Framework**\n\nBuild virtualization solutions on top of a lightweight hypervisor, without third-party kernel extensions.\n\n## Overview\n\nHypervisor provides C APIs so you can interact with virtualization technologies in user space, without writing kernel extensions (KEXTs). As a result, the apps you create using this framework are suitable for distribution on the [https:\/\/www.appstore.com\/].\n\nUse this framework to create and control hardware-facilitated virtual machines and virtual processors (VMs and vCPUs) from your entitled, sandboxed, user-space process. Hypervisor abstracts virtual machines as processes, and virtual processors as threads.\n\n### Requirements\n\nThe Hypervisor framework has the following requirements:\n\n\n\nAt runtime, determine whether the Hypervisor APIs are available on a particular machine with the sysctl command, passing `kern.hv_support` as an argument.\n\n\n\n### Virtual Resource Mapping\n\nA guest is an operating system that runs on top of the virtual hardware. The operating system and processes that run the virtualized hardware are together called the host. Virtual hardware in the guest maps to specific resources on the host.\n\nEach virtual machine corresponds to a process on the host. There can only be one virtual machine at a time per process; the virtual machine creates it with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vm_create(_:)].\n\nVirtual CPUs (vCPUs) in a virtual machine map to POSIX threads. Create a new vCPU for the current thread with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_create(_:_:)]. The vCPU runs when the thread calls [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_run(_:)].\n\nHypervisor maps the physical memory in the guest to virtual memory of the host process. Create a new memory mapping with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vm_map(_:_:_:_:)]. Access to memory outside the mapped range causes [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_run(_:)] to exit. Emulate memory-mapped hardware by emulating the memory access on exit and re-enter the guest with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_run(_:)].\n\n### Example VM Life Cycle\n\nThe following figure illustrates a simplified life cycle of creating and running a virtual machine with one or more virtual CPUs using the Hypervisor API.\n\n\n\nAt the start of a task:\n\n- Create a VM with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vm_create(_:)].\n- Map a region in the virtual address space of the current task into the guest physical address space of the VM with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vm_map(_:_:_:_:)].\n- Create one or more POSIX threads with `pthread_create(_:_:_:_:)`.\n\nIn each thread:\n\n- Create a virtual CPU with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_create(_:_:)].\n- Call [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_run(_:)] to run the vCPU.\n\nWhen a thread receives an exit event:\n\n- Handle the event.\n- Re-enter the guest with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_run(_:)] or destroy the vCPU with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vcpu_destroy(_:)].\n\nAfter all threads finish:\n\n- Unmap the memory region with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vm_unmap(_:_:)].\n- Destroy the VM with [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vm_destroy()].\n\n## Platforms\n\n- **Apple Silicon**: Create and run virtual machines on Apple silicon.\n- **Intel-based Mac**: Create and run virtual machines on Intel-based Mac computers.\n\n## Entitlements\n\n- **com.apple.security.hypervisor**: A Boolean value that indicates whether the app creates and manages virtual machines.\n- **com.apple.vm.hypervisor**: A Boolean value that indicates whether the app creates and manages virtual machines.\n- **com.apple.vm.networking**: A Boolean that indicates whether the app manages virtual network interfaces without escalating privileges to the root user.\n- **com.apple.vm.device-access**: A Boolean value that indicates whether the app captures USB devices and uses them in the guest-operating system.\n\n## Reference\n\n- **Hypervisor Structures**\n- **Hypervisor Constants**\n- **Hypervisor Functions**\n- **Hypervisor Data Types**\n\n## Structures\n\n- **hv_ipa_granule_t**\n\n## Variables\n\n- **HV_IPA_GRANULE_16KB**\n- **HV_IPA_GRANULE_4KB**\n\n## Functions\n\n- **hv_vm_config_get_default_ipa_granule(_:)**\n- **hv_vm_config_get_ipa_granule(_:_:)**\n- **hv_vm_config_set_ipa_granule(_:_:)**\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create and run virtual machines on Apple silicon.",
+          "name" : "Apple Silicon",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/apple-silicon"
+        },
+        {
+          "description" : "Create and run virtual machines on Intel-based Mac computers.",
+          "name" : "Intel-based Mac",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/intel-based-mac"
+        }
+      ],
+      "title" : "Platforms"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the app creates and manages virtual machines.",
+          "name" : "com.apple.security.hypervisor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Entitlements\/com.apple.security.hypervisor"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the app creates and manages virtual machines.",
+          "name" : "com.apple.vm.hypervisor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Entitlements\/com.apple.vm.hypervisor"
+        },
+        {
+          "description" : "A Boolean that indicates whether the app manages virtual network interfaces without escalating privileges to the root user.",
+          "name" : "com.apple.vm.networking",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Entitlements\/com.apple.vm.networking"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the app captures USB devices and uses them in the guest-operating system.",
+          "name" : "com.apple.vm.device-access",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Entitlements\/com.apple.vm.device-access"
+        }
+      ],
+      "title" : "Entitlements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Hypervisor Structures",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hypervisor-structures"
+        },
+        {
+          "description" : "",
+          "name" : "Hypervisor Constants",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hypervisor-constants"
+        },
+        {
+          "description" : "",
+          "name" : "Hypervisor Functions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hypervisor-functions"
+        },
+        {
+          "description" : "",
+          "name" : "Hypervisor Data Types",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hypervisor-data-types"
+        }
+      ],
+      "title" : "Reference"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "hv_ipa_granule_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hv_ipa_granule_t"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "HV_IPA_GRANULE_16KB",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/HV_IPA_GRANULE_16KB"
+        },
+        {
+          "description" : "",
+          "name" : "HV_IPA_GRANULE_4KB",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/HV_IPA_GRANULE_4KB"
+        }
+      ],
+      "title" : "Variables"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "hv_vm_config_get_default_ipa_granule(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hv_vm_config_get_default_ipa_granule(_:)"
+        },
+        {
+          "description" : "",
+          "name" : "hv_vm_config_get_ipa_granule(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hv_vm_config_get_ipa_granule(_:_:)"
+        },
+        {
+          "description" : "",
+          "name" : "hv_vm_config_set_ipa_granule(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hv_vm_config_set_ipa_granule(_:_:)"
+        }
+      ],
+      "title" : "Functions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Hypervisor",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor"
+}

@@ -1,0 +1,55 @@
+{
+  "abstract" : "Subtracts the product of two single-precision complex matrices from a single-precision complex matrix.",
+  "codeExamples" : [
+    {
+      "code" : "    \/\/\/ Compute the following:\n    \/\/\/ ```\n    \/\/\/                                   [ 4+5i,\n    \/\/\/ [ 4+5i ] - [ 1+2i, 2+3i, 3+4i ] *   5+6i,  = [ 28-80i ]\n    \/\/\/                                     6+7i ]\n    \/\/\/ ```\n\n    let m: vDSP_Length = 1\n    let n: vDSP_Length = 1\n    let p: vDSP_Length = 3\n    \n    \/\/ `m` rows x `p` columns.\n    let aReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * p))\n    _ = aReal.initialize(from: [1, 2, 3])\n    \n    let aImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * p))\n    _ = aImag.initialize(from: [2, 3, 4])\n    \n    var a = DSPSplitComplex(realp: aReal.baseAddress!,\n                            imagp: aImag.baseAddress!)\n    \n    \/\/ `p` rows x `n` columns.\n    let bReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(p * n))\n    _ = bReal.initialize(from: [4, 5, 6])\n    \n    let bImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(p * n))\n    _ = bImag.initialize(from: [5, 6, 7])\n    \n    var b = DSPSplitComplex(realp: bReal.baseAddress!,\n                            imagp: bImag.baseAddress!)\n    \n    \/\/ `m` rows x `n` columns.\n    let cReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * n))\n    _ = cReal.initialize(from: [4])\n    \n    let cImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * n))\n    _ = cImag.initialize(from: [5])\n    \n    var c = DSPSplitComplex(realp: cReal.baseAddress!,\n                            imagp: cImag.baseAddress!)\n    \n    \/\/ `m` rows x `n` columns.\n    let dReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * n))\n    let dImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * n))\n    \n    var d = DSPSplitComplex(realp: dReal.baseAddress!,\n                            imagp: dImag.baseAddress!)\n    \n    vDSP_zmsm(&a, 1,\n              &b, 1,\n              &c, 1,\n              &d, 1,\n              m, n, p)\n    \n    print(Array(dReal)) \/\/ Prints \"[28.0]\".\n    print(Array(dImag)) \/\/ Prints \"[-80.0]\".",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "16f6b122a44a0c3cf9df19e0407d6e82834780cb0bb7a4831a0f474eb973cc0a",
+  "crawledAt" : "2025-12-01T03:25:30Z",
+  "declaration" : {
+    "code" : "extern void vDSP_zmsm(const DSPSplitComplex * __A, vDSP_Stride __IA, const DSPSplitComplex * __B, vDSP_Stride __IB, const DSPSplitComplex * __C, vDSP_Stride __IC, const DSPSplitComplex * __D, vDSP_Stride __ID, vDSP_Length __M, vDSP_Length __N, vDSP_Length __P);",
+    "language" : "swift"
+  },
+  "id" : "A9557745-3028-46FD-A1A1-91E049DBCDCB",
+  "kind" : "function",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nThe following code subtracts the product of matrices `a` and `b from` the matrix `c`, and writes the result to matrix `d`:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_zmsm\ncrawled: 2025-12-01T03:25:30Z\n---\n\n# vDSP_zmsm\n\n**Function**\n\nSubtracts the product of two single-precision complex matrices from a single-precision complex matrix.\n\n## Declaration\n\n```swift\nextern void vDSP_zmsm(const DSPSplitComplex * __A, vDSP_Stride __IA, const DSPSplitComplex * __B, vDSP_Stride __IB, const DSPSplitComplex * __C, vDSP_Stride __IC, const DSPSplitComplex * __D, vDSP_Stride __ID, vDSP_Length __M, vDSP_Length __N, vDSP_Length __P);\n```\n\n## Parameters\n\n- **__A**: The single-precision complex `M` x `P` input matrix `a` in `d = c - (a * b)`.\n- **__IA**: The distance between the elements in the matrix `A`.\n- **__B**: The single-precision complex `P` x `N` input matrix `b` in `d = c - (a * b)`.\n- **__IB**: The distance between the elements in the matrix `B`.\n- **__C**: The single-precision complex `M` x `N` input matrix `c` in `d = c - (a * b)`.\n- **__IC**: The distance between the elements in the matrix `C`.\n- **__D**: The single-precision complex `M` x `N` output matrix `d` in `d = c - (a * b)`.\n- **__ID**: The distance between the elements in the matrix `D`.\n- **__M**: The number of rows in matrices `A`, `C`, and `D`.\n- **__N**: The number of columns in matrix `B`, `C`, and `D`.\n- **__P**: The number of columns in matrix `A` and the number of rows in matrix `B`.\n\n## Discussion\n\nThe following code subtracts the product of matrices `a` and `b from` the matrix `c`, and writes the result to matrix `d`:\n\n```swift\n    \/\/\/ Compute the following:\n    \/\/\/ ```\n    \/\/\/                                   [ 4+5i,\n    \/\/\/ [ 4+5i ] - [ 1+2i, 2+3i, 3+4i ] *   5+6i,  = [ 28-80i ]\n    \/\/\/                                     6+7i ]\n    \/\/\/ ```\n\n    let m: vDSP_Length = 1\n    let n: vDSP_Length = 1\n    let p: vDSP_Length = 3\n    \n    \/\/ `m` rows x `p` columns.\n    let aReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * p))\n    _ = aReal.initialize(from: [1, 2, 3])\n    \n    let aImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * p))\n    _ = aImag.initialize(from: [2, 3, 4])\n    \n    var a = DSPSplitComplex(realp: aReal.baseAddress!,\n                            imagp: aImag.baseAddress!)\n    \n    \/\/ `p` rows x `n` columns.\n    let bReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(p * n))\n    _ = bReal.initialize(from: [4, 5, 6])\n    \n    let bImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(p * n))\n    _ = bImag.initialize(from: [5, 6, 7])\n    \n    var b = DSPSplitComplex(realp: bReal.baseAddress!,\n                            imagp: bImag.baseAddress!)\n    \n    \/\/ `m` rows x `n` columns.\n    let cReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * n))\n    _ = cReal.initialize(from: [4])\n    \n    let cImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * n))\n    _ = cImag.initialize(from: [5])\n    \n    var c = DSPSplitComplex(realp: cReal.baseAddress!,\n                            imagp: cImag.baseAddress!)\n    \n    \/\/ `m` rows x `n` columns.\n    let dReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * n))\n    let dImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: Int(m * n))\n    \n    var d = DSPSplitComplex(realp: dReal.baseAddress!,\n                            imagp: dImag.baseAddress!)\n    \n    vDSP_zmsm(&a, 1,\n              &b, 1,\n              &c, 1,\n              &d, 1,\n              m, n, p)\n    \n    print(Array(dReal)) \/\/ Prints \"[28.0]\".\n    print(Array(dImag)) \/\/ Prints \"[-80.0]\".\n```\n\n## Multiplying and subtracting complex matrices\n\n- **vDSP_zmms**: Subtracts a single-precision complex matrix from the product of two single-precision complex matrices.\n- **vDSP_zmmsD**: Subtracts a double-precision complex matrix from the product of two double-precision complex matrices.\n- **vDSP_zmsmD**: Subtracts the product of two double-precision complex matrices from a double-precision complex matrix.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Subtracts a single-precision complex matrix from the product of two single-precision complex matrices.",
+          "name" : "vDSP_zmms",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_zmms"
+        },
+        {
+          "description" : "Subtracts a double-precision complex matrix from the product of two double-precision complex matrices.",
+          "name" : "vDSP_zmmsD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_zmmsD"
+        },
+        {
+          "description" : "Subtracts the product of two double-precision complex matrices from a double-precision complex matrix.",
+          "name" : "vDSP_zmsmD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_zmsmD"
+        }
+      ],
+      "title" : "Multiplying and subtracting complex matrices"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vDSP_zmsm",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_zmsm"
+}

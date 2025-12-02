@@ -1,0 +1,75 @@
+{
+  "abstract" : "Block GPU stages in a pass until another pass unblocks it by signaling a fence.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "b7b3488f623b9c75cd7537c8a11d9db5cd9e207b2fe9f21d861b36416cba1a9e",
+  "crawledAt" : "2025-12-02T17:01:55Z",
+  "id" : "F2887579-B5F9-4BCA-987B-FF5741B4C642",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Metal",
+  "overview" : "## Overview\n\nA fence resolves access conflicts between commands in different passes that you submit to the same command queue, including the passes you commit in other command buffers.\n\nWhen your app encodes commands that access a resource from different passes — or different stages within a single pass — it creates an access conflict when at least one command modifies that resource. This conflict happens because the GPU can run multiple commands at the same time, including those from:\n\nFor more information about resource access conflicts and GPU stages, see [doc:\/\/com.apple.metal\/documentation\/Metal\/resource-synchronization] and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStages], respectively.\n\nFor more information about synchronizing within a single pass, see [doc:\/\/com.apple.metal\/documentation\/Metal\/synchronizing-stages-within-a-pass].\n\nStart by identifying which memory operations from different passes introduce a conflict and resolve it with a fence:\n\n### Identify access conflicts between two or more passes\n\nThe following code example encodes two compute passes. The first encoder creates a pass with a copy command and a dispatch command:\n\nThe second encoder also creates a pass with a copy command and a dispatch command:\n\nThe example has at least one access conflict because both passes access a common resource, `bufferC`:\n\n\n\nWithout synchronization, the GPU can run both passes and their stages in parallel, which can yield inconsistent results in resources with access conflicts.\n\n\n\n### Resolve an access conflict between passes with a fence\n\nResolve access conflicts between passes from the same command queue with an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLFence] instance by:\n\nThe GPU pauses before running the commands you encode in the consuming pass after the wait command until the GPU runs all update commands you encode for the same fence in the other relevant, producing passes.\n\nThe following code example modifies the code for the first pass by adding a call that updates the fence:\n\nThe following code example modifies the code for the second pass by adding a call that waits for the fence.\n\nThe fence forces the GPU to wait before it runs the blit stage of the second pass until the dispatch stage of the first pass finishes storing its modifications to the underlying memory for `bufferC`.\n\n\n\nYou can reuse a fence instance to resolve resource access conflicts in subsequent commands after encoding a wait command for a pass.\n\nFor more information about other synchronization mechanisms, see these articles in the series:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-passes-with-a-fence\ncrawled: 2025-12-02T17:01:55Z\n---\n\n# Synchronizing passes with a fence\n\n**Article**\n\nBlock GPU stages in a pass until another pass unblocks it by signaling a fence.\n\n## Overview\n\nA fence resolves access conflicts between commands in different passes that you submit to the same command queue, including the passes you commit in other command buffers.\n\n\n\nWhen your app encodes commands that access a resource from different passes — or different stages within a single pass — it creates an access conflict when at least one command modifies that resource. This conflict happens because the GPU can run multiple commands at the same time, including those from:\n\n- Multiple passes\n- Different stages of a pass, such as the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStages\/blit] and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStages\/dispatch] stages of a compute pass\n- Multiple instances of a stage, such as two or more dispatch commands within a compute pass\n\nFor more information about resource access conflicts and GPU stages, see [doc:\/\/com.apple.metal\/documentation\/Metal\/resource-synchronization] and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStages], respectively.\n\n\n\nFor more information about synchronizing within a single pass, see [doc:\/\/com.apple.metal\/documentation\/Metal\/synchronizing-stages-within-a-pass].\n\nStart by identifying which memory operations from different passes introduce a conflict and resolve it with a fence:\n\n1. Update a fence in the producing pass.\n2. Wait for that fence in the consuming pass.\n\n\n\n### Identify access conflicts between two or more passes\n\nThe following code example encodes two compute passes. The first encoder creates a pass with a copy command and a dispatch command:\n\n\n\nThe second encoder also creates a pass with a copy command and a dispatch command:\n\n\n\nThe example has at least one access conflict because both passes access a common resource, `bufferC`:\n\n- The dispatch command from the first pass stores to `bufferC`.\n- The copy command from the second pass loads from `bufferC`.\n\n\n\nWithout synchronization, the GPU can run both passes and their stages in parallel, which can yield inconsistent results in resources with access conflicts.\n\n\n\n### Resolve an access conflict between passes with a fence\n\nResolve access conflicts between passes from the same command queue with an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLFence] instance by:\n\n- Instructing the producing pass to signal a pass that’s waiting for a fence by calling the encoder’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4CommandEncoder\/updateFence(_:afterEncoderStages:)] method.\n- Instructing the consuming pass to wait for the fence by calling the encoder’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4CommandEncoder\/waitForFence(_:beforeEncoderStages:)] method.\n\nThe GPU pauses before running the commands you encode in the consuming pass after the wait command until the GPU runs all update commands you encode for the same fence in the other relevant, producing passes.\n\n\n\nThe following code example modifies the code for the first pass by adding a call that updates the fence:\n\n\n\nThe following code example modifies the code for the second pass by adding a call that waits for the fence.\n\n\n\nThe fence forces the GPU to wait before it runs the blit stage of the second pass until the dispatch stage of the first pass finishes storing its modifications to the underlying memory for `bufferC`.\n\n\n\nYou can reuse a fence instance to resolve resource access conflicts in subsequent commands after encoding a wait command for a pass.\n\n\n\nFor more information about other synchronization mechanisms, see these articles in the series:\n\n- [doc:\/\/com.apple.metal\/documentation\/Metal\/synchronizing-stages-within-a-pass]\n- [doc:\/\/com.apple.metal\/documentation\/Metal\/synchronizing-passes-with-consumer-barriers]\n- [doc:\/\/com.apple.metal\/documentation\/Metal\/synchronizing-passes-with-producer-barriers]\n\n## Synchronizing with barriers and fences\n\n- **Synchronizing stages within a pass**: Block GPU stages in the a pass from running until other stages in the same pass finish.\n- **Synchronizing passes with consumer barriers**: Block GPU stages in a pass, and all subsequent passes, from running until stages from earlier passes finish.\n- **Synchronizing passes with producer barriers**: Block GPU stages in subsequent passes from running until stages in a pass, and earlier passes, finish.\n- **Synchronizing CPU and GPU work**: Avoid stalls between CPU and GPU work by using multiple instances of a resource.\n- **Implementing a multistage image filter using heaps and fences**: Use fences to synchronize access to resources allocated on a heap.\n- **MTLStages**: Describes stages of GPU work.\n- **MTLFence**: A synchronization mechanism that orders memory operations between GPU passes.\n- **MTLRenderStages**: The stages in a render pass that triggers a synchronization command.\n- **MTLBarrierScope**: Describes the types of resources that a barrier operates on.\n- **MTL4VisibilityOptions**: Memory consistency options for synchronization commands.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Block GPU stages in the a pass from running until other stages in the same pass finish.",
+          "name" : "Synchronizing stages within a pass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-stages-within-a-pass"
+        },
+        {
+          "description" : "Block GPU stages in a pass, and all subsequent passes, from running until stages from earlier passes finish.",
+          "name" : "Synchronizing passes with consumer barriers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-passes-with-consumer-barriers"
+        },
+        {
+          "description" : "Block GPU stages in subsequent passes from running until stages in a pass, and earlier passes, finish.",
+          "name" : "Synchronizing passes with producer barriers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-passes-with-producer-barriers"
+        },
+        {
+          "description" : "Avoid stalls between CPU and GPU work by using multiple instances of a resource.",
+          "name" : "Synchronizing CPU and GPU work",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-cpu-and-gpu-work"
+        },
+        {
+          "description" : "Use fences to synchronize access to resources allocated on a heap.",
+          "name" : "Implementing a multistage image filter using heaps and fences",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/implementing-a-multistage-image-filter-using-heaps-and-fences"
+        },
+        {
+          "description" : "Describes stages of GPU work.",
+          "name" : "MTLStages",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages"
+        },
+        {
+          "description" : "A synchronization mechanism that orders memory operations between GPU passes.",
+          "name" : "MTLFence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLFence"
+        },
+        {
+          "description" : "The stages in a render pass that triggers a synchronization command.",
+          "name" : "MTLRenderStages",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderStages"
+        },
+        {
+          "description" : "Describes the types of resources that a barrier operates on.",
+          "name" : "MTLBarrierScope",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLBarrierScope"
+        },
+        {
+          "description" : "Memory consistency options for synchronization commands.",
+          "name" : "MTL4VisibilityOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4VisibilityOptions"
+        }
+      ],
+      "title" : "Synchronizing with barriers and fences"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Synchronizing passes with a fence",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/synchronizing-passes-with-a-fence"
+}

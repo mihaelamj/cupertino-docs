@@ -1,0 +1,139 @@
+{
+  "abstract" : "A type that describes the criteria, sort order, and any additional configuration to use when performing a fetch.",
+  "codeExamples" : [
+    {
+      "code" : "let descriptor = FetchDescriptor<Recipe>(\n    predicate: #Predicate { $0.isFavorite == true },\n    sortBy: [\n        .init(\\.createdAt)\n    ]\n)\ndescriptor.fetchLimit = 10\n\nlet favoriteRecipes = try modelContext.fetch(descriptor)",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct FavoriteRecipesList: View {\n    static var fetchDescriptor: FetchDescriptor<Recipe> {\n        let descriptor = FetchDescriptor<Recipe>(\n            predicate: #Predicate { $0.isFavorite == true },\n            sortBy: [\n                .init(\\.createdAt)\n            ]\n        )\n        descriptor.fetchLimit = 10\n        return descriptor\n    }\n\n    @Query(FavoriteRecipesList.fetchDescriptor) private var favoriteRecipes: [Recipe]\n    \n    var body: some View {\n        List(favoriteRecipes) { RecipeRowView($0) }\n    }\n} ",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "Equatable",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "1accc198e679b3ad24a5a749613b19515cf1e1bc283246c4115af299d9297fec",
+  "crawledAt" : "2025-12-02T16:15:33Z",
+  "declaration" : {
+    "code" : "struct FetchDescriptor<T> where T : PersistentModel",
+    "language" : "swift"
+  },
+  "id" : "92946579-75A9-4BC7-B0E1-A0C36ABAD3E6",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftData",
+  "overview" : "## Overview\n\nUse a fetch descriptor to capture the criteria necessary to select, and optionally sort, a specific collection of models from your app’s persistent storage. A fetch descriptor retrieves only a single type of persistent model, and relies on type inference to determine the appropriate type. However, you can configure a fetch descriptor to prefetch related models of different types using the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/FetchDescriptor\/relationshipKeyPathsForPrefetching] property.\n\nTo fetch a collection of models, first create a fetch descriptor and specify a predicate and one or more sort descriptors. The predicate describes the attributes to filter by and the constraints to apply to those attributes. If you don’t specify a predicate, the fetch returns all models of the inferred type. You can further tweak a fetch by limiting the number of models it returns, or indicating whether the fetch evaluates any unsaved changes when it selects the models to return. After configuring the fetch descriptor, pass it to the model context’s [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetch(_:)] method to run the fetch.\n\nIf you’re displaying the fetched models in a SwiftUI view, use the descriptor with the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/Query(_:animation:)] macro instead.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor\ncrawled: 2025-12-02T16:15:33Z\n---\n\n# FetchDescriptor\n\n**Structure**\n\nA type that describes the criteria, sort order, and any additional configuration to use when performing a fetch.\n\n## Declaration\n\n```swift\nstruct FetchDescriptor<T> where T : PersistentModel\n```\n\n## Overview\n\nUse a fetch descriptor to capture the criteria necessary to select, and optionally sort, a specific collection of models from your app’s persistent storage. A fetch descriptor retrieves only a single type of persistent model, and relies on type inference to determine the appropriate type. However, you can configure a fetch descriptor to prefetch related models of different types using the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/FetchDescriptor\/relationshipKeyPathsForPrefetching] property.\n\nTo fetch a collection of models, first create a fetch descriptor and specify a predicate and one or more sort descriptors. The predicate describes the attributes to filter by and the constraints to apply to those attributes. If you don’t specify a predicate, the fetch returns all models of the inferred type. You can further tweak a fetch by limiting the number of models it returns, or indicating whether the fetch evaluates any unsaved changes when it selects the models to return. After configuring the fetch descriptor, pass it to the model context’s [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetch(_:)] method to run the fetch.\n\n```swift\nlet descriptor = FetchDescriptor<Recipe>(\n    predicate: #Predicate { $0.isFavorite == true },\n    sortBy: [\n        .init(\\.createdAt)\n    ]\n)\ndescriptor.fetchLimit = 10\n\nlet favoriteRecipes = try modelContext.fetch(descriptor)\n```\n\nIf you’re displaying the fetched models in a SwiftUI view, use the descriptor with the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/Query(_:animation:)] macro instead.\n\n```swift\nstruct FavoriteRecipesList: View {\n    static var fetchDescriptor: FetchDescriptor<Recipe> {\n        let descriptor = FetchDescriptor<Recipe>(\n            predicate: #Predicate { $0.isFavorite == true },\n            sortBy: [\n                .init(\\.createdAt)\n            ]\n        )\n        descriptor.fetchLimit = 10\n        return descriptor\n    }\n\n    @Query(FavoriteRecipesList.fetchDescriptor) private var favoriteRecipes: [Recipe]\n    \n    var body: some View {\n        List(favoriteRecipes) { RecipeRowView($0) }\n    }\n} \n```\n\n## Creating a fetch descriptor\n\n- **init(predicate:sortBy:)**: Creates a fetch descriptor with the specified predicate that, optionally, arranges the fetched models in a particular order.\n- **Predicate**: A logical condition used to test a set of input values for searching or filtering.\n- **SortDescriptor**: A serializable description of how to sort numerics and strings.\n\n## Constraining the fetch\n\n- **predicate**: The logical condition that determines whether the fetch includes a specific model in its results.\n- **sortBy**: The sort descriptors that tell the fetch how to order its results.\n- **fetchLimit**: The maximum number of models the fetch can return.\n- **fetchOffset**: The offset of the first matching model to fetch.\n- **includePendingChanges**: A Boolean value that indicates whether, when the fetch runs, it matches against currently unsaved changes in the model context.\n\n## Specifying the fetched attributes\n\n- **relationshipKeyPathsForPrefetching**: The key paths that identify any related models to include as part of the fetch.\n- **propertiesToFetch**: The specific subset of attributes to fetch if you don’t require them all.\n\n## Model fetch\n\n- **Filtering and sorting persistent data**: Manage data store presentation using predicates and dynamic queries.\n- **Query()**: Fetches all instances of the attached model type.\n- **Additional query macros**: Supplementary macros that enable you to narrow query results and tell SwiftData how to sort and order those results.\n- **Query**: A type that fetches models using the specified criteria, and manages those models so they remain in sync with the underlying data.\n\n## Conforms To\n\n- Copyable\n- Equatable\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a fetch descriptor with the specified predicate that, optionally, arranges the fetched models in a particular order.",
+          "name" : "init(predicate:sortBy:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor\/init(predicate:sortBy:)"
+        },
+        {
+          "description" : "A logical condition used to test a set of input values for searching or filtering.",
+          "name" : "Predicate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Predicate"
+        },
+        {
+          "description" : "A serializable description of how to sort numerics and strings.",
+          "name" : "SortDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/SortDescriptor"
+        }
+      ],
+      "title" : "Creating a fetch descriptor"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The logical condition that determines whether the fetch includes a specific model in its results.",
+          "name" : "predicate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor\/predicate"
+        },
+        {
+          "description" : "The sort descriptors that tell the fetch how to order its results.",
+          "name" : "sortBy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor\/sortBy"
+        },
+        {
+          "description" : "The maximum number of models the fetch can return.",
+          "name" : "fetchLimit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor\/fetchLimit"
+        },
+        {
+          "description" : "The offset of the first matching model to fetch.",
+          "name" : "fetchOffset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor\/fetchOffset"
+        },
+        {
+          "description" : "A Boolean value that indicates whether, when the fetch runs, it matches against currently unsaved changes in the model context.",
+          "name" : "includePendingChanges",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor\/includePendingChanges"
+        }
+      ],
+      "title" : "Constraining the fetch"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The key paths that identify any related models to include as part of the fetch.",
+          "name" : "relationshipKeyPathsForPrefetching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor\/relationshipKeyPathsForPrefetching"
+        },
+        {
+          "description" : "The specific subset of attributes to fetch if you don’t require them all.",
+          "name" : "propertiesToFetch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor\/propertiesToFetch"
+        }
+      ],
+      "title" : "Specifying the fetched attributes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Manage data store presentation using predicates and dynamic queries.",
+          "name" : "Filtering and sorting persistent data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Filtering-and-sorting-persistent-data"
+        },
+        {
+          "description" : "Fetches all instances of the attached model type.",
+          "name" : "Query()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Query()"
+        },
+        {
+          "description" : "Supplementary macros that enable you to narrow query results and tell SwiftData how to sort and order those results.",
+          "name" : "Additional query macros",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/AdditionalQueryMacros"
+        },
+        {
+          "description" : "A type that fetches models using the specified criteria, and manages those models so they remain in sync with the underlying data.",
+          "name" : "Query",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Query"
+        }
+      ],
+      "title" : "Model fetch"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "FetchDescriptor",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor"
+}

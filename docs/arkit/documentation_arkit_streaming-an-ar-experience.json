@@ -1,0 +1,136 @@
+{
+  "abstract" : "Control an AR experience remotely by transferring sensor and user input over the network.",
+  "codeExamples" : [
+    {
+      "code" : "arView.session.delegate = self",
+      "language" : "swift"
+    },
+    {
+      "code" : "RPScreenRecorder.shared().startCapture {",
+      "language" : "swift"
+    },
+    {
+      "code" : "if type == .video {\n    guard let currentFrame = arView.session.currentFrame else { return }\n    videoProcessor.compressAndSend(sampleBuffer, arFrame: currentFrame) {",
+      "language" : "swift"
+    },
+    {
+      "code" : "VTCompressionSessionEncodeFrame(compressionSession,\n    imageBuffer: imageBuffer,\n    presentationTimeStamp: presentationTimeStamp,\n    duration: .invalid,\n    frameProperties: nil,\n    infoFlagsOut: nil) {",
+      "language" : "swift"
+    },
+    {
+      "code" : "VTSessionSetProperty(compressionSession, key: kVTCompressionPropertyKey_RealTime,\n    value: kCFBooleanTrue)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let videoFrameData = VideoFrameData(sampleBuffer: sampleBuffer, arFrame: arFrame)",
+      "language" : "swift"
+    },
+    {
+      "code" : "do {\n    let data = try JSONEncoder().encode(videoFrameData)\n    \/\/ Invoke the caller's handler to send the data.\n    sendHandler(data)\n} catch {\n    fatalError(\"Failed to encode videoFrameData as JSON with error: \"\n        + error.localizedDescription)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "multipeerSession.sendToAllPeers(data, reliably: true)",
+      "language" : "swift"
+    },
+    {
+      "code" : "func receivedData(_ data: Data, from peer: MCPeerID) {\n    \/\/ Try to decode the received data and handle it appropriately.\n    if let videoFrameData = try? JSONDecoder().decode(VideoFrameData.self,\n        from: data) {",
+      "language" : "swift"
+    },
+    {
+      "code" : "let sampleBuffer = videoFrameData.makeSampleBuffer()",
+      "language" : "swift"
+    },
+    {
+      "code" : "VTDecompressionSessionDecodeFrame(decompressionSession,\n    sampleBuffer: sampleBuffer,\n    flags: [],\n    infoFlagsOut: nil) {",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Update the PipView aspect ratio to match the camera-image dimensions.\nlet width = CGFloat(CVPixelBufferGetWidth(imageBuffer))\nlet height = CGFloat(CVPixelBufferGetHeight(imageBuffer))\noverlayViewController?.setPipViewConstraints(width: width, height: height)\n\noverlayViewController?.renderer.enqueueFrame(\n    pixelBuffer: imageBuffer,\n    presentationTimeStamp: presentationTimeStamp,\n    inverseProjectionMatrix: videoFrameData.inverseProjectionMatrix,\n    inverseViewMatrix: videoFrameData.inverseViewMatrix)",
+      "language" : "swift"
+    },
+    {
+      "code" : "overlayWindow = UIWindow(windowScene: windowScene)\n\nlet storyBoard = UIStoryboard(name: \"Main\", bundle: nil)\nlet overlayViewController = storyBoard.instantiateViewController(\n    identifier: \"OverlayViewController\")\noverlayWindow.rootViewController = overlayViewController\noverlayWindow.makeKeyAndVisible()\n\n\/\/ Make sure the overlayWindow is always above the main window.\noverlayWindow.windowLevel = window.windowLevel + 1",
+      "language" : "swift"
+    },
+    {
+      "code" : "@objc\nfunc tapped(_ sender: UITapGestureRecognizer) {\n    guard let view = sender.view else { return }\n    let location = sender.location(in: view)",
+      "language" : "swift"
+    },
+    {
+      "code" : "guard let inverseProjectionMatrix = renderer.lastDrawnInverseProjectionMatrix,\n    let inverseViewMatrix = renderer.lastDrawnInverseViewMatrix else {\n    return\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let rayQuery = makeRay(from: location,\n    viewportSize: view.frame.size,\n    inverseProjectionMatrix: simd_float4x4(inverseProjectionMatrix),\n    inverseViewMatrix: simd_float4x4(inverseViewMatrix))",
+      "language" : "swift"
+    },
+    {
+      "code" : "let data = try JSONEncoder().encode(rayQuery)\nmultipeerSession?.sendToAllPeers(data, reliably: true)",
+      "language" : "swift"
+    },
+    {
+      "code" : "} else if let rayQuery = try? JSONDecoder().decode(Ray.self, from: data) {",
+      "language" : "swift"
+    },
+    {
+      "code" : "trackedRaycast = arView.session.trackedRaycast(\n    ARRaycastQuery(\n        origin: rayQuery.origin,\n        direction: rayQuery.direction,\n        allowing: .estimatedPlane,\n        alignment: .any)\n    ) {",
+      "language" : "swift"
+    },
+    {
+      "code" : "if let result = raycastResults.first {\n    marker.transform.matrix = result.worldTransform",
+      "language" : "swift"
+    },
+    {
+      "code" : "let marker: AnchorEntity = {\n    let entity = AnchorEntity()\n    entity.addChild(ModelEntity(mesh: .generateSphere(radius: 0.05)))\n    entity.isEnabled = false\n    return entity\n}()",
+      "language" : "swift"
+    },
+    {
+      "code" : "arView.scene.addAnchor(marker)",
+      "language" : "swift"
+    },
+    {
+      "code" : "marker.isEnabled = true",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "5c71cbce91494a32c2c7d223374bd5d7556ae70b6943c124396b69c8a2f46e32",
+  "crawledAt" : "2025-12-02T15:47:30Z",
+  "id" : "AA5E6A98-D6C2-40C8-A8CC-452B1D405440",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "ARKit",
+  "overview" : "## Overview\n\nThe sample app, AR Stream, shares the augmented camera feed with a peer device, and enables it to take control by interacting with the remote AR experience. For example, a user shares their screen depicting their physical environment with a computer technician who assists the user with troubleshooting a hardware issue. As the user views a broken device resting on a table from different angles, the remote technician interacts with the experience by augmenting the user’s camera feed with textual annotations that describe the necessary steps to repair the device.\n\n\n\nTo enable the remote user to see the user’s physical environment, AR Stream shares device sensor information across the network. By compressing camera frames with [doc:\/\/com.apple.documentation\/documentation\/VideoToolbox], the app provides the peer with good visibility of the user’s view by displaying the remote experience at a high frame rate.\n\nAR Stream also sends mathematical details about the user’s real-world pose to the remote user to process the peer’s touch input. The sample app sends the session’s inverse view and inverse projection matrices to the remote device so it can calculate a location in the user’s environment where the remote user taps. To indicate when the remote user taps the screen, AR Stream places a helpful virtual indicator at the tap location.\n\n## Display a camera feed and monitor the session\n\nAR Stream displays the device’s camera feed by configuring a window with a view controller that displays an [doc:\/\/com.apple.documentation\/documentation\/RealityKit\/ARView] (see the sample project’s `Main.storyboard` file). By default,[doc:\/\/com.apple.documentation\/documentation\/RealityKit\/ARView] runs a session with a world-tracking configuration [doc:\/\/com.apple.arkit\/documentation\/ARKit\/ARWorldTrackingConfiguration]. To receive notifications of the view’s session events, the project’s view controller (see `ViewController` in the sample project) assigns itself as the session delegate.\n\n## Capture frames\n\nTo show the user’s physical environment to the remote user, AR Stream uses ReplayKit to open a screen-recording session with [doc:\/\/com.apple.documentation\/documentation\/ReplayKit\/RPScreenRecorder].\n\nThe screen recording captures the contents of the app’s main window, which includes any augmentations that RealityKit may add to the camera feed. In the [doc:\/\/com.apple.documentation\/documentation\/ReplayKit\/RPScreenRecorder\/startCapture(handler:completionHandler:)] closure, the sample project passes the captured screen (`sampleBuffer`) to the `compressAndSend` function for eventual transmission over the network. The sample project also passes in the session’s current frame to conform the screen captures to the camera-image size.\n\n## Compress and send frames to the peer\n\nThe sample project’s `VideoProcessor` class implements the `compressAndSend` function, which uses [doc:\/\/com.apple.documentation\/documentation\/VideoToolbox\/VTCompressionSession] to compress the captured video frames.\n\nTo ensure timely compression for the real-time streaming use case of the app, the video processor enables the compression session’s [doc:\/\/com.apple.documentation\/documentation\/VideoToolbox\/kVTCompressionPropertyKey_RealTime] option.\n\nAfter the [doc:\/\/com.apple.documentation\/documentation\/VideoToolbox\/VTCompressionSession] finishes encoding a frame, the app creates a `VideoFrameData` instance using the compressed frame and the inverse view and projection matrices from the corresponding [doc:\/\/com.apple.arkit\/documentation\/ARKit\/ARFrame].\n\nThe project serializes and encodes the `VideoFrameData` as JSON data, and passes the data to its `sendHandler`.\n\nThe screen-recording closure defines the send handler to contain code that uses [doc:\/\/com.apple.documentation\/documentation\/MultipeerConnectivity] to transmit the video data over the local network.\n\n## Receive and decompress peer frames\n\nWhen the app receives `VideoFrameData` from another device, it decodes the JSON data.\n\nTo house the transmitted video frame, AR Stream reconstructs a sample buffer.\n\nThe system can display only uncompressed data, so the video processor decompresses the video frame using [doc:\/\/com.apple.documentation\/documentation\/VideoToolbox\/VTDecompressionSession] within its `decompress` function.\n\nAR Stream draws the video frame to the screen using its renderer object (see `Renderer` in the sample project). The renderer enqueues the frame data for imminent display.\n\n## Display the remote user’s camera feed\n\nAR Stream defines an [doc:\/\/com.apple.documentation\/documentation\/MetalKit\/MTKView] subclass, `OverlayViewController`, that displays the remote user’s camera feed on top of the [doc:\/\/com.apple.documentation\/documentation\/RealityKit\/ARView] by placing a *picture-in-picture* (PiP) view at the bottom left of the screen.\n\n\n\nThe sample project’s `AppDelegate` configures the PiP view in a secondary window. Because ReplayKit’s screen recording captures only the main window, the PiP view displays only the remote user’s camera feed.\n\n## Send gestures to the peer\n\nWhen the remote user taps the PiP view, the project responds by recording the tap location.\n\nThe sample project uses the inverse matrices that the user sends to enable the remote user to interact with the user’s AR experience.\n\nThe project converts the tap location and inverse matrices into a ray cast that describes the location and direction in the user’s [doc:\/\/com.apple.arkit\/documentation\/ARKit\/ARSession] world coordinate system (see the `makeRay` function in the sample project).\n\nThen, the sample project encodes the ray cast as JSON data and sends it to the connected peer.\n\n## Handle peer gestures\n\nIn the project’s `ViewController`, the `receivedData` function receives a `Ray` object when the remote user taps the PiP view.\n\nTo hand the remote user’s tap gesture to ARKit as if the user is tapping the screen, the sample project uses the `Ray` data to create an [doc:\/\/com.apple.arkit\/documentation\/ARKit\/ARTrackedRaycast].\n\nWhen the tracked ray cast intersects with a surface in the user’s environment, the app records the resulting location.\n\n## Display virtual content\n\nTo enable the remote user to interact with the user’s AR experience, the app places a virtual ball at the location in the environment where the remote user taps.\n\n\n\nThe project creates this visual marker using a ball-shaped [doc:\/\/com.apple.documentation\/documentation\/RealityKit\/ModelEntity].\n\nAt app launch, the marker is invisible by default as the project readies the marker for display by adding it to the scene.\n\nWhen the app receives a `Ray` from the remote user and adjusts the marker’s position, the project displays the marker by enabling it.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/ARKit\/streaming-an-ar-experience\ncrawled: 2025-12-02T15:47:30Z\n---\n\n# Streaming an AR experience\n\n**Sample Code**\n\nControl an AR experience remotely by transferring sensor and user input over the network.\n\n## Overview\n\nThe sample app, AR Stream, shares the augmented camera feed with a peer device, and enables it to take control by interacting with the remote AR experience. For example, a user shares their screen depicting their physical environment with a computer technician who assists the user with troubleshooting a hardware issue. As the user views a broken device resting on a table from different angles, the remote technician interacts with the experience by augmenting the user’s camera feed with textual annotations that describe the necessary steps to repair the device.\n\n\n\nTo enable the remote user to see the user’s physical environment, AR Stream shares device sensor information across the network. By compressing camera frames with [doc:\/\/com.apple.documentation\/documentation\/VideoToolbox], the app provides the peer with good visibility of the user’s view by displaying the remote experience at a high frame rate.\n\nAR Stream also sends mathematical details about the user’s real-world pose to the remote user to process the peer’s touch input. The sample app sends the session’s inverse view and inverse projection matrices to the remote device so it can calculate a location in the user’s environment where the remote user taps. To indicate when the remote user taps the screen, AR Stream places a helpful virtual indicator at the tap location.\n\n## Display a camera feed and monitor the session\n\nAR Stream displays the device’s camera feed by configuring a window with a view controller that displays an [doc:\/\/com.apple.documentation\/documentation\/RealityKit\/ARView] (see the sample project’s `Main.storyboard` file). By default,[doc:\/\/com.apple.documentation\/documentation\/RealityKit\/ARView] runs a session with a world-tracking configuration [doc:\/\/com.apple.arkit\/documentation\/ARKit\/ARWorldTrackingConfiguration]. To receive notifications of the view’s session events, the project’s view controller (see `ViewController` in the sample project) assigns itself as the session delegate.\n\n```swift\narView.session.delegate = self\n```\n\n## Capture frames\n\nTo show the user’s physical environment to the remote user, AR Stream uses ReplayKit to open a screen-recording session with [doc:\/\/com.apple.documentation\/documentation\/ReplayKit\/RPScreenRecorder].\n\n```swift\nRPScreenRecorder.shared().startCapture {\n```\n\nThe screen recording captures the contents of the app’s main window, which includes any augmentations that RealityKit may add to the camera feed. In the [doc:\/\/com.apple.documentation\/documentation\/ReplayKit\/RPScreenRecorder\/startCapture(handler:completionHandler:)] closure, the sample project passes the captured screen (`sampleBuffer`) to the `compressAndSend` function for eventual transmission over the network. The sample project also passes in the session’s current frame to conform the screen captures to the camera-image size.\n\n```swift\nif type == .video {\n    guard let currentFrame = arView.session.currentFrame else { return }\n    videoProcessor.compressAndSend(sampleBuffer, arFrame: currentFrame) {\n```\n\n\n\n## Compress and send frames to the peer\n\nThe sample project’s `VideoProcessor` class implements the `compressAndSend` function, which uses [doc:\/\/com.apple.documentation\/documentation\/VideoToolbox\/VTCompressionSession] to compress the captured video frames.\n\n```swift\nVTCompressionSessionEncodeFrame(compressionSession,\n    imageBuffer: imageBuffer,\n    presentationTimeStamp: presentationTimeStamp,\n    duration: .invalid,\n    frameProperties: nil,\n    infoFlagsOut: nil) {\n```\n\nTo ensure timely compression for the real-time streaming use case of the app, the video processor enables the compression session’s [doc:\/\/com.apple.documentation\/documentation\/VideoToolbox\/kVTCompressionPropertyKey_RealTime] option.\n\n```swift\nVTSessionSetProperty(compressionSession, key: kVTCompressionPropertyKey_RealTime,\n    value: kCFBooleanTrue)\n```\n\nAfter the [doc:\/\/com.apple.documentation\/documentation\/VideoToolbox\/VTCompressionSession] finishes encoding a frame, the app creates a `VideoFrameData` instance using the compressed frame and the inverse view and projection matrices from the corresponding [doc:\/\/com.apple.arkit\/documentation\/ARKit\/ARFrame].\n\n```swift\nlet videoFrameData = VideoFrameData(sampleBuffer: sampleBuffer, arFrame: arFrame)\n```\n\nThe project serializes and encodes the `VideoFrameData` as JSON data, and passes the data to its `sendHandler`.\n\n```swift\ndo {\n    let data = try JSONEncoder().encode(videoFrameData)\n    \/\/ Invoke the caller's handler to send the data.\n    sendHandler(data)\n} catch {\n    fatalError(\"Failed to encode videoFrameData as JSON with error: \"\n        + error.localizedDescription)\n}\n```\n\nThe screen-recording closure defines the send handler to contain code that uses [doc:\/\/com.apple.documentation\/documentation\/MultipeerConnectivity] to transmit the video data over the local network.\n\n```swift\nmultipeerSession.sendToAllPeers(data, reliably: true)\n```\n\n## Receive and decompress peer frames\n\nWhen the app receives `VideoFrameData` from another device, it decodes the JSON data.\n\n```swift\nfunc receivedData(_ data: Data, from peer: MCPeerID) {\n    \/\/ Try to decode the received data and handle it appropriately.\n    if let videoFrameData = try? JSONDecoder().decode(VideoFrameData.self,\n        from: data) {\n```\n\nTo house the transmitted video frame, AR Stream reconstructs a sample buffer.\n\n```swift\nlet sampleBuffer = videoFrameData.makeSampleBuffer()\n```\n\nThe system can display only uncompressed data, so the video processor decompresses the video frame using [doc:\/\/com.apple.documentation\/documentation\/VideoToolbox\/VTDecompressionSession] within its `decompress` function.\n\n```swift\nVTDecompressionSessionDecodeFrame(decompressionSession,\n    sampleBuffer: sampleBuffer,\n    flags: [],\n    infoFlagsOut: nil) {\n```\n\nAR Stream draws the video frame to the screen using its renderer object (see `Renderer` in the sample project). The renderer enqueues the frame data for imminent display.\n\n```swift\n\/\/ Update the PipView aspect ratio to match the camera-image dimensions.\nlet width = CGFloat(CVPixelBufferGetWidth(imageBuffer))\nlet height = CGFloat(CVPixelBufferGetHeight(imageBuffer))\noverlayViewController?.setPipViewConstraints(width: width, height: height)\n\noverlayViewController?.renderer.enqueueFrame(\n    pixelBuffer: imageBuffer,\n    presentationTimeStamp: presentationTimeStamp,\n    inverseProjectionMatrix: videoFrameData.inverseProjectionMatrix,\n    inverseViewMatrix: videoFrameData.inverseViewMatrix)\n```\n\n## Display the remote user’s camera feed\n\nAR Stream defines an [doc:\/\/com.apple.documentation\/documentation\/MetalKit\/MTKView] subclass, `OverlayViewController`, that displays the remote user’s camera feed on top of the [doc:\/\/com.apple.documentation\/documentation\/RealityKit\/ARView] by placing a *picture-in-picture* (PiP) view at the bottom left of the screen.\n\n\n\nThe sample project’s `AppDelegate` configures the PiP view in a secondary window. Because ReplayKit’s screen recording captures only the main window, the PiP view displays only the remote user’s camera feed.\n\n```swift\noverlayWindow = UIWindow(windowScene: windowScene)\n\nlet storyBoard = UIStoryboard(name: \"Main\", bundle: nil)\nlet overlayViewController = storyBoard.instantiateViewController(\n    identifier: \"OverlayViewController\")\noverlayWindow.rootViewController = overlayViewController\noverlayWindow.makeKeyAndVisible()\n\n\/\/ Make sure the overlayWindow is always above the main window.\noverlayWindow.windowLevel = window.windowLevel + 1\n```\n\n## Send gestures to the peer\n\nWhen the remote user taps the PiP view, the project responds by recording the tap location.\n\n```swift\n@objc\nfunc tapped(_ sender: UITapGestureRecognizer) {\n    guard let view = sender.view else { return }\n    let location = sender.location(in: view)\n```\n\nThe sample project uses the inverse matrices that the user sends to enable the remote user to interact with the user’s AR experience.\n\n```swift\nguard let inverseProjectionMatrix = renderer.lastDrawnInverseProjectionMatrix,\n    let inverseViewMatrix = renderer.lastDrawnInverseViewMatrix else {\n    return\n}\n```\n\nThe project converts the tap location and inverse matrices into a ray cast that describes the location and direction in the user’s [doc:\/\/com.apple.arkit\/documentation\/ARKit\/ARSession] world coordinate system (see the `makeRay` function in the sample project).\n\n```swift\nlet rayQuery = makeRay(from: location,\n    viewportSize: view.frame.size,\n    inverseProjectionMatrix: simd_float4x4(inverseProjectionMatrix),\n    inverseViewMatrix: simd_float4x4(inverseViewMatrix))\n```\n\nThen, the sample project encodes the ray cast as JSON data and sends it to the connected peer.\n\n```swift\nlet data = try JSONEncoder().encode(rayQuery)\nmultipeerSession?.sendToAllPeers(data, reliably: true)\n```\n\n## Handle peer gestures\n\nIn the project’s `ViewController`, the `receivedData` function receives a `Ray` object when the remote user taps the PiP view.\n\n```swift\n} else if let rayQuery = try? JSONDecoder().decode(Ray.self, from: data) {\n```\n\nTo hand the remote user’s tap gesture to ARKit as if the user is tapping the screen, the sample project uses the `Ray` data to create an [doc:\/\/com.apple.arkit\/documentation\/ARKit\/ARTrackedRaycast].\n\n```swift\ntrackedRaycast = arView.session.trackedRaycast(\n    ARRaycastQuery(\n        origin: rayQuery.origin,\n        direction: rayQuery.direction,\n        allowing: .estimatedPlane,\n        alignment: .any)\n    ) {\n```\n\nWhen the tracked ray cast intersects with a surface in the user’s environment, the app records the resulting location.\n\n```swift\nif let result = raycastResults.first {\n    marker.transform.matrix = result.worldTransform\n```\n\n## Display virtual content\n\nTo enable the remote user to interact with the user’s AR experience, the app places a virtual ball at the location in the environment where the remote user taps.\n\n\n\n\n\nThe project creates this visual marker using a ball-shaped [doc:\/\/com.apple.documentation\/documentation\/RealityKit\/ModelEntity].\n\n```swift\nlet marker: AnchorEntity = {\n    let entity = AnchorEntity()\n    entity.addChild(ModelEntity(mesh: .generateSphere(radius: 0.05)))\n    entity.isEnabled = false\n    return entity\n}()\n```\n\nAt app launch, the marker is invisible by default as the project readies the marker for display by adding it to the scene.\n\n```swift\narView.scene.addAnchor(marker)\n```\n\nWhen the app receives a `Ray` from the remote user and adjusts the marker’s position, the project displays the marker by enabling it.\n\n```swift\nmarker.isEnabled = true\n```\n\n## Shared Experiences\n\n- **Creating a collaborative session**: Enable nearby devices to share an AR experience by using a peer-to-peer multiuser strategy.\n- **Creating a multiuser AR experience**: Enable nearby devices to share an AR experience by using a host-guest multiuser strategy.\n- **ARParticipantAnchor**: An anchor for another user in multiuser augmented reality experiences.\n- **ARSession.CollaborationData**: An object that holds information that a user has collected about the physical environment.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Enable nearby devices to share an AR experience by using a peer-to-peer multiuser strategy.",
+          "name" : "Creating a collaborative session",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ARKit\/creating-a-collaborative-session"
+        },
+        {
+          "description" : "Enable nearby devices to share an AR experience by using a host-guest multiuser strategy.",
+          "name" : "Creating a multiuser AR experience",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ARKit\/creating-a-multiuser-ar-experience"
+        },
+        {
+          "description" : "An anchor for another user in multiuser augmented reality experiences.",
+          "name" : "ARParticipantAnchor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ARKit\/ARParticipantAnchor"
+        },
+        {
+          "description" : "An object that holds information that a user has collected about the physical environment.",
+          "name" : "ARSession.CollaborationData",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ARKit\/ARSession\/CollaborationData"
+        }
+      ],
+      "title" : "Shared Experiences"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Streaming an AR experience",
+  "url" : "https:\/\/developer.apple.com\/documentation\/ARKit\/streaming-an-ar-experience"
+}

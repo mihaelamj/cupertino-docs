@@ -1,0 +1,50 @@
+{
+  "abstract" : "Tells the delegate it can request the item provider data from the session’s drag items.",
+  "codeExamples" : [
+    {
+      "code" : "func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {\n    for item in session.items {\n        let itemProvider = item.itemProvider\n        guard itemProvider.canLoadObject(ofClass: UIImage.self) \n        else {continue}\n\n        itemProvider.loadObject(ofClass: UIImage.self, completionHandler: { (object, error) in\n            if let image = object as? UIImage {\n                DispatchQueue.main.async {\n                    self.imageView.image = image\n                }\n            }\n        })\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "import MobileCoreServices \/\/ for kUTTypeJPEG\nfunc dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {\n    for item in session.items {\n        let itemProvider = item.itemProvider\n        itemProvider.loadDataRepresentation(forTypeIdentifier: kUTTypeJPEG as String, completionHandler: { (data, error) in\n            guard\n                let data = data,\n                let image = UIImage(data: data)\n                else {return}\n            \n            DispatchQueue.main.async {\n                self.imageView.image = image\n            }        \n        })\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {\n    session.loadObjects(ofClass: UIImage.self) { objects in\n        guard let images = objects as? [UIImage] else {return}\n        for image in images {\n            self.imageView.image = image\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "56a56649a204b2e36771a8ebbccb13139be596a2656d92505df9ccd9d676fbd2",
+  "crawledAt" : "2025-12-02T04:45:52Z",
+  "declaration" : {
+    "code" : "@MainActor optional func dropInteraction(_ interaction: UIDropInteraction, performDrop session: any UIDropSession)",
+    "language" : "swift"
+  },
+  "id" : "FDB0E6D2-94AC-4803-AD92-F9E56F21F695",
+  "kind" : "method",
+  "module" : "UIKit",
+  "overview" : "## Discussion\n\nYou can request a drag item’s [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDragItem\/itemProvider] data within the scope of this method only and not at any other time.\n\nTo request the data, iterate over the session items calling [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSItemProvider\/loadObject(ofClass:completionHandler:)-8ak5d] on each item’s item provider. For example, if you are expecting the drag items to be images, here’s how you can load each image:\n\nIf you need to be more specific about the type of data to load, use one of the following methods to specify the desired data type using its uniform type identifier (UTI):\n\nIf you want only JPEG images, use the UTI for the JPEG image type:\n\nYou can also use the session’s convenience method [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDropSession\/loadObjects(ofClass:completion:)] to load the data for an item. Note that the completion handler for this method is called on the main thread, which is not true when loading the data from the item provider.\n\nWhen you ask the session or item provider to load its data, it gives you a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Progress] object. You can also get the progress for the session at a later time from its [doc:\/\/com.apple.documentation\/documentation\/Foundation\/ProgressReporting\/progress] property.\n\nThe [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Progress] object tells you how much of the data transfer is complete and if the transfer has finished. What’s more, it can be used to cancel, pause, and resume the data-load process.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/UIKit\/UIDropInteractionDelegate\/dropInteraction(_:performDrop:)\ncrawled: 2025-12-02T04:45:52Z\n---\n\n# dropInteraction(_:performDrop:)\n\n**Instance Method**\n\nTells the delegate it can request the item provider data from the session’s drag items.\n\n## Declaration\n\n```swift\n@MainActor optional func dropInteraction(_ interaction: UIDropInteraction, performDrop session: any UIDropSession)\n```\n\n## Parameters\n\n- **interaction**: The interaction that called this method.\n- **session**: The session containing the drag items.\n\n## Discussion\n\nYou can request a drag item’s [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDragItem\/itemProvider] data within the scope of this method only and not at any other time.\n\nTo request the data, iterate over the session items calling [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSItemProvider\/loadObject(ofClass:completionHandler:)-8ak5d] on each item’s item provider. For example, if you are expecting the drag items to be images, here’s how you can load each image:\n\n```swift\nfunc dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {\n    for item in session.items {\n        let itemProvider = item.itemProvider\n        guard itemProvider.canLoadObject(ofClass: UIImage.self) \n        else {continue}\n\n        itemProvider.loadObject(ofClass: UIImage.self, completionHandler: { (object, error) in\n            if let image = object as? UIImage {\n                DispatchQueue.main.async {\n                    self.imageView.image = image\n                }\n            }\n        })\n    }\n}\n```\n\nIf you need to be more specific about the type of data to load, use one of the following methods to specify the desired data type using its uniform type identifier (UTI):\n\n- [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSItemProvider\/loadDataRepresentation(forTypeIdentifier:completionHandler:)]\n- [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSItemProvider\/loadFileRepresentation(forTypeIdentifier:completionHandler:)]\n- [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSItemProvider\/loadInPlaceFileRepresentation(forTypeIdentifier:completionHandler:)]\n\nIf you want only JPEG images, use the UTI for the JPEG image type:\n\n```swift\nimport MobileCoreServices \/\/ for kUTTypeJPEG\nfunc dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {\n    for item in session.items {\n        let itemProvider = item.itemProvider\n        itemProvider.loadDataRepresentation(forTypeIdentifier: kUTTypeJPEG as String, completionHandler: { (data, error) in\n            guard\n                let data = data,\n                let image = UIImage(data: data)\n                else {return}\n            \n            DispatchQueue.main.async {\n                self.imageView.image = image\n            }        \n        })\n    }\n}\n```\n\nYou can also use the session’s convenience method [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIDropSession\/loadObjects(ofClass:completion:)] to load the data for an item. Note that the completion handler for this method is called on the main thread, which is not true when loading the data from the item provider.\n\n```swift\nfunc dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {\n    session.loadObjects(ofClass: UIImage.self) { objects in\n        guard let images = objects as? [UIImage] else {return}\n        for image in images {\n            self.imageView.image = image\n        }\n    }\n}\n```\n\nWhen you ask the session or item provider to load its data, it gives you a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Progress] object. You can also get the progress for the session at a later time from its [doc:\/\/com.apple.documentation\/documentation\/Foundation\/ProgressReporting\/progress] property.\n\nThe [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Progress] object tells you how much of the data transfer is complete and if the transfer has finished. What’s more, it can be used to cancel, pause, and resume the data-load process.\n\n## Handling the drop\n\n- **dropInteraction(_:canHandle:)**: Asks the delegate whether it can handle the session’s drag items.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Asks the delegate whether it can handle the session’s drag items.",
+          "name" : "dropInteraction(_:canHandle:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIDropInteractionDelegate\/dropInteraction(_:canHandle:)"
+        }
+      ],
+      "title" : "Handling the drop"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "dropInteraction(_:performDrop:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIDropInteractionDelegate\/dropInteraction(_:performDrop:)"
+}

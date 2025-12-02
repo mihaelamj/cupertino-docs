@@ -1,0 +1,58 @@
+{
+  "abstract" : "Creates a new `MLShapedArray` using a pixel buffer as the backing storage.",
+  "codeExamples" : [
+    {
+      "code" : "var pixelBuffer: CVPixelBuffer?\nlet pixelBufferAttributes = [\n    kCVPixelBufferIOSurfacePropertiesKey : [:]\n]\n\/\/ Pixel buffer's width is the last dimension of `shape`, which is 4.\n\/\/ The height is the product of the rest of the dimensions, which is\n\/\/ 2 * 3 = 6.\nCVPixelBufferCreate(kCFAllocatorDefault,\n                    4, 6,\n                    kCVPixelFormatType_OneComponent16Half,\n                    pixelBufferAttributes as CFDictionary,\n                    &pixelBuffer)\n\nlet shapedArray = MLShapedArray<Float16>(mutating: pixelBuffer!,\n                                         shape: [2, 3, 4])",
+      "language" : "swift"
+    },
+    {
+      "code" : "var shapedArray = MLShapedArray<Float16>(mutating: pixelBuffer, shape: [1])\nshapedArray[scalarAt: 0] = 42\n\/\/ The pixel buffer now has 42 in its frame buffer.",
+      "language" : "swift"
+    },
+    {
+      "code" : "var array1 = MLShapedArray<Float16>(mutating: pixelBuffer, shape: [1])\narray1[scalarAt: 0] = 0 \/\/ pixelBuffer is mutated.\nlet array2 = array1\narray1[scalarAt: 0] = 42 \/\/ Copy-on-Write\n\nassert(array1[scalarAt: 0] == 42)\nassert(array2[scalarAt: 0] == 0)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "3b7c9a50eda73cfce3bd2118f85e4d8223eed240184cbf0e384c27b803237dcc",
+  "crawledAt" : "2025-12-01T09:55:09Z",
+  "declaration" : {
+    "code" : "init(mutating pixelBuffer: CVPixelBuffer, shape: [Int])",
+    "language" : "swift"
+  },
+  "id" : "73884F26-4A58-4CAA-AC7B-DCDDA1CF0D09",
+  "kind" : "unknown",
+  "module" : "Core ML",
+  "overview" : "## Discussion\n\nUse this initializer to create an `IOSurface` backed `MLShapedArray`, which can reduce the inference latency by avoiding the buffer copy.\n\nThe pixel buffer’s pixel format type must be `OneComponent16Half` for scalar type `Float16` and `OneComponent8` for scalar type `Int8`. Other data types are not supported.\n\nWhen there is one and only one owner of the shaped array, mutating operations modifies the underlying pixel buffer.\n\nIt follows the value semantics. The mutation doesn’t affect the copy.\n\nIt is undefined behavior to mutate the pixel buffer directly without using `.withMutablePixelBufferIfAvailable`.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CoreML\/MLShapedArray\/init(mutating:shape:)\ncrawled: 2025-12-01T09:55:09Z\n---\n\n# init(mutating:shape:)\n\n**Initializer**\n\nCreates a new `MLShapedArray` using a pixel buffer as the backing storage.\n\n## Declaration\n\n```swift\ninit(mutating pixelBuffer: CVPixelBuffer, shape: [Int])\n```\n\n## Parameters\n\n- **pixelBuffer**: The backing pixel buffer. It must be backed by `IOSurface`.\n- **shape**: The shape of the MLShapedArray. The last dimension of `shape` must match the pixel buffer’s width. The product of the rest of the dimensions must match the height.\n\n## Discussion\n\nUse this initializer to create an `IOSurface` backed `MLShapedArray`, which can reduce the inference latency by avoiding the buffer copy.\n\nThe pixel buffer’s pixel format type must be `OneComponent16Half` for scalar type `Float16` and `OneComponent8` for scalar type `Int8`. Other data types are not supported.\n\n```swift\nvar pixelBuffer: CVPixelBuffer?\nlet pixelBufferAttributes = [\n    kCVPixelBufferIOSurfacePropertiesKey : [:]\n]\n\/\/ Pixel buffer's width is the last dimension of `shape`, which is 4.\n\/\/ The height is the product of the rest of the dimensions, which is\n\/\/ 2 * 3 = 6.\nCVPixelBufferCreate(kCFAllocatorDefault,\n                    4, 6,\n                    kCVPixelFormatType_OneComponent16Half,\n                    pixelBufferAttributes as CFDictionary,\n                    &pixelBuffer)\n\nlet shapedArray = MLShapedArray<Float16>(mutating: pixelBuffer!,\n                                         shape: [2, 3, 4])\n```\n\nWhen there is one and only one owner of the shaped array, mutating operations modifies the underlying pixel buffer.\n\n```swift\nvar shapedArray = MLShapedArray<Float16>(mutating: pixelBuffer, shape: [1])\nshapedArray[scalarAt: 0] = 42\n\/\/ The pixel buffer now has 42 in its frame buffer.\n```\n\nIt follows the value semantics. The mutation doesn’t affect the copy.\n\n```swift\nvar array1 = MLShapedArray<Float16>(mutating: pixelBuffer, shape: [1])\narray1[scalarAt: 0] = 0 \/\/ pixelBuffer is mutated.\nlet array2 = array1\narray1[scalarAt: 0] = 42 \/\/ Copy-on-Write\n\nassert(array1[scalarAt: 0] == 42)\nassert(array2[scalarAt: 0] == 0)\n```\n\nIt is undefined behavior to mutate the pixel buffer directly without using `.withMutablePixelBufferIfAvailable`.\n\n## Creating a shaped array\n\n- **init(scalar:)**: Creates a shaped array with exactly one value and zero dimensions.\n- **init(scalars:shape:)**: Initialize with a sequence and the shape.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a shaped array with exactly one value and zero dimensions.",
+          "name" : "init(scalar:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreML\/MLShapedArray\/init(scalar:)"
+        },
+        {
+          "description" : "Initialize with a sequence and the shape.",
+          "name" : "init(scalars:shape:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreML\/MLShapedArray\/init(scalars:shape:)"
+        }
+      ],
+      "title" : "Creating a shaped array"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "init(mutating:shape:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CoreML\/MLShapedArray\/init(mutating:shape:)"
+}

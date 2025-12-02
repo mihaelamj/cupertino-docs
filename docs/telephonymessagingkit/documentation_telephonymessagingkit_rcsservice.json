@@ -1,0 +1,439 @@
+{
+  "abstract" : "A class that provides an interface for performing RCS operations.",
+  "codeExamples" : [
+    {
+      "code" : "let service = TelephonyMessagingSession.shared.rcsService\n\nlet cellularServices = try TelephonyMessagingSession.shared.cellularServices\nlet cellularServiceID = cellularServices[0].id\n\nguard service.isViable(for: cellularServiceID) else { return }\n\nlet message = RCSMessage.Text(\"Hello there.\")\nguard let handle = RCSHandle.phoneNumber(SAMPLE_PHONE_NUMBER) else { return }\ntry await service.sendMessage(message,\n                   to: handle,\n                   using:cellularServiceID,\n                   messageID: RCSMessageID(rawValue: SAMPLE_RCS_MESSAGE_ID))",
+      "language" : "swift"
+    },
+    {
+      "code" : "let service = TelephonyMessagingSession.shared.rcsService\n\nlet incomingMessageNotifications = try service.incomingMessageNotifications\nTask {\n    for await notification in incomingMessageNotifications {\n        let receivedMessage = notification.message\n        switch receivedMessage.content {\n            case .text(let text): \/\/ ...\n            case .fileTransfer(let fileTransfer): \/\/ ...\n            case .geolocationPush(let geolocationPush): \/\/ ...\n            case .dispositionNotification(let dispositionNotification): \/\/ ...\n            case .composingIndicator(let composingIndicator): \/\/ ...\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "72a1a1ac8bd99f7a8645193a647554f183a3a47d8e434edf4c638a0e5bd0c7d8",
+  "crawledAt" : "2025-12-02T05:55:39Z",
+  "declaration" : {
+    "code" : "final class RCSService",
+    "language" : "swift"
+  },
+  "id" : "C9EFF598-1EBE-412A-BF95-37A0FEAABA97",
+  "kind" : "class",
+  "module" : "TelephonyMessagingKit",
+  "overview" : "## Overview\n\nUse the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/TelephonyMessagingSession] property [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/TelephonyMessagingSession\/rcsService] to get an instance of this class.\n\nAn `RCSService` sends and receives different kinds of messages, distinguished by the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/RCSMessage\/content-swift.property] property of [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/RCSMessage]:\n\nUse the various overloads of `sendMessage(_:to:using:messageID)` to send messages of these types to recipients. The following example shows how to send a plain text message with [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/RCSService\/sendMessage(_:to:using:messageID:)-70q7h]:\n\nTo receive messages, iterate over the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/RCSService\/incomingMessageNotifications] asynchronous sequence with a `for`-`await`-`in` loop, then handle each notification based on its message content type, like this:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\ncrawled: 2025-12-02T05:55:39Z\n---\n\n# RCSService\n\n**Class**\n\nA class that provides an interface for performing RCS operations.\n\n## Declaration\n\n```swift\nfinal class RCSService\n```\n\n## Overview\n\nUse the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/TelephonyMessagingSession] property [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/TelephonyMessagingSession\/rcsService] to get an instance of this class.\n\nAn `RCSService` sends and receives different kinds of messages, distinguished by the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/RCSMessage\/content-swift.property] property of [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/RCSMessage]:\n\n\n\nUse the various overloads of `sendMessage(_:to:using:messageID)` to send messages of these types to recipients. The following example shows how to send a plain text message with [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/RCSService\/sendMessage(_:to:using:messageID:)-70q7h]:\n\n```swift\nlet service = TelephonyMessagingSession.shared.rcsService\n\nlet cellularServices = try TelephonyMessagingSession.shared.cellularServices\nlet cellularServiceID = cellularServices[0].id\n\nguard service.isViable(for: cellularServiceID) else { return }\n\nlet message = RCSMessage.Text(\"Hello there.\")\nguard let handle = RCSHandle.phoneNumber(SAMPLE_PHONE_NUMBER) else { return }\ntry await service.sendMessage(message,\n                   to: handle,\n                   using:cellularServiceID,\n                   messageID: RCSMessageID(rawValue: SAMPLE_RCS_MESSAGE_ID))\n```\n\nTo receive messages, iterate over the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/RCSService\/incomingMessageNotifications] asynchronous sequence with a `for`-`await`-`in` loop, then handle each notification based on its message content type, like this:\n\n```swift\nlet service = TelephonyMessagingSession.shared.rcsService\n\nlet incomingMessageNotifications = try service.incomingMessageNotifications\nTask {\n    for await notification in incomingMessageNotifications {\n        let receivedMessage = notification.message\n        switch receivedMessage.content {\n            case .text(let text): \/\/ ...\n            case .fileTransfer(let fileTransfer): \/\/ ...\n            case .geolocationPush(let geolocationPush): \/\/ ...\n            case .dispositionNotification(let dispositionNotification): \/\/ ...\n            case .composingIndicator(let composingIndicator): \/\/ ...\n        }\n    }\n}\n```\n\n## Determining service viabililty\n\n- **isViable(for:)**: Queries whether the device can perform RCS operations at this time.\n- **viabilityNotifications**: An asynchronous sequence of service viability notifications produced by the service.\n- **RCSService.ViabilityNotification**: A notification that indicates whether RCS is viable for a given cellular service.\n\n## Managing RCS configuration\n\n- **configuration(for:)**: Retrieves the RCS configuration for the specified cellular service.\n- **RCSService.Configuration**: A structure that contains RCS configuration parameters, such as timing and size limits.\n\n## Sending messages\n\n- **sendMessage(_:to:using:messageID:)**: Sends a text message to a specified destination.\n- **RCSMessage.Text**: A structure that represents text content in an RCS message.\n- **sendMessage(_:to:using:messageID:)**: Sends a file transfer message to a specified destination.\n- **RCSMessage.FileTransfer**: A structure that represents file transfer content in an RCS message.\n- **sendMessage(_:to:using:messageID:)**: Sends a composing indicator message to a specified destination.\n- **RCSMessage.ComposingIndicator**: A structure that represents RFC 3994 composing indicator content in an RCS message.\n- **sendMessage(_:to:using:messageID:)**: Sends a geolocation push message to a specified destination.\n- **RCSMessage.GeolocationPush**: A structure that represents geolocation push content in an RCS message.\n- **sendMessage(_:to:using:messageID:group:)**: Sends the disposition for an incoming message.\n- **RCSMessage.DispositionNotification**: A structure that represents disposition notification content in an RCS message, such as whether delivery succeeded or failed.\n- **RCSHandle**: An enumeration that represents an RCS destination or sender.\n- **CellularServiceID**: An opaque identifier that represents the cellular service for which to provide operations.\n- **RCSMessageID**: A structure that represents an RCS message identifier.\n\n## Receiving messages\n\n- **incomingMessageNotifications**: An asynchronous sequence of incoming message notifications produced by this service.\n- **RCSService.IncomingMessageNotification**: A structure that contains information about an incoming RCS message.\n- **RCSMessage**: A structure that contains an RCS message’s content and metadata.\n\n## Revoking messages\n\n- **revokeMessage(_:)**: Requests revocation of an RCS message.\n- **RCSService.RevokeMessageRequest**: A structure that respresents a request to revoke a previously sent message.\n\n## Transferring files\n\n- **upload(_:)**: Uploads a file to the RCS content server.\n- **RCSService.FileUploadRequest**: A structure that represents an RCS file upload request.\n- **RCSService.FileUploadRequest.Metadata**: A structure that contains upload metadata from the content server.\n- **download(_:)**: Downloads a file from the RCS content server.\n- **RCSService.FileDownloadRequest**: A structure that represents an RCS file download request.\n- **RCSService.FileDownloadRequest.Metadata**: A structure that contains download metadata from the content server.\n\n## Receiving handle updates\n\n- **remoteHandleUpdates**: An asynchronous sequence of remote handle updates produced by this service.\n- **RCSService.RemoteHandleUpdate**: A structure that contains information about an update to a remote handle.\n\n## Reporting spam\n\n- **reportSpam(_:)**: Reports an RCS message as spam to the carrier and to partners.\n- **RCSService.ReportSpamRequest**: A structure that contains information about a spam reporting request for an RCS message.\n\n## Managing group chats\n\n- **createGroupChat(_:)**: Creates a group with a list of participants and a specified subject.\n- **RCSService.CreateGroupChatRequest**: Structure representing a request for creating a group chat.\n- **leaveGroupChat(_:)**: Leave a group chat.\n- **RCSService.LeaveGroupChatRequest**: Structure representing a request to leave a group chat.\n- **addGroupChatParticipants(_:)**: Adds participants to a group chat.\n- **RCSService.AddGroupChatParticipantsRequest**: Structure representing a request for adding participants to a group chat.\n- **removeGroupChatParticipants(_:)**: Removes participants from a group chat.\n- **RCSService.RemoveGroupChatParticipantsRequest**: Structure representing a request for removing participants from a group chat.\n- **changeGroupChatSubject(_:)**: Changes subject of a group.\n- **RCSService.ChangeGroupChatSubjectRequest**: Structure representing a request for changing a group chat’s subject.\n- **groupChatEvents**: Returns an asynchronous sequence of incoming group chat notifications produced by this service.\n- **RCSService.GroupChatEvent**: Enumeration representing an RCS group chat event.\n\n## Discovering remote capabilities\n\n- **remoteCapabilities(for:)**: Requests remote capability discovery for a given handle\n- **RCSService.RemoteCapabilitiesRequest**: A structure representing a request to retrieve the capabilities of a remote handle.\n- **RCSService.RemoteCapabilities**: Structure representing the capabilities of a remote handle.\n\n## Responding to business suggestions\n\n- **sendSuggestionResponse(_:)**: Sends a response for a business suggestion.\n- **RCSService.SuggestionResponse**: Structure representing a response to a business suggestion.\n\n## Retrieving business information\n\n- **businessInformation(for:)**: Requests business information for a specified handle.\n- **RCSService.BusinessInformationRequest**: A structure representing a request to retrieve information about a business.\n- **RCSService.Business**: Structure containing details about a business.\n\n## Handling errors\n\n- **RCSService.Error**: A type to define errors that can occur when performing RCS operations.\n\n## Supporting types\n\n- **RCSService.GroupChatEndedEvent**: Event triggered when a group chat is ended.\n- **RCSService.GroupChatParticipantsAddedEvent**: Event triggered when participants are added to a group.\n- **RCSService.GroupChatParticipantsRemovedEvent**: Event triggered when participants are removed from a group.\n- **RCSService.GroupChatStartedEvent**: Event triggered when group chat is started.\n- **RCSService.GroupChatSubjectUpdatedEvent**: Event triggered when a group’s subject is updated.\n\n## Instance Methods\n\n- **sendDeviceSpecifics(to:using:messageID:)**: Sends device specifics in response to a suggested action to send device specifics.\n\n## Using Rich Communication Services (RCS)\n\n- **rcsService**: RCS service associated with this session.\n\n## Conforms To\n\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Queries whether the device can perform RCS operations at this time.",
+          "name" : "isViable(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/isViable(for:)"
+        },
+        {
+          "description" : "An asynchronous sequence of service viability notifications produced by the service.",
+          "name" : "viabilityNotifications",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/viabilityNotifications"
+        },
+        {
+          "description" : "A notification that indicates whether RCS is viable for a given cellular service.",
+          "name" : "RCSService.ViabilityNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/ViabilityNotification"
+        }
+      ],
+      "title" : "Determining service viabililty"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Retrieves the RCS configuration for the specified cellular service.",
+          "name" : "configuration(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/configuration(for:)"
+        },
+        {
+          "description" : "A structure that contains RCS configuration parameters, such as timing and size limits.",
+          "name" : "RCSService.Configuration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/Configuration"
+        }
+      ],
+      "title" : "Managing RCS configuration"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sends a text message to a specified destination.",
+          "name" : "sendMessage(_:to:using:messageID:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/sendMessage(_:to:using:messageID:)-70q7h"
+        },
+        {
+          "description" : "A structure that represents text content in an RCS message.",
+          "name" : "RCSMessage.Text",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSMessage\/Text"
+        },
+        {
+          "description" : "Sends a file transfer message to a specified destination.",
+          "name" : "sendMessage(_:to:using:messageID:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/sendMessage(_:to:using:messageID:)-63zct"
+        },
+        {
+          "description" : "A structure that represents file transfer content in an RCS message.",
+          "name" : "RCSMessage.FileTransfer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSMessage\/FileTransfer"
+        },
+        {
+          "description" : "Sends a composing indicator message to a specified destination.",
+          "name" : "sendMessage(_:to:using:messageID:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/sendMessage(_:to:using:messageID:)-9i178"
+        },
+        {
+          "description" : "A structure that represents RFC 3994 composing indicator content in an RCS message.",
+          "name" : "RCSMessage.ComposingIndicator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSMessage\/ComposingIndicator"
+        },
+        {
+          "description" : "Sends a geolocation push message to a specified destination.",
+          "name" : "sendMessage(_:to:using:messageID:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/sendMessage(_:to:using:messageID:)-y1z"
+        },
+        {
+          "description" : "A structure that represents geolocation push content in an RCS message.",
+          "name" : "RCSMessage.GeolocationPush",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSMessage\/GeolocationPush"
+        },
+        {
+          "description" : "Sends the disposition for an incoming message.",
+          "name" : "sendMessage(_:to:using:messageID:group:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/sendMessage(_:to:using:messageID:group:)"
+        },
+        {
+          "description" : "A structure that represents disposition notification content in an RCS message, such as whether delivery succeeded or failed.",
+          "name" : "RCSMessage.DispositionNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSMessage\/DispositionNotification"
+        },
+        {
+          "description" : "An enumeration that represents an RCS destination or sender.",
+          "name" : "RCSHandle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSHandle"
+        },
+        {
+          "description" : "An opaque identifier that represents the cellular service for which to provide operations.",
+          "name" : "CellularServiceID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/CellularServiceID"
+        },
+        {
+          "description" : "A structure that represents an RCS message identifier.",
+          "name" : "RCSMessageID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSMessageID"
+        }
+      ],
+      "title" : "Sending messages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An asynchronous sequence of incoming message notifications produced by this service.",
+          "name" : "incomingMessageNotifications",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/incomingMessageNotifications"
+        },
+        {
+          "description" : "A structure that contains information about an incoming RCS message.",
+          "name" : "RCSService.IncomingMessageNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/IncomingMessageNotification"
+        },
+        {
+          "description" : "A structure that contains an RCS message’s content and metadata.",
+          "name" : "RCSMessage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSMessage"
+        }
+      ],
+      "title" : "Receiving messages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Requests revocation of an RCS message.",
+          "name" : "revokeMessage(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/revokeMessage(_:)"
+        },
+        {
+          "description" : "A structure that respresents a request to revoke a previously sent message.",
+          "name" : "RCSService.RevokeMessageRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/RevokeMessageRequest"
+        }
+      ],
+      "title" : "Revoking messages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Uploads a file to the RCS content server.",
+          "name" : "upload(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/upload(_:)"
+        },
+        {
+          "description" : "A structure that represents an RCS file upload request.",
+          "name" : "RCSService.FileUploadRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/FileUploadRequest"
+        },
+        {
+          "description" : "A structure that contains upload metadata from the content server.",
+          "name" : "RCSService.FileUploadRequest.Metadata",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/FileUploadRequest\/Metadata"
+        },
+        {
+          "description" : "Downloads a file from the RCS content server.",
+          "name" : "download(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/download(_:)"
+        },
+        {
+          "description" : "A structure that represents an RCS file download request.",
+          "name" : "RCSService.FileDownloadRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/FileDownloadRequest"
+        },
+        {
+          "description" : "A structure that contains download metadata from the content server.",
+          "name" : "RCSService.FileDownloadRequest.Metadata",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/FileDownloadRequest\/Metadata"
+        }
+      ],
+      "title" : "Transferring files"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An asynchronous sequence of remote handle updates produced by this service.",
+          "name" : "remoteHandleUpdates",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/remoteHandleUpdates"
+        },
+        {
+          "description" : "A structure that contains information about an update to a remote handle.",
+          "name" : "RCSService.RemoteHandleUpdate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/RemoteHandleUpdate"
+        }
+      ],
+      "title" : "Receiving handle updates"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Reports an RCS message as spam to the carrier and to partners.",
+          "name" : "reportSpam(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/reportSpam(_:)"
+        },
+        {
+          "description" : "A structure that contains information about a spam reporting request for an RCS message.",
+          "name" : "RCSService.ReportSpamRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/ReportSpamRequest"
+        }
+      ],
+      "title" : "Reporting spam"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a group with a list of participants and a specified subject.",
+          "name" : "createGroupChat(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/createGroupChat(_:)"
+        },
+        {
+          "description" : "Structure representing a request for creating a group chat.",
+          "name" : "RCSService.CreateGroupChatRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/CreateGroupChatRequest"
+        },
+        {
+          "description" : "Leave a group chat.",
+          "name" : "leaveGroupChat(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/leaveGroupChat(_:)"
+        },
+        {
+          "description" : "Structure representing a request to leave a group chat.",
+          "name" : "RCSService.LeaveGroupChatRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/LeaveGroupChatRequest"
+        },
+        {
+          "description" : "Adds participants to a group chat.",
+          "name" : "addGroupChatParticipants(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/addGroupChatParticipants(_:)"
+        },
+        {
+          "description" : "Structure representing a request for adding participants to a group chat.",
+          "name" : "RCSService.AddGroupChatParticipantsRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/AddGroupChatParticipantsRequest"
+        },
+        {
+          "description" : "Removes participants from a group chat.",
+          "name" : "removeGroupChatParticipants(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/removeGroupChatParticipants(_:)"
+        },
+        {
+          "description" : "Structure representing a request for removing participants from a group chat.",
+          "name" : "RCSService.RemoveGroupChatParticipantsRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/RemoveGroupChatParticipantsRequest"
+        },
+        {
+          "description" : "Changes subject of a group.",
+          "name" : "changeGroupChatSubject(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/changeGroupChatSubject(_:)"
+        },
+        {
+          "description" : "Structure representing a request for changing a group chat’s subject.",
+          "name" : "RCSService.ChangeGroupChatSubjectRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/ChangeGroupChatSubjectRequest"
+        },
+        {
+          "description" : "Returns an asynchronous sequence of incoming group chat notifications produced by this service.",
+          "name" : "groupChatEvents",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/groupChatEvents"
+        },
+        {
+          "description" : "Enumeration representing an RCS group chat event.",
+          "name" : "RCSService.GroupChatEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/GroupChatEvent"
+        }
+      ],
+      "title" : "Managing group chats"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Requests remote capability discovery for a given handle",
+          "name" : "remoteCapabilities(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/remoteCapabilities(for:)"
+        },
+        {
+          "description" : "A structure representing a request to retrieve the capabilities of a remote handle.",
+          "name" : "RCSService.RemoteCapabilitiesRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/RemoteCapabilitiesRequest"
+        },
+        {
+          "description" : "Structure representing the capabilities of a remote handle.",
+          "name" : "RCSService.RemoteCapabilities",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/RemoteCapabilities"
+        }
+      ],
+      "title" : "Discovering remote capabilities"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sends a response for a business suggestion.",
+          "name" : "sendSuggestionResponse(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/sendSuggestionResponse(_:)"
+        },
+        {
+          "description" : "Structure representing a response to a business suggestion.",
+          "name" : "RCSService.SuggestionResponse",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/SuggestionResponse"
+        }
+      ],
+      "title" : "Responding to business suggestions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Requests business information for a specified handle.",
+          "name" : "businessInformation(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/businessInformation(for:)"
+        },
+        {
+          "description" : "A structure representing a request to retrieve information about a business.",
+          "name" : "RCSService.BusinessInformationRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/BusinessInformationRequest"
+        },
+        {
+          "description" : "Structure containing details about a business.",
+          "name" : "RCSService.Business",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/Business"
+        }
+      ],
+      "title" : "Retrieving business information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A type to define errors that can occur when performing RCS operations.",
+          "name" : "RCSService.Error",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/Error"
+        }
+      ],
+      "title" : "Handling errors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Event triggered when a group chat is ended.",
+          "name" : "RCSService.GroupChatEndedEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/GroupChatEndedEvent"
+        },
+        {
+          "description" : "Event triggered when participants are added to a group.",
+          "name" : "RCSService.GroupChatParticipantsAddedEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/GroupChatParticipantsAddedEvent"
+        },
+        {
+          "description" : "Event triggered when participants are removed from a group.",
+          "name" : "RCSService.GroupChatParticipantsRemovedEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/GroupChatParticipantsRemovedEvent"
+        },
+        {
+          "description" : "Event triggered when group chat is started.",
+          "name" : "RCSService.GroupChatStartedEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/GroupChatStartedEvent"
+        },
+        {
+          "description" : "Event triggered when a group’s subject is updated.",
+          "name" : "RCSService.GroupChatSubjectUpdatedEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/GroupChatSubjectUpdatedEvent"
+        }
+      ],
+      "title" : "Supporting types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sends device specifics in response to a suggested action to send device specifics.",
+          "name" : "sendDeviceSpecifics(to:using:messageID:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService\/sendDeviceSpecifics(to:using:messageID:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "RCS service associated with this session.",
+          "name" : "rcsService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/TelephonyMessagingSession\/rcsService"
+        }
+      ],
+      "title" : "Using Rich Communication Services (RCS)"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "RCSService",
+  "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/RCSService"
+}

@@ -1,0 +1,56 @@
+{
+  "abstract" : "Copies the contents of a pixel buffer to a Core Video pixel buffer.",
+  "codeExamples" : [
+    {
+      "code" : "class ContrastStretchImageProcessorKernel: CIImageProcessorKernel {\n    \n    static var cgImageFormat = vImage_CGImageFormat(\n        bitsPerComponent: 8,\n        bitsPerPixel: 32,\n        colorSpace: CGColorSpaceCreateDeviceRGB(),\n        bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),\n        renderingIntent: .defaultIntent)!\n    \n    static let cvImageFormat = vImageCVImageFormat.make(\n        format: .format32BGRA,\n        colorSpace: CGColorSpaceCreateDeviceRGB(),\n        alphaIsOpaqueHint: true)!\n\n    override class var outputFormat: CIFormat {\n        return CIFormat.BGRA8\n    }\n    \n    override class func formatForInput(at input: Int32) -> CIFormat {\n        return CIFormat.BGRA8\n    }\n    \n    override class func process(with inputs: [CIImageProcessorInput]?,\n                                arguments: [String: Any]?,\n                                output: CIImageProcessorOutput) throws {\n        \n        guard\n            let input = inputs?.first,\n            let inputPixelBuffer = input.pixelBuffer,\n            let outputPixelBuffer = output.pixelBuffer else {\n                return\n            }\n   \n        let buffer = try vImage.PixelBuffer(copying: inputPixelBuffer,\n                                            cvImageFormat: cvImageFormat,\n                                            cgImageFormat: &cgImageFormat,\n                                            pixelFormat: vImage.Interleaved8x4.self)\n        \n        buffer.contrastStretch(destination: buffer)\n        \n        try buffer.copy(to: outputPixelBuffer,\n                        cvImageFormat: cvImageFormat,\n                        cgImageFormat: cgImageFormat)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "e2ce965ae1174434896566b3929fd5797d2bac7156bc3ba75b10dcd1970a3dde",
+  "crawledAt" : "2025-12-02T18:18:50Z",
+  "declaration" : {
+    "code" : "func copy(to cvPixelBuffer: CVPixelBuffer, cvImageFormat: vImageCVImageFormat, cgImageFormat: vImage_CGImageFormat) throws",
+    "language" : "swift"
+  },
+  "id" : "C56A7E7E-CC21-47DE-9EDD-1F7C2D75E0CB",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nThe destination Core Video pixel buffer must be nonplanar and be the same size as the source buffer.\n\nThe following code shows how to incorporate a vImage pixel buffer into a [doc:\/\/com.apple.documentation\/documentation\/CoreImage\/CIImageProcessorKernel] instance. The code calls [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/copy(to:cvImageFormat:cgImageFormat:)] to write the result of a contast stretch operation to the processor kernel’s output.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/copy(to:cvImageFormat:cgImageFormat:)\ncrawled: 2025-12-02T18:18:50Z\n---\n\n# copy(to:cvImageFormat:cgImageFormat:)\n\n**Instance Method**\n\nCopies the contents of a pixel buffer to a Core Video pixel buffer.\n\n## Declaration\n\n```swift\nfunc copy(to cvPixelBuffer: CVPixelBuffer, cvImageFormat: vImageCVImageFormat, cgImageFormat: vImage_CGImageFormat) throws\n```\n\n## Parameters\n\n- **cvPixelBuffer**: The destination Core Video pixel buffer.\n- **cvImageFormat**: A [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageCVImageFormat] that specifies the pixel format of the destination buffer.\n- **cgImageFormat**: The Core Graphics format of the source buffer.\n\n## Discussion\n\nThe destination Core Video pixel buffer must be nonplanar and be the same size as the source buffer.\n\nThe following code shows how to incorporate a vImage pixel buffer into a [doc:\/\/com.apple.documentation\/documentation\/CoreImage\/CIImageProcessorKernel] instance. The code calls [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/copy(to:cvImageFormat:cgImageFormat:)] to write the result of a contast stretch operation to the processor kernel’s output.\n\n```swift\nclass ContrastStretchImageProcessorKernel: CIImageProcessorKernel {\n    \n    static var cgImageFormat = vImage_CGImageFormat(\n        bitsPerComponent: 8,\n        bitsPerPixel: 32,\n        colorSpace: CGColorSpaceCreateDeviceRGB(),\n        bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),\n        renderingIntent: .defaultIntent)!\n    \n    static let cvImageFormat = vImageCVImageFormat.make(\n        format: .format32BGRA,\n        colorSpace: CGColorSpaceCreateDeviceRGB(),\n        alphaIsOpaqueHint: true)!\n\n    override class var outputFormat: CIFormat {\n        return CIFormat.BGRA8\n    }\n    \n    override class func formatForInput(at input: Int32) -> CIFormat {\n        return CIFormat.BGRA8\n    }\n    \n    override class func process(with inputs: [CIImageProcessorInput]?,\n                                arguments: [String: Any]?,\n                                output: CIImageProcessorOutput) throws {\n        \n        guard\n            let input = inputs?.first,\n            let inputPixelBuffer = input.pixelBuffer,\n            let outputPixelBuffer = output.pixelBuffer else {\n                return\n            }\n   \n        let buffer = try vImage.PixelBuffer(copying: inputPixelBuffer,\n                                            cvImageFormat: cvImageFormat,\n                                            cgImageFormat: &cgImageFormat,\n                                            pixelFormat: vImage.Interleaved8x4.self)\n        \n        buffer.contrastStretch(destination: buffer)\n        \n        try buffer.copy(to: outputPixelBuffer,\n                        cvImageFormat: cvImageFormat,\n                        cgImageFormat: cgImageFormat)\n    }\n}\n```\n\n## Pixel buffer methods\n\n- **copy(to:)**: Copies the contents of the pixel buffer to another pixel buffer.\n- **makeCGImage(cgImageFormat:)**: Returns a Core Graphics image from the pixel buffer’s contents.\n- **withCVPixelBuffer(readOnly:body:)**: Calls the given closure with a locked 32-bit BGRA Core Video Pixel Buffer.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Copies the contents of the pixel buffer to another pixel buffer.",
+          "name" : "copy(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/copy(to:)"
+        },
+        {
+          "description" : "Returns a Core Graphics image from the pixel buffer’s contents.",
+          "name" : "makeCGImage(cgImageFormat:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)"
+        },
+        {
+          "description" : "Calls the given closure with a locked 32-bit BGRA Core Video Pixel Buffer.",
+          "name" : "withCVPixelBuffer(readOnly:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/withCVPixelBuffer(readOnly:body:)"
+        }
+      ],
+      "title" : "Pixel buffer methods"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "copy(to:cvImageFormat:cgImageFormat:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/copy(to:cvImageFormat:cgImageFormat:)"
+}

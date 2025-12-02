@@ -1,0 +1,51 @@
+{
+  "abstract" : "Presents a translation popover when a given condition is true.",
+  "codeExamples" : [
+    {
+      "code" : "struct ContentView: View {\n    @State private var translationVisible = false\n    private var originalText = \"Hallo, Welt!\"\n\n    var body: some View {\n        VStack {\n            Text(verbatim: originalText)\n                .translationPresentation(isPresented: $translationVisible, text: originalText)\n            Button(\"Translate\") {\n                translationVisible.toggle()\n            }\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct ReplaceTranslation: View {\n    @State private var translationVisible = false\n    @State private var originalText = \"Hallo, Welt!\"\n\n    var body: some View {\n        VStack(spacing: 20) {\n            TextField(\"Text to translate\", text: $originalText, axis: .vertical)\n                .textFieldStyle(.roundedBorder)\n                .translationPresentation(isPresented: $translationVisible, text: originalText) { translatedString in\n                    \/\/ Update the original text with the translated result.\n                    originalText = translatedString\n                }\n            Button(\"Translate\") {\n                translationVisible.toggle()\n            }\n        }\n        .padding()\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "f8195dac3744364dec5a7442c9da4fabe79112a664a1191eb35b1549ecde53cf",
+  "crawledAt" : "2025-12-02T16:05:44Z",
+  "declaration" : {
+    "code" : "nonisolated func translationPresentation(isPresented: Binding<Bool>, text: String, attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: Edge = .top, replacementAction: ((String) -> Void)? = nil) -> some View\n",
+    "language" : "swift"
+  },
+  "id" : "C8B629B2-2676-4DD2-B1D6-C505ACBBD1A6",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Translation",
+  "overview" : "## Discussion\n\nUse this method to show a system UI translation popover when the `translationVisible` Boolean variable is `true`. Attach this view modifier to the containing view holding the text to translate. Then set the `isPresented` Boolean binding to `true` when you want the popover to display. When you do, a system UI translation popover appears offering a translation.\n\nIn the example below, the popover appears when the user toggles the `translationVisible` state variable by pressing the Translate button.\n\nTo replace the original text with the translation, pass in a trailing closure to the `replacementAction` parameter. When you do, a Replace with Translation button appears in the system UI. When the user taps this button, the closure returns a translation of the text as a string. Use that string to update the original text with the translated text as shown below:\n\nIf the system can’t detect the source language, it asks the user to select the language to translate from. For a list of supported languages see `LanguageAvailability.supportedLanguages`.\n\nWhile this function does support long strings of text, it works best with short ones (no more than a couple of sentences or phrases in length).",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/translationPresentation(isPresented:text:attachmentAnchor:arrowEdge:replacementAction:)\ncrawled: 2025-12-02T16:05:44Z\n---\n\n# translationPresentation(isPresented:text:attachmentAnchor:arrowEdge:replacementAction:)\n\n**Instance Method**\n\nPresents a translation popover when a given condition is true.\n\n## Declaration\n\n```swift\nnonisolated func translationPresentation(isPresented: Binding<Bool>, text: String, attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: Edge = .top, replacementAction: ((String) -> Void)? = nil) -> some View\n\n```\n\n## Parameters\n\n- **isPresented**: A binding to a Boolean value that determines whether to present the popover.\n- **text**: The text to be translated. Changing this after the popover presents has no effect.\n- **attachmentAnchor**: The positioning anchor that defines the attachment point of the popover. The default is [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/Anchor\/Source\/bounds].\n- **arrowEdge**: The edge of the `attachmentAnchor` that defines the location of the popover’s arrow in macOS. The default is [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/Edge\/top]. iOS ignores this parameter.\n- **replacementAction**: An optional action to perform when someone interacts with the “Replace with Translation” button. The “Replace with Translation” button appears when you provide this action.\n\n## Discussion\n\nUse this method to show a system UI translation popover when the `translationVisible` Boolean variable is `true`. Attach this view modifier to the containing view holding the text to translate. Then set the `isPresented` Boolean binding to `true` when you want the popover to display. When you do, a system UI translation popover appears offering a translation.\n\nIn the example below, the popover appears when the user toggles the `translationVisible` state variable by pressing the Translate button.\n\n```swift\nstruct ContentView: View {\n    @State private var translationVisible = false\n    private var originalText = \"Hallo, Welt!\"\n\n    var body: some View {\n        VStack {\n            Text(verbatim: originalText)\n                .translationPresentation(isPresented: $translationVisible, text: originalText)\n            Button(\"Translate\") {\n                translationVisible.toggle()\n            }\n        }\n    }\n}\n```\n\nTo replace the original text with the translation, pass in a trailing closure to the `replacementAction` parameter. When you do, a Replace with Translation button appears in the system UI. When the user taps this button, the closure returns a translation of the text as a string. Use that string to update the original text with the translated text as shown below:\n\n```swift\nstruct ReplaceTranslation: View {\n    @State private var translationVisible = false\n    @State private var originalText = \"Hallo, Welt!\"\n\n    var body: some View {\n        VStack(spacing: 20) {\n            TextField(\"Text to translate\", text: $originalText, axis: .vertical)\n                .textFieldStyle(.roundedBorder)\n                .translationPresentation(isPresented: $translationVisible, text: originalText) { translatedString in\n                    \/\/ Update the original text with the translated result.\n                    originalText = translatedString\n                }\n            Button(\"Translate\") {\n                translationVisible.toggle()\n            }\n        }\n        .padding()\n    }\n}\n```\n\nIf the system can’t detect the source language, it asks the user to select the language to translate from. For a list of supported languages see `LanguageAvailability.supportedLanguages`.\n\nWhile this function does support long strings of text, it works best with short ones (no more than a couple of sentences or phrases in length).\n\n## Showing a translation\n\n- **translationTask(_:action:)**: Adds a task to perform before this view appears or when the translation configuration changes.\n- **translationTask(source:target:action:)**: Adds a task to perform before this view appears or when the specified source or target languages change.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds a task to perform before this view appears or when the translation configuration changes.",
+          "name" : "translationTask(_:action:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/translationTask(_:action:)"
+        },
+        {
+          "description" : "Adds a task to perform before this view appears or when the specified source or target languages change.",
+          "name" : "translationTask(source:target:action:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/translationTask(source:target:action:)"
+        }
+      ],
+      "title" : "Showing a translation"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "translationPresentation(isPresented:text:attachmentAnchor:arrowEdge:replacementAction:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/translationPresentation(isPresented:text:attachmentAnchor:arrowEdge:replacementAction:)"
+}

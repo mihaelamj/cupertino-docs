@@ -1,0 +1,64 @@
+{
+  "abstract" : "Configure your extension to enable messaging from webpages, and then update your extension to handle messages.",
+  "codeExamples" : [
+    {
+      "code" : "{ \n    \"externally_connectable\": {\n        \"matches\": [ \"*:\/\/*.apple.com\/*\" ]\n    }\n}",
+      "language" : "javascript"
+    },
+    {
+      "code" : "browser.runtime.sendMessage(\"com.example.connectable-ext.Extension (team_identifier)\", {greeting: \"Hello!\"}, function(response) {\n    console.log(\"Received response from the background page:\");\n    console.log(response.farewell);\n});",
+      "language" : "javascript"
+    },
+    {
+      "code" : "browser.runtime.onMessageExternal.addListener(function(message, sender, sendResponse) {\n    console.log(\"Received message from the sender:\");\n    console.log(message.greeting);\n    sendResponse({farewell: \"Goodbye from the background page!\"});\n});",
+      "language" : "javascript"
+    },
+    {
+      "code" : "let port = browser.runtime.connect(\"extensionID\");",
+      "language" : "javascript"
+    },
+    {
+      "code" : "browser.runtime.onConnectExternal.addListener(function(port) {\n    console.log(\"Connection request received!\");\n});",
+      "language" : "javascript"
+    }
+  ],
+  "contentHash" : "c30b76bd46d67782b9806173234e662ecf18ee10cbca14cf84d1de5c76f7095e",
+  "crawledAt" : "2025-12-02T16:24:43Z",
+  "id" : "C674351E-FF90-4920-AD6B-AAC2639BB90C",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Safari Services",
+  "overview" : "## Overview\n\nWith messaging, you can allow a webpage to control features in your extension based on events or data, or you can allow a webpage to request and use data from your extension.\n\nFirst, configure your web extension to receive messages from a list of webpages that you specify. Then, add functionality to handle messages that a webpage sends to your extension, and respond to that webpage.\n\n### Enable messaging from webpages in your manifest\n\nTo enable messaging from webpages, add `externally_connectable` to your extension’s `manifest.json` file. Include a list of webpages that you want to send messages to your extension in the `matches` attribute.\n\nIf you don’t provide the `matches` attribute or you provide an empty list, no webpages can send messages to your extension.\n\n### Send messages from a webpage to your extension\n\nSend a message from a webpage to your extension using `browser.runtime.sendMessage`. Provide your extension’s identifier, the message data, and a closure to handle the response from your extension.\n\nYour extension’s identifier is a string that consists of the bundle identifier for your extension, and your team identifier in parentheses. Find your team identifier in your [https:\/\/developer.apple.com\/programs\/] in the Membership tab under Account Settings. Note that extension identifiers can be different across browsers. For more information about finding the right extension identifier for Safari, see [https:\/\/developer.apple.com\/videos\/play\/wwdc2022\/10099\/].\n\nIn your extension’s background page, listen for incoming messages webpages and send responses.\n\n### Set up a port for messages between a webpage and your extension\n\nIf your extension needs to handle more continuous data from a webpage, establish a port connection between the webpage and your extension.\n\nIn your extension’s background page, listen for incoming port connection requests.\n\nThen, use `port.postMessage` to send a message through the port, and `port.onMessage` to receive a message from the port.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SafariServices\/messaging-between-a-webpage-and-your-safari-web-extension\ncrawled: 2025-12-02T16:24:43Z\n---\n\n# Messaging between a webpage and your Safari web extension\n\n**Article**\n\nConfigure your extension to enable messaging from webpages, and then update your extension to handle messages.\n\n## Overview\n\nWith messaging, you can allow a webpage to control features in your extension based on events or data, or you can allow a webpage to request and use data from your extension.\n\nFirst, configure your web extension to receive messages from a list of webpages that you specify. Then, add functionality to handle messages that a webpage sends to your extension, and respond to that webpage.\n\n### Enable messaging from webpages in your manifest\n\nTo enable messaging from webpages, add `externally_connectable` to your extension’s `manifest.json` file. Include a list of webpages that you want to send messages to your extension in the `matches` attribute.\n\n```javascript\n{ \n    \"externally_connectable\": {\n        \"matches\": [ \"*:\/\/*.apple.com\/*\" ]\n    }\n}\n```\n\nIf you don’t provide the `matches` attribute or you provide an empty list, no webpages can send messages to your extension.\n\n### Send messages from a webpage to your extension\n\nSend a message from a webpage to your extension using `browser.runtime.sendMessage`. Provide your extension’s identifier, the message data, and a closure to handle the response from your extension.\n\n```javascript\nbrowser.runtime.sendMessage(\"com.example.connectable-ext.Extension (team_identifier)\", {greeting: \"Hello!\"}, function(response) {\n    console.log(\"Received response from the background page:\");\n    console.log(response.farewell);\n});\n```\n\nYour extension’s identifier is a string that consists of the bundle identifier for your extension, and your team identifier in parentheses. Find your team identifier in your [https:\/\/developer.apple.com\/programs\/] in the Membership tab under Account Settings. Note that extension identifiers can be different across browsers. For more information about finding the right extension identifier for Safari, see [https:\/\/developer.apple.com\/videos\/play\/wwdc2022\/10099\/].\n\nIn your extension’s background page, listen for incoming messages webpages and send responses.\n\n```javascript\nbrowser.runtime.onMessageExternal.addListener(function(message, sender, sendResponse) {\n    console.log(\"Received message from the sender:\");\n    console.log(message.greeting);\n    sendResponse({farewell: \"Goodbye from the background page!\"});\n});\n```\n\n### Set up a port for messages between a webpage and your extension\n\nIf your extension needs to handle more continuous data from a webpage, establish a port connection between the webpage and your extension.\n\n```javascript\nlet port = browser.runtime.connect(\"extensionID\");\n```\n\nIn your extension’s background page, listen for incoming port connection requests.\n\n```javascript\nbrowser.runtime.onConnectExternal.addListener(function(port) {\n    console.log(\"Connection request received!\");\n});\n```\n\nThen, use `port.postMessage` to send a message through the port, and `port.onMessage` to receive a message from the port.\n\n## Messaging\n\n- **Messaging between the app and JavaScript in a Safari web extension**: Communicate about events and share data between the containing app and JavaScript by using native messaging and app groups.\n- **SFExtensionMessageKey**: A string the system uses as a key in a user info dictionary to identify a message.\n- **SFExtensionProfileKey**: A string the system uses as a key in a user info dictionary to identify a profile identifier.\n- **Messaging a Web Extension’s Native App**: Communicate between your Safari web extension and its containing app.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Communicate about events and share data between the containing app and JavaScript by using native messaging and app groups.",
+          "name" : "Messaging between the app and JavaScript in a Safari web extension",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/messaging-between-the-app-and-javascript-in-a-safari-web-extension"
+        },
+        {
+          "description" : "A string the system uses as a key in a user info dictionary to identify a message.",
+          "name" : "SFExtensionMessageKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/SFExtensionMessageKey"
+        },
+        {
+          "description" : "A string the system uses as a key in a user info dictionary to identify a profile identifier.",
+          "name" : "SFExtensionProfileKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/SFExtensionProfileKey"
+        },
+        {
+          "description" : "Communicate between your Safari web extension and its containing app.",
+          "name" : "Messaging a Web Extension’s Native App",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/messaging-a-web-extension-s-native-app"
+        }
+      ],
+      "title" : "Messaging"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Messaging between a webpage and your Safari web extension",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/messaging-between-a-webpage-and-your-safari-web-extension"
+}

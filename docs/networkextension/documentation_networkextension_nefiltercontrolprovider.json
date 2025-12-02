@@ -1,0 +1,137 @@
+{
+  "abstract" : "The principal class for a filter control provider extension.",
+  "codeExamples" : [
+    {
+      "code" : "<key>NSExtension<\/key>\n<dict>\n    <key>NSExtensionPointIdentifier<\/key>\n    <string>com.apple.networkextension.filter-control<\/string>\n    <key>NSExtensionPrincipalClass<\/key>\n    <string>MyCustomFilterControlProvider<\/string>\n<\/dict>",
+      "language" : "xml"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "e871fecb4e0cb09575700e41fec2f7d15852761a8676bab2cc5669c667f023c5",
+  "crawledAt" : "2025-12-02T21:07:03Z",
+  "declaration" : {
+    "code" : "class NEFilterControlProvider",
+    "language" : "swift"
+  },
+  "id" : "6BDD9E19-7637-40B9-91CC-3003C6A73D1A",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Network Extension",
+  "overview" : "## Overview\n\nThe Filter Control Provider’s primary responsibility is to provide information to the associated Filter Data Provider so that it can perform its task of accurately filtering network content. There are several ways in which the Filter Control Provider provides data to the associated Filter Data Provider:\n\n### Creating a Filter Control Provider Extension\n\nFilter Control Providers run as App Extensions for the `com.apple.networkextension.filter-control` extension point.\n\nTo create a Filter Control Provider extension, first create a new App Extension target in your project.\n\nFor an example of an Xcode build target for this app extension, see the [https:\/\/developer.apple.com\/library\/archive\/samplecode\/SimpleTunnel\/Introduction\/Intro.html#\/\/apple_ref\/doc\/uid\/TP40016140] sample code project.\n\nOnce you have a Filter Control Provider extension target, create a sub-class of `NEFilterControlProvider`. Then, set the `NSExtensionPrincipalClass` key in the the extension’s `Info.plist` to the name of your subclass.\n\nIf it is not already, set the `NSExtensionPointIdentifier` key in the extension’s `Info.plist` to `com.apple.networkextension.filter-control`.\n\nHere is an example of the `NSExtension` dictionary in a Filter Control Provider extension’s `Info.plist`:\n\nFinally, add your Filter Control Provider extension target to your app’s Embed App Extensions build phase.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterControlProvider\ncrawled: 2025-12-02T21:07:03Z\n---\n\n# NEFilterControlProvider\n\n**Class**\n\nThe principal class for a filter control provider extension.\n\n## Declaration\n\n```swift\nclass NEFilterControlProvider\n```\n\n## Overview\n\nThe Filter Control Provider’s primary responsibility is to provide information to the associated Filter Data Provider so that it can perform its task of accurately filtering network content. There are several ways in which the Filter Control Provider provides data to the associated Filter Data Provider:\n\n- By writing information to disk. For example, the Filter Control Provider can maintain a database of filtering rules on disk in a location where the Filter Data Provider can read from the database.\n- By defining a dictionary that maps keys to sets of customization parameters to be used when generating the block page. The Filter Data Provider gives the system the key for the desired customization parameters, and the system uses that key to get the customization parameters from the Filter Control Provider and generate the customized block page.\n- By defining a dictionary that maps keys to strings to be appended to URLs. The Filter Data Provider gives the system the key for the string to be appended, and the system uses that key to get the string to be appended from the Filter Control Provider and appends the string to the URL.\n\n\n\n### Creating a Filter Control Provider Extension\n\nFilter Control Providers run as App Extensions for the `com.apple.networkextension.filter-control` extension point.\n\nTo create a Filter Control Provider extension, first create a new App Extension target in your project.\n\nFor an example of an Xcode build target for this app extension, see the [https:\/\/developer.apple.com\/library\/archive\/samplecode\/SimpleTunnel\/Introduction\/Intro.html#\/\/apple_ref\/doc\/uid\/TP40016140] sample code project.\n\nOnce you have a Filter Control Provider extension target, create a sub-class of `NEFilterControlProvider`. Then, set the `NSExtensionPrincipalClass` key in the the extension’s `Info.plist` to the name of your subclass.\n\nIf it is not already, set the `NSExtensionPointIdentifier` key in the extension’s `Info.plist` to `com.apple.networkextension.filter-control`.\n\nHere is an example of the `NSExtension` dictionary in a Filter Control Provider extension’s `Info.plist`:\n\n```xml\n<key>NSExtension<\/key>\n<dict>\n    <key>NSExtensionPointIdentifier<\/key>\n    <string>com.apple.networkextension.filter-control<\/string>\n    <key>NSExtensionPrincipalClass<\/key>\n    <string>MyCustomFilterControlProvider<\/string>\n<\/dict>\n```\n\nFinally, add your Filter Control Provider extension target to your app’s Embed App Extensions build phase.\n\n## Handling requests for new rules\n\n- **handleNewFlow(_:completionHandler:)**: Handle a request for new filtering rules.\n- **notifyRulesChanged()**: Notify the Filter Data Provider that the filtering rules have changed on disk.\n\n## Handling remediation\n\n- **handleRemediation(for:completionHandler:)**: Handle a request for remediation from the user.\n- **remediationMap**: A dictionary containing sets of strings used to customize the remediation portion of the block page.\n- **NEFilterProviderRemediationMapRemediationButtonTexts**: A key in the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEFilterControlProvider\/remediationMap] dictionary. The value of this key should be set to a dictionary that maps button text string identifiers to the text to display for the remediation URL link in the block page. The button text string identifiers are defined by the Filter Control Provider app extension.\n- **NEFilterProviderRemediationMapRemediationURLs**: A key in the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEFilterControlProvider\/remediationMap] dictionary. The value of this key should be set to a dictionary that maps URL identifiers to remediation URLs to be inserted into the block page. The URL identifiers are defined by the Filter Control Provider app extension.\n- **NEFilterProviderRemediationURLFlowURL**: This string will be replaced with the full URL of the flow.\n- **NEFilterProviderRemediationURLFlowURLHostname**: This string will be replaced with the hostname portion of the flow’s URL.\n- **NEFilterProviderRemediationURLOrganization**: This string will be replaced with the value of the organization property set in the filter configuration.\n- **NEFilterProviderRemediationURLUsername**: This string will be replaced with the value of the username property set in the filter configuration.\n- **urlAppendStringMap**: A dictionary containing strings to be appended to URLs.\n\n## Data and control providers\n\n- **NEFilterDataProvider**: The principal class for a filter data provider extension.\n- **NEFilterPacketProvider**: A filter provider that evaluates network packets and decides whether to block, allow, or delay the packets.\n- **NEFilterProvider**: An abstract base class shared by content filters.\n\n## Inherits From\n\n- NEFilterProvider\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Handle a request for new filtering rules.",
+          "name" : "handleNewFlow(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterControlProvider\/handleNewFlow(_:completionHandler:)"
+        },
+        {
+          "description" : "Notify the Filter Data Provider that the filtering rules have changed on disk.",
+          "name" : "notifyRulesChanged()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterControlProvider\/notifyRulesChanged()"
+        }
+      ],
+      "title" : "Handling requests for new rules"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Handle a request for remediation from the user.",
+          "name" : "handleRemediation(for:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterControlProvider\/handleRemediation(for:completionHandler:)"
+        },
+        {
+          "description" : "A dictionary containing sets of strings used to customize the remediation portion of the block page.",
+          "name" : "remediationMap",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterControlProvider\/remediationMap"
+        },
+        {
+          "description" : "A key in the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEFilterControlProvider\/remediationMap] dictionary. The value of this key should be set to a dictionary that maps button text string identifiers to the text to display for the remediation URL link in the block page. The button text string identifiers are defined by the Filter Control Provider app extension.",
+          "name" : "NEFilterProviderRemediationMapRemediationButtonTexts",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterProviderRemediationMapRemediationButtonTexts"
+        },
+        {
+          "description" : "A key in the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEFilterControlProvider\/remediationMap] dictionary. The value of this key should be set to a dictionary that maps URL identifiers to remediation URLs to be inserted into the block page. The URL identifiers are defined by the Filter Control Provider app extension.",
+          "name" : "NEFilterProviderRemediationMapRemediationURLs",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterProviderRemediationMapRemediationURLs"
+        },
+        {
+          "description" : "This string will be replaced with the full URL of the flow.",
+          "name" : "NEFilterProviderRemediationURLFlowURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterProviderRemediationURLFlowURL"
+        },
+        {
+          "description" : "This string will be replaced with the hostname portion of the flow’s URL.",
+          "name" : "NEFilterProviderRemediationURLFlowURLHostname",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterProviderRemediationURLFlowURLHostname"
+        },
+        {
+          "description" : "This string will be replaced with the value of the organization property set in the filter configuration.",
+          "name" : "NEFilterProviderRemediationURLOrganization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterProviderRemediationURLOrganization"
+        },
+        {
+          "description" : "This string will be replaced with the value of the username property set in the filter configuration.",
+          "name" : "NEFilterProviderRemediationURLUsername",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterProviderRemediationURLUsername"
+        },
+        {
+          "description" : "A dictionary containing strings to be appended to URLs.",
+          "name" : "urlAppendStringMap",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterControlProvider\/urlAppendStringMap"
+        }
+      ],
+      "title" : "Handling remediation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The principal class for a filter data provider extension.",
+          "name" : "NEFilterDataProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterDataProvider"
+        },
+        {
+          "description" : "A filter provider that evaluates network packets and decides whether to block, allow, or delay the packets.",
+          "name" : "NEFilterPacketProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterPacketProvider"
+        },
+        {
+          "description" : "An abstract base class shared by content filters.",
+          "name" : "NEFilterProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterProvider"
+        }
+      ],
+      "title" : "Data and control providers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NEFilterProvider"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NEFilterControlProvider",
+  "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEFilterControlProvider"
+}

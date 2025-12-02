@@ -1,0 +1,84 @@
+{
+  "abstract" : "Display standard controls in your app to edit the timeline of the currently playing media.",
+  "codeExamples" : [
+    {
+      "code" : "@Published private(set) var isTrimming = true\n@Published private(set) var supportsTrimming = true\n\nvar controller: AVPlayerViewController? {\n    didSet {\n        \/\/ Reset the internal state variables to false and exit.\n        guard let controller else {\n            isTrimming = false\n            supportsTrimming = false\n            return\n        }\n        \/\/ Connect the AVPlayer object to the the view controller.\n        controller.player = player\n        \/\/\/ Update the state of `supportsTrimming` based on the value of `canBeginTrimming`.\n        controller.publisher(for: \\.canBeginTrimming)\n            .removeDuplicates()\n            .assign(to: &$supportsTrimming)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/\/ Enables the player view controller's media trimming interface.\nfunc startTrimming() async {\n    \/\/ Exit early if the controller doesn't support trimming.\n    guard let controller, controller.canBeginTrimming else { return }\n    \n    isTrimming = true\n    if await controller.beginTrimming() {\n        \/\/ A user pinched the button to complete the trim operation.\n    } else {\n        \/\/ A user pinched the button to cancel their changes.\n    }\n    isTrimming = false\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Export the asset in the highest quality.\nlet preset = AVAssetExportPresetHighestQuality\n\/\/ Check the compatibility of the preset to export the video to the output file type.\nguard await AVAssetExportSession.compatibility(ofExportPreset: preset,\n                                               with: playerItem.asset,\n                                               outputFileType: .mp4) else {\n    print(\"The selected preset can't export the video to the output file type.\")\n    return\n}\n\nguard let exportSession = AVAssetExportSession(asset: playerItem.asset,\n                                               presetName: preset) else {\n    print(\"Unable to create an export session that supports the asset and preset.\")\n    return\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Create a time range that matches the trimmed selection.\nlet startTime = playerItem.reversePlaybackEndTime\nlet endTime = playerItem.forwardPlaybackEndTime\nexportSession.timeRange = CMTimeRange(start: startTime, end: endTime)",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Export the content.\nawait exportSession.export()",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "8193e99f0b9a6b1fcffabb05094808dd24746d541a55eaa590345adad69ef639",
+  "crawledAt" : "2025-12-02T16:05:16Z",
+  "id" : "4F7F4AD4-3B2A-4888-9C7D-7C6C16B52D44",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "AVKit",
+  "overview" : "## Overview\n\nYou use [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVPlayerViewController] to present the system video-player interface in your visionOS app. In addition to its primary role, [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVPlayerViewController] can also provide a media-trimming experience similar to the interface of QuickTime Player in macOS, like that below.\n\n\n\nWhen you enable this feature, people can specify a segment of the media timeline for display. This article describes how to adopt this feature in your app, and shows how to use AVFoundation to export the trimmed result.\n\n### Determine whether the media supports trimming\n\nApps typically provide a user-interface element to put the player view controller into trimming mode. Because the player doesn’t support trimming certain media, such as HTTP Live Streaming or protected content, apps observe the state of the [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVPlayerViewController\/canBeginTrimming] property to update the enabled state of their user interface accordingly. For example, the following code observes the state of the [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVPlayerViewController\/canBeginTrimming] property and updates the state of a published property, which sets the appropriate enabled state in the UI:\n\n### Enable the trimming user interface\n\nAfter you determine that the player view controller supports editing the current media’s timeline, call the player’s [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVPlayerViewController\/beginTrimming(completionHandler:)] method to enable its trimming interface. Call this method from an asynchronous context:\n\nThis method returns a Boolean value that indicates whether the user pinched the Done button or the Cancel button. Pinching the Done button causes the view controller to update the values of the player item’s [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVPlayerItem\/reversePlaybackEndTime] and [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVPlayerItem\/forwardPlaybackEndTime] properties to match the trimmed selection.\n\n### Export the trimmed media selection\n\nA convenient way to export your trimmed selection is to use [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVAssetExportSession]. This object provides a simple preset-based approach to transcode media in various formats. Create an instance of an export session by passing it the player item’s asset and an export preset. Additionally, configure its output URL and file type:\n\nTo export only the portion of the asset that matches your trimmed selection, create a [doc:\/\/com.apple.documentation\/documentation\/CoreMedia\/CMTimeRange] based on the reverse and forward playback end times of the current player item:\n\nFinally, begin the export operation to begin asynchronously transcoding the media to the output URL:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AVKit\/trimming-and-exporting-media-in-visionos\ncrawled: 2025-12-02T16:05:16Z\n---\n\n# Trimming and exporting media in visionOS\n\n**Article**\n\nDisplay standard controls in your app to edit the timeline of the currently playing media.\n\n## Overview\n\nYou use [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVPlayerViewController] to present the system video-player interface in your visionOS app. In addition to its primary role, [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVPlayerViewController] can also provide a media-trimming experience similar to the interface of QuickTime Player in macOS, like that below.\n\n\n\nWhen you enable this feature, people can specify a segment of the media timeline for display. This article describes how to adopt this feature in your app, and shows how to use AVFoundation to export the trimmed result.\n\n### Determine whether the media supports trimming\n\nApps typically provide a user-interface element to put the player view controller into trimming mode. Because the player doesn’t support trimming certain media, such as HTTP Live Streaming or protected content, apps observe the state of the [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVPlayerViewController\/canBeginTrimming] property to update the enabled state of their user interface accordingly. For example, the following code observes the state of the [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVPlayerViewController\/canBeginTrimming] property and updates the state of a published property, which sets the appropriate enabled state in the UI:\n\n```swift\n@Published private(set) var isTrimming = true\n@Published private(set) var supportsTrimming = true\n\nvar controller: AVPlayerViewController? {\n    didSet {\n        \/\/ Reset the internal state variables to false and exit.\n        guard let controller else {\n            isTrimming = false\n            supportsTrimming = false\n            return\n        }\n        \/\/ Connect the AVPlayer object to the the view controller.\n        controller.player = player\n        \/\/\/ Update the state of `supportsTrimming` based on the value of `canBeginTrimming`.\n        controller.publisher(for: \\.canBeginTrimming)\n            .removeDuplicates()\n            .assign(to: &$supportsTrimming)\n    }\n}\n```\n\n### Enable the trimming user interface\n\nAfter you determine that the player view controller supports editing the current media’s timeline, call the player’s [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVPlayerViewController\/beginTrimming(completionHandler:)] method to enable its trimming interface. Call this method from an asynchronous context:\n\n```swift\n\/\/\/ Enables the player view controller's media trimming interface.\nfunc startTrimming() async {\n    \/\/ Exit early if the controller doesn't support trimming.\n    guard let controller, controller.canBeginTrimming else { return }\n    \n    isTrimming = true\n    if await controller.beginTrimming() {\n        \/\/ A user pinched the button to complete the trim operation.\n    } else {\n        \/\/ A user pinched the button to cancel their changes.\n    }\n    isTrimming = false\n}\n```\n\nThis method returns a Boolean value that indicates whether the user pinched the Done button or the Cancel button. Pinching the Done button causes the view controller to update the values of the player item’s [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVPlayerItem\/reversePlaybackEndTime] and [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVPlayerItem\/forwardPlaybackEndTime] properties to match the trimmed selection.\n\n### Export the trimmed media selection\n\nA convenient way to export your trimmed selection is to use [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVAssetExportSession]. This object provides a simple preset-based approach to transcode media in various formats. Create an instance of an export session by passing it the player item’s asset and an export preset. Additionally, configure its output URL and file type:\n\n```swift\n\/\/ Export the asset in the highest quality.\nlet preset = AVAssetExportPresetHighestQuality\n\/\/ Check the compatibility of the preset to export the video to the output file type.\nguard await AVAssetExportSession.compatibility(ofExportPreset: preset,\n                                               with: playerItem.asset,\n                                               outputFileType: .mp4) else {\n    print(\"The selected preset can't export the video to the output file type.\")\n    return\n}\n\nguard let exportSession = AVAssetExportSession(asset: playerItem.asset,\n                                               presetName: preset) else {\n    print(\"Unable to create an export session that supports the asset and preset.\")\n    return\n}\n```\n\nTo export only the portion of the asset that matches your trimmed selection, create a [doc:\/\/com.apple.documentation\/documentation\/CoreMedia\/CMTimeRange] based on the reverse and forward playback end times of the current player item:\n\n```swift\n\/\/ Create a time range that matches the trimmed selection.\nlet startTime = playerItem.reversePlaybackEndTime\nlet endTime = playerItem.forwardPlaybackEndTime\nexportSession.timeRange = CMTimeRange(start: startTime, end: endTime)\n```\n\nFinally, begin the export operation to begin asynchronously transcoding the media to the output URL:\n\n```swift\n\/\/ Export the content.\nawait exportSession.export()\n```\n\n## visionOS playback\n\n- **Playing immersive media with AVKit**: Adopt the system playback interface to provide an immersive video watching experience.\n- **Creating a multiview video playback experience in visionOS**: Build an interface that plays multiple videos simultaneously and handles transitions to different experience types gracefully.\n- **Adopting the system player interface in visionOS**: Provide an optimized viewing experience for watching 3D video content.\n- **AVPlayerViewController**: A view controller that displays content from a player and presents a native user interface to control playback.\n- **AVPlayerViewControllerDelegate**: A protocol that defines the methods to implement to respond to player view controller events.\n- **AVExperienceController**: An object that controls video experiences.\n- **AVMultiviewManager**: An object that manages viewing multiple videos at once.\n- **AVGroupExperienceCoordinator**: An object that synchronizes viewing environment state across participants in a SharePlay session.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adopt the system playback interface to provide an immersive video watching experience.",
+          "name" : "Playing immersive media with AVKit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/playing-immersive-media-with-avkit"
+        },
+        {
+          "description" : "Build an interface that plays multiple videos simultaneously and handles transitions to different experience types gracefully.",
+          "name" : "Creating a multiview video playback experience in visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/creating-a-multiview-video-playback-experience-in-visionos"
+        },
+        {
+          "description" : "Provide an optimized viewing experience for watching 3D video content.",
+          "name" : "Adopting the system player interface in visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/adopting-the-system-player-interface-in-visionos"
+        },
+        {
+          "description" : "A view controller that displays content from a player and presents a native user interface to control playback.",
+          "name" : "AVPlayerViewController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVPlayerViewController"
+        },
+        {
+          "description" : "A protocol that defines the methods to implement to respond to player view controller events.",
+          "name" : "AVPlayerViewControllerDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVPlayerViewControllerDelegate"
+        },
+        {
+          "description" : "An object that controls video experiences.",
+          "name" : "AVExperienceController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVExperienceController"
+        },
+        {
+          "description" : "An object that manages viewing multiple videos at once.",
+          "name" : "AVMultiviewManager",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVMultiviewManager"
+        },
+        {
+          "description" : "An object that synchronizes viewing environment state across participants in a SharePlay session.",
+          "name" : "AVGroupExperienceCoordinator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVGroupExperienceCoordinator"
+        }
+      ],
+      "title" : "visionOS playback"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Trimming and exporting media in visionOS",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/trimming-and-exporting-media-in-visionos"
+}

@@ -1,0 +1,51 @@
+{
+  "abstract" : "Divide the search space into a few broad categories.",
+  "codeExamples" : [
+    {
+      "code" : "enum ProductScope {\n    case fruit\n    case vegetable\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@Published var scope: ProductScope = .fruit",
+      "language" : "swift"
+    },
+    {
+      "code" : "ProductList(departmentId: departmentId, productId: $productId)\n    .searchable(text: $model.searchText, tokens: $model.tokens) { token in\n        switch token {\n        case .apple: Text(\"Apple\")\n        case .pear: Text(\"Pear\")\n        case .banana: Text(\"Banana\")\n        }\n    }\n    .searchScopes($model.scope) {\n        Text(\"Fruit\").tag(ProductScope.fruit)\n        Text(\"Vegetable\").tag(ProductScope.vegetable)\n    }",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "669ad6be14dbb877274186184aa993ef3d94bd81f794d4903c43524f5642f2c2",
+  "crawledAt" : "2025-12-02T17:31:42Z",
+  "id" : "2EE0B634-1A3E-418E-BE65-0F6E43D38448",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nIf the data you want to search falls into a few categories, you can define different scopes to help people narrow their search. When you define a scope, SwiftUI presents a picker that people can use to choose one of them. You then use the current scope selection as one of the inputs to the search operation.\n\n### Define the possible scopes\n\nStart by creating a type that conforms to the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Hashable] protocol to represent the possible scopes. For example, you can use an enumeration to scope a product search to just fruits or just vegetables:\n\nThen create a property to store the current scope, either as a state variable in a view, or a published property in your model:\n\n### Apply the scope\n\nTo use the scope information, bind the current scope to the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/searchScopes(_:scopes:)] modifier. You also indicate a set of views that correspond to the different scopes. Like the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/searchSuggestions(_:)] modifier, the scopes modifier operates on the searchable modifier that’s closer to the modified view, so it needs to follow the searchable modifier:\n\nSwiftUI uses the binding and views to add a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Picker] to the search field. By default, the picker appears below the search field in macOS when search is active, or in iOS when someone starts entering text into the search field:\n\nYou can change when the picker appears by using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/searchScopes(_:activation:_:)] modifier instead, and supplying one of the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/SearchScopeActivation] values, like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/SearchScopeActivation\/onTextEntry] or [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/SearchScopeActivation\/onSearchPresentation].\n\nTo ensure that the picker operates correctly, match the type of the scope binding with the type of each view’s tag. In the above example, both the `scope` input and the tags for each view have the type `ProductScope`.\n\n### Use the scope in your search\n\nModify your search to account for the current value of the `scope` property, if you offer it, along with the text and tokens in the query. For example, you might include the scope as one element of a predicate that you define for a Core Data fetch request. For more information about conducting a search, see [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Performing-a-search-operation].",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/Scoping-a-search-operation\ncrawled: 2025-12-02T17:31:42Z\n---\n\n# Scoping a search operation\n\n**Article**\n\nDivide the search space into a few broad categories.\n\n## Overview\n\nIf the data you want to search falls into a few categories, you can define different scopes to help people narrow their search. When you define a scope, SwiftUI presents a picker that people can use to choose one of them. You then use the current scope selection as one of the inputs to the search operation.\n\n### Define the possible scopes\n\nStart by creating a type that conforms to the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Hashable] protocol to represent the possible scopes. For example, you can use an enumeration to scope a product search to just fruits or just vegetables:\n\n```swift\nenum ProductScope {\n    case fruit\n    case vegetable\n}\n```\n\nThen create a property to store the current scope, either as a state variable in a view, or a published property in your model:\n\n```swift\n@Published var scope: ProductScope = .fruit\n```\n\n### Apply the scope\n\nTo use the scope information, bind the current scope to the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/searchScopes(_:scopes:)] modifier. You also indicate a set of views that correspond to the different scopes. Like the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/searchSuggestions(_:)] modifier, the scopes modifier operates on the searchable modifier that’s closer to the modified view, so it needs to follow the searchable modifier:\n\n```swift\nProductList(departmentId: departmentId, productId: $productId)\n    .searchable(text: $model.searchText, tokens: $model.tokens) { token in\n        switch token {\n        case .apple: Text(\"Apple\")\n        case .pear: Text(\"Pear\")\n        case .banana: Text(\"Banana\")\n        }\n    }\n    .searchScopes($model.scope) {\n        Text(\"Fruit\").tag(ProductScope.fruit)\n        Text(\"Vegetable\").tag(ProductScope.vegetable)\n    }\n```\n\nSwiftUI uses the binding and views to add a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Picker] to the search field. By default, the picker appears below the search field in macOS when search is active, or in iOS when someone starts entering text into the search field:\n\n\n\nYou can change when the picker appears by using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/searchScopes(_:activation:_:)] modifier instead, and supplying one of the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/SearchScopeActivation] values, like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/SearchScopeActivation\/onTextEntry] or [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/SearchScopeActivation\/onSearchPresentation].\n\nTo ensure that the picker operates correctly, match the type of the scope binding with the type of each view’s tag. In the above example, both the `scope` input and the tags for each view have the type `ProductScope`.\n\n### Use the scope in your search\n\nModify your search to account for the current value of the `scope` property, if you offer it, along with the text and tokens in the query. For example, you might include the scope as one element of a predicate that you define for a Core Data fetch request. For more information about conducting a search, see [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Performing-a-search-operation].\n\n## Limiting search scope\n\n- **searchScopes(_:scopes:)**: Configures the search scopes for this view.\n- **searchScopes(_:activation:_:)**: Configures the search scopes for this view with the specified activation strategy.\n- **SearchScopeActivation**: The ways that searchable modifiers can show or hide search scopes.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Configures the search scopes for this view.",
+          "name" : "searchScopes(_:scopes:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/searchScopes(_:scopes:)"
+        },
+        {
+          "description" : "Configures the search scopes for this view with the specified activation strategy.",
+          "name" : "searchScopes(_:activation:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/searchScopes(_:activation:_:)"
+        },
+        {
+          "description" : "The ways that searchable modifiers can show or hide search scopes.",
+          "name" : "SearchScopeActivation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/SearchScopeActivation"
+        }
+      ],
+      "title" : "Limiting search scope"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Scoping a search operation",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Scoping-a-search-operation"
+}

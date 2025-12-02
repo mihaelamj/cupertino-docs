@@ -1,0 +1,50 @@
+{
+  "abstract" : "Detects when you don’t close threads after use.",
+  "codeExamples" : [
+    {
+      "code" : "void *run(){\n    pthread_exit(0);\n}\npthread_t thread;\npthread_create(&thread, NULL, run, NULL); \/\/ Error: thread leak\nsleep(1);",
+      "language" : "occ"
+    },
+    {
+      "code" : "void *run(){\n    pthread_exit(0);\n}\npthread_t thread;\npthread_create(&thread, NULL, run, NULL);\nsleep(1);\npthread_join(thread, NULL); \/\/ Correct",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "c4b64d44a88fc4678cadd20a1b7f37a397baa624d9fc890ee1dcc8046fdc5a08",
+  "crawledAt" : "2025-12-02T06:11:02Z",
+  "id" : "17A6A5DA-A8FD-4BFF-8A6E-873E4F466CE1",
+  "kind" : "article",
+  "overview" : "## Overview\n\nUse this check to detect threads you create using the `pthread_create(_:_:_:_:)` function without a corresponding call to the `pthread_join(_:_:)` function. Leaked threads can result in decreased performance and may lead to crashes. Available in Xcode 8 and later.\n\n### Leaked thread in C\n\nIn the following example, the code creates a `thread` variable, but doesn’t close it after use:\n\n#### Solution\n\nAdd a call to the `pthread_join(_:_:)` function.\n\nAlternatively, you can create a detached thread by passing the `PTHREAD_CREATE_DETACHED` attribute to `pthread_create(_:_:_:_:)`, or calling `pthread_detach(_:)` on the thread after creation.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Xcode\/thread-leaks\ncrawled: 2025-12-02T06:11:02Z\n---\n\n# Thread leaks\n\n**Article**\n\nDetects when you don’t close threads after use.\n\n## Overview\n\nUse this check to detect threads you create using the `pthread_create(_:_:_:_:)` function without a corresponding call to the `pthread_join(_:_:)` function. Leaked threads can result in decreased performance and may lead to crashes. Available in Xcode 8 and later.\n\n### Leaked thread in C\n\nIn the following example, the code creates a `thread` variable, but doesn’t close it after use:\n\n```occ\nvoid *run(){\n    pthread_exit(0);\n}\npthread_t thread;\npthread_create(&thread, NULL, run, NULL); \/\/ Error: thread leak\nsleep(1);\n```\n\n#### Solution\n\nAdd a call to the `pthread_join(_:_:)` function.\n\n```swift\nvoid *run(){\n    pthread_exit(0);\n}\npthread_t thread;\npthread_create(&thread, NULL, run, NULL);\nsleep(1);\npthread_join(thread, NULL); \/\/ Correct\n```\n\nAlternatively, you can create a detached thread by passing the `PTHREAD_CREATE_DETACHED` attribute to `pthread_create(_:_:_:_:)`, or calling `pthread_detach(_:)` on the thread after creation.\n\n## Thread Sanitizer\n\n- **Data races**: Detects unsynchronized access to mutable state across multiple threads.\n- **Swift access races**: Detects unsynchronized access to mutable state across multiple threads in Swift.\n- **Races on collections and other APIs**: Detects when one thread accesses a mutable object while another thread is writing to it.\n- **Uninitialized mutexes**: Detects when you use an uninitialized mutex.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Detects unsynchronized access to mutable state across multiple threads.",
+          "name" : "Data races",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/data-races"
+        },
+        {
+          "description" : "Detects unsynchronized access to mutable state across multiple threads in Swift.",
+          "name" : "Swift access races",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/swift-access-races"
+        },
+        {
+          "description" : "Detects when one thread accesses a mutable object while another thread is writing to it.",
+          "name" : "Races on collections and other APIs",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/races-on-collections-and-other-apis"
+        },
+        {
+          "description" : "Detects when you use an uninitialized mutex.",
+          "name" : "Uninitialized mutexes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/uninitialized-mutexes"
+        }
+      ],
+      "title" : "Thread Sanitizer"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Thread leaks",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/thread-leaks"
+}

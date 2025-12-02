@@ -1,0 +1,233 @@
+{
+  "abstract" : "Analyzes spoken audio content in various ways and manages the analysis session.",
+  "codeExamples" : [
+    {
+      "code" : "import Speech\n\n\/\/ Step 1: Modules\nguard let locale = SpeechTranscriber.supportedLocale(equivalentTo: Locale.current) else {\n    \/* Note unsupported language *\/\n}\nlet transcriber = SpeechTranscriber(locale: locale, preset: .offlineTranscription)\n\n\/\/ Step 2: Assets\nif let installationRequest = try await AssetInventory.assetInstallationRequest(supporting: [transcriber]) {\n    try await installationRequest.downloadAndInstall()\n}\n\n\/\/ Step 3: Input sequence\nlet (inputSequence, inputBuilder) = AsyncStream.makeStream(of: AnalyzerInput.self)\n\n\/\/ Step 4: Analyzer\nlet audioFormat = await SpeechAnalyzer.bestAvailableAudioFormat(compatibleWith: [transcriber])\nlet analyzer = SpeechAnalyzer(modules: [transcriber])\n\n\/\/ Step 5: Supply audio\nTask {\n    while \/* audio remains *\/ {\n        \/* Get some audio *\/\n        \/* Convert to audioFormat *\/\n        let pcmBuffer = \/* an AVAudioPCMBuffer containing some converted audio *\/\n        let input = AnalyzerInput(buffer: pcmBuffer)\n        inputBuilder.yield(input)\n    }\n    inputBuilder.finish()\n}\n\n\/\/ Step 7: Act on results\nTask {\n    do {\n        for try await result in transcriber.results {\n            let bestTranscription = result.text \/\/ an AttributedString\n            let plainTextBestTranscription = String(bestTranscription.characters) \/\/ a String\n            print(plainTextBestTranscription)\n        }\n    } catch {\n        \/* Handle error *\/\n    }\n}\n\n\/\/ Step 6: Perform analysis\nlet lastSampleTime = try await analyzer.analyzeSequence(inputSequence)\n\n\/\/ Step 8: Finish analysis\nif let lastSampleTime {\n    try await analyzer.finalizeAndFinish(through: lastSampleTime)\n} else {\n    try analyzer.cancelAndFinishNow()\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Actor",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "025d90757adffb9bba1df91d96b641ec8101f8e18dd11dd18afec2d98da0fe51",
+  "crawledAt" : "2025-12-02T16:03:13Z",
+  "declaration" : {
+    "code" : "final actor SpeechAnalyzer",
+    "language" : "swift"
+  },
+  "id" : "157C1672-E5B3-434D-9802-52C167AECA08",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Speech",
+  "overview" : "## Overview\n\nThe Speech framework provides several modules that can be added to an analyzer to provide specific types of analysis and transcription. Many use cases only need a [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechTranscriber] module, which performs speech-to-text transcriptions.\n\nThe `SpeechAnalyzer` class is responsible for:\n\nEach module is responsible for:\n\nAnalysis is asynchronous. Input, output, and session control are decoupled and typically occur over several different tasks created by you or by the session. In particular, where an Objective-C API might use a delegate to provide results to you, the Swift API’s modules provides their results via an `AsyncSequence`. Similarly, you provide speech input to this API via an `AsyncSequence` you create and populate.\n\nThe analyzer can only analyze one input sequence at a time.\n\n### Perform analysis\n\nTo perform analysis on audio files and streams, follow these general steps:\n\nThis example shows how you could perform an analysis that transcribes audio using the `SpeechTranscriber` module:\n\n### Analyze audio files\n\nTo analyze one or more audio files represented by an `AVAudioFile` object, call methods such as [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/analyzeSequence(from:)] or [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/start(inputAudioFile:finishAfterFile:)], or create the analyzer with one of the initializers that has a file parameter. These methods automatically convert the file to a supported audio format and process the file in its entirety.\n\nTo end the analysis session after one file, pass `true` for the `finishAfterFile` parameter or call one of the `finish` methods.\n\nOtherwise, by default, the analyzer won’t terminate its result streams and will wait for additional audio files or buffers. The analysis session doesn’t reset the audio timeline after each file; the next audio is assumed to come immediately after the completed file.\n\n### Analyze audio buffers\n\nTo analyze audio buffers directly, convert them to a supported audio format, either on the fly or in advance. You can use [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/bestAvailableAudioFormat(compatibleWith:)] or individual modules’ [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechModule\/availableCompatibleAudioFormats] methods to select a format to convert to.\n\nCreate an [doc:\/\/com.apple.speech\/documentation\/Speech\/AnalyzerInput] object for each audio buffer and add the object to an input sequence you create. Supply that input sequence to [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/analyzeSequence(_:)], [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/start(inputSequence:)], or a similar parameter of the analyzer’s initializer.\n\nTo skip past part of an audio stream, omit the buffers you want to skip from the input sequence. When you resume analysis with a later buffer, you can ensure the time-code of each module’s result accounts for the skipped audio. To do this, pass the later buffer’s time-code within the audio stream as the `bufferStartTime` parameter of the later `AnalyzerInput` object.\n\n### Analyze autonomously\n\nYou can and usually should perform analysis using the [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/analyzeSequence(_:)] or [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/analyzeSequence(from:)] methods; those methods work well with Swift structured concurrency techniques. However, you may prefer that the analyzer proceed independently and perform its analysis autonomously as audio input becomes available in a task managed by the analyzer itself.\n\nTo use this capability, create the analyzer with one of the initializers that has an input sequence or file parameter, or call [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/start(inputSequence:)] or [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/start(inputAudioFile:finishAfterFile:)]. To end the analysis when the input ends, call [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/finalizeAndFinishThroughEndOfInput()]. To end the analysis of that input and start analysis of different input, call one of the `start` methods again.\n\n### Control processing and timing of results\n\nModules deliver results periodically, but you can manually synchronize their processing and delivery to outside cues.\n\nTo deliver a result for a particular time-code, call [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/finalize(through:)]. To cancel processing of results that are no longer of interest, call [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/cancelAnalysis(before:)].\n\n### Improve responsiveness\n\nBy default, the analyzer and modules load the system resources that they require lazily, and unload those resources when they’re deallocated.\n\nTo proactively load system resources and “preheat” the analyzer, call [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/prepareToAnalyze(in:)] after setting its modules. This may improve how quickly the modules return their first results.\n\nTo delay or prevent unloading an analyzer’s resources — caching them for later use by a different analyzer instance — you can select a [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/Options\/ModelRetention-swift.enum] option and create the analyzer with an appropriate [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/Options] object.\n\nTo set the priority of analysis work, create the analyzer with a [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/Options] object given a `priority` value.\n\nSpecific modules may also offer options that improve responsiveness.\n\n### Finish analysis\n\nTo end an analysis session, you must use one of the analyzer’s `finish` methods or parameters, or deallocate the analyzer.\n\nWhen the analysis session transitions to the *finished* state:\n\n### Respond to errors\n\nWhen the analyzer or its modules’ result streams throw an error, the analysis session becomes finished as described above, and the same error (or a `CancellationError`) is thrown from all waiting methods and result streams.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "macOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\ncrawled: 2025-12-02T16:03:13Z\n---\n\n# SpeechAnalyzer\n\n**Class**\n\nAnalyzes spoken audio content in various ways and manages the analysis session.\n\n## Declaration\n\n```swift\nfinal actor SpeechAnalyzer\n```\n\n## Overview\n\nThe Speech framework provides several modules that can be added to an analyzer to provide specific types of analysis and transcription. Many use cases only need a [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechTranscriber] module, which performs speech-to-text transcriptions.\n\nThe `SpeechAnalyzer` class is responsible for:\n\n- Holding associated modules\n- Accepting audio speech input\n- Controlling the overall analysis\n\nEach module is responsible for:\n\n- Providing guidance on acceptable input\n- Providing its analysis or transcription output\n\nAnalysis is asynchronous. Input, output, and session control are decoupled and typically occur over several different tasks created by you or by the session. In particular, where an Objective-C API might use a delegate to provide results to you, the Swift API’s modules provides their results via an `AsyncSequence`. Similarly, you provide speech input to this API via an `AsyncSequence` you create and populate.\n\nThe analyzer can only analyze one input sequence at a time.\n\n### Perform analysis\n\nTo perform analysis on audio files and streams, follow these general steps:\n\n1. Create and configure the necessary modules.\n2. Ensure the relevant assets are installed or already present. See [doc:\/\/com.apple.speech\/documentation\/Speech\/AssetInventory].\n3. Create an input sequence you can use to provide the spoken audio.\n4. Create and configure the analyzer with the modules and input sequence.\n5. Supply audio.\n6. Start analysis.\n7. Act on results.\n8. Finish analysis when desired.\n\nThis example shows how you could perform an analysis that transcribes audio using the `SpeechTranscriber` module:\n\n```swift\nimport Speech\n\n\/\/ Step 1: Modules\nguard let locale = SpeechTranscriber.supportedLocale(equivalentTo: Locale.current) else {\n    \/* Note unsupported language *\/\n}\nlet transcriber = SpeechTranscriber(locale: locale, preset: .offlineTranscription)\n\n\/\/ Step 2: Assets\nif let installationRequest = try await AssetInventory.assetInstallationRequest(supporting: [transcriber]) {\n    try await installationRequest.downloadAndInstall()\n}\n\n\/\/ Step 3: Input sequence\nlet (inputSequence, inputBuilder) = AsyncStream.makeStream(of: AnalyzerInput.self)\n\n\/\/ Step 4: Analyzer\nlet audioFormat = await SpeechAnalyzer.bestAvailableAudioFormat(compatibleWith: [transcriber])\nlet analyzer = SpeechAnalyzer(modules: [transcriber])\n\n\/\/ Step 5: Supply audio\nTask {\n    while \/* audio remains *\/ {\n        \/* Get some audio *\/\n        \/* Convert to audioFormat *\/\n        let pcmBuffer = \/* an AVAudioPCMBuffer containing some converted audio *\/\n        let input = AnalyzerInput(buffer: pcmBuffer)\n        inputBuilder.yield(input)\n    }\n    inputBuilder.finish()\n}\n\n\/\/ Step 7: Act on results\nTask {\n    do {\n        for try await result in transcriber.results {\n            let bestTranscription = result.text \/\/ an AttributedString\n            let plainTextBestTranscription = String(bestTranscription.characters) \/\/ a String\n            print(plainTextBestTranscription)\n        }\n    } catch {\n        \/* Handle error *\/\n    }\n}\n\n\/\/ Step 6: Perform analysis\nlet lastSampleTime = try await analyzer.analyzeSequence(inputSequence)\n\n\/\/ Step 8: Finish analysis\nif let lastSampleTime {\n    try await analyzer.finalizeAndFinish(through: lastSampleTime)\n} else {\n    try analyzer.cancelAndFinishNow()\n}\n```\n\n### Analyze audio files\n\nTo analyze one or more audio files represented by an `AVAudioFile` object, call methods such as [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/analyzeSequence(from:)] or [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/start(inputAudioFile:finishAfterFile:)], or create the analyzer with one of the initializers that has a file parameter. These methods automatically convert the file to a supported audio format and process the file in its entirety.\n\nTo end the analysis session after one file, pass `true` for the `finishAfterFile` parameter or call one of the `finish` methods.\n\nOtherwise, by default, the analyzer won’t terminate its result streams and will wait for additional audio files or buffers. The analysis session doesn’t reset the audio timeline after each file; the next audio is assumed to come immediately after the completed file.\n\n### Analyze audio buffers\n\nTo analyze audio buffers directly, convert them to a supported audio format, either on the fly or in advance. You can use [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/bestAvailableAudioFormat(compatibleWith:)] or individual modules’ [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechModule\/availableCompatibleAudioFormats] methods to select a format to convert to.\n\nCreate an [doc:\/\/com.apple.speech\/documentation\/Speech\/AnalyzerInput] object for each audio buffer and add the object to an input sequence you create. Supply that input sequence to [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/analyzeSequence(_:)], [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/start(inputSequence:)], or a similar parameter of the analyzer’s initializer.\n\nTo skip past part of an audio stream, omit the buffers you want to skip from the input sequence. When you resume analysis with a later buffer, you can ensure the time-code of each module’s result accounts for the skipped audio. To do this, pass the later buffer’s time-code within the audio stream as the `bufferStartTime` parameter of the later `AnalyzerInput` object.\n\n### Analyze autonomously\n\nYou can and usually should perform analysis using the [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/analyzeSequence(_:)] or [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/analyzeSequence(from:)] methods; those methods work well with Swift structured concurrency techniques. However, you may prefer that the analyzer proceed independently and perform its analysis autonomously as audio input becomes available in a task managed by the analyzer itself.\n\nTo use this capability, create the analyzer with one of the initializers that has an input sequence or file parameter, or call [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/start(inputSequence:)] or [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/start(inputAudioFile:finishAfterFile:)]. To end the analysis when the input ends, call [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/finalizeAndFinishThroughEndOfInput()]. To end the analysis of that input and start analysis of different input, call one of the `start` methods again.\n\n### Control processing and timing of results\n\nModules deliver results periodically, but you can manually synchronize their processing and delivery to outside cues.\n\nTo deliver a result for a particular time-code, call [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/finalize(through:)]. To cancel processing of results that are no longer of interest, call [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/cancelAnalysis(before:)].\n\n### Improve responsiveness\n\nBy default, the analyzer and modules load the system resources that they require lazily, and unload those resources when they’re deallocated.\n\nTo proactively load system resources and “preheat” the analyzer, call [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/prepareToAnalyze(in:)] after setting its modules. This may improve how quickly the modules return their first results.\n\nTo delay or prevent unloading an analyzer’s resources — caching them for later use by a different analyzer instance — you can select a [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/Options\/ModelRetention-swift.enum] option and create the analyzer with an appropriate [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/Options] object.\n\nTo set the priority of analysis work, create the analyzer with a [doc:\/\/com.apple.speech\/documentation\/Speech\/SpeechAnalyzer\/Options] object given a `priority` value.\n\nSpecific modules may also offer options that improve responsiveness.\n\n### Finish analysis\n\nTo end an analysis session, you must use one of the analyzer’s `finish` methods or parameters, or deallocate the analyzer.\n\nWhen the analysis session transitions to the *finished* state:\n\n- The analyzer won’t take additional input from the input sequence\n- Most methods won’t do anything; in particular, the analyzer won’t accept different input sequences or modules\n- Module result streams terminate and modules won’t publish additional results, though the app can continue to iterate over already-published results\n\n\n\n### Respond to errors\n\nWhen the analyzer or its modules’ result streams throw an error, the analysis session becomes finished as described above, and the same error (or a `CancellationError`) is thrown from all waiting methods and result streams.\n\n## Creating an analyzer\n\n- **init(modules:options:)**: Creates an analyzer.\n- **init(inputSequence:modules:options:analysisContext:volatileRangeChangedHandler:)**: Creates an analyzer and begins analysis.\n- **init(inputAudioFile:modules:options:analysisContext:finishAfterFile:volatileRangeChangedHandler:)**: Creates an analyzer and begins analysis on an audio file.\n- **SpeechAnalyzer.Options**: Analysis processing options.\n\n## Managing modules\n\n- **setModules(_:)**: Adds or removes modules.\n- **modules**: The modules performing analysis on the audio input.\n\n## Performing analysis\n\n- **analyzeSequence(_:)**: Analyzes an input sequence, returning when the sequence is consumed.\n- **analyzeSequence(from:)**: Analyzes an input sequence created from an audio file, returning when the file has been read.\n\n## Performing autonomous analysis\n\n- **start(inputSequence:)**: Starts analysis of an input sequence and returns immediately.\n- **start(inputAudioFile:finishAfterFile:)**: Starts analysis of an input sequence created from an audio file and returns immediately.\n\n## Finalizing and cancelling results\n\n- **cancelAnalysis(before:)**: Stops analyzing audio predating the given time.\n- **finalize(through:)**: Finalizes the modules’ analyses.\n\n## Finishing analysis\n\n- **cancelAndFinishNow()**: Finishes analysis immediately.\n- **finalizeAndFinishThroughEndOfInput()**: Finishes analysis after an audio input sequence has been fully consumed and its results are finalized.\n- **finalizeAndFinish(through:)**: Finishes analysis after finalizing results for a given time-code.\n- **finish(after:)**: Finishes analysis once input for a given time is consumed.\n\n## Determining audio formats\n\n- **bestAvailableAudioFormat(compatibleWith:)**: Retrieves the best-quality audio format that the specified modules can work with, from assets installed on the device.\n- **bestAvailableAudioFormat(compatibleWith:considering:)**: Retrieves the best-quality audio format that the specified modules can work with, taking into account the natural format of the audio and assets installed on the device.\n\n## Improving responsiveness\n\n- **prepareToAnalyze(in:)**: Prepares the analyzer to begin work with minimal startup delay.\n- **prepareToAnalyze(in:withProgressReadyHandler:)**: Prepares the analyzer to begin work with minimal startup delay, reporting the progress of that preparation.\n\n## Monitoring analysis\n\n- **setVolatileRangeChangedHandler(_:)**: A closure that the analyzer calls when the volatile range changes.\n- **volatileRange**: The range of results that can change.\n\n## Managing contexts\n\n- **setContext(_:)**: Sets contextual information to improve or inform the analysis.\n- **context**: An object containing contextual information.\n\n## Essentials\n\n- **Bringing advanced speech-to-text capabilities to your app**: Learn how to incorporate live speech-to-text transcription into your app with SpeechAnalyzer.\n- **AssetInventory**: Manages the assets that are necessary for transcription or other analyses.\n\n## Conforms To\n\n- Actor\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an analyzer.",
+          "name" : "init(modules:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/init(modules:options:)"
+        },
+        {
+          "description" : "Creates an analyzer and begins analysis.",
+          "name" : "init(inputSequence:modules:options:analysisContext:volatileRangeChangedHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/init(inputSequence:modules:options:analysisContext:volatileRangeChangedHandler:)"
+        },
+        {
+          "description" : "Creates an analyzer and begins analysis on an audio file.",
+          "name" : "init(inputAudioFile:modules:options:analysisContext:finishAfterFile:volatileRangeChangedHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/init(inputAudioFile:modules:options:analysisContext:finishAfterFile:volatileRangeChangedHandler:)"
+        },
+        {
+          "description" : "Analysis processing options.",
+          "name" : "SpeechAnalyzer.Options",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/Options"
+        }
+      ],
+      "title" : "Creating an analyzer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds or removes modules.",
+          "name" : "setModules(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/setModules(_:)"
+        },
+        {
+          "description" : "The modules performing analysis on the audio input.",
+          "name" : "modules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/modules"
+        }
+      ],
+      "title" : "Managing modules"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Analyzes an input sequence, returning when the sequence is consumed.",
+          "name" : "analyzeSequence(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/analyzeSequence(_:)"
+        },
+        {
+          "description" : "Analyzes an input sequence created from an audio file, returning when the file has been read.",
+          "name" : "analyzeSequence(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/analyzeSequence(from:)"
+        }
+      ],
+      "title" : "Performing analysis"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Starts analysis of an input sequence and returns immediately.",
+          "name" : "start(inputSequence:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/start(inputSequence:)"
+        },
+        {
+          "description" : "Starts analysis of an input sequence created from an audio file and returns immediately.",
+          "name" : "start(inputAudioFile:finishAfterFile:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/start(inputAudioFile:finishAfterFile:)"
+        }
+      ],
+      "title" : "Performing autonomous analysis"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Stops analyzing audio predating the given time.",
+          "name" : "cancelAnalysis(before:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/cancelAnalysis(before:)"
+        },
+        {
+          "description" : "Finalizes the modules’ analyses.",
+          "name" : "finalize(through:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/finalize(through:)"
+        }
+      ],
+      "title" : "Finalizing and cancelling results"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Finishes analysis immediately.",
+          "name" : "cancelAndFinishNow()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/cancelAndFinishNow()"
+        },
+        {
+          "description" : "Finishes analysis after an audio input sequence has been fully consumed and its results are finalized.",
+          "name" : "finalizeAndFinishThroughEndOfInput()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/finalizeAndFinishThroughEndOfInput()"
+        },
+        {
+          "description" : "Finishes analysis after finalizing results for a given time-code.",
+          "name" : "finalizeAndFinish(through:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/finalizeAndFinish(through:)"
+        },
+        {
+          "description" : "Finishes analysis once input for a given time is consumed.",
+          "name" : "finish(after:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/finish(after:)"
+        }
+      ],
+      "title" : "Finishing analysis"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Retrieves the best-quality audio format that the specified modules can work with, from assets installed on the device.",
+          "name" : "bestAvailableAudioFormat(compatibleWith:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/bestAvailableAudioFormat(compatibleWith:)"
+        },
+        {
+          "description" : "Retrieves the best-quality audio format that the specified modules can work with, taking into account the natural format of the audio and assets installed on the device.",
+          "name" : "bestAvailableAudioFormat(compatibleWith:considering:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/bestAvailableAudioFormat(compatibleWith:considering:)"
+        }
+      ],
+      "title" : "Determining audio formats"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Prepares the analyzer to begin work with minimal startup delay.",
+          "name" : "prepareToAnalyze(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/prepareToAnalyze(in:)"
+        },
+        {
+          "description" : "Prepares the analyzer to begin work with minimal startup delay, reporting the progress of that preparation.",
+          "name" : "prepareToAnalyze(in:withProgressReadyHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/prepareToAnalyze(in:withProgressReadyHandler:)"
+        }
+      ],
+      "title" : "Improving responsiveness"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A closure that the analyzer calls when the volatile range changes.",
+          "name" : "setVolatileRangeChangedHandler(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/setVolatileRangeChangedHandler(_:)"
+        },
+        {
+          "description" : "The range of results that can change.",
+          "name" : "volatileRange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/volatileRange"
+        }
+      ],
+      "title" : "Monitoring analysis"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets contextual information to improve or inform the analysis.",
+          "name" : "setContext(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/setContext(_:)"
+        },
+        {
+          "description" : "An object containing contextual information.",
+          "name" : "context",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer\/context"
+        }
+      ],
+      "title" : "Managing contexts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how to incorporate live speech-to-text transcription into your app with SpeechAnalyzer.",
+          "name" : "Bringing advanced speech-to-text capabilities to your app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/bringing-advanced-speech-to-text-capabilities-to-your-app"
+        },
+        {
+          "description" : "Manages the assets that are necessary for transcription or other analyses.",
+          "name" : "AssetInventory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/AssetInventory"
+        }
+      ],
+      "title" : "Essentials"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "SpeechAnalyzer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Speech\/SpeechAnalyzer"
+}

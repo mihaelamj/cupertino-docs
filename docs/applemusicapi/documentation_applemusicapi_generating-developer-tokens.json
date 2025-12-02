@@ -1,0 +1,66 @@
+{
+  "abstract" : "Generate a developer token needed to make requests to Apple Music API.",
+  "codeExamples" : [
+    {
+      "code" : "{\n     \"alg\": \"ES256\",\n     \"kid\": \"ABC123DEFG\"\n}\n{\n     \"iss\": \"DEF123GHIJ\",\n     \"iat\": 1437179036,\n     \"exp\": 1493298100\n}",
+      "language" : "other"
+    },
+    {
+      "code" : "curl -v -H 'Authorization: Bearer [developer token]' \"https:\/\/api.music.apple.com\/v1\/test\"",
+      "language" : "other"
+    }
+  ],
+  "contentHash" : "34bd8329cb93bb57eb2ab9754b95aa919110db395689f7fc527aa85dfd4798a6",
+  "crawledAt" : "2025-12-02T13:21:54Z",
+  "id" : "74A17733-8F7D-46D8-82D1-7907A338CD6B",
+  "kind" : "article",
+  "module" : "Apple Music API",
+  "overview" : "## Overview\n\nTo make requests to the Apple Music API, you need to authorize yourself as a trusted developer and member of the Apple Developer Program. The header of every Apple Music API request requires a signed developer token.\n\nThere are two paths to generate developer tokens:\n\n### Create a Developer Token\n\nA developer token is a signed token used to authenticate a developer in Apple Music requests. [https:\/\/developer.apple.com\/help\/account\/configure-app-capabilities\/create-a-media-identifier-and-private-key\/] allows you to use a developer token to authenticate yourself as a trusted developer and member of the Apple Developer Program.\n\nThe Apple Music API supports the JSON Web Token (JWT) specification, so you can pass statements and metadata called *claims*. For more information, see the [https:\/\/tools.ietf.org\/html\/rfc7519] and the available libraries for generating signed JWTs.\n\nConstruct a developer token as a JSON object whose header contains:\n\nIn the *claims* payload of the token, include:\n\nA decoded developer token has the following format.\n\nAfter you create the token, sign it with your MusicKit private key using the ES256 algorithm.\n\n### Authorize Requests\n\nA developer token is used to authorize all Apple Music API requests. If you manage this directly, in all requests, pass the `Authorization: Bearer` header set to the developer token.\n\nTo sign in and authenticate requests for an Apple Music subscriber, see [doc:\/\/com.apple.applemusicapi\/documentation\/AppleMusicAPI\/user-authentication-for-musickit]. For more information about requests, responses, and error handling, see [doc:\/\/com.apple.applemusicapi\/documentation\/AppleMusicAPI\/handling-requests-and-responses].\n\n### Request Rate Limiting\n\nApple Music API limits the number of requests your app can make using a developer token within a specific period of time. If this limit is exceeded, you’ll temporarily receive `429 Too Many Requests` error responses for requests that use the token. This error resolves itself shortly after the request rate has reduced.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AppleMusicAPI\/generating-developer-tokens\ncrawled: 2025-12-02T13:21:54Z\n---\n\n# Generating Developer Tokens\n\n**Article**\n\nGenerate a developer token needed to make requests to Apple Music API.\n\n## Overview\n\nTo make requests to the Apple Music API, you need to authorize yourself as a trusted developer and member of the Apple Developer Program. The header of every Apple Music API request requires a signed developer token.\n\nThere are two paths to generate developer tokens:\n\n- If you’re developing an app for Apple platforms (iOS, tvOS, watchOS or macOS), the recommended way to integrate with Apple Music is to use [doc:\/\/com.apple.documentation\/documentation\/MusicKit] for Swift, following the steps provided in [doc:\/\/com.apple.documentation\/documentation\/MusicKit\/Using-Automatic-Token-Generation-for-Apple-Music-API].\n- Follow the directions below to create and manage developer tokens for other platforms.\n\n### Create a Developer Token\n\nA developer token is a signed token used to authenticate a developer in Apple Music requests. [https:\/\/developer.apple.com\/help\/account\/configure-app-capabilities\/create-a-media-identifier-and-private-key\/] allows you to use a developer token to authenticate yourself as a trusted developer and member of the Apple Developer Program.\n\nThe Apple Music API supports the JSON Web Token (JWT) specification, so you can pass statements and metadata called *claims*. For more information, see the [https:\/\/tools.ietf.org\/html\/rfc7519] and the available libraries for generating signed JWTs.\n\nConstruct a developer token as a JSON object whose header contains:\n\n- The algorithm (`alg`) you use to sign the token, which should have a value of `ES256`\n- A 10-character key identifier (`kid`) key, obtained from your developer account\n\n\n\nIn the *claims* payload of the token, include:\n\n- The *issuer* (`iss`) registered claim key, whose value is your 10-character Team ID, obtained from your developer account\n- The *issued at* (`iat`) registered claim key, whose value indicates the time at which the token was generated, in terms of the number of seconds since epoch, in UTC\n- The *expiration time* (`exp`) registered claim key, whose value must not be greater than `15777000` (6 months in seconds) from the current Unix time on the server\n- Optional, but recommended for web clients, use the *origin claim* (`origin`). Only use this JWT if the origin header of the request matches one of the values in the array. This addition helps prevent unauthorized use of the tokens. For example: “`origin`”`:[`”`https:\/\/example.com`”`,`”`https:\/\/music.example.com`”`]`.\n\n\n\nA decoded developer token has the following format.\n\n```other\n{\n     \"alg\": \"ES256\",\n     \"kid\": \"ABC123DEFG\"\n}\n{\n     \"iss\": \"DEF123GHIJ\",\n     \"iat\": 1437179036,\n     \"exp\": 1493298100\n}\n```\n\nAfter you create the token, sign it with your MusicKit private key using the ES256 algorithm.\n\n\n\n### Authorize Requests\n\nA developer token is used to authorize all Apple Music API requests. If you manage this directly, in all requests, pass the `Authorization: Bearer` header set to the developer token.\n\n```other\ncurl -v -H 'Authorization: Bearer [developer token]' \"https:\/\/api.music.apple.com\/v1\/test\"\n```\n\nTo sign in and authenticate requests for an Apple Music subscriber, see [doc:\/\/com.apple.applemusicapi\/documentation\/AppleMusicAPI\/user-authentication-for-musickit]. For more information about requests, responses, and error handling, see [doc:\/\/com.apple.applemusicapi\/documentation\/AppleMusicAPI\/handling-requests-and-responses].\n\n### Request Rate Limiting\n\nApple Music API limits the number of requests your app can make using a developer token within a specific period of time. If this limit is exceeded, you’ll temporarily receive `429 Too Many Requests` error responses for requests that use the token. This error resolves itself shortly after the request rate has reduced.\n\n## Essentials\n\n- **User Authentication for MusicKit**: Authenticate requests for user data using the Music User Token.\n- **Handling Requests and Responses**: Write a request and handle responses from the API.\n- **Handling Resource Representation and Relationships**: Fetch resources with extended attributes and included relationships and relationship views.\n- **Storefronts and Localization**: Pick a region-specific geographic location from which to retrieve catalog information, or retrieve information from the user’s personal library.\n- **Common Objects**: Understand the common JSON objects that framework responses contain.\n- **Managing Content Ratings, Alternate Versions, and Equivalencies**: Handle multiple and alternate versions of content.\n- **Fetching Resources by Page**: Use pagination to fetch the next set of objects.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Authenticate requests for user data using the Music User Token.",
+          "name" : "User Authentication for MusicKit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppleMusicAPI\/user-authentication-for-musickit"
+        },
+        {
+          "description" : "Write a request and handle responses from the API.",
+          "name" : "Handling Requests and Responses",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppleMusicAPI\/handling-requests-and-responses"
+        },
+        {
+          "description" : "Fetch resources with extended attributes and included relationships and relationship views.",
+          "name" : "Handling Resource Representation and Relationships",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppleMusicAPI\/handling-resource-representation-and-relationships"
+        },
+        {
+          "description" : "Pick a region-specific geographic location from which to retrieve catalog information, or retrieve information from the user’s personal library.",
+          "name" : "Storefronts and Localization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppleMusicAPI\/storefronts-and-localization"
+        },
+        {
+          "description" : "Understand the common JSON objects that framework responses contain.",
+          "name" : "Common Objects",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppleMusicAPI\/common-objects"
+        },
+        {
+          "description" : "Handle multiple and alternate versions of content.",
+          "name" : "Managing Content Ratings, Alternate Versions, and Equivalencies",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppleMusicAPI\/managing-content-ratings-alternate-versions-and-equivalencies"
+        },
+        {
+          "description" : "Use pagination to fetch the next set of objects.",
+          "name" : "Fetching Resources by Page",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppleMusicAPI\/fetching-resources-by-page"
+        }
+      ],
+      "title" : "Essentials"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Generating Developer Tokens",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AppleMusicAPI\/generating-developer-tokens"
+}

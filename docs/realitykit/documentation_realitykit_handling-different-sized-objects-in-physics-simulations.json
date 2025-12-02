@@ -1,0 +1,56 @@
+{
+  "abstract" : "Set up a scene hierarchy for accurate physics simulations.",
+  "codeExamples" : [
+    {
+      "code" : "let myAnchor = AnchorEntity()\narView.scene.addAnchor(myAnchor);\nself.arView.physicsOrigin = myAnchor",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Create an anchor entity.\nlet myAnchor = AnchorEntity()\n\n\/\/ Create the scene root.\nlet sceneRootEntity = Entity()\nsceneRootEntity.name = \"Scene Root\"\nmyAnchor.addChild(sceneRootEntity)\n\n\/\/ Create the physics origin.\nlet physicsRootEntity = Entity()\nphysicsOriginEntity.name = \"Physics Origin\"\nmyAnchor.addChild(physicsOriginEntity)\n\n\/\/ Add the anchor and specify the physics origin.\narView.scene.addAnchor(myAnchor);\nself.arView.physicsOrigin = physicsOriginEntity",
+      "language" : "swift"
+    },
+    {
+      "code" : "if let myScene = try! Experience.loadMyScene() {\n    sceneRootEntity.addChild(myScene)\n}\nphysicsRootEntity.scale = SIMD3<Float>(0.1)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "3849cadd1c1a4d486cef7df07bdfe26d593369fae84bbb9add3a0b6a93c60b2f",
+  "crawledAt" : "2025-12-01T12:06:49Z",
+  "id" : "257ED1AF-1402-459F-A790-13DF8DF2E9E9",
+  "kind" : "article",
+  "module" : "RealityKit",
+  "overview" : "## Overview\n\nRealityKit provides a physics engine optimized to simulate a wide range of object sizes. Most RealityKit scenes contain objects within this range, so they simulate correctly without any extra work. However, objects smaller than one cubic centimeter fall outside the optimal size range. You need to set up scenes containing those tiny objects differently to ensure that they simulate realistically.\n\n### Use the default hierarchy for most scenes\n\nSet up most RealityKit scenes — those without very tiny objects — so that you’ve parented all entities to a single anchor entity that acts as both the root of the visible scene and the origin of the physics simulation. With this setup, you can rotate and move the anchor in the scene without affecting the physics simulation because RealityKit applies anchor transforms after calculating the physics simulation.\n\n\n\nReality Composer automatically sets up its scenes this way with no additional work needed. When building scenes programmatically or manually anchoring a Reality Composer scene into your [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ARView], set the physics origin to be the scene’s [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/AnchorEntity], like this:\n\nWhen using this type of hierarchy, you can move, rotate, and scale objects after placing them in the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ARView], and everything functions correctly, even if you make some objects smaller than a cubic centimeter after placing them in your scene.\n\n### Create a hierarchy for simulating tiny objects\n\nScenes that are authored with tiny objects, however, may not simulate optimally. To compensate, set up those scenes with a hierarchy that separates the scene root from the physics origin so you can change the scale of the physics origin independently of the scene.\n\n\n\nTo set up a scene like this, instead of using the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/AnchorEntity] as both the scene root and the physics origin, add two empty entities as children of the anchor before adding any entities or a Reality Composer scene. One of the two entities functions as the scene root and the other acts as the physics origin. The following code shows how to set up a hierarchy like this:\n\nWhen adding your scene to an [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ARView], instead of adding it directly as a child of the anchor entity, add it as a child of the scene root entity.\n\nSince the scene root and physics origin are siblings in this hierarchy, you can apply separate transforms to each of them. Doing so allows you to adjust the scale of the physics calculations to increase the size of the tiny objects relative to the physics origin. To do that, scale the physics origin by the inverse of the desired amount of change. To calculate the inverse, divide `1.0` by the desired scale value. For example, if you want to scale up a physics simulation so that it behaves as if it’s 10 times larger, apply a scale transform to the physics origin of `0.1`.\n\nHere’s an example that shows how to load a Reality Composer scene, add it to an [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ARView], and then adjust the physics origin so the scene’s physics simulation behaves as if it were 10 times larger, allowing the tiny items in the scene to simulate in a more optimal manner:\n\nAdjusting the scale of the physics origin increases the size of the simulated entities *only* for the physics simulation. It has no effect on how RealityKit renders the entities.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/RealityKit\/handling-different-sized-objects-in-physics-simulations\ncrawled: 2025-12-01T12:06:49Z\n---\n\n# Handling different-sized objects in physics simulations\n\n**Article**\n\nSet up a scene hierarchy for accurate physics simulations.\n\n## Overview\n\nRealityKit provides a physics engine optimized to simulate a wide range of object sizes. Most RealityKit scenes contain objects within this range, so they simulate correctly without any extra work. However, objects smaller than one cubic centimeter fall outside the optimal size range. You need to set up scenes containing those tiny objects differently to ensure that they simulate realistically.\n\n### Use the default hierarchy for most scenes\n\nSet up most RealityKit scenes — those without very tiny objects — so that you’ve parented all entities to a single anchor entity that acts as both the root of the visible scene and the origin of the physics simulation. With this setup, you can rotate and move the anchor in the scene without affecting the physics simulation because RealityKit applies anchor transforms after calculating the physics simulation.\n\n\n\nReality Composer automatically sets up its scenes this way with no additional work needed. When building scenes programmatically or manually anchoring a Reality Composer scene into your [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ARView], set the physics origin to be the scene’s [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/AnchorEntity], like this:\n\n```swift\nlet myAnchor = AnchorEntity()\narView.scene.addAnchor(myAnchor);\nself.arView.physicsOrigin = myAnchor\n```\n\nWhen using this type of hierarchy, you can move, rotate, and scale objects after placing them in the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ARView], and everything functions correctly, even if you make some objects smaller than a cubic centimeter after placing them in your scene.\n\n### Create a hierarchy for simulating tiny objects\n\nScenes that are authored with tiny objects, however, may not simulate optimally. To compensate, set up those scenes with a hierarchy that separates the scene root from the physics origin so you can change the scale of the physics origin independently of the scene.\n\n\n\nTo set up a scene like this, instead of using the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/AnchorEntity] as both the scene root and the physics origin, add two empty entities as children of the anchor before adding any entities or a Reality Composer scene. One of the two entities functions as the scene root and the other acts as the physics origin. The following code shows how to set up a hierarchy like this:\n\n```swift\n\/\/ Create an anchor entity.\nlet myAnchor = AnchorEntity()\n\n\/\/ Create the scene root.\nlet sceneRootEntity = Entity()\nsceneRootEntity.name = \"Scene Root\"\nmyAnchor.addChild(sceneRootEntity)\n\n\/\/ Create the physics origin.\nlet physicsRootEntity = Entity()\nphysicsOriginEntity.name = \"Physics Origin\"\nmyAnchor.addChild(physicsOriginEntity)\n\n\/\/ Add the anchor and specify the physics origin.\narView.scene.addAnchor(myAnchor);\nself.arView.physicsOrigin = physicsOriginEntity\n```\n\nWhen adding your scene to an [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ARView], instead of adding it directly as a child of the anchor entity, add it as a child of the scene root entity.\n\nSince the scene root and physics origin are siblings in this hierarchy, you can apply separate transforms to each of them. Doing so allows you to adjust the scale of the physics calculations to increase the size of the tiny objects relative to the physics origin. To do that, scale the physics origin by the inverse of the desired amount of change. To calculate the inverse, divide `1.0` by the desired scale value. For example, if you want to scale up a physics simulation so that it behaves as if it’s 10 times larger, apply a scale transform to the physics origin of `0.1`.\n\nHere’s an example that shows how to load a Reality Composer scene, add it to an [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ARView], and then adjust the physics origin so the scene’s physics simulation behaves as if it were 10 times larger, allowing the tiny items in the scene to simulate in a more optimal manner:\n\n```swift\nif let myScene = try! Experience.loadMyScene() {\n    sceneRootEntity.addChild(myScene)\n}\nphysicsRootEntity.scale = SIMD3<Float>(0.1)\n```\n\nAdjusting the scale of the physics origin increases the size of the simulated entities *only* for the physics simulation. It has no effect on how RealityKit renders the entities.\n\n## Related Documentation\n\n- **physicsOrigin**: The entity that defines the origin of the scene’s physics simulation.\n\n## Simulation setup\n\n- **Designing scene hierarchies for efficient physics simulation**: Configure your RealityKit scenes to avoid performance bottlenecks.\n- **PhysicsSimulationComponent**: A component that controls localized physics simulations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The entity that defines the origin of the scene’s physics simulation.",
+          "name" : "physicsOrigin",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/ARView\/physicsOrigin"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Configure your RealityKit scenes to avoid performance bottlenecks.",
+          "name" : "Designing scene hierarchies for efficient physics simulation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/designing-scene-hierarchies-for-efficient-physics-simulation"
+        },
+        {
+          "description" : "A component that controls localized physics simulations.",
+          "name" : "PhysicsSimulationComponent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhysicsSimulationComponent"
+        }
+      ],
+      "title" : "Simulation setup"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Handling different-sized objects in physics simulations",
+  "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/handling-different-sized-objects-in-physics-simulations"
+}

@@ -1,0 +1,113 @@
+{
+  "abstract" : "A collection of container values associated with a given view.",
+  "codeExamples" : [
+    {
+      "code" : "VStack {\n    Text(\"A\")\n        .containerValue(\\.myCustomValue, 1) \/\/ myCustomValue = 1\n    Text(\"B\")\n        .containerValue(\\.myCustomValue, 2) \/\/ myCustomValue = 2\n    \/\/ container values are unaffected by views that aren't containers:\n    Text(\"C\")\n        .containerValue(\\.myCustomValue, 3)\n        .padding() \/\/ myCustomValue = 3\n} \/\/ myCustomValue = its default value, values do not escape the container",
+      "language" : "swift"
+    },
+    {
+      "code" : "@ViewBuilder var content: some View {\n    Text(\"A\")\n        .containerValue(\\.myCustomValue, 1)\n}\n\nForEach(subviews: content) { subview in\n    Text(\"value = \\(subview.containerValues.myCustomValue)\") \/\/ shows \"value = 1\"\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@ViewBuilder var containedContent: some View {\n    VStack {\n        Text(\"A\")\n            .containerValue(\\.myCustomValue, 1)\n    }\n}\n\nForEach(subviews: containedContent) { subviews in\n    Text(\"value = \\(subview.containerValues.myCustomValue)\") \/\/ shows the default value\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension ContainerValues {\n    @Entry var myCustomValue: String = \"Default value\"\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct PinPosition {\n    var rotation: Double = 0\n    var xOffset: Int = 0\n}\n\nextension ContainerValues {\n    @Entry var pinPosition: PinPosition = .init()\n}\n\n\/\/ pinPosition.rotation = 0, pinPosition.xOffset = 3\nText(\"A\").containerValue(\\.pinPosition.xOffset, 3)\n\n\/\/ pinPosition.rotation = 10, pinPosition.xOffset = 5\nText(\"B\")\n    .containerValue(\\.pinPosition.rotation, 10)\n    .containerValue(\\.pinPosition.xOffset, 5)",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension View {\n    func pinRotation(_ rotation: Double) -> some View {\n        containerValue(\\.pinPosition.rotation, rotation)\n    }\n\n    func pinXOffset(_ xOffset: Int) -> some View {\n        containerValue(\\.pinPosition.xOffset, xOffset)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "e3a998e54efc1cc5c357d1c314f428f4888280d9dc6031c66c55c50d90a569b1",
+  "crawledAt" : "2025-12-02T17:40:11Z",
+  "declaration" : {
+    "code" : "struct ContainerValues",
+    "language" : "swift"
+  },
+  "id" : "8914BCD1-12E4-414E-A2AF-195DB9BF82CF",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nSwiftUI exposes a collection of values associated with each view in the `ContainerValues` structure.\n\nContainer values you set on a given view affect only that view. Like preferences, container values are able to be read by views above the view they’re set on. Unlike preferences, however, container values don’t have merging behavior because they don’t escape their closest container. In the following example, the container value is set on the contained view, but is dropped when it reaches the containing [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VStack].\n\nEven if a stack has only one child, container values still won’t be readable outside of the `VStack`. Container values don’t escape a container even if the container has only one child.\n\nIn this example, a direct subview writes a container value, allowing its direct container view to read it back:\n\nHowever in the next example, the wrapping `VStack` means the `Text` view is not a direct subview of the outer container, so that container cannot read the changed value:\n\nCreate a custom container value by declaring a new property in an extension to the container values structure and applying the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Entry()] macro to the variable declaration:\n\nClients of your value then access the value by reading it from the container values collection of a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Subview].\n\nRelated pieces of container configuration can also be grouped under the same container values key.\n\nThis allows you to group multiple related container values into structs while maintaining separate modifiers to write each value.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/ContainerValues\ncrawled: 2025-12-02T17:40:11Z\n---\n\n# ContainerValues\n\n**Structure**\n\nA collection of container values associated with a given view.\n\n## Declaration\n\n```swift\nstruct ContainerValues\n```\n\n## Overview\n\nSwiftUI exposes a collection of values associated with each view in the `ContainerValues` structure.\n\nContainer values you set on a given view affect only that view. Like preferences, container values are able to be read by views above the view they’re set on. Unlike preferences, however, container values don’t have merging behavior because they don’t escape their closest container. In the following example, the container value is set on the contained view, but is dropped when it reaches the containing [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VStack].\n\n```swift\nVStack {\n    Text(\"A\")\n        .containerValue(\\.myCustomValue, 1) \/\/ myCustomValue = 1\n    Text(\"B\")\n        .containerValue(\\.myCustomValue, 2) \/\/ myCustomValue = 2\n    \/\/ container values are unaffected by views that aren't containers:\n    Text(\"C\")\n        .containerValue(\\.myCustomValue, 3)\n        .padding() \/\/ myCustomValue = 3\n} \/\/ myCustomValue = its default value, values do not escape the container\n```\n\nEven if a stack has only one child, container values still won’t be readable outside of the `VStack`. Container values don’t escape a container even if the container has only one child.\n\nIn this example, a direct subview writes a container value, allowing its direct container view to read it back:\n\n```swift\n@ViewBuilder var content: some View {\n    Text(\"A\")\n        .containerValue(\\.myCustomValue, 1)\n}\n\nForEach(subviews: content) { subview in\n    Text(\"value = \\(subview.containerValues.myCustomValue)\") \/\/ shows \"value = 1\"\n}\n```\n\nHowever in the next example, the wrapping `VStack` means the `Text` view is not a direct subview of the outer container, so that container cannot read the changed value:\n\n```swift\n@ViewBuilder var containedContent: some View {\n    VStack {\n        Text(\"A\")\n            .containerValue(\\.myCustomValue, 1)\n    }\n}\n\nForEach(subviews: containedContent) { subviews in\n    Text(\"value = \\(subview.containerValues.myCustomValue)\") \/\/ shows the default value\n}\n```\n\nCreate a custom container value by declaring a new property in an extension to the container values structure and applying the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Entry()] macro to the variable declaration:\n\n```swift\nextension ContainerValues {\n    @Entry var myCustomValue: String = \"Default value\"\n}\n```\n\nClients of your value then access the value by reading it from the container values collection of a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Subview].\n\nRelated pieces of container configuration can also be grouped under the same container values key.\n\n```swift\nstruct PinPosition {\n    var rotation: Double = 0\n    var xOffset: Int = 0\n}\n\nextension ContainerValues {\n    @Entry var pinPosition: PinPosition = .init()\n}\n\n\/\/ pinPosition.rotation = 0, pinPosition.xOffset = 3\nText(\"A\").containerValue(\\.pinPosition.xOffset, 3)\n\n\/\/ pinPosition.rotation = 10, pinPosition.xOffset = 5\nText(\"B\")\n    .containerValue(\\.pinPosition.rotation, 10)\n    .containerValue(\\.pinPosition.xOffset, 5)\n```\n\nThis allows you to group multiple related container values into structs while maintaining separate modifiers to write each value.\n\n```swift\nextension View {\n    func pinRotation(_ rotation: Double) -> some View {\n        containerValue(\\.pinPosition.rotation, rotation)\n    }\n\n    func pinXOffset(_ xOffset: Int) -> some View {\n        containerValue(\\.pinPosition.xOffset, xOffset)\n    }\n}\n```\n\n## Instance Methods\n\n- **hasTag(_:)**: Returns true if the container values contain a tag matching a given value.\n- **tag(for:)**: The tag value for the given type if the container values contains one.\n\n## Subscripts\n\n- **subscript(_:)**: Accesses the particular container value associated with a custom key.\n\n## Accessing a container’s subviews\n\n- **Subview**: An opaque value representing a subview of another view.\n- **SubviewsCollection**: An opaque collection representing the subviews of view.\n- **SubviewsCollectionSlice**: A slice of a SubviewsCollection.\n- **containerValue(_:_:)**: Sets a particular container value of a view.\n- **ContainerValueKey**: A key for accessing container values.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns true if the container values contain a tag matching a given value.",
+          "name" : "hasTag(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ContainerValues\/hasTag(_:)"
+        },
+        {
+          "description" : "The tag value for the given type if the container values contains one.",
+          "name" : "tag(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ContainerValues\/tag(for:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Accesses the particular container value associated with a custom key.",
+          "name" : "subscript(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ContainerValues\/subscript(_:)"
+        }
+      ],
+      "title" : "Subscripts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An opaque value representing a subview of another view.",
+          "name" : "Subview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Subview"
+        },
+        {
+          "description" : "An opaque collection representing the subviews of view.",
+          "name" : "SubviewsCollection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/SubviewsCollection"
+        },
+        {
+          "description" : "A slice of a SubviewsCollection.",
+          "name" : "SubviewsCollectionSlice",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/SubviewsCollectionSlice"
+        },
+        {
+          "description" : "Sets a particular container value of a view.",
+          "name" : "containerValue(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/containerValue(_:_:)"
+        },
+        {
+          "description" : "A key for accessing container values.",
+          "name" : "ContainerValueKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ContainerValueKey"
+        }
+      ],
+      "title" : "Accessing a container’s subviews"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "ContainerValues",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ContainerValues"
+}

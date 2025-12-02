@@ -1,0 +1,82 @@
+{
+  "abstract" : "Add machine-learning model inference to your Metal app’s GPU workflow.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "d110e44b40f57fc8353c2d4ad27f3839d20fd4054596703b71498a501f9f8276",
+  "crawledAt" : "2025-12-02T17:01:53Z",
+  "id" : "2CF40B94-6C49-43C5-ACD8-3716CABEDD08",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Metal",
+  "overview" : "## Overview\n\nMetal 4 introduces the ability to run CoreML models efficiently from within the Metal workflow. This is useful for apps that need to apply the output from a model in a Metal context, such as rendering a scene or running a compute dispatch. Add machine-learning inference to your app’s Metal workflow by converting a CoreML model into a Metal machine-learning (ML) package at development time, and then applying that package in a machine-learning encoder at runtime.\n\nYour app can combine its render, compute, and machine-learning work within the same command buffer, without needing to synchronize or wait for the CPU. By running inference with Core ML models in the GPU timeline, your app can provide model inputs, such as from a compute pass, and immediately work with a model’s outputs from a machine-learning pass.\n\nMetal 4 introduces new types for *tensors*, which are multidimensional-data arrays that serve as inputs, outputs, and intermediate values for machine-learning models. Metal Shading Language (MSL) also adds tensor operators and other functionalities, such as cooperative tensors, which your app’s shader code can use when working with tensors and their data in parallel during any GPU stage.\n\n### Convert a Core ML model into a Metal package\n\nConvert a Core ML model by creating a Metal machine-learning (ML) package from it with the `metal-package-builder` tool — which is part of the tools bundled in Xcode 26 and later — and then add the Metal ML package to your Xcode project. When you build the project, Xcode compiles the model in the Metal ML package to a Metal library that your app can load at runtime.\n\n### Apply the model from your app’s GPU workflow by encoding machine-learning commands\n\nMetal 4 introduces a new encoder type, [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4MachineLearningCommandEncoder], which encodes inference commands that run a Core ML model in a machine-learning pass that runs alongside your other Metal tasks, such as render and compute passes. To encode machine-learning inference commands for the GPU to run, you need to create a machine-learning pipeline state, provide an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHeap] for temporary scratch memory, and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTensor] instances for the model’s inputs and output. You create a machine-learning pipeline-state from the library that Xcode creates from a Metal ML package, which you can then apply to a machine-learning encoder.\n\nThe system automatically chooses an inference engine, such as a device’s GPU or Apple Neural Engine (ANE) for each machine-learning model. The GPU can run additional, independent render or compute work with the GPU when the system chooses to run a model on the ANE.\n\n### Provide model inputs and retrieve outputs with tensors\n\nMetal 4 introduces [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTensor] a resource type that stores multi-dimensional data arrays for machine-learning models. The tensor types works with the common weight and input data types, such as `int8` and `fp16`. You create input and output tensors to provide data to, and retrieve data from, a model, respectively, by passing those tensors to a machine-learning encoder when encoding a pass that invokes the model on the GPU timeline.\n\n### Work with tensors on the GPU timeline\n\nMetal 4 also adds tensor types and basic tensor operators to the Metal Shading Language (MSL), which include convolution, matrix multiplication, and reduction. You can use these operators in your MSL code that runs during the machine-learning GPU stage, and all other stages, such as blit, dispatch, vertex, fragment, and so on. This functionality gives you the option to work with tensor data in your app’s various GPU functions, such as modifying weights in an intermediate tensor between model inference invocations.\n\nThe MSL tensor types include:\n\nA tensor type can also include the `tensor_offset` tag, for example `tensor<device float, dextents<int, 2>, tensor_handle, tensor_offset>`. You can slice a tensor on the GPU without creating a new tensor descriptor by including this tag.\n\nCooperative tensors provide temporary memory for transient tensors by equally distributing their data among the threads that work with that tensor. This memory distribution reduces memory bandwidth by allocating the memory from thread-private or threadgroup-private address spaces, which is important for latency-critical, machine-learning algorithms.\n\nMSL version 4 also introduces operation descriptors, with which you can define custom operations and run them directly in your shader code.\n\n### Synchronize a machine-learning pass with other passes\n\nYour app can encode a machine-learning pass that works with other passes synchronizing the dependencies between its stage, [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStages\/machineLearning], and the relevant stages of one or more the other passes. To synchronize with stages in other passes, add barriers with the appropriate scope. For example, you can encode a machine-learning pass that:\n\nFor more information about stages and barriers, see [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStages] and [doc:\/\/com.apple.metal\/documentation\/Metal\/resource-synchronization] , respectively.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/machine-learning-passes\ncrawled: 2025-12-02T17:01:53Z\n---\n\n# Machine-learning passes\n\n**API Collection**\n\nAdd machine-learning model inference to your Metal app’s GPU workflow.\n\n## Overview\n\nMetal 4 introduces the ability to run CoreML models efficiently from within the Metal workflow. This is useful for apps that need to apply the output from a model in a Metal context, such as rendering a scene or running a compute dispatch. Add machine-learning inference to your app’s Metal workflow by converting a CoreML model into a Metal machine-learning (ML) package at development time, and then applying that package in a machine-learning encoder at runtime.\n\nYour app can combine its render, compute, and machine-learning work within the same command buffer, without needing to synchronize or wait for the CPU. By running inference with Core ML models in the GPU timeline, your app can provide model inputs, such as from a compute pass, and immediately work with a model’s outputs from a machine-learning pass.\n\nMetal 4 introduces new types for *tensors*, which are multidimensional-data arrays that serve as inputs, outputs, and intermediate values for machine-learning models. Metal Shading Language (MSL) also adds tensor operators and other functionalities, such as cooperative tensors, which your app’s shader code can use when working with tensors and their data in parallel during any GPU stage.\n\n### Convert a Core ML model into a Metal package\n\nConvert a Core ML model by creating a Metal machine-learning (ML) package from it with the `metal-package-builder` tool — which is part of the tools bundled in Xcode 26 and later — and then add the Metal ML package to your Xcode project. When you build the project, Xcode compiles the model in the Metal ML package to a Metal library that your app can load at runtime.\n\n### Apply the model from your app’s GPU workflow by encoding machine-learning commands\n\nMetal 4 introduces a new encoder type, [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4MachineLearningCommandEncoder], which encodes inference commands that run a Core ML model in a machine-learning pass that runs alongside your other Metal tasks, such as render and compute passes. To encode machine-learning inference commands for the GPU to run, you need to create a machine-learning pipeline state, provide an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHeap] for temporary scratch memory, and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTensor] instances for the model’s inputs and output. You create a machine-learning pipeline-state from the library that Xcode creates from a Metal ML package, which you can then apply to a machine-learning encoder.\n\n\n\nThe system automatically chooses an inference engine, such as a device’s GPU or Apple Neural Engine (ANE) for each machine-learning model. The GPU can run additional, independent render or compute work with the GPU when the system chooses to run a model on the ANE.\n\n### Provide model inputs and retrieve outputs with tensors\n\nMetal 4 introduces [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTensor] a resource type that stores multi-dimensional data arrays for machine-learning models. The tensor types works with the common weight and input data types, such as `int8` and `fp16`. You create input and output tensors to provide data to, and retrieve data from, a model, respectively, by passing those tensors to a machine-learning encoder when encoding a pass that invokes the model on the GPU timeline.\n\n\n\n### Work with tensors on the GPU timeline\n\nMetal 4 also adds tensor types and basic tensor operators to the Metal Shading Language (MSL), which include convolution, matrix multiplication, and reduction. You can use these operators in your MSL code that runs during the machine-learning GPU stage, and all other stages, such as blit, dispatch, vertex, fragment, and so on. This functionality gives you the option to work with tensor data in your app’s various GPU functions, such as modifying weights in an intermediate tensor between model inference invocations.\n\nThe MSL tensor types include:\n\n\n\nA tensor type can also include the `tensor_offset` tag, for example `tensor<device float, dextents<int, 2>, tensor_handle, tensor_offset>`. You can slice a tensor on the GPU without creating a new tensor descriptor by including this tag.\n\nCooperative tensors provide temporary memory for transient tensors by equally distributing their data among the threads that work with that tensor. This memory distribution reduces memory bandwidth by allocating the memory from thread-private or threadgroup-private address spaces, which is important for latency-critical, machine-learning algorithms.\n\nMSL version 4 also introduces operation descriptors, with which you can define custom operations and run them directly in your shader code.\n\n### Synchronize a machine-learning pass with other passes\n\nYour app can encode a machine-learning pass that works with other passes synchronizing the dependencies between its stage, [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStages\/machineLearning], and the relevant stages of one or more the other passes. To synchronize with stages in other passes, add barriers with the appropriate scope. For example, you can encode a machine-learning pass that:\n\n- Depends on the output from a previous render pass\n- Produces an output that a subsequent render pass consumes as its input\n- Synchronizes with both the previous and subsequent render passes with a consumer and producer queue-barrier, respectively\n\nFor more information about stages and barriers, see [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStages] and [doc:\/\/com.apple.metal\/documentation\/Metal\/resource-synchronization] , respectively.\n\n## Encoding a machine-learning pass\n\n- **MTL4MachineLearningCommandEncoder**: Encodes dispatch commands that run machine-learning model inference on Apple silicon.\n- **MTL4MachineLearningPipelineState**: A pipeline state that you can use with machine-learning encoder instances.\n\n## Configuring a machine-learning pipeline\n\n- **MTL4MachineLearningPipelineDescriptor**: Description for a machine learning pipeline state.\n- **MTL4MachineLearningPipelineReflection**: Represents reflection information for a machine learning pipeline state.\n\n## Command encoders\n\n- **Render passes**: Encode a render pass to draw graphics into an image.\n- **Compute passes**: Encode a compute pass that runs computations in parallel on a thread grid, processing and manipulating Metal resource data on multiple cores of a GPU.\n- **Blit passes**: Encode a block information transfer pass to adjust and copy data to and from GPU resources, such as buffers and textures.\n- **Indirect command encoding**: Store draw commands in Metal buffers and run them at a later time on the GPU, either once or repeatedly.\n- **Ray tracing with acceleration structures**: Build a representation of your scene’s geometry using triangles and bounding volumes to quickly trace rays through the scene.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Encodes dispatch commands that run machine-learning model inference on Apple silicon.",
+          "name" : "MTL4MachineLearningCommandEncoder",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4MachineLearningCommandEncoder"
+        },
+        {
+          "description" : "A pipeline state that you can use with machine-learning encoder instances.",
+          "name" : "MTL4MachineLearningPipelineState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4MachineLearningPipelineState"
+        }
+      ],
+      "title" : "Encoding a machine-learning pass"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Description for a machine learning pipeline state.",
+          "name" : "MTL4MachineLearningPipelineDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4MachineLearningPipelineDescriptor"
+        },
+        {
+          "description" : "Represents reflection information for a machine learning pipeline state.",
+          "name" : "MTL4MachineLearningPipelineReflection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTL4MachineLearningPipelineReflection"
+        }
+      ],
+      "title" : "Configuring a machine-learning pipeline"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Encode a render pass to draw graphics into an image.",
+          "name" : "Render passes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/render-passes"
+        },
+        {
+          "description" : "Encode a compute pass that runs computations in parallel on a thread grid, processing and manipulating Metal resource data on multiple cores of a GPU.",
+          "name" : "Compute passes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/compute-passes"
+        },
+        {
+          "description" : "Encode a block information transfer pass to adjust and copy data to and from GPU resources, such as buffers and textures.",
+          "name" : "Blit passes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/blit-passes"
+        },
+        {
+          "description" : "Store draw commands in Metal buffers and run them at a later time on the GPU, either once or repeatedly.",
+          "name" : "Indirect command encoding",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/indirect-command-encoding"
+        },
+        {
+          "description" : "Build a representation of your scene’s geometry using triangles and bounding volumes to quickly trace rays through the scene.",
+          "name" : "Ray tracing with acceleration structures",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/ray-tracing-with-acceleration-structures"
+        }
+      ],
+      "title" : "Command encoders"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Machine-learning passes",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/machine-learning-passes"
+}

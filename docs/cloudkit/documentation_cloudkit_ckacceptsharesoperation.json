@@ -1,0 +1,122 @@
+{
+  "abstract" : "An operation that confirms a user’s participation in a share.",
+  "codeExamples" : [
+    {
+      "code" : "func windowScene(_ windowScene: UIWindowScene, \n    userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {\n    \n    \/\/ Accept the share. If successful, schedule a fetch of the \n    \/\/ share's root record.\n    acceptShare(metadata: cloudKitShareMetadata) { [weak self] result in\n        switch result {\n        case .success(let recordID):\n            self?.fetchRootRecordAndNotifyObservers(recordID)\n        case .failure(let error):\n            \/\/ Handle the error...\n        }\n    }\n}\n    \nfunc acceptShare(metadata: CKShare.Metadata, \n    completion: @escaping (Result<CKRecord.ID, Error>) -> Void) {\n    \n    \/\/ Create a reference to the share's container so the operation\n    \/\/ executes in the correct context. \n    let container = CKContainer(identifier: metadata.containerIdentifier)\n    \n    \/\/ Create the operation using the metadata the caller provides.\n    let operation = CKAcceptSharesOperation(shareMetadatas: [metadata])\n        \n    var rootRecordID: CKRecord.ID!\n    \/\/ If CloudKit accepts the share, cache the root record's ID. \n    \/\/ The completion closure handles any errors.\n    operation.perShareCompletionBlock = { metadata, share, error in\n        if let _ = share, error == nil {\n            rootRecordID = hierarchicalRootRecordID \n        }\n    }\n\n    \/\/ If the operation fails, return the error to the caller.\n    \/\/ Otherwise, return the record ID of the share's root record.\n    operation.acceptSharesCompletionBlock = { error in\n        if let error = error {\n            completion(.failure(error))\n        } else {\n            completion(.success(rootRecordID))\n        }\n    }\n\n    \/\/ Set an appropriate QoS and add the operation to the\n    \/\/ container's queue to execute it.\n    operation.qualityOfService = .utility\n    container.add(operation)\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "3b89f6d05714bf7444c1f36bdce510c76cfc84b4aa2c64b4c17f20124903e8fe",
+  "crawledAt" : "2025-12-01T09:54:36Z",
+  "declaration" : {
+    "code" : "class CKAcceptSharesOperation",
+    "language" : "swift"
+  },
+  "id" : "FE1CD483-B155-4C03-92BF-33887367FF93",
+  "kind" : "class",
+  "module" : "CloudKit",
+  "overview" : "## Overview\n\nUse this operation to accept participation in one or more shares. You create the operation with an array of share metadatas, which CloudKit provides to your app when the user taps or clicks a share’s [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/url]. The method CloudKit calls varies by platform and app configuration. For more information, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/Metadata]. You can also fetch a share’s metadata using [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchShareMetadataOperation].\n\nIf there are several metadatas, group them by their [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/Metadata\/containerIdentifier] and create an operation for each container. Then add the operation to each container’s operation queue to run it. The operation executes its callbacks on a private serial queue.\n\nThe operation calls [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKAcceptSharesOperation\/perShareCompletionBlock] once for each metadata you provide. CloudKit returns the metadata and its related share, or an error if it can’t accept the share. CloudKit also batches per-metadata errors. If the operation completes with errors, it returns a [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKError\/partialFailure] error. The error stores individual errors in its [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSError\/userInfo] dictionary. Use the [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKPartialErrorsByItemIDKey] key to extract them.\n\nAfter CloudKit applies all record changes, the operation calls [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKAcceptSharesOperation\/acceptSharesCompletionBlock]. When the closure executes, the server may continue processing residual tasks of the operation, such as creating the record zone in the user’s private database.\n\nThe following example demonstrates how to accept a share that CloudKit provides to your window scene delegate. It shows how to create the operation, configure it, and execute it in the correct container:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAcceptSharesOperation\ncrawled: 2025-12-01T09:54:36Z\n---\n\n# CKAcceptSharesOperation\n\n**Class**\n\nAn operation that confirms a user’s participation in a share.\n\n## Declaration\n\n```swift\nclass CKAcceptSharesOperation\n```\n\n## Overview\n\nUse this operation to accept participation in one or more shares. You create the operation with an array of share metadatas, which CloudKit provides to your app when the user taps or clicks a share’s [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/url]. The method CloudKit calls varies by platform and app configuration. For more information, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/Metadata]. You can also fetch a share’s metadata using [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchShareMetadataOperation].\n\nIf there are several metadatas, group them by their [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKShare\/Metadata\/containerIdentifier] and create an operation for each container. Then add the operation to each container’s operation queue to run it. The operation executes its callbacks on a private serial queue.\n\nThe operation calls [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKAcceptSharesOperation\/perShareCompletionBlock] once for each metadata you provide. CloudKit returns the metadata and its related share, or an error if it can’t accept the share. CloudKit also batches per-metadata errors. If the operation completes with errors, it returns a [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKError\/partialFailure] error. The error stores individual errors in its [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSError\/userInfo] dictionary. Use the [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKPartialErrorsByItemIDKey] key to extract them.\n\nAfter CloudKit applies all record changes, the operation calls [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKAcceptSharesOperation\/acceptSharesCompletionBlock]. When the closure executes, the server may continue processing residual tasks of the operation, such as creating the record zone in the user’s private database.\n\nThe following example demonstrates how to accept a share that CloudKit provides to your window scene delegate. It shows how to create the operation, configure it, and execute it in the correct container:\n\n```swift\nfunc windowScene(_ windowScene: UIWindowScene, \n    userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {\n    \n    \/\/ Accept the share. If successful, schedule a fetch of the \n    \/\/ share's root record.\n    acceptShare(metadata: cloudKitShareMetadata) { [weak self] result in\n        switch result {\n        case .success(let recordID):\n            self?.fetchRootRecordAndNotifyObservers(recordID)\n        case .failure(let error):\n            \/\/ Handle the error...\n        }\n    }\n}\n    \nfunc acceptShare(metadata: CKShare.Metadata, \n    completion: @escaping (Result<CKRecord.ID, Error>) -> Void) {\n    \n    \/\/ Create a reference to the share's container so the operation\n    \/\/ executes in the correct context. \n    let container = CKContainer(identifier: metadata.containerIdentifier)\n    \n    \/\/ Create the operation using the metadata the caller provides.\n    let operation = CKAcceptSharesOperation(shareMetadatas: [metadata])\n        \n    var rootRecordID: CKRecord.ID!\n    \/\/ If CloudKit accepts the share, cache the root record's ID. \n    \/\/ The completion closure handles any errors.\n    operation.perShareCompletionBlock = { metadata, share, error in\n        if let _ = share, error == nil {\n            rootRecordID = hierarchicalRootRecordID \n        }\n    }\n\n    \/\/ If the operation fails, return the error to the caller.\n    \/\/ Otherwise, return the record ID of the share's root record.\n    operation.acceptSharesCompletionBlock = { error in\n        if let error = error {\n            completion(.failure(error))\n        } else {\n            completion(.success(rootRecordID))\n        }\n    }\n\n    \/\/ Set an appropriate QoS and add the operation to the\n    \/\/ container's queue to execute it.\n    operation.qualityOfService = .utility\n    container.add(operation)\n}\n```\n\n## Creating a Share Accept Operation\n\n- **init()**: Creates an operation for accepting shares.\n- **init(shareMetadatas:)**: Creates an operation for accepting the specified shares.\n\n## Processing the Share Accept Results\n\n- **shareMetadatas**: The share metadatas to process.\n- **perShareCompletionBlock**: The block to execute as CloudKit processes individual shares.\n- **acceptSharesCompletionBlock**: The closure to execute when the operation finishes.\n\n## Instance Properties\n\n- **acceptSharesResultBlock**\n- **perShareResultBlock**\n\n## Share Requests\n\n- **CKFetchShareMetadataOperation**: An operation that fetches metadata for one or more shares.\n- **CKShare.Metadata**: An object that describes a shared record’s metadata.\n\n## Inherits From\n\n- CKOperation\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an operation for accepting shares.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAcceptSharesOperation\/init()"
+        },
+        {
+          "description" : "Creates an operation for accepting the specified shares.",
+          "name" : "init(shareMetadatas:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAcceptSharesOperation\/init(shareMetadatas:)"
+        }
+      ],
+      "title" : "Creating a Share Accept Operation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The share metadatas to process.",
+          "name" : "shareMetadatas",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAcceptSharesOperation\/shareMetadatas"
+        },
+        {
+          "description" : "The block to execute as CloudKit processes individual shares.",
+          "name" : "perShareCompletionBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAcceptSharesOperation\/perShareCompletionBlock"
+        },
+        {
+          "description" : "The closure to execute when the operation finishes.",
+          "name" : "acceptSharesCompletionBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAcceptSharesOperation\/acceptSharesCompletionBlock"
+        }
+      ],
+      "title" : "Processing the Share Accept Results"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "acceptSharesResultBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAcceptSharesOperation\/acceptSharesResultBlock"
+        },
+        {
+          "description" : "",
+          "name" : "perShareResultBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAcceptSharesOperation\/perShareResultBlock"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An operation that fetches metadata for one or more shares.",
+          "name" : "CKFetchShareMetadataOperation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchShareMetadataOperation"
+        },
+        {
+          "description" : "An object that describes a shared record’s metadata.",
+          "name" : "CKShare.Metadata",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKShare\/Metadata"
+        }
+      ],
+      "title" : "Share Requests"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "CKOperation"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "CKAcceptSharesOperation",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKAcceptSharesOperation"
+}

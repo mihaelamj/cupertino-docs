@@ -1,0 +1,132 @@
+{
+  "abstract" : "A type that supports atomic operations through a separate atomic storage representation.",
+  "codeExamples" : [
+    {
+      "code" : "enum TrafficLight: UInt8 {\n  case red\n  case yellow\n  case green\n}\n\nextension TrafficLight: AtomicRepresentable {}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ A point in an x-y coordinate system.\nstruct GridPoint {\n  var x: Int\n  var y: Int\n}\n\nextension GridPoint: AtomicRepresentable {\n  typealias AtomicRepresentation = WordPair.AtomicRepresentation\n\n  static func encodeAtomicRepresentation(\n    _ value: consuming GridPoint\n  ) -> AtomicRepresentation {\n    let wordPair = WordPair(\n      first: UInt(bitPattern: value.x),\n      second: UInt(bitPattern: value.y)\n    )\n\n    return WordPair.encodeAtomicRepresentation(wordPair)\n  }\n\n  static func decodeAtomicRepresentation(\n    _ representation: consuming AtomicRepresentation\n  ) -> GridPoint {\n    let wordPair = WordPair.decodeAtomicRepresentation(representation)\n\n    return GridPoint(\n      x: Int(bitPattern: wordPair.first),\n      y: Int(bitPattern: wordPair.second)\n    )\n  }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func atomicGridPoint(_ gridPoint: Atomic<GridPoint>) {\n  let newGridPoint = GridPoint(x: 123, y: -456)\n\n  let oldGridPoint1 = gridPoint.load(ordering: .relaxed)\n\n  gridPoint.store(newGridPoint, ordering: .releasing)\n\n  let oldGridPoint2 = gridPoint.exchange(\n    desired: oldGridPoint1,\n    ordering: .acquiringAndReleasing\n  )\n\n  let (exchanged1, oldGridPoint2) = gridPoint.compareExchange(\n    expected: oldGridPoint1,\n    desired: newGridPoint,\n    ordering: .sequentiallyConsistent\n  )\n\n  let (exchanged2, oldGridPoint3) = gridPoint.weakCompareExchange(\n    expected: newGridPoint,\n    desired: oldGridPoint2,\n    ordering: .relaxed\n  )\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformingTypes" : [
+    "Bool",
+    "Double",
+    "Duration",
+    "Float",
+    "Float16",
+    "Int",
+    "Int128",
+    "Int16",
+    "Int32",
+    "Int64",
+    "Int8",
+    "Never",
+    "ObjectIdentifier",
+    "OpaquePointer",
+    "Optional",
+    "UInt",
+    "UInt128",
+    "UInt16",
+    "UInt32",
+    "UInt64",
+    "UInt8",
+    "Unmanaged",
+    "UnsafeBufferPointer",
+    "UnsafeMutableBufferPointer",
+    "UnsafeMutablePointer",
+    "UnsafeMutableRawBufferPointer",
+    "UnsafeMutableRawPointer",
+    "UnsafePointer",
+    "UnsafeRawBufferPointer",
+    "UnsafeRawPointer",
+    "WordPair"
+  ],
+  "contentHash" : "916a6d8633405189cb51270c69cd3ca7287846b4a6be35f66a1efdaea61a2cdb",
+  "crawledAt" : "2025-12-02T20:34:09Z",
+  "declaration" : {
+    "code" : "protocol AtomicRepresentable",
+    "language" : "swift"
+  },
+  "id" : "56AC81BE-DA34-431E-8204-D1EAE01A271A",
+  "inheritedBy" : [
+    "AtomicOptionalRepresentable"
+  ],
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "Synchronization",
+  "overview" : "## Overview\n\nTypes that conform to the `AtomicRepresentable` protocol can be used as the `Value` type parameter with the `Atomic` type. Conformances that utilize existing atomic storage representations as their own representation will get the primitive atomic operations available on `Atomic` for free. Such operations include `load`, `store`, `exchange`, `compareExchange`, and `weakCompareExchange`.\n\n## Conforming to the AtomicRepresentable protocol\n\nConforming your own custom types allow them to be used in the `Atomic` type and get access to all of the primitive atomic operations explained above. There are two main ways to conform your type to `AtomicRepresentable`:\n\nIf you custom type already conforms to `RawRepresentable`, then adding the `AtomicRepresentable` conformance may be really simple! If the `RawValue` associated type of your type is already itself an `AtomicRepresentable`, then all you need to do is add the conformance and you’re done!\n\nAnd that’s it! Here, we’re utilizing Swift’s automatic `RawRepresentable` conformance synthesis for enums by declaring our “raw value” to be a `UInt8`. By adding the `AtomicRepresentable` conformance, we automatically figure out how to do the conformance from the `RawRepresentable` implementation and do all of th necessary work for you. However, it is still possible to customize this behavior using the manual method explained below.\n\nDefining your own `AtomicRepresentable` conformance is pretty simple. All you have to do is decide what atomic storage representation fits best for your type, and create the bidirectional relationship between the two.\n\nHere, we’re going to select `WordPair`’s atomic storage representation as our own. This is very important because we only get the atomic operations like `load` and `store` if our representation is one of the *fundamental* storage representations. Luckily for us, `WordPair` does use one of these types as its storage type.\n\nIn addition to selecting what storage representation our type will use, we define two static functions that go from both our custom type to its representation and the representation back to our own type. Because our representation is the same as `WordPair.AtomicRepresentation`, we will actually go through `WordPair`’s `AtomicRepresentable` conformance to help define our own.\n\nThis is all you need to do to conform your custom type to the `AtomicRepresentable` protocol. From here, you can use this type in all of the primitive atomic operations like shown below:\n\n## List of Fundamental Atomic Representations\n\nWhen defining your own `AtomicRepresentable` conformance, it is critical that your custom type should choose from the following list of types as its own `AtomicRepresentation`:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Synchronization\/AtomicRepresentable\ncrawled: 2025-12-02T20:34:09Z\n---\n\n# AtomicRepresentable\n\n**Protocol**\n\nA type that supports atomic operations through a separate atomic storage representation.\n\n## Declaration\n\n```swift\nprotocol AtomicRepresentable\n```\n\n## Overview\n\nTypes that conform to the `AtomicRepresentable` protocol can be used as the `Value` type parameter with the `Atomic` type. Conformances that utilize existing atomic storage representations as their own representation will get the primitive atomic operations available on `Atomic` for free. Such operations include `load`, `store`, `exchange`, `compareExchange`, and `weakCompareExchange`.\n\n## Conforming to the AtomicRepresentable protocol\n\nConforming your own custom types allow them to be used in the `Atomic` type and get access to all of the primitive atomic operations explained above. There are two main ways to conform your type to `AtomicRepresentable`:\n\n1. Using a predefined `RawRepresentable` conformance\n2. Manually conforming to `AtomicRepresentable`\n\nIf you custom type already conforms to `RawRepresentable`, then adding the `AtomicRepresentable` conformance may be really simple! If the `RawValue` associated type of your type is already itself an `AtomicRepresentable`, then all you need to do is add the conformance and you’re done!\n\n```swift\nenum TrafficLight: UInt8 {\n  case red\n  case yellow\n  case green\n}\n\nextension TrafficLight: AtomicRepresentable {}\n```\n\nAnd that’s it! Here, we’re utilizing Swift’s automatic `RawRepresentable` conformance synthesis for enums by declaring our “raw value” to be a `UInt8`. By adding the `AtomicRepresentable` conformance, we automatically figure out how to do the conformance from the `RawRepresentable` implementation and do all of th necessary work for you. However, it is still possible to customize this behavior using the manual method explained below.\n\nDefining your own `AtomicRepresentable` conformance is pretty simple. All you have to do is decide what atomic storage representation fits best for your type, and create the bidirectional relationship between the two.\n\n```swift\n\/\/ A point in an x-y coordinate system.\nstruct GridPoint {\n  var x: Int\n  var y: Int\n}\n\nextension GridPoint: AtomicRepresentable {\n  typealias AtomicRepresentation = WordPair.AtomicRepresentation\n\n  static func encodeAtomicRepresentation(\n    _ value: consuming GridPoint\n  ) -> AtomicRepresentation {\n    let wordPair = WordPair(\n      first: UInt(bitPattern: value.x),\n      second: UInt(bitPattern: value.y)\n    )\n\n    return WordPair.encodeAtomicRepresentation(wordPair)\n  }\n\n  static func decodeAtomicRepresentation(\n    _ representation: consuming AtomicRepresentation\n  ) -> GridPoint {\n    let wordPair = WordPair.decodeAtomicRepresentation(representation)\n\n    return GridPoint(\n      x: Int(bitPattern: wordPair.first),\n      y: Int(bitPattern: wordPair.second)\n    )\n  }\n}\n```\n\nHere, we’re going to select `WordPair`’s atomic storage representation as our own. This is very important because we only get the atomic operations like `load` and `store` if our representation is one of the *fundamental* storage representations. Luckily for us, `WordPair` does use one of these types as its storage type.\n\nIn addition to selecting what storage representation our type will use, we define two static functions that go from both our custom type to its representation and the representation back to our own type. Because our representation is the same as `WordPair.AtomicRepresentation`, we will actually go through `WordPair`’s `AtomicRepresentable` conformance to help define our own.\n\nThis is all you need to do to conform your custom type to the `AtomicRepresentable` protocol. From here, you can use this type in all of the primitive atomic operations like shown below:\n\n```swift\nfunc atomicGridPoint(_ gridPoint: Atomic<GridPoint>) {\n  let newGridPoint = GridPoint(x: 123, y: -456)\n\n  let oldGridPoint1 = gridPoint.load(ordering: .relaxed)\n\n  gridPoint.store(newGridPoint, ordering: .releasing)\n\n  let oldGridPoint2 = gridPoint.exchange(\n    desired: oldGridPoint1,\n    ordering: .acquiringAndReleasing\n  )\n\n  let (exchanged1, oldGridPoint2) = gridPoint.compareExchange(\n    expected: oldGridPoint1,\n    desired: newGridPoint,\n    ordering: .sequentiallyConsistent\n  )\n\n  let (exchanged2, oldGridPoint3) = gridPoint.weakCompareExchange(\n    expected: newGridPoint,\n    desired: oldGridPoint2,\n    ordering: .relaxed\n  )\n}\n```\n\n## List of Fundamental Atomic Representations\n\nWhen defining your own `AtomicRepresentable` conformance, it is critical that your custom type should choose from the following list of types as its own `AtomicRepresentation`:\n\n- `UInt8.AtomicRepresentation`\n- `UInt16.AtomicRepresentation`\n- `UInt32.AtomicRepresentation`\n- `UInt64.AtomicRepresentation`\n- `UInt.AtomicRepresentation`\n- `Int8.AtomicRepresentation`\n- `Int16.AtomicRepresentation`\n- `Int32.AtomicRepresentation`\n- `Int64.AtomicRepresentation`\n- `Int.AtomicRepresentation`\n- `WordPair.AtomicRepresentation`\n\n\n\n## Associated Types\n\n- **AtomicRepresentation**: The storage representation type that `Self` encodes to and decodes from which is a suitable type when used in atomic operations.\n\n## Type Methods\n\n- **decodeAtomicRepresentation(_:)**: Recovers the logical atomic type `Self` by destroying some `AtomicRepresentation` storage instance returned from an atomic operation.\n- **encodeAtomicRepresentation(_:)**: Destroys a value of `Self` and prepares an `AtomicRepresentation` storage type to be used for atomic operations.\n\n## Atomic Values\n\n- **Atomic**: An atomic value.\n- **AtomicLazyReference**: A lazily initializable atomic strong reference.\n- **WordPair**: A pair of two word sized `UInt`s.\n- **AtomicOptionalRepresentable**: An atomic value that also supports atomic operations when wrapped in an `Optional`. Atomic optional representable types come with a standalone atomic representation for their optional-wrapped variants.\n\n## Inherited By\n\n- AtomicOptionalRepresentable\n\n## Conforming Types\n\n- Bool\n- Double\n- Duration\n- Float\n- Float16\n- Int\n- Int128\n- Int16\n- Int32\n- Int64\n- Int8\n- Never\n- ObjectIdentifier\n- OpaquePointer\n- Optional\n- UInt\n- UInt128\n- UInt16\n- UInt32\n- UInt64\n- UInt8\n- Unmanaged\n- UnsafeBufferPointer\n- UnsafeMutableBufferPointer\n- UnsafeMutablePointer\n- UnsafeMutableRawBufferPointer\n- UnsafeMutableRawPointer\n- UnsafePointer\n- UnsafeRawBufferPointer\n- UnsafeRawPointer\n- WordPair\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The storage representation type that `Self` encodes to and decodes from which is a suitable type when used in atomic operations.",
+          "name" : "AtomicRepresentation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Synchronization\/AtomicRepresentable\/AtomicRepresentation"
+        }
+      ],
+      "title" : "Associated Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Recovers the logical atomic type `Self` by destroying some `AtomicRepresentation` storage instance returned from an atomic operation.",
+          "name" : "decodeAtomicRepresentation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Synchronization\/AtomicRepresentable\/decodeAtomicRepresentation(_:)"
+        },
+        {
+          "description" : "Destroys a value of `Self` and prepares an `AtomicRepresentation` storage type to be used for atomic operations.",
+          "name" : "encodeAtomicRepresentation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Synchronization\/AtomicRepresentable\/encodeAtomicRepresentation(_:)"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An atomic value.",
+          "name" : "Atomic",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Synchronization\/Atomic"
+        },
+        {
+          "description" : "A lazily initializable atomic strong reference.",
+          "name" : "AtomicLazyReference",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Synchronization\/AtomicLazyReference"
+        },
+        {
+          "description" : "A pair of two word sized `UInt`s.",
+          "name" : "WordPair",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Synchronization\/WordPair"
+        },
+        {
+          "description" : "An atomic value that also supports atomic operations when wrapped in an `Optional`. Atomic optional representable types come with a standalone atomic representation for their optional-wrapped variants.",
+          "name" : "AtomicOptionalRepresentable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Synchronization\/AtomicOptionalRepresentable"
+        }
+      ],
+      "title" : "Atomic Values"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AtomicRepresentable",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Synchronization\/AtomicRepresentable"
+}

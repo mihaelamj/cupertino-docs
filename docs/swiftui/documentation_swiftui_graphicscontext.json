@@ -1,0 +1,295 @@
+{
+  "abstract" : "An immediate mode drawing destination, and its current state.",
+  "codeExamples" : [
+    {
+      "code" : "Canvas { context, size in\n    context.fill(\n        Path(ellipseIn: CGRect(origin: .zero, size: size)),\n        with: .color(.green))\n}\n.frame(width: 300, height: 200)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let halfSize = size.applying(CGAffineTransform(scaleX: 0.5, y: 0.5))\ncontext.clip(to: Path(CGRect(origin: .zero, size: halfSize)))\ncontext.fill(\n    Path(ellipseIn: CGRect(origin: .zero, size: size)),\n    with: .color(.green))",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Create a copy of the context to draw a clipped ellipse.\nvar maskedContext = context\nlet halfSize = size.applying(CGAffineTransform(scaleX: 0.5, y: 0.5))\nmaskedContext.clip(to: Path(CGRect(origin: .zero, size: halfSize)))\nmaskedContext.fill(\n    Path(ellipseIn: CGRect(origin: .zero, size: size)),\n    with: .color(.green))\n\n\/\/ Go back to the original context to draw the rectangle.\nlet origin = CGPoint(x: size.width \/ 4, y: size.height \/ 4)\ncontext.fill(\n    Path(CGRect(origin: origin, size: halfSize)),\n    with: .color(.blue))",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "1f99339b400bb5783406d043ab384e3e9e6341c204f8e77e47c6cf78d52d1f01",
+  "crawledAt" : "2025-12-02T16:15:44Z",
+  "declaration" : {
+    "code" : "@frozen struct GraphicsContext",
+    "language" : "swift"
+  },
+  "id" : "4FF4D799-DC6E-46CD-BB83-7CA2A69ADFB7",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nUse a context to execute 2D drawing primitives. For example, you can draw filled shapes using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext\/fill(_:with:style:)] method inside a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Canvas] view:\n\nThe example above draws an ellipse that just fits inside a canvas that’s constrained to 300 points wide and 200 points tall:\n\n\n\nIn addition to outlining or filling paths, you can draw images, text, and SwiftUI views. You can also use the context to perform many common graphical operations, like adding masks, applying filters and transforms, and setting a blend mode. For example you can add a mask using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext\/clip(to:style:options:)] method:\n\nThe rectangular mask hides all but one quadrant of the ellipse:\n\n\n\nThe order of operations matters. Changes that you make to the state of the context, like adding a mask or a filter, apply to later drawing operations. If you reverse the fill and clip operations in the example above, so that the fill comes first, the mask doesn’t affect the ellipse.\n\nEach context references a particular layer in a tree of transparency layers, and also contains a full copy of the drawing state. You can modify the state of one context without affecting the state of any other, even if they refer to the same layer. For example you can draw the masked ellipse from the previous example into a copy of the main context, and then add a rectangle into the main context:\n\nThe mask doesn’t clip the rectangle because the mask isn’t part of the main context. However, both contexts draw into the same view because you created one context as a copy of the other:\n\n\n\nThe context has access to an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues] instance called [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext\/environment] that’s initially copied from the environment of its enclosing view. SwiftUI uses environment values — like the display resolution and color scheme — to resolve types like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Image] and [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Color] that appear in the context. You can also access values stored in the environment for your own purposes.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\ncrawled: 2025-12-02T16:15:44Z\n---\n\n# GraphicsContext\n\n**Structure**\n\nAn immediate mode drawing destination, and its current state.\n\n## Declaration\n\n```swift\n@frozen struct GraphicsContext\n```\n\n## Overview\n\nUse a context to execute 2D drawing primitives. For example, you can draw filled shapes using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext\/fill(_:with:style:)] method inside a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Canvas] view:\n\n```swift\nCanvas { context, size in\n    context.fill(\n        Path(ellipseIn: CGRect(origin: .zero, size: size)),\n        with: .color(.green))\n}\n.frame(width: 300, height: 200)\n```\n\nThe example above draws an ellipse that just fits inside a canvas that’s constrained to 300 points wide and 200 points tall:\n\n\n\nIn addition to outlining or filling paths, you can draw images, text, and SwiftUI views. You can also use the context to perform many common graphical operations, like adding masks, applying filters and transforms, and setting a blend mode. For example you can add a mask using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext\/clip(to:style:options:)] method:\n\n```swift\nlet halfSize = size.applying(CGAffineTransform(scaleX: 0.5, y: 0.5))\ncontext.clip(to: Path(CGRect(origin: .zero, size: halfSize)))\ncontext.fill(\n    Path(ellipseIn: CGRect(origin: .zero, size: size)),\n    with: .color(.green))\n```\n\nThe rectangular mask hides all but one quadrant of the ellipse:\n\n\n\nThe order of operations matters. Changes that you make to the state of the context, like adding a mask or a filter, apply to later drawing operations. If you reverse the fill and clip operations in the example above, so that the fill comes first, the mask doesn’t affect the ellipse.\n\nEach context references a particular layer in a tree of transparency layers, and also contains a full copy of the drawing state. You can modify the state of one context without affecting the state of any other, even if they refer to the same layer. For example you can draw the masked ellipse from the previous example into a copy of the main context, and then add a rectangle into the main context:\n\n```swift\n\/\/ Create a copy of the context to draw a clipped ellipse.\nvar maskedContext = context\nlet halfSize = size.applying(CGAffineTransform(scaleX: 0.5, y: 0.5))\nmaskedContext.clip(to: Path(CGRect(origin: .zero, size: halfSize)))\nmaskedContext.fill(\n    Path(ellipseIn: CGRect(origin: .zero, size: size)),\n    with: .color(.green))\n\n\/\/ Go back to the original context to draw the rectangle.\nlet origin = CGPoint(x: size.width \/ 4, y: size.height \/ 4)\ncontext.fill(\n    Path(CGRect(origin: origin, size: halfSize)),\n    with: .color(.blue))\n```\n\nThe mask doesn’t clip the rectangle because the mask isn’t part of the main context. However, both contexts draw into the same view because you created one context as a copy of the other:\n\n\n\nThe context has access to an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues] instance called [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext\/environment] that’s initially copied from the environment of its enclosing view. SwiftUI uses environment values — like the display resolution and color scheme — to resolve types like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Image] and [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Color] that appear in the context. You can also access values stored in the environment for your own purposes.\n\n## Drawing a path\n\n- **stroke(_:with:lineWidth:)**: Draws a path into the context with a specified line width.\n- **stroke(_:with:style:)**: Draws a path into the context with a specified stroke style.\n- **fill(_:with:style:)**: Draws a path into the context and fills the outlined region.\n- **GraphicsContext.Shading**: A color or pattern that you can use to outline or fill a path.\n- **GraphicsContext.GradientOptions**: Options that affect the rendering of color gradients.\n\n## Drawing images, text, and views\n\n- **draw(_:in:)**: Draws a resolved symbol into the context, using the specified rectangle as a layout frame.\n- **draw(_:in:style:)**: Draws a resolved image into the context, using the specified rectangle as a layout frame.\n- **draw(_:at:anchor:)**: Draws a resolved image into the context, aligning an anchor within the image to a point in the context.\n\n## Drawing into a new layer\n\n- **drawLayer(content:)**: Draws a new layer, created by drawing code that you provide, into the context.\n\n## Resolving a drawn entity\n\n- **resolve(_:)**: Gets a version of an image that’s fixed with the current values of the graphics context’s environment.\n- **resolveSymbol(id:)**: Gets the identified child view as a resolved symbol, if the view exists.\n- **GraphicsContext.ResolvedSymbol**: A static sequence of drawing operations that may be drawn multiple times, preserving their resolution independence.\n- **GraphicsContext.ResolvedImage**: An image resolved to a particular environment.\n- **GraphicsContext.ResolvedText**: A text view resolved to a particular environment.\n\n## Masking\n\n- **clip(to:style:options:)**: Adds a path to the context’s array of clip shapes.\n- **clipToLayer(opacity:options:content:)**: Adds a clip shape that you define in a new layer to the context’s array of clip shapes.\n- **clipBoundingRect**: The bounding rectangle of the intersection of all current clip shapes in the current user space.\n- **GraphicsContext.ClipOptions**: Options that affect the use of clip shapes.\n\n## Setting opacity and the blend mode\n\n- **opacity**: The opacity of drawing operations in the context.\n- **blendMode**: The blend mode used by drawing operations in the context.\n- **GraphicsContext.BlendMode**: The ways that a graphics context combines new content with background content.\n\n## Filtering\n\n- **addFilter(_:options:)**: Adds a filter that applies to subsequent drawing operations.\n- **GraphicsContext.Filter**: A type that applies image processing operations to rendered content.\n- **GraphicsContext.FilterOptions**: Options that configure a filter that you add to a graphics context.\n- **GraphicsContext.BlurOptions**: Options that configure the graphics context filter that creates blur.\n- **GraphicsContext.ShadowOptions**: Options that configure the graphics context filter that creates shadows.\n\n## Applying transforms\n\n- **scaleBy(x:y:)**: Scales subsequent drawing operations by an amount in each dimension.\n- **rotate(by:)**: Rotates subsequent drawing operations by an angle.\n- **translateBy(x:y:)**: Moves subsequent drawing operations by an amount in each dimension.\n- **concatenate(_:)**: Appends the given transform to the context’s existing transform.\n- **transform**: The current transform matrix, defining user space coordinates.\n\n## Drawing with a core graphics context\n\n- **withCGContext(content:)**: Provides a Core Graphics context that you can use as a proxy to draw into this context.\n\n## Accessing the environment\n\n- **environment**: The environment associated with the graphics context.\n\n## Instance Methods\n\n- **draw(_:options:)**: Draws `line` into the graphics context.\n\n## Immediate mode drawing\n\n- **Add rich graphics to your SwiftUI app**: Make your apps stand out by adding background materials, vibrancy, custom graphics, and animations.\n- **Canvas**: A view type that supports immediate mode drawing.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Draws a path into the context with a specified line width.",
+          "name" : "stroke(_:with:lineWidth:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/stroke(_:with:lineWidth:)"
+        },
+        {
+          "description" : "Draws a path into the context with a specified stroke style.",
+          "name" : "stroke(_:with:style:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/stroke(_:with:style:)"
+        },
+        {
+          "description" : "Draws a path into the context and fills the outlined region.",
+          "name" : "fill(_:with:style:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/fill(_:with:style:)"
+        },
+        {
+          "description" : "A color or pattern that you can use to outline or fill a path.",
+          "name" : "GraphicsContext.Shading",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/Shading"
+        },
+        {
+          "description" : "Options that affect the rendering of color gradients.",
+          "name" : "GraphicsContext.GradientOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/GradientOptions"
+        }
+      ],
+      "title" : "Drawing a path"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Draws a resolved symbol into the context, using the specified rectangle as a layout frame.",
+          "name" : "draw(_:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/draw(_:in:)"
+        },
+        {
+          "description" : "Draws a resolved image into the context, using the specified rectangle as a layout frame.",
+          "name" : "draw(_:in:style:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/draw(_:in:style:)"
+        },
+        {
+          "description" : "Draws a resolved image into the context, aligning an anchor within the image to a point in the context.",
+          "name" : "draw(_:at:anchor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/draw(_:at:anchor:)"
+        }
+      ],
+      "title" : "Drawing images, text, and views"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Draws a new layer, created by drawing code that you provide, into the context.",
+          "name" : "drawLayer(content:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/drawLayer(content:)"
+        }
+      ],
+      "title" : "Drawing into a new layer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Gets a version of an image that’s fixed with the current values of the graphics context’s environment.",
+          "name" : "resolve(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/resolve(_:)"
+        },
+        {
+          "description" : "Gets the identified child view as a resolved symbol, if the view exists.",
+          "name" : "resolveSymbol(id:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/resolveSymbol(id:)"
+        },
+        {
+          "description" : "A static sequence of drawing operations that may be drawn multiple times, preserving their resolution independence.",
+          "name" : "GraphicsContext.ResolvedSymbol",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/ResolvedSymbol"
+        },
+        {
+          "description" : "An image resolved to a particular environment.",
+          "name" : "GraphicsContext.ResolvedImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/ResolvedImage"
+        },
+        {
+          "description" : "A text view resolved to a particular environment.",
+          "name" : "GraphicsContext.ResolvedText",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/ResolvedText"
+        }
+      ],
+      "title" : "Resolving a drawn entity"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds a path to the context’s array of clip shapes.",
+          "name" : "clip(to:style:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/clip(to:style:options:)"
+        },
+        {
+          "description" : "Adds a clip shape that you define in a new layer to the context’s array of clip shapes.",
+          "name" : "clipToLayer(opacity:options:content:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/clipToLayer(opacity:options:content:)"
+        },
+        {
+          "description" : "The bounding rectangle of the intersection of all current clip shapes in the current user space.",
+          "name" : "clipBoundingRect",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/clipBoundingRect"
+        },
+        {
+          "description" : "Options that affect the use of clip shapes.",
+          "name" : "GraphicsContext.ClipOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/ClipOptions"
+        }
+      ],
+      "title" : "Masking"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The opacity of drawing operations in the context.",
+          "name" : "opacity",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/opacity"
+        },
+        {
+          "description" : "The blend mode used by drawing operations in the context.",
+          "name" : "blendMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/blendMode-swift.property"
+        },
+        {
+          "description" : "The ways that a graphics context combines new content with background content.",
+          "name" : "GraphicsContext.BlendMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/BlendMode-swift.struct"
+        }
+      ],
+      "title" : "Setting opacity and the blend mode"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds a filter that applies to subsequent drawing operations.",
+          "name" : "addFilter(_:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/addFilter(_:options:)"
+        },
+        {
+          "description" : "A type that applies image processing operations to rendered content.",
+          "name" : "GraphicsContext.Filter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/Filter"
+        },
+        {
+          "description" : "Options that configure a filter that you add to a graphics context.",
+          "name" : "GraphicsContext.FilterOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/FilterOptions"
+        },
+        {
+          "description" : "Options that configure the graphics context filter that creates blur.",
+          "name" : "GraphicsContext.BlurOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/BlurOptions"
+        },
+        {
+          "description" : "Options that configure the graphics context filter that creates shadows.",
+          "name" : "GraphicsContext.ShadowOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/ShadowOptions"
+        }
+      ],
+      "title" : "Filtering"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Scales subsequent drawing operations by an amount in each dimension.",
+          "name" : "scaleBy(x:y:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/scaleBy(x:y:)"
+        },
+        {
+          "description" : "Rotates subsequent drawing operations by an angle.",
+          "name" : "rotate(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/rotate(by:)"
+        },
+        {
+          "description" : "Moves subsequent drawing operations by an amount in each dimension.",
+          "name" : "translateBy(x:y:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/translateBy(x:y:)"
+        },
+        {
+          "description" : "Appends the given transform to the context’s existing transform.",
+          "name" : "concatenate(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/concatenate(_:)"
+        },
+        {
+          "description" : "The current transform matrix, defining user space coordinates.",
+          "name" : "transform",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/transform"
+        }
+      ],
+      "title" : "Applying transforms"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Provides a Core Graphics context that you can use as a proxy to draw into this context.",
+          "name" : "withCGContext(content:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/withCGContext(content:)"
+        }
+      ],
+      "title" : "Drawing with a core graphics context"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The environment associated with the graphics context.",
+          "name" : "environment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/environment"
+        }
+      ],
+      "title" : "Accessing the environment"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Draws `line` into the graphics context.",
+          "name" : "draw(_:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext\/draw(_:options:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Make your apps stand out by adding background materials, vibrancy, custom graphics, and animations.",
+          "name" : "Add rich graphics to your SwiftUI app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/add-rich-graphics-to-your-swiftui-app"
+        },
+        {
+          "description" : "A view type that supports immediate mode drawing.",
+          "name" : "Canvas",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Canvas"
+        }
+      ],
+      "title" : "Immediate mode drawing"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "GraphicsContext",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/GraphicsContext"
+}

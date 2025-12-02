@@ -1,0 +1,139 @@
+{
+  "abstract" : "An object that creates images from SwiftUI views.",
+  "codeExamples" : [
+    {
+      "code" : "var body: some View {\n    let trophyAndDate = createAwardView(forUser: playerName,\n                                         date: achievementDate)\n    VStack {\n        trophyAndDate\n        Button(\"Save Achievement\") {\n            let renderer = ImageRenderer(content: trophyAndDate)\n            if let image = renderer.cgImage {\n                uploadAchievementImage(image)\n            }\n        }\n    }\n}\n\nprivate func createAwardView(forUser: String, date: Date) -> some View {\n    VStack {\n        Image(systemName: \"trophy\")\n            .resizable()\n            .frame(width: 200, height: 200)\n            .frame(maxWidth: .infinity, maxHeight: .infinity)\n            .shadow(color: .mint, radius: 5)\n        Text(playerName)\n            .font(.largeTitle)\n        Text(achievementDate.formatted())\n    }\n    .multilineTextAlignment(.center)\n    .frame(width: 200, height: 290)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "var body: some View {\n    let trophyAndDate = createAwardView(forUser: playerName,\n                                        date: achievementDate)\n    VStack {\n        trophyAndDate\n        Button(\"Save Achievement\") {\n            let renderer = ImageRenderer(content: trophyAndDate)\n            renderer.render { size, renderer in\n                var mediaBox = CGRect(origin: .zero,\n                                      size: CGSize(width: 800, height: 600))\n                guard let consumer = CGDataConsumer(url: renderURL as CFURL),\n                      let pdfContext =  CGContext(consumer: consumer,\n                                                  mediaBox: &mediaBox, nil)\n                else {\n                    return\n                }\n                pdfContext.beginPDFPage(nil)\n                pdfContext.translateBy(x: mediaBox.size.width \/ 2 - size.width \/ 2,\n                                       y: mediaBox.size.height \/ 2 - size.height \/ 2)\n                renderer(pdfContext)\n                pdfContext.endPDFPage()\n                pdfContext.closePDF()\n            }\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "Observable",
+    "ObservableObject"
+  ],
+  "contentHash" : "f17a5564cf892cd29c548e9e06288ac08d462000805442209ac93660f89cc9f9",
+  "crawledAt" : "2025-12-02T17:35:58Z",
+  "declaration" : {
+    "code" : "final class ImageRenderer<Content> where Content : View",
+    "language" : "swift"
+  },
+  "id" : "1DA65DE3-26FE-4EB4-BCA4-EEF9370F1500",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nUse `ImageRenderer` to export bitmap image data from a SwiftUI view. You initialize the renderer with a view, then render images on demand, either by calling the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ImageRenderer\/render(rasterizationScale:renderer:)] method, or by using the renderer’s properties to create a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage], [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSImage], or [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIImage].\n\nBy drawing to a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Canvas] and exporting with an `ImageRenderer`, you can generate images from any progammatically-rendered content, like paths, shapes, gradients, and more. You can also render standard SwiftUI views like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text] views, or containers of multiple view types.\n\nThe following example uses a private `createAwardView(forUser:date:)` method to create a game app’s view of a trophy symbol with a user name and date. This view combines a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Canvas] that applies a shadow filter with two [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text] views into a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VStack]. A [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Button] allows the person to save this view. The button’s action uses an `ImageRenderer` to rasterize a `CGImage` and then calls a private `uploadAchievementImage(_:)` method to encode and upload the image.\n\n\n\nBecause `ImageRenderer` conforms to [doc:\/\/com.apple.documentation\/documentation\/Combine\/ObservableObject], you can use it to produce a stream of images as its properties change. Subscribe to the renderer’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ImageRenderer\/objectWillChange] publisher, then use the renderer to rasterize a new image each time the subscriber receives an update.\n\n### Rendering to a PDF context\n\nThe [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ImageRenderer\/render(rasterizationScale:renderer:)] method renders the specified view to any [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGContext]. That means you aren’t limited to creating a rasterized `CGImage`. For example, you can generate PDF data by rendering to a PDF context. The resulting PDF maintains resolution-independence for supported members of the view hierarchy, such as text, symbol images, lines, shapes, and fills.\n\nThe following example uses the `createAwardView(forUser:date:)` method from the previous example, and exports its contents as an 800-by-600 point PDF to the file URL `renderURL`. It uses the `size` parameter sent to the rendering closure to center the `trophyAndDate` view vertically and horizontally on the page.\n\n### Creating an image from drawing instructions\n\n`ImageRenderer` makes it possible to create a custom image by drawing into a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Canvas], rendering a `CGImage` from it, and using that to initialize an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Image]. To simplify this process, use the `Image` initializer [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Image\/init(size:label:opaque:colorMode:renderer:)], which takes a closure whose argument is a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext] that you can directly draw into.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\ncrawled: 2025-12-02T17:35:58Z\n---\n\n# ImageRenderer\n\n**Class**\n\nAn object that creates images from SwiftUI views.\n\n## Declaration\n\n```swift\nfinal class ImageRenderer<Content> where Content : View\n```\n\n## Overview\n\nUse `ImageRenderer` to export bitmap image data from a SwiftUI view. You initialize the renderer with a view, then render images on demand, either by calling the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ImageRenderer\/render(rasterizationScale:renderer:)] method, or by using the renderer’s properties to create a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage], [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSImage], or [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIImage].\n\nBy drawing to a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Canvas] and exporting with an `ImageRenderer`, you can generate images from any progammatically-rendered content, like paths, shapes, gradients, and more. You can also render standard SwiftUI views like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text] views, or containers of multiple view types.\n\nThe following example uses a private `createAwardView(forUser:date:)` method to create a game app’s view of a trophy symbol with a user name and date. This view combines a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Canvas] that applies a shadow filter with two [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text] views into a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/VStack]. A [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Button] allows the person to save this view. The button’s action uses an `ImageRenderer` to rasterize a `CGImage` and then calls a private `uploadAchievementImage(_:)` method to encode and upload the image.\n\n```swift\nvar body: some View {\n    let trophyAndDate = createAwardView(forUser: playerName,\n                                         date: achievementDate)\n    VStack {\n        trophyAndDate\n        Button(\"Save Achievement\") {\n            let renderer = ImageRenderer(content: trophyAndDate)\n            if let image = renderer.cgImage {\n                uploadAchievementImage(image)\n            }\n        }\n    }\n}\n\nprivate func createAwardView(forUser: String, date: Date) -> some View {\n    VStack {\n        Image(systemName: \"trophy\")\n            .resizable()\n            .frame(width: 200, height: 200)\n            .frame(maxWidth: .infinity, maxHeight: .infinity)\n            .shadow(color: .mint, radius: 5)\n        Text(playerName)\n            .font(.largeTitle)\n        Text(achievementDate.formatted())\n    }\n    .multilineTextAlignment(.center)\n    .frame(width: 200, height: 290)\n}\n```\n\n\n\nBecause `ImageRenderer` conforms to [doc:\/\/com.apple.documentation\/documentation\/Combine\/ObservableObject], you can use it to produce a stream of images as its properties change. Subscribe to the renderer’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ImageRenderer\/objectWillChange] publisher, then use the renderer to rasterize a new image each time the subscriber receives an update.\n\n\n\n### Rendering to a PDF context\n\nThe [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ImageRenderer\/render(rasterizationScale:renderer:)] method renders the specified view to any [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGContext]. That means you aren’t limited to creating a rasterized `CGImage`. For example, you can generate PDF data by rendering to a PDF context. The resulting PDF maintains resolution-independence for supported members of the view hierarchy, such as text, symbol images, lines, shapes, and fills.\n\nThe following example uses the `createAwardView(forUser:date:)` method from the previous example, and exports its contents as an 800-by-600 point PDF to the file URL `renderURL`. It uses the `size` parameter sent to the rendering closure to center the `trophyAndDate` view vertically and horizontally on the page.\n\n```swift\nvar body: some View {\n    let trophyAndDate = createAwardView(forUser: playerName,\n                                        date: achievementDate)\n    VStack {\n        trophyAndDate\n        Button(\"Save Achievement\") {\n            let renderer = ImageRenderer(content: trophyAndDate)\n            renderer.render { size, renderer in\n                var mediaBox = CGRect(origin: .zero,\n                                      size: CGSize(width: 800, height: 600))\n                guard let consumer = CGDataConsumer(url: renderURL as CFURL),\n                      let pdfContext =  CGContext(consumer: consumer,\n                                                  mediaBox: &mediaBox, nil)\n                else {\n                    return\n                }\n                pdfContext.beginPDFPage(nil)\n                pdfContext.translateBy(x: mediaBox.size.width \/ 2 - size.width \/ 2,\n                                       y: mediaBox.size.height \/ 2 - size.height \/ 2)\n                renderer(pdfContext)\n                pdfContext.endPDFPage()\n                pdfContext.closePDF()\n            }\n        }\n    }\n}\n```\n\n### Creating an image from drawing instructions\n\n`ImageRenderer` makes it possible to create a custom image by drawing into a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Canvas], rendering a `CGImage` from it, and using that to initialize an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Image]. To simplify this process, use the `Image` initializer [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Image\/init(size:label:opaque:colorMode:renderer:)], which takes a closure whose argument is a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext] that you can directly draw into.\n\n## Creating an image renderer\n\n- **init(content:)**: Creates a renderer object with a source content view.\n\n## Providing the source view\n\n- **content**: The root view rendered by this image renderer.\n\n## Accessing renderer properties\n\n- **proposedSize**: The size proposed to the root view.\n- **scale**: The scale at which to render the image.\n- **isOpaque**: A Boolean value that indicates whether the alpha channel of the image is fully opaque.\n- **colorMode**: The working color space and storage format of the image.\n- **allowedDynamicRange**: The allowed dynamic range of the image, or nil to mark that the dynamic range of the image should be unrestricted. This property defaults to `sdr`, i.e. HDR content will be tone mapped to SDR.\n\n## Rendering images\n\n- **render(rasterizationScale:renderer:)**: Draws the renderer’s current contents to an arbitrary Core Graphics context.\n- **cgImage**: The current contents of the view, rasterized as a Core Graphics image.\n- **nsImage**: The current contents of the view, rasterized as an AppKit image.\n- **uiImage**: The current contents of the view, rasterized as a UIKit image.\n\n## Producing a stream of images\n\n- **objectWillChange**: A publisher that informs subscribers of changes to the image.\n- **isObservationEnabled**: If observers of this observed object should be notified when the produced image changes.\n\n## Conforms To\n\n- Copyable\n- Observable\n- ObservableObject\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a renderer object with a source content view.",
+          "name" : "init(content:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/init(content:)"
+        }
+      ],
+      "title" : "Creating an image renderer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The root view rendered by this image renderer.",
+          "name" : "content",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/content"
+        }
+      ],
+      "title" : "Providing the source view"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The size proposed to the root view.",
+          "name" : "proposedSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/proposedSize"
+        },
+        {
+          "description" : "The scale at which to render the image.",
+          "name" : "scale",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/scale"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the alpha channel of the image is fully opaque.",
+          "name" : "isOpaque",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/isOpaque"
+        },
+        {
+          "description" : "The working color space and storage format of the image.",
+          "name" : "colorMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/colorMode"
+        },
+        {
+          "description" : "The allowed dynamic range of the image, or nil to mark that the dynamic range of the image should be unrestricted. This property defaults to `sdr`, i.e. HDR content will be tone mapped to SDR.",
+          "name" : "allowedDynamicRange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/allowedDynamicRange"
+        }
+      ],
+      "title" : "Accessing renderer properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Draws the renderer’s current contents to an arbitrary Core Graphics context.",
+          "name" : "render(rasterizationScale:renderer:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/render(rasterizationScale:renderer:)"
+        },
+        {
+          "description" : "The current contents of the view, rasterized as a Core Graphics image.",
+          "name" : "cgImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/cgImage"
+        },
+        {
+          "description" : "The current contents of the view, rasterized as an AppKit image.",
+          "name" : "nsImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/nsImage"
+        },
+        {
+          "description" : "The current contents of the view, rasterized as a UIKit image.",
+          "name" : "uiImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/uiImage"
+        }
+      ],
+      "title" : "Rendering images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A publisher that informs subscribers of changes to the image.",
+          "name" : "objectWillChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/objectWillChange"
+        },
+        {
+          "description" : "If observers of this observed object should be notified when the produced image changes.",
+          "name" : "isObservationEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer\/isObservationEnabled"
+        }
+      ],
+      "title" : "Producing a stream of images"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "ImageRenderer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ImageRenderer"
+}

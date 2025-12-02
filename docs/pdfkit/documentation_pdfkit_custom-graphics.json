@@ -1,0 +1,56 @@
+{
+  "abstract" : "Demonstrates adding a watermark to a PDF page.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ 1. Set delegate\ndocument.delegate = self\npdfView?.document = document",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ 2. Return your custom PDFPage class\n\/\/\/ - Tag: ClassForPage\nfunc classForPage() -> AnyClass {\n    return WatermarkPage.self\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ 3. Override PDFPage custom draw\n\/\/\/ - Tag: OverrideDraw\noverride func draw(with box: PDFDisplayBox, to context: CGContext) {\n\n    \/\/ Draw original content\n    super.draw(with: box, to: context)\n\n    \/\/ Draw rotated overlay string\n    UIGraphicsPushContext(context)\n    context.saveGState()\n\n    let pageBounds = self.bounds(for: box)\n    context.translateBy(x: 0.0, y: pageBounds.size.height)\n    context.scaleBy(x: 1.0, y: -1.0)\n    context.rotate(by: CGFloat.pi \/ 4.0)\n\n    let string: NSString = \"U s e r   3 1 4 1 5 9\"\n    let attributes: [NSAttributedString.Key: Any] = [\n        NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.4980392157, green: 0.4980392157, blue: 0.4980392157, alpha: 0.5),\n        NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 64)\n    ]\n\n    string.draw(at: CGPoint(x: 250, y: 40), withAttributes: attributes)\n\n    context.restoreGState()\n    UIGraphicsPopContext()\n\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "b7a29a723d378840955750a14fb891af8af7bb0c9c030064eb3f549f67a9e88e",
+  "crawledAt" : "2025-12-02T15:48:42Z",
+  "id" : "A731FA89-EFFD-4D06-92BC-C91F7EF6BB29",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "PDFKit",
+  "overview" : "## Overview\n\nYou can add a custom drawing to a page or annotation by overriding that class’s draw method. Adding drawings  to pages can be useful for adding custom layered effects or, as shown in this sample, watermarking a document.\n\n### Register the Delegate and Set the Page Class\n\nThe [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController] class first initializes a [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocument] instance and sets its delegate to `self`.\n\nThe delegate, of type [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocumentDelegate], implements a [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocumentDelegate\/classForPage()] method. This method returns [doc:\/\/com.apple.documentation\/documentation\/Swift\/AnyClass] and declares that all instances of [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage] for the document presented through [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFView] should instantiate the subclass `WatermarkPage`.\n\nThis subclass, found in `WatermarkPage.swift`, implements custom drawing.\n\n`ViewController` loads a URL to the `Sample.pdf` file through the app’s main bundle. This URL is then used to instantiate a `PDFDocument`. On success, the document is assigned to the `PDFView`, which was set up in Interface Builder.\n\nThe delegate is assigned before the document, so `classForPage()`, a `PDFDocumentDelegate` method, is implemented. This method returns the `PDFPage` subclass used for custom drawing.\n\n### Override the Draw Method\n\n`WatermarkPage` subclasses `PDFPage` so that it can override the [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage\/draw(with:to:)] method. This method is called by `PDFDocument` to draw the page in a `PDFView`. All custom drawing for a PDF page should be done through this mechanism.\n\nCustom drawing methods should always be thread-safe and call the superclass method, which is required to draw the original `PDFPage` content. Custom drawing code can execute before or after this superclass call, although order matters. If your graphics run before the superclass call, they’re drawn below the `PDFPage` content. Conversely, if your graphics run after the superclass call, they’re drawn above the `PDFPage` content.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/PDFKit\/custom-graphics\ncrawled: 2025-12-02T15:48:42Z\n---\n\n# Custom Graphics\n\n**Sample Code**\n\nDemonstrates adding a watermark to a PDF page.\n\n## Overview\n\nYou can add a custom drawing to a page or annotation by overriding that class’s draw method. Adding drawings  to pages can be useful for adding custom layered effects or, as shown in this sample, watermarking a document.\n\n### Register the Delegate and Set the Page Class\n\nThe [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController] class first initializes a [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocument] instance and sets its delegate to `self`.\n\n```swift\n\/\/ 1. Set delegate\ndocument.delegate = self\npdfView?.document = document\n```\n\nThe delegate, of type [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocumentDelegate], implements a [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocumentDelegate\/classForPage()] method. This method returns [doc:\/\/com.apple.documentation\/documentation\/Swift\/AnyClass] and declares that all instances of [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage] for the document presented through [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFView] should instantiate the subclass `WatermarkPage`.\n\nThis subclass, found in `WatermarkPage.swift`, implements custom drawing.\n\n```swift\n\/\/ 2. Return your custom PDFPage class\n\/\/\/ - Tag: ClassForPage\nfunc classForPage() -> AnyClass {\n    return WatermarkPage.self\n}\n```\n\n`ViewController` loads a URL to the `Sample.pdf` file through the app’s main bundle. This URL is then used to instantiate a `PDFDocument`. On success, the document is assigned to the `PDFView`, which was set up in Interface Builder.\n\nThe delegate is assigned before the document, so `classForPage()`, a `PDFDocumentDelegate` method, is implemented. This method returns the `PDFPage` subclass used for custom drawing.\n\n### Override the Draw Method\n\n`WatermarkPage` subclasses `PDFPage` so that it can override the [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage\/draw(with:to:)] method. This method is called by `PDFDocument` to draw the page in a `PDFView`. All custom drawing for a PDF page should be done through this mechanism.\n\n```swift\n\/\/ 3. Override PDFPage custom draw\n\/\/\/ - Tag: OverrideDraw\noverride func draw(with box: PDFDisplayBox, to context: CGContext) {\n\n    \/\/ Draw original content\n    super.draw(with: box, to: context)\n\n    \/\/ Draw rotated overlay string\n    UIGraphicsPushContext(context)\n    context.saveGState()\n\n    let pageBounds = self.bounds(for: box)\n    context.translateBy(x: 0.0, y: pageBounds.size.height)\n    context.scaleBy(x: 1.0, y: -1.0)\n    context.rotate(by: CGFloat.pi \/ 4.0)\n\n    let string: NSString = \"U s e r   3 1 4 1 5 9\"\n    let attributes: [NSAttributedString.Key: Any] = [\n        NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.4980392157, green: 0.4980392157, blue: 0.4980392157, alpha: 0.5),\n        NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 64)\n    ]\n\n    string.draw(at: CGPoint(x: 250, y: 40), withAttributes: attributes)\n\n    context.restoreGState()\n    UIGraphicsPopContext()\n\n}\n```\n\nCustom drawing methods should always be thread-safe and call the superclass method, which is required to draw the original `PDFPage` content. Custom drawing code can execute before or after this superclass call, although order matters. If your graphics run before the superclass call, they’re drawn below the `PDFPage` content. Conversely, if your graphics run after the superclass call, they’re drawn above the `PDFPage` content.\n\n## Annotations\n\n- **Adding Widgets to a PDF Document**: Add text, button, and choice widgets to a PDF document.\n- **Adding Custom Graphics to a PDF**: Create and add custom annotation and page graphics to your PDF document.\n- **PDF Widgets**: Demonstrates adding widgets—interactive form elements—to a PDF document.\n- **PDFAnnotation**: An annotation in a PDF document.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Add text, button, and choice widgets to a PDF document.",
+          "name" : "Adding Widgets to a PDF Document",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PDFKit\/adding-widgets-to-a-pdf-document"
+        },
+        {
+          "description" : "Create and add custom annotation and page graphics to your PDF document.",
+          "name" : "Adding Custom Graphics to a PDF",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PDFKit\/adding-custom-graphics-to-a-pdf"
+        },
+        {
+          "description" : "Demonstrates adding widgets—interactive form elements—to a PDF document.",
+          "name" : "PDF Widgets",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PDFKit\/pdf-widgets"
+        },
+        {
+          "description" : "An annotation in a PDF document.",
+          "name" : "PDFAnnotation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PDFKit\/PDFAnnotation"
+        }
+      ],
+      "title" : "Annotations"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Custom Graphics",
+  "url" : "https:\/\/developer.apple.com\/documentation\/PDFKit\/custom-graphics"
+}

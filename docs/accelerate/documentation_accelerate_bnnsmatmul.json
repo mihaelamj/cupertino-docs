@@ -1,0 +1,83 @@
+{
+  "abstract" : "Applies a matrix multiplication operation directly to two input matrices.",
+  "codeExamples" : [
+    {
+      "code" : "let inputAValues: [Float] = [\n    [ 24 values ]\n]\n\nlet inputBValues: [Float] = [\n    1, 2,\n    3, 4,\n    \n    1, 2,\n    3, 4,\n    \n    1, 2,\n    3, 4\n]\n\nvar inputADescriptor = BNNSNDArrayDescriptor.allocate(\n    initializingFrom: inputAValues,\n    shape: .imageCHW(3, 4, 2))\n\nvar inputBDescriptor = BNNSNDArrayDescriptor.allocate(\n    initializingFrom: inputBValues,\n    shape: .tensor3DFirstMajor(3, 2, 2))\n\nvar outputDescriptor = BNNSNDArrayDescriptor.allocateUninitialized(\n    scalarType: Float.self,\n    shape: .imageCHW(inputADescriptor.shape.size.0,\n                     inputADescriptor.shape.size.1,\n                     inputBDescriptor.shape.size.1))",
+      "language" : "swift"
+    },
+    {
+      "code" : "let inputBValues: [Float] = [\n    1, 2,\n    3, 4\n]\n\nvar inputBDescriptor = BNNSNDArrayDescriptor.allocate(\n    initializingFrom: inputBValues,\n    shape: .matrixFirstMajor(2, 2))",
+      "language" : "swift"
+    },
+    {
+      "code" : "BNNSMatMul(false, false,\n           1,\n           &inputADescriptor, &inputBDescriptor,\n           &outputDescriptor,\n           nil, nil)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "69d8a7527d5320a3e0b61eb6bb4b270a7bf6cbf10a3c434fd9005defb69b5ac0",
+  "crawledAt" : "2025-12-02T01:21:13Z",
+  "declaration" : {
+    "code" : "func BNNSMatMul(_ transA: Bool, _ transB: Bool, _ alpha: Float, _ inputA: UnsafePointer<BNNSNDArrayDescriptor>, _ inputB: UnsafePointer<BNNSNDArrayDescriptor>, _ output: UnsafePointer<BNNSNDArrayDescriptor>, _ workspace: UnsafeMutableRawPointer?, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> Int32",
+    "language" : "swift"
+  },
+  "id" : "5BDF9707-E571-4D4B-AEFE-95053C191A3B",
+  "kind" : "function",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to perform the operation `C = alpha * op(A) * op(B)` where `op` transposes the corresponding matrix if the appropriate transpose parameter is `true`. The function broadcasts dimensions that are absent on either input matrix. The matrix multiplication is always on the final two indices of each operand.\n\nFor example, the following arrays of values and descriptors for the matrix multiply inputs and outputs define a matrix multiplication operation without broadcasting. Note that the operation repeats the values in `inputBValues` along the third dimension.\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSMatMul(_:_:_:_:_:_:_:_:)] function calculates the same result using a 2 x 2 matrix.\n\nIn both cases, the call to the matrix multiply function is the same.\n\nYou may optionally pass a workspace to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSMatMul(_:_:_:_:_:_:_:_:)]. Call [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSMatMulWorkspaceSize(_:_:_:_:_:_:_:)] to calculate the required workspace size for a set of parameters. If you pass `nil` to the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSMatMul(_:_:_:_:_:_:_:_:)] workspace parameter, BNNS allocates and dellocates the workspace.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSMatMul(_:_:_:_:_:_:_:_:)\ncrawled: 2025-12-02T01:21:13Z\n---\n\n# BNNSMatMul(_:_:_:_:_:_:_:_:)\n\n**Function**\n\nApplies a matrix multiplication operation directly to two input matrices.\n\n## Declaration\n\n```swift\nfunc BNNSMatMul(_ transA: Bool, _ transB: Bool, _ alpha: Float, _ inputA: UnsafePointer<BNNSNDArrayDescriptor>, _ inputB: UnsafePointer<BNNSNDArrayDescriptor>, _ output: UnsafePointer<BNNSNDArrayDescriptor>, _ workspace: UnsafeMutableRawPointer?, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> Int32\n```\n\n## Parameters\n\n- **transA**: A Boolean value that specifies whether the operation should treat `inputA` as transposed.\n- **transB**: A Boolean value that specifies whether the operation should treat `inputB` as transposed.\n- **alpha**: A value that the operation uses to scale the result.\n- **inputA**: A pointer to the `inputA` matrix descriptor.\n- **inputB**: A pointer to the `inputB` matrix descriptor.\n- **output**: A pointer to the output matrix descriptor.\n- **workspace**: An optional pointer to the workspace memory. Use [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSMatMulWorkspaceSize(_:_:_:_:_:_:_:)] to calculate the workspace size that operation requires. [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSMatMul(_:_:_:_:_:_:_:_:)] doesn’t require any particular alignment for the workspace memory.\n- **filter_params**: The filter runtime parameters.\n\n## Discussion\n\nUse this function to perform the operation `C = alpha * op(A) * op(B)` where `op` transposes the corresponding matrix if the appropriate transpose parameter is `true`. The function broadcasts dimensions that are absent on either input matrix. The matrix multiplication is always on the final two indices of each operand.\n\nFor example, the following arrays of values and descriptors for the matrix multiply inputs and outputs define a matrix multiplication operation without broadcasting. Note that the operation repeats the values in `inputBValues` along the third dimension.\n\n```swift\nlet inputAValues: [Float] = [\n    [ 24 values ]\n]\n\nlet inputBValues: [Float] = [\n    1, 2,\n    3, 4,\n    \n    1, 2,\n    3, 4,\n    \n    1, 2,\n    3, 4\n]\n\nvar inputADescriptor = BNNSNDArrayDescriptor.allocate(\n    initializingFrom: inputAValues,\n    shape: .imageCHW(3, 4, 2))\n\nvar inputBDescriptor = BNNSNDArrayDescriptor.allocate(\n    initializingFrom: inputBValues,\n    shape: .tensor3DFirstMajor(3, 2, 2))\n\nvar outputDescriptor = BNNSNDArrayDescriptor.allocateUninitialized(\n    scalarType: Float.self,\n    shape: .imageCHW(inputADescriptor.shape.size.0,\n                     inputADescriptor.shape.size.1,\n                     inputBDescriptor.shape.size.1))\n```\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSMatMul(_:_:_:_:_:_:_:_:)] function calculates the same result using a 2 x 2 matrix.\n\n```swift\nlet inputBValues: [Float] = [\n    1, 2,\n    3, 4\n]\n\nvar inputBDescriptor = BNNSNDArrayDescriptor.allocate(\n    initializingFrom: inputBValues,\n    shape: .matrixFirstMajor(2, 2))\n```\n\nIn both cases, the call to the matrix multiply function is the same.\n\n```swift\nBNNSMatMul(false, false,\n           1,\n           &inputADescriptor, &inputBDescriptor,\n           &outputDescriptor,\n           nil, nil)\n```\n\nYou may optionally pass a workspace to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSMatMul(_:_:_:_:_:_:_:_:)]. Call [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSMatMulWorkspaceSize(_:_:_:_:_:_:_:)] to calculate the required workspace size for a set of parameters. If you pass `nil` to the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSMatMul(_:_:_:_:_:_:_:_:)] workspace parameter, BNNS allocates and dellocates the workspace.\n\n## Matrix multiplication\n\n- **BNNSDirectApplyBroadcastMatMul(_:_:_:_:_:_:_:)**: Applies a broadcast matrix multiplication operation directly to two input matrices.\n- **BNNS.BroadcastMatrixMultiplyLayer**: A layer object that wraps a broadcast matrix multiply filter and manages its deinitialization.\n- **BNNSLayerParametersBroadcastMatMul**: A set of parameters that define a broadcast matrix multiply layer.\n- **BNNSFilterCreateLayerBroadcastMatMul(_:_:)**: Returns a new broadcast matrix multiply layer.\n- **BNNSMatMulWorkspaceSize(_:_:_:_:_:_:_:)**: Returns the workspace size that a matrix multiply operation requires.\n- **applyMatrixMultiplication(inputA:transposed:inputB:transposed:output:alpha:workspace:filterParameters:)**: Performs a matrix multiplication operation directly on two input matrices.\n- **matrixMultiplicationWorkspaceSize(inputA:transposed:inputB:transposed:output:alpha:filterParameters:)**: Returns the workspace size that a matrix multiply operation requires.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Applies a broadcast matrix multiplication operation directly to two input matrices.",
+          "name" : "BNNSDirectApplyBroadcastMatMul(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSDirectApplyBroadcastMatMul(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "A layer object that wraps a broadcast matrix multiply filter and manages its deinitialization.",
+          "name" : "BNNS.BroadcastMatrixMultiplyLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/BroadcastMatrixMultiplyLayer"
+        },
+        {
+          "description" : "A set of parameters that define a broadcast matrix multiply layer.",
+          "name" : "BNNSLayerParametersBroadcastMatMul",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerParametersBroadcastMatMul"
+        },
+        {
+          "description" : "Returns a new broadcast matrix multiply layer.",
+          "name" : "BNNSFilterCreateLayerBroadcastMatMul(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateLayerBroadcastMatMul(_:_:)"
+        },
+        {
+          "description" : "Returns the workspace size that a matrix multiply operation requires.",
+          "name" : "BNNSMatMulWorkspaceSize(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSMatMulWorkspaceSize(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Performs a matrix multiplication operation directly on two input matrices.",
+          "name" : "applyMatrixMultiplication(inputA:transposed:inputB:transposed:output:alpha:workspace:filterParameters:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/applyMatrixMultiplication(inputA:transposed:inputB:transposed:output:alpha:workspace:filterParameters:)"
+        },
+        {
+          "description" : "Returns the workspace size that a matrix multiply operation requires.",
+          "name" : "matrixMultiplicationWorkspaceSize(inputA:transposed:inputB:transposed:output:alpha:filterParameters:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/matrixMultiplicationWorkspaceSize(inputA:transposed:inputB:transposed:output:alpha:filterParameters:)"
+        }
+      ],
+      "title" : "Matrix multiplication"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSMatMul(_:_:_:_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSMatMul(_:_:_:_:_:_:_:_:)"
+}

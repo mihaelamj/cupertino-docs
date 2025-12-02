@@ -1,0 +1,106 @@
+{
+  "abstract" : "Pass image data between the Core Graphics framework and the vImage library.",
+  "codeExamples" : [
+    {
+      "code" : "static func passThrough(sourceImage: CGImage) -> CGImage? {\n\n    var format = vImage_CGImageFormat()\n    var buffer = vImage_Buffer()\n    \n    defer {\n        buffer.free()\n    }\n\n    vImageBuffer_InitWithCGImage(\n        &buffer,\n        &format,\n        nil,\n        sourceImage,\n        vImage_Flags(kvImageNoFlags))\n   \n    \/\/ Perform image-processing operations on `buffer`.\n\n    let destinationCGImage = vImageCreateCGImageFromBuffer(\n        &buffer,\n        &format,\n        nil,\n        nil,\n        vImage_Flags(kvImageNoFlags),\n        nil)\n    \n    return destinationCGImage?.takeRetainedValue()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "static func passThrough(sourceImage: CGImage) -> CGImage? {\n    \n    var format = vImage_CGImageFormat(\n        bitsPerComponent: 8,\n        bitsPerPixel: 8 * 3,\n        colorSpace: CGColorSpaceCreateDeviceRGB(),\n        bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),\n        renderingIntent: .defaultIntent)!\n\n    var buffer = vImage_Buffer()\n\n    defer {\n        buffer.free()\n    }\n    \n    vImageBuffer_InitWithCGImage(\n        &buffer,\n        &format,\n        nil,\n        sourceImage,\n        vImage_Flags(kvImageNoFlags))\n    \n    \/\/ Perform image-processing operations on RGB888 `buffer`.\n\n    let destinationCGImage = vImageCreateCGImageFromBuffer(\n        &buffer,\n        &format,\n        nil,\n        nil,\n        vImage_Flags(kvImageNoFlags),\n        nil)\n    \n    return destinationCGImage?.takeRetainedValue()\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "9307027f6c38f748acfc8b3e70450a45f354b6f96ecb0aac17495acaa25834ba",
+  "crawledAt" : "2025-12-02T16:26:33Z",
+  "id" : "D0AA68C8-9731-4EE7-987C-8AAE6A0E5A20",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nThe vImage library uses the [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] class as the main type to consume and produce still images. A [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance may originate from [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSImage] or [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIImage] images, or from a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGContext] drawing destination.\n\nA typical Core Graphics-based vImage workflow consists of:\n\nvImage provides the following functions that simplify interoperation with Core Graphics:\n\nThe following code shows a passthrough function that accepts a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] image, populates a vImage buffer from the image, and generates a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] image from the buffer.\n\nIn this example, the call to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageBuffer_InitWithCGImage(_:_:_:_:_:)] populates the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] and the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer] variables with the properties of the source image:\n\nPass a fully initialized [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] to specify that [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageBuffer_InitWithCGImage(_:_:_:_:_:)] converts the source [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] image to the format that `format` describes. The following example converts the source image to a three-channel, 8-bit-per-channel RGB image:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/core-graphics-interoperability\ncrawled: 2025-12-02T16:26:33Z\n---\n\n# Core Graphics interoperability\n\n**API Collection**\n\nPass image data between the Core Graphics framework and the vImage library.\n\n## Overview\n\nThe vImage library uses the [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] class as the main type to consume and produce still images. A [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance may originate from [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSImage] or [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIImage] images, or from a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGContext] drawing destination.\n\nA typical Core Graphics-based vImage workflow consists of:\n\n1. Selecting a source image, such as a Core Graphics-backed [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIImage] instance.\n2. Initializing a vImage buffer from the image’s bitmap data.\n3. Performing an operation on the vImage buffer, such as scaling or adjusting gamma.\n4. Creating a destination image from the operation result with the same image format as the source image.\n\nvImage provides the following functions that simplify interoperation with Core Graphics:\n\n- [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageBuffer_InitWithCGImage(_:_:_:_:_:)] initializes a vImage buffer with the contents of a Core Graphics image.\n- [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageCreateCGImageFromBuffer(_:_:_:_:_:_:)] creates a Core Graphics image from a vImage buffer.\n\nThe following code shows a passthrough function that accepts a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] image, populates a vImage buffer from the image, and generates a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] image from the buffer.\n\nIn this example, the call to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageBuffer_InitWithCGImage(_:_:_:_:_:)] populates the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] and the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer] variables with the properties of the source image:\n\n```swift\nstatic func passThrough(sourceImage: CGImage) -> CGImage? {\n\n    var format = vImage_CGImageFormat()\n    var buffer = vImage_Buffer()\n    \n    defer {\n        buffer.free()\n    }\n\n    vImageBuffer_InitWithCGImage(\n        &buffer,\n        &format,\n        nil,\n        sourceImage,\n        vImage_Flags(kvImageNoFlags))\n   \n    \/\/ Perform image-processing operations on `buffer`.\n\n    let destinationCGImage = vImageCreateCGImageFromBuffer(\n        &buffer,\n        &format,\n        nil,\n        nil,\n        vImage_Flags(kvImageNoFlags),\n        nil)\n    \n    return destinationCGImage?.takeRetainedValue()\n}\n```\n\nPass a fully initialized [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] to specify that [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageBuffer_InitWithCGImage(_:_:_:_:_:)] converts the source [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] image to the format that `format` describes. The following example converts the source image to a three-channel, 8-bit-per-channel RGB image:\n\n```swift\nstatic func passThrough(sourceImage: CGImage) -> CGImage? {\n    \n    var format = vImage_CGImageFormat(\n        bitsPerComponent: 8,\n        bitsPerPixel: 8 * 3,\n        colorSpace: CGColorSpaceCreateDeviceRGB(),\n        bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),\n        renderingIntent: .defaultIntent)!\n\n    var buffer = vImage_Buffer()\n\n    defer {\n        buffer.free()\n    }\n    \n    vImageBuffer_InitWithCGImage(\n        &buffer,\n        &format,\n        nil,\n        sourceImage,\n        vImage_Flags(kvImageNoFlags))\n    \n    \/\/ Perform image-processing operations on RGB888 `buffer`.\n\n    let destinationCGImage = vImageCreateCGImageFromBuffer(\n        &buffer,\n        &format,\n        nil,\n        nil,\n        vImage_Flags(kvImageNoFlags),\n        nil)\n    \n    return destinationCGImage?.takeRetainedValue()\n}\n```\n\n## Initializing vImage buffers from Core Graphics images\n\n- **vImageBuffer_InitWithCGImage(_:_:_:_:_:)**: Initializes a vImage buffer with the contents of a Core Graphics image.\n\n## Creating Core Graphics images from vImage buffers\n\n- **vImageCreateCGImageFromBuffer(_:_:_:_:_:_:)**: Creates a Core Graphics image from a vImage buffer.\n\n## Creating Core Graphics image formats\n\n- **vImage_CGImageFormat**: The description of a Core Graphics image.\n\n## Querying Core Graphics image format attributes\n\n- **vImageCGImageFormat_IsEqual(_:_:)**: Returns a Boolean value that indicates whether two vImage Core Graphics image formats are equal.\n- **vImageCGImageFormat_GetComponentCount(_:)**: Calculates the number of color and alpha channels for a specified image format.\n\n## Creating Core Graphics color spaces\n\n- **vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction(_:_:_:_:_:)**: Creates an RGB color space based on primitives from Y’CbCr specifications.\n- **vImageRGBPrimaries**: A representation of the chromaticity of primaries that define a color space.\n- **vImageTransferFunction**: A transfer function to convert from linear to nonlinear RGB.\n- **vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction(_:_:_:_:_:)**: Creates a monochrome color space based on primitives from Y’CbCr specifications.\n- **vImageWhitePoint**: A representation of a white point according to the CIE 1931 color space.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a vImage buffer with the contents of a Core Graphics image.",
+          "name" : "vImageBuffer_InitWithCGImage(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageBuffer_InitWithCGImage(_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Initializing vImage buffers from Core Graphics images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a Core Graphics image from a vImage buffer.",
+          "name" : "vImageCreateCGImageFromBuffer(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageCreateCGImageFromBuffer(_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Creating Core Graphics images from vImage buffers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The description of a Core Graphics image.",
+          "name" : "vImage_CGImageFormat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage_CGImageFormat"
+        }
+      ],
+      "title" : "Creating Core Graphics image formats"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value that indicates whether two vImage Core Graphics image formats are equal.",
+          "name" : "vImageCGImageFormat_IsEqual(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageCGImageFormat_IsEqual(_:_:)"
+        },
+        {
+          "description" : "Calculates the number of color and alpha channels for a specified image format.",
+          "name" : "vImageCGImageFormat_GetComponentCount(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageCGImageFormat_GetComponentCount(_:)"
+        }
+      ],
+      "title" : "Querying Core Graphics image format attributes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an RGB color space based on primitives from Y’CbCr specifications.",
+          "name" : "vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction(_:_:_:_:_:)"
+        },
+        {
+          "description" : "A representation of the chromaticity of primaries that define a color space.",
+          "name" : "vImageRGBPrimaries",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageRGBPrimaries"
+        },
+        {
+          "description" : "A transfer function to convert from linear to nonlinear RGB.",
+          "name" : "vImageTransferFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageTransferFunction"
+        },
+        {
+          "description" : "Creates a monochrome color space based on primitives from Y’CbCr specifications.",
+          "name" : "vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction(_:_:_:_:_:)"
+        },
+        {
+          "description" : "A representation of a white point according to the CIE 1931 color space.",
+          "name" : "vImageWhitePoint",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageWhitePoint"
+        }
+      ],
+      "title" : "Creating Core Graphics color spaces"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Core Graphics interoperability",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/core-graphics-interoperability"
+}

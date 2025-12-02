@@ -1,0 +1,109 @@
+{
+  "abstract" : "Pass image data between Core Graphics and vImage to create and manipulate images.",
+  "codeExamples" : [
+    {
+      "code" : "var format = vImage_CGImageFormat(\n    bitsPerComponent: 8,\n    bitsPerPixel: 8 * 4,\n    colorSpace: CGColorSpace(name: CGColorSpace.displayP3)!,\n    bitmapInfo: .init(rawValue: CGImageAlphaInfo.noneSkipFirst.rawValue))!",
+      "language" : "swift"
+    },
+    {
+      "code" : "let buf = try vImage.PixelBuffer(\n    cgImage: cgImage,\n    cgImageFormat: &format,\n    pixelFormat: vImage.Interleaved8x4.self)\n\n\/\/ Prints:\n\/\/ \"[255, 115, 136, 165,  255, 115, 136, 165]\"\n\/\/    A    R    G    B  |  A    R    G    B\nprint(buf.array[0 ..< 2 * format.componentCount])",
+      "language" : "swift"
+    },
+    {
+      "code" : "let result = buf.makeCGImage(cgImageFormat: format)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let bitmapInfo = CGBitmapInfo(\n    rawValue: kCGBitmapByteOrder32Host.rawValue |\n    CGBitmapInfo.floatComponents.rawValue |\n    CGImageAlphaInfo.none.rawValue)\n\nvar format = vImage_CGImageFormat(bitsPerComponent: 32,\n                                  bitsPerPixel: 32,\n                                  colorSpace: CGColorSpaceCreateDeviceGray(),\n                                  bitmapInfo: bitmapInfo)!",
+      "language" : "swift"
+    },
+    {
+      "code" : "let buf = try vImage.PixelBuffer(cgImage: cgImage,\n                                 cgImageFormat: &format,\n                                 pixelFormat: vImage.PlanarF.self)\n\n\/\/ Prints:\n\/\/ \"[133, 133]\"  \/\/ (0.299 * 115 + 0.587 * 136 + 0.114 * 165) = 133\n\/\/    Y    Y\nprint(buf.array[0 ..< 2 * format.componentCount].map {\n    Pixel_8($0 * 255 )\n})",
+      "language" : "swift"
+    },
+    {
+      "code" : "let result = buf.makeCGImage(cgImageFormat: format)",
+      "language" : "swift"
+    },
+    {
+      "code" : "guard var format = vImage_CGImageFormat(cgImage: cgImage) else {\n    NSLog(\"Unable to derive format from image.\")\n    return\n}\n\nprint(format.bitsPerComponent)                      \/\/ 8\nprint(format.componentCount)                        \/\/ 4\nprint(format.colorSpace.takeRetainedValue().name!)  \/\/ kCGColorSpaceDisplayP3\nprint (format.bitmapInfo)                           \/\/ noneSkipLast",
+      "language" : "swift"
+    },
+    {
+      "code" : "let buf = try vImage.PixelBuffer(cgImage: cgImage,\n                                 cgImageFormat: &format,\n                                 pixelFormat: vImage.Interleaved8x4.self)\n\n\/\/ Prints:\n\/\/ \"[115, 136, 165, 255,  115, 136, 165, 255]\"\n\/\/    R    G    B    A  |  R    G    B    A\nprint(buf.array[0 ..< 2 * format.componentCount])",
+      "language" : "swift"
+    },
+    {
+      "code" : "guard cgImage.bitsPerComponent == 8,\n      cgImage.bitsPerPixel == 8 * 4 else {\n    fatalError(\"Unsupported `bitsPerComponent` and `bitsPerPixel`.\")\n}\n\nvar format = vImage_CGImageFormat()\n\nlet buf = try vImage.PixelBuffer(cgImage: cgImage,\n                                 cgImageFormat: &format,\n                                 pixelFormat: vImage.Interleaved8x4.self)",
+      "language" : "swift"
+    },
+    {
+      "code" : "print(format.colorSpace.takeRetainedValue().name!)  \/\/ kCGColorSpaceDisplayP3\nprint(format.bitmapInfo)                            \/\/ noneSkipLast\n\n\/\/ Prints:\n\/\/ \"[115, 136, 165, 255,  115, 136, 165, 255]\"\n\/\/    R    G    B    A  |  R    G    B    A\nprint(buf.array[0 ..< 2 * format.componentCount])",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "357238c1eaccd6ee1bc580e8dd105c86548724315e572db02a2e3cb3da757d12",
+  "crawledAt" : "2025-12-02T15:55:10Z",
+  "id" : "6816C509-B3C2-4D4C-A906-DAD728C2C5A2",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nWhen you work with bitmap images, you typically work with Core Graphics [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instances. The vImage library provides functionality that allows you to work with Core Graphics bitmap images. Typically, you convert a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance to a vImage buffer, apply operations to the vImage buffer, and convert the transformed data to a new [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance.\n\nConversions between Core Graphics-backed images and vImage buffers require a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] format structure. The format describes properties such as the color space, the number of channels and how they’re ordered, and the size, in bits, of the color channels.\n\n### Initialize an 8-bit Core Graphics image format from hard-coded values\n\nCreate a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure with hard-coded values when you need to perform operations on image data with properties that your app defines at compile time. For example, the code below initializes an 8-bit-per-channel ARGB format that’s suitable for working with [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] structures with a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/Interleaved8x4] format.\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)] initializer creates a pixel buffer from a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance and converts the source image data to the format that the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] describes. If you’re working with [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer] structures, the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageBuffer_InitWithCGImage(_:_:_:_:_:)] function performs the same conversion and creates a buffer that’s suitable for working with ARGB8888 operations, such as [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConvolve_ARGB8888(_:_:_:_:_:_:_:_:_:_:_:)].\n\nThe code below creates a buffer from a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance named `cgImage` and prints the values of the first two pixels. The opaque alpha values (`255`) are the first value in each pixel as [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImageAlphaInfo\/noneSkipFirst] defines.\n\nFor all the examples in this article, pass the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure to the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)] method to generate an output image.\n\nOn return, `result` is a four-channel 8-bit-per-channel image with [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImageAlphaInfo\/noneSkipLast] alpha ordering.\n\n\n\n### Initialize a 32-bit Core Graphics image format from hard-coded values\n\nYou can use the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)] initializer to convert an image’s color model and bit depth. For example, you can specify a grayscale 32-bit format such as the example below:\n\nIn this case, the initializer uses the Rec. 601 luma coefficients to convert the RGB pixel values (`115, 136, 165`) to a single grayscale pixel.\n\nAs above, pass the 32-bit format to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)] to create a single-channel 32-bit-per-channel image with no alpha information.\n\nOn return, `result` contains a grayscale version of the original image.\n\n\n\n### Initialize a Core Graphics image format from a Core Graphics image\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat\/init(cgImage:)] initializer creates a new [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure that describes a Core Graphics image’s properties.\n\nIn this example, the image’s inherent channel ordering is [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImageAlphaInfo\/noneSkipLast]. The code below prints the first two pixels and shows that the opaque alpha values (`255`) are the last two values in each pixel:\n\n### Initialize a Core Graphics image format from an image during pixel buffer initialization\n\nYou can pass an empty [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure to the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)] initializer to instruct the initializer to populate the format with an image’s properties. In this case, the initializer returns `nil` if the image’s and the pixel buffer’s bit depths aren’t equal.\n\nOn return, the mutable format variable contains the image properties.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/converting-bitmap-data-between-core-graphics-images-and-vimage-buffers\ncrawled: 2025-12-02T15:55:10Z\n---\n\n# Converting bitmap data between Core Graphics images and vImage buffers\n\n**Article**\n\nPass image data between Core Graphics and vImage to create and manipulate images.\n\n## Overview\n\nWhen you work with bitmap images, you typically work with Core Graphics [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instances. The vImage library provides functionality that allows you to work with Core Graphics bitmap images. Typically, you convert a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance to a vImage buffer, apply operations to the vImage buffer, and convert the transformed data to a new [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance.\n\nConversions between Core Graphics-backed images and vImage buffers require a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] format structure. The format describes properties such as the color space, the number of channels and how they’re ordered, and the size, in bits, of the color channels.\n\n### Initialize an 8-bit Core Graphics image format from hard-coded values\n\nCreate a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure with hard-coded values when you need to perform operations on image data with properties that your app defines at compile time. For example, the code below initializes an 8-bit-per-channel ARGB format that’s suitable for working with [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] structures with a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/Interleaved8x4] format.\n\n```swift\nvar format = vImage_CGImageFormat(\n    bitsPerComponent: 8,\n    bitsPerPixel: 8 * 4,\n    colorSpace: CGColorSpace(name: CGColorSpace.displayP3)!,\n    bitmapInfo: .init(rawValue: CGImageAlphaInfo.noneSkipFirst.rawValue))!\n```\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)] initializer creates a pixel buffer from a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance and converts the source image data to the format that the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] describes. If you’re working with [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer] structures, the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageBuffer_InitWithCGImage(_:_:_:_:_:)] function performs the same conversion and creates a buffer that’s suitable for working with ARGB8888 operations, such as [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConvolve_ARGB8888(_:_:_:_:_:_:_:_:_:_:_:)].\n\nThe code below creates a buffer from a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance named `cgImage` and prints the values of the first two pixels. The opaque alpha values (`255`) are the first value in each pixel as [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImageAlphaInfo\/noneSkipFirst] defines.\n\n```swift\nlet buf = try vImage.PixelBuffer(\n    cgImage: cgImage,\n    cgImageFormat: &format,\n    pixelFormat: vImage.Interleaved8x4.self)\n\n\/\/ Prints:\n\/\/ \"[255, 115, 136, 165,  255, 115, 136, 165]\"\n\/\/    A    R    G    B  |  A    R    G    B\nprint(buf.array[0 ..< 2 * format.componentCount])\n```\n\nFor all the examples in this article, pass the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure to the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)] method to generate an output image.\n\n```swift\nlet result = buf.makeCGImage(cgImageFormat: format)\n```\n\nOn return, `result` is a four-channel 8-bit-per-channel image with [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImageAlphaInfo\/noneSkipLast] alpha ordering.\n\n\n\n### Initialize a 32-bit Core Graphics image format from hard-coded values\n\nYou can use the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)] initializer to convert an image’s color model and bit depth. For example, you can specify a grayscale 32-bit format such as the example below:\n\n```swift\nlet bitmapInfo = CGBitmapInfo(\n    rawValue: kCGBitmapByteOrder32Host.rawValue |\n    CGBitmapInfo.floatComponents.rawValue |\n    CGImageAlphaInfo.none.rawValue)\n\nvar format = vImage_CGImageFormat(bitsPerComponent: 32,\n                                  bitsPerPixel: 32,\n                                  colorSpace: CGColorSpaceCreateDeviceGray(),\n                                  bitmapInfo: bitmapInfo)!\n```\n\nIn this case, the initializer uses the Rec. 601 luma coefficients to convert the RGB pixel values (`115, 136, 165`) to a single grayscale pixel.\n\n```swift\nlet buf = try vImage.PixelBuffer(cgImage: cgImage,\n                                 cgImageFormat: &format,\n                                 pixelFormat: vImage.PlanarF.self)\n\n\/\/ Prints:\n\/\/ \"[133, 133]\"  \/\/ (0.299 * 115 + 0.587 * 136 + 0.114 * 165) = 133\n\/\/    Y    Y\nprint(buf.array[0 ..< 2 * format.componentCount].map {\n    Pixel_8($0 * 255 )\n})\n```\n\nAs above, pass the 32-bit format to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)] to create a single-channel 32-bit-per-channel image with no alpha information.\n\n```swift\nlet result = buf.makeCGImage(cgImageFormat: format)\n```\n\nOn return, `result` contains a grayscale version of the original image.\n\n\n\n### Initialize a Core Graphics image format from a Core Graphics image\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat\/init(cgImage:)] initializer creates a new [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure that describes a Core Graphics image’s properties.\n\n```swift\nguard var format = vImage_CGImageFormat(cgImage: cgImage) else {\n    NSLog(\"Unable to derive format from image.\")\n    return\n}\n\nprint(format.bitsPerComponent)                      \/\/ 8\nprint(format.componentCount)                        \/\/ 4\nprint(format.colorSpace.takeRetainedValue().name!)  \/\/ kCGColorSpaceDisplayP3\nprint (format.bitmapInfo)                           \/\/ noneSkipLast\n```\n\nIn this example, the image’s inherent channel ordering is [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImageAlphaInfo\/noneSkipLast]. The code below prints the first two pixels and shows that the opaque alpha values (`255`) are the last two values in each pixel:\n\n```swift\nlet buf = try vImage.PixelBuffer(cgImage: cgImage,\n                                 cgImageFormat: &format,\n                                 pixelFormat: vImage.Interleaved8x4.self)\n\n\/\/ Prints:\n\/\/ \"[115, 136, 165, 255,  115, 136, 165, 255]\"\n\/\/    R    G    B    A  |  R    G    B    A\nprint(buf.array[0 ..< 2 * format.componentCount])\n```\n\n### Initialize a Core Graphics image format from an image during pixel buffer initialization\n\nYou can pass an empty [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure to the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)] initializer to instruct the initializer to populate the format with an image’s properties. In this case, the initializer returns `nil` if the image’s and the pixel buffer’s bit depths aren’t equal.\n\n```swift\nguard cgImage.bitsPerComponent == 8,\n      cgImage.bitsPerPixel == 8 * 4 else {\n    fatalError(\"Unsupported `bitsPerComponent` and `bitsPerPixel`.\")\n}\n\nvar format = vImage_CGImageFormat()\n\nlet buf = try vImage.PixelBuffer(cgImage: cgImage,\n                                 cgImageFormat: &format,\n                                 pixelFormat: vImage.Interleaved8x4.self)\n```\n\nOn return, the mutable format variable contains the image properties.\n\n```swift\nprint(format.colorSpace.takeRetainedValue().name!)  \/\/ kCGColorSpaceDisplayP3\nprint(format.bitmapInfo)                            \/\/ noneSkipLast\n\n\/\/ Prints:\n\/\/ \"[115, 136, 165, 255,  115, 136, 165, 255]\"\n\/\/    R    G    B    A  |  R    G    B    A\nprint(buf.array[0 ..< 2 * format.componentCount])\n```\n\n## Image Processing Essentials\n\n- **Creating and Populating Buffers from Core Graphics Images**: Initialize vImage buffers from Core Graphics images.\n- **Creating a Core Graphics Image from a vImage Buffer**: Create displayable representations of vImage buffers.\n- **Building a Basic Image-Processing Workflow**: Resize an image with vImage.\n- **Applying geometric transforms to images**: Reflect, shear, rotate, and scale image buffers using vImage.\n- **Compositing images with alpha blending**: Combine two images by using alpha blending to create a single output.\n- **Compositing images with vImage blend modes**: Combine two images by using blend modes to create a single output.\n- **Applying vImage operations to regions of interest**: Limit the effect of vImage operations to rectangular regions of interest.\n- **Optimizing image-processing performance**: Improve your app’s performance by converting image buffer formats from interleaved to planar.\n- **vImage**: Manipulate large images using the CPU’s vector processor.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initialize vImage buffers from Core Graphics images.",
+          "name" : "Creating and Populating Buffers from Core Graphics Images",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/creating-and-populating-buffers-from-core-graphics-images"
+        },
+        {
+          "description" : "Create displayable representations of vImage buffers.",
+          "name" : "Creating a Core Graphics Image from a vImage Buffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/creating-a-core-graphics-image-from-a-vimage-buffer"
+        },
+        {
+          "description" : "Resize an image with vImage.",
+          "name" : "Building a Basic Image-Processing Workflow",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/building-a-basic-image-processing-workflow"
+        },
+        {
+          "description" : "Reflect, shear, rotate, and scale image buffers using vImage.",
+          "name" : "Applying geometric transforms to images",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-geometric-transforms-to-images"
+        },
+        {
+          "description" : "Combine two images by using alpha blending to create a single output.",
+          "name" : "Compositing images with alpha blending",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/compositing-images-with-alpha-blending"
+        },
+        {
+          "description" : "Combine two images by using blend modes to create a single output.",
+          "name" : "Compositing images with vImage blend modes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/compositing-images-with-vimage-blend-modes"
+        },
+        {
+          "description" : "Limit the effect of vImage operations to rectangular regions of interest.",
+          "name" : "Applying vImage operations to regions of interest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-vimage-operations-to-regions-of-interest"
+        },
+        {
+          "description" : "Improve your app’s performance by converting image buffer formats from interleaved to planar.",
+          "name" : "Optimizing image-processing performance",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/optimizing-image-processing-performance"
+        },
+        {
+          "description" : "Manipulate large images using the CPU’s vector processor.",
+          "name" : "vImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vimage-library"
+        }
+      ],
+      "title" : "Image Processing Essentials"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Converting bitmap data between Core Graphics images and vImage buffers",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/converting-bitmap-data-between-core-graphics-images-and-vimage-buffers"
+}

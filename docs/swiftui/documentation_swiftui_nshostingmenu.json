@@ -1,0 +1,110 @@
+{
+  "abstract" : "An AppKit menu with menu items that are defined by a SwiftUI View.",
+  "codeExamples" : [
+    {
+      "code" : "struct FileOrFolderContextMenu: View {\n    let url: URL\n    var body: some View {\n        Section {\n            if url.hasDirectoryPath {\n                Button(\"Open in New Tab\") { ... }\n            } else {\n                Button(\"Open\") { ... }\n                Menu(\"Open With\") { ... }\n            }\n        }\n        Section {\n            Button(\"Move to Trash\") { ... }\n        }\n        Section {\n            Button(\"Get Info\") { ... }\n            Button(\"Rename\") { ... }\n            if url.pathExtension != \"zip\" {\n                Button(\"Compress “\\(url.lastPathComponent)”\") { ... }\n            }\n            \/\/ ...\n        }\n    }\n}\n\n\/\/ In the toolbar setup:\nlet popUpButton = NSPopUpButton(frame: .zero, pullsDown: true)\n(popUpButton.cell as! NSPopUpButtonCell).usesItemFromMenu = false\npopUpButton.menu = NSHostingMenu(rootView: Group {\n    Button(\"New Folder\") { ... }\n    FileOrFolderContextMenu(url: selectedURL)\n})\n\n\/\/ In the column view:\nList(directoryContents, selection: $selection) { entry in\n    DirectoryEntryRow(entry: entry)\n        .contextMenu {\n            FileOrFolderContextMenu(url: entry.url)\n        }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSAccessibilityElementProtocol",
+    "NSAccessibilityProtocol",
+    "NSAppearanceCustomization",
+    "NSCoding",
+    "NSCopying",
+    "NSObjectProtocol",
+    "NSUserInterfaceItemIdentification"
+  ],
+  "contentHash" : "28d58591a0f4dd05a503321721475c20fdd71b398e204442f962526b0e443730",
+  "crawledAt" : "2025-12-02T17:44:42Z",
+  "declaration" : {
+    "code" : "class NSHostingMenu<Content> where Content : View",
+    "language" : "swift"
+  },
+  "id" : "17D76B1C-A50E-4777-806A-048CD5131235",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nBecause `NSHostingMenu` is an `NSMenu` subclass, you can integrate it into your existing AppKit view hierarchies that display menus. For example, you can set a hosting menu as an AppKit view’s context menu.\n\nA hosting menu’s `items` property will be updated based on the content of the provided `rootView`, so direct mutations to the item array are not allowed, even if done using methods like `addItem` on the menu itself.\n\nSwiftUI views hosted in the menu will be styled and behave identically to views in a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Menu] or `View\/contextMenu`. Make sure to use a `Group` or a view with multiple subviews as your top level container instead of an `HStack` or other container that would attempt to place all of your actions in a single menu item.\n\nFor example, the following code would set up the first part of the Finder’s context menu, both in the Action button in the toolbar and as a context menu:",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/NSHostingMenu\ncrawled: 2025-12-02T17:44:42Z\n---\n\n# NSHostingMenu\n\n**Class**\n\nAn AppKit menu with menu items that are defined by a SwiftUI View.\n\n## Declaration\n\n```swift\nclass NSHostingMenu<Content> where Content : View\n```\n\n## Overview\n\nBecause `NSHostingMenu` is an `NSMenu` subclass, you can integrate it into your existing AppKit view hierarchies that display menus. For example, you can set a hosting menu as an AppKit view’s context menu.\n\nA hosting menu’s `items` property will be updated based on the content of the provided `rootView`, so direct mutations to the item array are not allowed, even if done using methods like `addItem` on the menu itself.\n\nSwiftUI views hosted in the menu will be styled and behave identically to views in a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Menu] or `View\/contextMenu`. Make sure to use a `Group` or a view with multiple subviews as your top level container instead of an `HStack` or other container that would attempt to place all of your actions in a single menu item.\n\n\n\nFor example, the following code would set up the first part of the Finder’s context menu, both in the Action button in the toolbar and as a context menu:\n\n```swift\nstruct FileOrFolderContextMenu: View {\n    let url: URL\n    var body: some View {\n        Section {\n            if url.hasDirectoryPath {\n                Button(\"Open in New Tab\") { ... }\n            } else {\n                Button(\"Open\") { ... }\n                Menu(\"Open With\") { ... }\n            }\n        }\n        Section {\n            Button(\"Move to Trash\") { ... }\n        }\n        Section {\n            Button(\"Get Info\") { ... }\n            Button(\"Rename\") { ... }\n            if url.pathExtension != \"zip\" {\n                Button(\"Compress “\\(url.lastPathComponent)”\") { ... }\n            }\n            \/\/ ...\n        }\n    }\n}\n\n\/\/ In the toolbar setup:\nlet popUpButton = NSPopUpButton(frame: .zero, pullsDown: true)\n(popUpButton.cell as! NSPopUpButtonCell).usesItemFromMenu = false\npopUpButton.menu = NSHostingMenu(rootView: Group {\n    Button(\"New Folder\") { ... }\n    FileOrFolderContextMenu(url: selectedURL)\n})\n\n\/\/ In the column view:\nList(directoryContents, selection: $selection) { entry in\n    DirectoryEntryRow(entry: entry)\n        .contextMenu {\n            FileOrFolderContextMenu(url: entry.url)\n        }\n}\n```\n\n## Initializers\n\n- **init(rootView:)**: Creates a hosting menu object that wraps the specified SwiftUI view.\n\n## Instance Properties\n\n- **rootView**: The root view of the SwiftUI view hierarchy managed by this menu.\n\n## Displaying SwiftUI views in AppKit\n\n- **Unifying your app’s animations**: Create a consistent UI animation experience across SwiftUI, UIKit, and AppKit.\n- **NSHostingController**: An AppKit view controller that hosts SwiftUI view hierarchy.\n- **NSHostingView**: An AppKit view that hosts a SwiftUI view hierarchy.\n- **NSHostingSizingOptions**: Options for how hosting views and controllers reflect their content’s size into Auto Layout constraints.\n- **NSHostingSceneRepresentation**: An AppKit type that hosts and can present SwiftUI scenes\n- **NSHostingSceneBridgingOptions**: Options for how hosting views and controllers manage aspects of the associated window.\n\n## Inherits From\n\n- NSMenu\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSAccessibilityElementProtocol\n- NSAccessibilityProtocol\n- NSAppearanceCustomization\n- NSCoding\n- NSCopying\n- NSObjectProtocol\n- NSUserInterfaceItemIdentification\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a hosting menu object that wraps the specified SwiftUI view.",
+          "name" : "init(rootView:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NSHostingMenu\/init(rootView:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The root view of the SwiftUI view hierarchy managed by this menu.",
+          "name" : "rootView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NSHostingMenu\/rootView"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create a consistent UI animation experience across SwiftUI, UIKit, and AppKit.",
+          "name" : "Unifying your app’s animations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Unifying-your-app-s-animations"
+        },
+        {
+          "description" : "An AppKit view controller that hosts SwiftUI view hierarchy.",
+          "name" : "NSHostingController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NSHostingController"
+        },
+        {
+          "description" : "An AppKit view that hosts a SwiftUI view hierarchy.",
+          "name" : "NSHostingView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NSHostingView"
+        },
+        {
+          "description" : "Options for how hosting views and controllers reflect their content’s size into Auto Layout constraints.",
+          "name" : "NSHostingSizingOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NSHostingSizingOptions"
+        },
+        {
+          "description" : "An AppKit type that hosts and can present SwiftUI scenes",
+          "name" : "NSHostingSceneRepresentation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NSHostingSceneRepresentation"
+        },
+        {
+          "description" : "Options for how hosting views and controllers manage aspects of the associated window.",
+          "name" : "NSHostingSceneBridgingOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NSHostingSceneBridgingOptions"
+        }
+      ],
+      "title" : "Displaying SwiftUI views in AppKit"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSMenu"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSHostingMenu",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/NSHostingMenu"
+}

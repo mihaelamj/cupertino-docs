@@ -1,0 +1,139 @@
+{
+  "abstract" : "A container for texture data allowing you to create and update textures using your own format.",
+  "codeExamples" : [
+    {
+      "code" : "var textureDescriptor: LowLevelTexture.Descriptor {\n    var desc = LowLevelTexture.Descriptor()\n\n    desc.textureType = .type2D\n    desc.arrayLength = 1\n\n    desc.width = 2048\n    desc.height = 2048\n    desc.depth = 1\n\n    desc.mipmapLevelCount = 1\n    desc.pixelFormat = .bgra8Unorm\n    desc.textureUsage = [.shaderRead, .shaderWrite]\n    desc.swizzle = .init(red: .red, green: .green, blue: .blue, alpha: .alpha)\n\n    return desc\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let texture = try LowLevelTexture(descriptor: textureDescriptor)\nlet resource = try TextureResource(from: texture)",
+      "language" : "swift"
+    },
+    {
+      "code" : "kernel void\nlowLevelTextureKernel(\n    texture2d<half, access::write> outTexture [[texture(0)]],\n    uint2 gid [[thread_position_in_grid]])\n{\n    \/\/ Compute texture coordinate ranging from 0 to 1 along each axis.\n    half2 texCoord {\n        half(gid[0]) \/ (outTexture.get_width() - 1),\n        half(gid[1]) \/ (outTexture.get_height() - 1)\n    };\n\n    \/\/ Compute the color as a linear gradient from top to bottom.\n    half3 color = mix(\n        half3 { 0.2, 0.2, 0.8 },\n        half3 { 0.7, 0.7, 0.9 },\n        texCoord.y);\n\n    \/\/ Specify an opacity of 1 if the pixel is within a circle\n    \/\/ spanning the image bounds.\n    half alpha = length(texCoord - 0.5) < 0.5 ? 1.0h : 0.0h;\n\n    \/\/ Write the color and opacity to the texture.\n    outTexture.write(half4(color, alpha), gid);\n}",
+      "language" : "cpp"
+    },
+    {
+      "code" : "func populate(texture: LowLevelTexture, device: MTLDevice) {\n    \/\/ Set up the Metal command queue and compute command encoder, \n    \/\/ or abort if that fails.\n    guard let commandQueue = device.makeCommandQueue(),\n          let commandBuffer = commandQueue.makeCommandBuffer(),\n          let computeEncoder = commandBuffer.makeComputeCommandEncoder() else {\n        return\n    }\n\n    \/\/ Load a Metal compute kernel written in Metal Shading Language, \n    \/\/ or abort if that fails.\n    guard let library = device.makeDefaultLibrary(),\n          let function = library.makeFunction(name: \"lowLevelTextureKernel\"),\n          let computePipelineState = try? device.makeComputePipelineState(function: function) else {\n        return\n    }\n\n    \/\/ Enqueue the Metal command buffer.\n    commandBuffer.enqueue()\n\n    \/\/ Set up the Metal compute command encoder with the app's compute kernel.\n    computeEncoder.setComputePipelineState(computePipelineState)\n\n    \/\/ Retrieve a MTLTexture from LowLevelTexture.\n    \/\/ This texture will be directly consumed by RealityKit's renderer.\n    let outTexture: MTLTexture = texture.replace(using: commandBuffer)\n    computeEncoder.setTexture(outTexture, index: 0)\n\n    \/\/ Disptach the GPU compute work.\n    \/\/ Note: threadGroupCount and threadGroupSize determined elsewhere.\n    computeEncoder.dispatchThreadgroups(\n        threadGroupCount,\n        threadsPerThreadgroup: threadGroupSize)\n\n    \/\/ End the encoding and commit the command buffer.\n    \/\/ When the command buffer completes, RealityKit automatically applies the changes.\n    computeEncoder.endEncoding()\n    commandBuffer.commit()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func textureEntity(device: MTLDevice) throws -> Entity {\n    \/\/ Create the LowLevelTexture and populate it on the GPU.\n    let texture = try LowLevelTexture(descriptor: textureDescriptor)\n    populate(texture: texture, device: device)\n\n    \/\/ Create a TextureResource from the LowLevelTexture.\n    let resource = try TextureResource(from: texture)\n\n    \/\/ Create a material that uses the texture.\n    var material = UnlitMaterial(texture: resource)\n    material.opacityThreshold = 0.5\n\n    \/\/ Return an entity of a plane which uses the generated texture.\n    return ModelEntity(mesh: .generatePlane(width: 1, depth: 1), materials: [material])\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "d6133c89c2327b698a32d295fa8931478dfacd580a9e8c1d54a9b50382a05e3c",
+  "crawledAt" : "2025-12-02T20:12:56Z",
+  "declaration" : {
+    "code" : "@MainActor class LowLevelTexture",
+    "language" : "swift"
+  },
+  "id" : "6AD5DA46-3308-4FE4-9EC1-2702E18C8DBF",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "RealityKit",
+  "overview" : "## Overview\n\nUse `LowLevelTexture` when you want to bring your own texture data to RealityKit, or update your data frequently. You update the data on the GPU with Metal compute shaders. This is ideal for bringing your own textures to RealityKit as-is, or when you intend to update your data frequently.\n\nExpress your texture by creating a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/LowLevelTexture\/Descriptor-swift.struct] that describes how the data is laid out, along with the size of the texture.  This descriptor is similar to [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLTextureDescriptor].\n\nTo use `LowLevelTexture`, first configure the descriptor with the desired characteristics of your texture.\n\nThen, you can initialize the `LowLevelTexture` from its descriptor and provide it to a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/TextureResource].\n\nYou update the contents of a `LowLevelTexture` on the GPU, using a Metal Command Buffer and Compute Command Encoder. For example, you can write a compute kernel in Metal Shading Language to generate the color of each pixel:\n\nYou can use this compute kernel to populate the `LowLevelTexture`:\n\nTo finish, add your [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/TextureResource] to a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/Material] and display it on an [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/Entity].\n\n\n\nThe [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/TextureResource] retains a reference to the `LowLevelTexture`, and presents changes made to the `LowLevelTexture` when the renderer updates.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/RealityKit\/LowLevelTexture\ncrawled: 2025-12-02T20:12:56Z\n---\n\n# LowLevelTexture\n\n**Class**\n\nA container for texture data allowing you to create and update textures using your own format.\n\n## Declaration\n\n```swift\n@MainActor class LowLevelTexture\n```\n\n## Overview\n\nUse `LowLevelTexture` when you want to bring your own texture data to RealityKit, or update your data frequently. You update the data on the GPU with Metal compute shaders. This is ideal for bringing your own textures to RealityKit as-is, or when you intend to update your data frequently.\n\n\n\nExpress your texture by creating a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/LowLevelTexture\/Descriptor-swift.struct] that describes how the data is laid out, along with the size of the texture.  This descriptor is similar to [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLTextureDescriptor].\n\nTo use `LowLevelTexture`, first configure the descriptor with the desired characteristics of your texture.\n\n```swift\nvar textureDescriptor: LowLevelTexture.Descriptor {\n    var desc = LowLevelTexture.Descriptor()\n\n    desc.textureType = .type2D\n    desc.arrayLength = 1\n\n    desc.width = 2048\n    desc.height = 2048\n    desc.depth = 1\n\n    desc.mipmapLevelCount = 1\n    desc.pixelFormat = .bgra8Unorm\n    desc.textureUsage = [.shaderRead, .shaderWrite]\n    desc.swizzle = .init(red: .red, green: .green, blue: .blue, alpha: .alpha)\n\n    return desc\n}\n```\n\nThen, you can initialize the `LowLevelTexture` from its descriptor and provide it to a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/TextureResource].\n\n```swift\nlet texture = try LowLevelTexture(descriptor: textureDescriptor)\nlet resource = try TextureResource(from: texture)\n```\n\nYou update the contents of a `LowLevelTexture` on the GPU, using a Metal Command Buffer and Compute Command Encoder. For example, you can write a compute kernel in Metal Shading Language to generate the color of each pixel:\n\n```cpp\nkernel void\nlowLevelTextureKernel(\n    texture2d<half, access::write> outTexture [[texture(0)]],\n    uint2 gid [[thread_position_in_grid]])\n{\n    \/\/ Compute texture coordinate ranging from 0 to 1 along each axis.\n    half2 texCoord {\n        half(gid[0]) \/ (outTexture.get_width() - 1),\n        half(gid[1]) \/ (outTexture.get_height() - 1)\n    };\n\n    \/\/ Compute the color as a linear gradient from top to bottom.\n    half3 color = mix(\n        half3 { 0.2, 0.2, 0.8 },\n        half3 { 0.7, 0.7, 0.9 },\n        texCoord.y);\n\n    \/\/ Specify an opacity of 1 if the pixel is within a circle\n    \/\/ spanning the image bounds.\n    half alpha = length(texCoord - 0.5) < 0.5 ? 1.0h : 0.0h;\n\n    \/\/ Write the color and opacity to the texture.\n    outTexture.write(half4(color, alpha), gid);\n}\n```\n\nYou can use this compute kernel to populate the `LowLevelTexture`:\n\n```swift\nfunc populate(texture: LowLevelTexture, device: MTLDevice) {\n    \/\/ Set up the Metal command queue and compute command encoder, \n    \/\/ or abort if that fails.\n    guard let commandQueue = device.makeCommandQueue(),\n          let commandBuffer = commandQueue.makeCommandBuffer(),\n          let computeEncoder = commandBuffer.makeComputeCommandEncoder() else {\n        return\n    }\n\n    \/\/ Load a Metal compute kernel written in Metal Shading Language, \n    \/\/ or abort if that fails.\n    guard let library = device.makeDefaultLibrary(),\n          let function = library.makeFunction(name: \"lowLevelTextureKernel\"),\n          let computePipelineState = try? device.makeComputePipelineState(function: function) else {\n        return\n    }\n\n    \/\/ Enqueue the Metal command buffer.\n    commandBuffer.enqueue()\n\n    \/\/ Set up the Metal compute command encoder with the app's compute kernel.\n    computeEncoder.setComputePipelineState(computePipelineState)\n\n    \/\/ Retrieve a MTLTexture from LowLevelTexture.\n    \/\/ This texture will be directly consumed by RealityKit's renderer.\n    let outTexture: MTLTexture = texture.replace(using: commandBuffer)\n    computeEncoder.setTexture(outTexture, index: 0)\n\n    \/\/ Disptach the GPU compute work.\n    \/\/ Note: threadGroupCount and threadGroupSize determined elsewhere.\n    computeEncoder.dispatchThreadgroups(\n        threadGroupCount,\n        threadsPerThreadgroup: threadGroupSize)\n\n    \/\/ End the encoding and commit the command buffer.\n    \/\/ When the command buffer completes, RealityKit automatically applies the changes.\n    computeEncoder.endEncoding()\n    commandBuffer.commit()\n}\n```\n\nTo finish, add your [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/TextureResource] to a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/Material] and display it on an [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/Entity].\n\n```swift\nfunc textureEntity(device: MTLDevice) throws -> Entity {\n    \/\/ Create the LowLevelTexture and populate it on the GPU.\n    let texture = try LowLevelTexture(descriptor: textureDescriptor)\n    populate(texture: texture, device: device)\n\n    \/\/ Create a TextureResource from the LowLevelTexture.\n    let resource = try TextureResource(from: texture)\n\n    \/\/ Create a material that uses the texture.\n    var material = UnlitMaterial(texture: resource)\n    material.opacityThreshold = 0.5\n\n    \/\/ Return an entity of a plane which uses the generated texture.\n    return ModelEntity(mesh: .generatePlane(width: 1, depth: 1), materials: [material])\n}\n```\n\n\n\nThe [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/TextureResource] retains a reference to the `LowLevelTexture`, and presents changes made to the `LowLevelTexture` when the renderer updates.\n\n## Structures\n\n- **LowLevelTexture.Descriptor**: An object that you use to configure new `LowLevelTexture` objects.\n\n## Initializers\n\n- **init(descriptor:)**: Creates a low-level texture from a descriptor.\n\n## Instance Properties\n\n- **descriptor**: The descriptor that you use to initialize the `LowLevelTexture`.\n\n## Instance Methods\n\n- **read()**: Retrieves the current texture for GPU reading.\n- **replace(using:)**: Retrieves a Metal texture that your app’s shaders can write to when they run on a GPU.\n\n## Texture drawing\n\n- **Rendering a windowed game in stereo**: Bring an iOS or iPadOS game to visionOS and enhance it.\n- **Creating a dynamic height and normal map with low-level texture**: Create a low-level texture and update its pixel data on the GPU to form a dynamic height and normal map.\n- **LowLevelTexture.Descriptor**: An object that you use to configure new `LowLevelTexture` objects.\n- **TextureResource.Drawable**: A drawable associated with a drawable queue\n- **TextureResource.DrawableQueue**: A drawable queue that may be used to update a texture resource dynamically\n- **TextureResource.DrawableQueue.Descriptor**: Describes the texture managed by the drawable queue\n\n## Conforms To\n\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that you use to configure new `LowLevelTexture` objects.",
+          "name" : "LowLevelTexture.Descriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/LowLevelTexture\/Descriptor-swift.struct"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a low-level texture from a descriptor.",
+          "name" : "init(descriptor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/LowLevelTexture\/init(descriptor:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The descriptor that you use to initialize the `LowLevelTexture`.",
+          "name" : "descriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/LowLevelTexture\/descriptor-swift.property"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Retrieves the current texture for GPU reading.",
+          "name" : "read()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/LowLevelTexture\/read()"
+        },
+        {
+          "description" : "Retrieves a Metal texture that your app’s shaders can write to when they run on a GPU.",
+          "name" : "replace(using:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/LowLevelTexture\/replace(using:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Bring an iOS or iPadOS game to visionOS and enhance it.",
+          "name" : "Rendering a windowed game in stereo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/rendering-a-windowed-game-in-stereo"
+        },
+        {
+          "description" : "Create a low-level texture and update its pixel data on the GPU to form a dynamic height and normal map.",
+          "name" : "Creating a dynamic height and normal map with low-level texture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/creating-a-dynamic-height-map-with-low-level-texture"
+        },
+        {
+          "description" : "An object that you use to configure new `LowLevelTexture` objects.",
+          "name" : "LowLevelTexture.Descriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/LowLevelTexture\/Descriptor-swift.struct"
+        },
+        {
+          "description" : "A drawable associated with a drawable queue",
+          "name" : "TextureResource.Drawable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/TextureResource\/Drawable"
+        },
+        {
+          "description" : "A drawable queue that may be used to update a texture resource dynamically",
+          "name" : "TextureResource.DrawableQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/TextureResource\/DrawableQueue-swift.class"
+        },
+        {
+          "description" : "Describes the texture managed by the drawable queue",
+          "name" : "TextureResource.DrawableQueue.Descriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/TextureResource\/DrawableQueue-swift.class\/Descriptor"
+        }
+      ],
+      "title" : "Texture drawing"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "LowLevelTexture",
+  "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/LowLevelTexture"
+}

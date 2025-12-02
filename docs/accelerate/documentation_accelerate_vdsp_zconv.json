@@ -1,0 +1,61 @@
+{
+  "abstract" : "Performs either correlation or convolution on two complex single-precision vectors.",
+  "codeExamples" : [
+    {
+      "code" : "let signalReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: 8)\n_ = signalReal.initialize(from: [1, 2, 3, 4, 5, 6, 7, 8])\n\nlet signalImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: 8)\n_ = signalImag.initialize(from: [1, 2, 3, 4, 5, 6, 7, 8])\n\nvar signal = DSPSplitComplex(realp: signalReal.baseAddress!,\n                             imagp: signalImag.baseAddress!)\n\nlet filterReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: 3)\n_ = filterReal.initialize(from: [10, 20, 30])\n\nlet filterImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: 3)\n_ = filterImag.initialize(from: [10, 20, 30])\n\nvar filter = DSPSplitComplex(realp: filterReal.baseAddress!,\n                             imagp: filterImag.baseAddress!)\nlet filterCount = filterReal.count\n\nlet outputCount = signalReal.count - filterReal.count + 1\n\ndefer {\n    signalReal.deallocate()\n    signalImag.deallocate()\n    filterReal.deallocate()\n    filterImag.deallocate()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let correlationResultReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: outputCount)\nlet correlationResultImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: outputCount)\nvar correlationResult = DSPSplitComplex(realp: correlationResultReal.baseAddress!,\n                                        imagp: correlationResultImag.baseAddress!)\n\ndefer {\n    correlationResultReal.deallocate()\n    correlationResultImag.deallocate()\n}\n\nvDSP_zconv(&signal,\n          1,\n          &filter,\n          1, \/\/ The stride through the filter vector.\n          &correlationResult,\n          1,\n          vDSP_Length(outputCount),\n          vDSP_Length(filterCount))",
+      "language" : "swift"
+    },
+    {
+      "code" : "(1 + 1i) * (10 + 10i) + (2 + 2i) * (20 + 20i) + (3 + 3i) * (30 + 30i) = 280",
+      "language" : "c"
+    },
+    {
+      "code" : "let convolutionResultReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: outputCount)\nlet convolutionResultImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: outputCount)\nvar convolutionResult = DSPSplitComplex(realp: convolutionResultReal.baseAddress!,\n                                        imagp: convolutionResultImag.baseAddress!)\n\ndefer {\n    convolutionResultReal.deallocate()\n    convolutionResultImag.deallocate()\n}\n\nvar kernel = DSPSplitComplex(realp: filter.realp.advanced(by: filterCount - 1),\n                             imagp: filter.imagp.advanced(by: filterCount - 1))\n\nvDSP_zconv(&signal,\n           1,\n           &kernel,\n           -1, \/\/ The stride through the filter vector.\n           &convolutionResult,\n           1,\n           vDSP_Length(outputCount),\n           vDSP_Length(filterCount))\n\nprint(\"convolutionResult r\", Array(convolutionResultReal))\nprint(\"convolutionResult i\", Array(convolutionResultImag))",
+      "language" : "swift"
+    },
+    {
+      "code" : "(1 + 1i) * (30 + 30i) + (2 + 2i) * (20 + 20i) + (3 + 3i) * (10 + 10i) = 200",
+      "language" : "c"
+    }
+  ],
+  "contentHash" : "575d37862d70a7764c73cd066d3aebfd55cf712987f9eb4cc7056b26fa8ac734",
+  "crawledAt" : "2025-12-01T03:25:35Z",
+  "declaration" : {
+    "code" : "extern void vDSP_zconv(const DSPSplitComplex * __A, vDSP_Stride __IA, const DSPSplitComplex * __F, vDSP_Stride __IF, const DSPSplitComplex * __C, vDSP_Stride __IC, vDSP_Length __N, vDSP_Length __P);",
+    "language" : "swift"
+  },
+  "id" : "260676D6-145F-4517-8DD9-B2EEFE3FAC2B",
+  "kind" : "function",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to compute either the convolution or the correlation of an input signal and a filter vector. Both operations compute the sliding dot product of the filter and the section of the input signal that the filter is over. Specify a positive stride through the filter to perform correlation and a negative stride through the filter to perform convolution. When you perform convolution, the `__F` parameter must point to the last element in the filter.\n\nThe function can run in place, but `C` can’t be in place with `F`. For example, the following code defines an input signal, a filter, and the number of output elements:\n\n### Perform Correlation\n\nThe following code performs correlation. In this example, the stride through the filter is `1`.\n\nOn return, `correlationResultReal` contains all zeroes and `correlationResultImag` contains the values `[280.0, 400.0, 520.0, 640.0, 760.0, 880.0]`. For example, the operation calculates the first element, `280`, as:\n\n### Perform Convolution\n\nThe following code performs convolution. In this example, the stride through the filter is `-1` and the filter parameter points to the last element in the filter.\n\nOn return, `correlationResultReal` contains all zeroes and `correlationResultImag` contains the values `[200.0, 320.0, 440.0, 560.0, 680.0, 800.0]`. For example, the operation calculates the first element, `200`, as:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_zconv\ncrawled: 2025-12-01T03:25:35Z\n---\n\n# vDSP_zconv\n\n**Function**\n\nPerforms either correlation or convolution on two complex single-precision vectors.\n\n## Declaration\n\n```swift\nextern void vDSP_zconv(const DSPSplitComplex * __A, vDSP_Stride __IA, const DSPSplitComplex * __F, vDSP_Stride __IF, const DSPSplitComplex * __C, vDSP_Stride __IC, vDSP_Length __N, vDSP_Length __P);\n```\n\n## Parameters\n\n- **__A**: The complex single-precision input signal vector. The length of this vector must be at least `N + P - 1`.\n- **__IA**: The stride through the input signal vector, `A`.\n- **__F**: The complex single-precision filter vector.\n- **__IF**: The stride through the filter vector, `F`.\n- **__C**: The complex single-precision output signal vector.\n- **__IC**: The stride through the output signal vector, `C`.\n- **__N**: The number of elements in the output signal vector, `C`.\n- **__P**: The number of elements in the filter vector, `F`.\n\n## Discussion\n\nUse this function to compute either the convolution or the correlation of an input signal and a filter vector. Both operations compute the sliding dot product of the filter and the section of the input signal that the filter is over. Specify a positive stride through the filter to perform correlation and a negative stride through the filter to perform convolution. When you perform convolution, the `__F` parameter must point to the last element in the filter.\n\nThe function can run in place, but `C` can’t be in place with `F`. For example, the following code defines an input signal, a filter, and the number of output elements:\n\n```swift\nlet signalReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: 8)\n_ = signalReal.initialize(from: [1, 2, 3, 4, 5, 6, 7, 8])\n\nlet signalImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: 8)\n_ = signalImag.initialize(from: [1, 2, 3, 4, 5, 6, 7, 8])\n\nvar signal = DSPSplitComplex(realp: signalReal.baseAddress!,\n                             imagp: signalImag.baseAddress!)\n\nlet filterReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: 3)\n_ = filterReal.initialize(from: [10, 20, 30])\n\nlet filterImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: 3)\n_ = filterImag.initialize(from: [10, 20, 30])\n\nvar filter = DSPSplitComplex(realp: filterReal.baseAddress!,\n                             imagp: filterImag.baseAddress!)\nlet filterCount = filterReal.count\n\nlet outputCount = signalReal.count - filterReal.count + 1\n\ndefer {\n    signalReal.deallocate()\n    signalImag.deallocate()\n    filterReal.deallocate()\n    filterImag.deallocate()\n}\n```\n\n### Perform Correlation\n\nThe following code performs correlation. In this example, the stride through the filter is `1`.\n\n```swift\nlet correlationResultReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: outputCount)\nlet correlationResultImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: outputCount)\nvar correlationResult = DSPSplitComplex(realp: correlationResultReal.baseAddress!,\n                                        imagp: correlationResultImag.baseAddress!)\n\ndefer {\n    correlationResultReal.deallocate()\n    correlationResultImag.deallocate()\n}\n\nvDSP_zconv(&signal,\n          1,\n          &filter,\n          1, \/\/ The stride through the filter vector.\n          &correlationResult,\n          1,\n          vDSP_Length(outputCount),\n          vDSP_Length(filterCount))\n```\n\nOn return, `correlationResultReal` contains all zeroes and `correlationResultImag` contains the values `[280.0, 400.0, 520.0, 640.0, 760.0, 880.0]`. For example, the operation calculates the first element, `280`, as:\n\n```c\n(1 + 1i) * (10 + 10i) + (2 + 2i) * (20 + 20i) + (3 + 3i) * (30 + 30i) = 280\n```\n\n### Perform Convolution\n\nThe following code performs convolution. In this example, the stride through the filter is `-1` and the filter parameter points to the last element in the filter.\n\n```swift\nlet convolutionResultReal = UnsafeMutableBufferPointer<Float>.allocate(capacity: outputCount)\nlet convolutionResultImag = UnsafeMutableBufferPointer<Float>.allocate(capacity: outputCount)\nvar convolutionResult = DSPSplitComplex(realp: convolutionResultReal.baseAddress!,\n                                        imagp: convolutionResultImag.baseAddress!)\n\ndefer {\n    convolutionResultReal.deallocate()\n    convolutionResultImag.deallocate()\n}\n\nvar kernel = DSPSplitComplex(realp: filter.realp.advanced(by: filterCount - 1),\n                             imagp: filter.imagp.advanced(by: filterCount - 1))\n\nvDSP_zconv(&signal,\n           1,\n           &kernel,\n           -1, \/\/ The stride through the filter vector.\n           &convolutionResult,\n           1,\n           vDSP_Length(outputCount),\n           vDSP_Length(filterCount))\n\nprint(\"convolutionResult r\", Array(convolutionResultReal))\nprint(\"convolutionResult i\", Array(convolutionResultImag))\n```\n\nOn return, `correlationResultReal` contains all zeroes and `correlationResultImag` contains the values `[200.0, 320.0, 440.0, 560.0, 680.0, 800.0]`. For example, the operation calculates the first element, `200`, as:\n\n```c\n(1 + 1i) * (30 + 30i) + (2 + 2i) * (20 + 20i) + (3 + 3i) * (10 + 10i) = 200\n```\n\n## Complex Vectors\n\n- **vDSP_zconvD**: Performs either correlation or convolution on two complex double-precision vectors.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Performs either correlation or convolution on two complex double-precision vectors.",
+          "name" : "vDSP_zconvD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_zconvD"
+        }
+      ],
+      "title" : "Complex Vectors"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vDSP_zconv",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_zconv"
+}

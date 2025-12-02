@@ -1,0 +1,44 @@
+{
+  "abstract" : "Update your apps to use new features, and test your apps against API changes.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "8365558caccbf0317e250860267030de61141cfe8ab1a2ddb01d3c2548708656",
+  "crawledAt" : "2025-12-02T17:09:15Z",
+  "id" : "5637172A-09C7-40A7-915B-1B94C4CD0E8F",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nXcode 10.2.1 includes SDKs for iOS 12.2, watchOS 5.2, macOS 10.14.4, and tvOS 12.2. Xcode 10.2.1 supports on-device debugging for iOS 8 and later, tvOS 9 and later, and watchOS 2 and later. Xcode 10.2.1 requires a Mac running macOS 10.14.3 or later.\n\n### Apple Clang Compiler\n\n#### Resolved Issues\n\n### Build System\n\n#### Resolved Issues\n\n### LLDB\n\n#### Resolved Issues\n\n### Localization\n\n#### Resolved Issues\n\n### Simulator\n\n#### Known Issues\n\n### Swift Compiler\n\n#### Known Issues\n\n#### Resolved Issues\n\n### Swift Package Manager\n\n#### Resolved Issues",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Xcode-Release-Notes\/xcode-10_2_1-release-notes\ncrawled: 2025-12-02T17:09:15Z\n---\n\n# Xcode 10.2.1 Release Notes\n\n**Article**\n\nUpdate your apps to use new features, and test your apps against API changes.\n\n## Overview\n\nXcode 10.2.1 includes SDKs for iOS 12.2, watchOS 5.2, macOS 10.14.4, and tvOS 12.2. Xcode 10.2.1 supports on-device debugging for iOS 8 and later, tvOS 9 and later, and watchOS 2 and later. Xcode 10.2.1 requires a Mac running macOS 10.14.3 or later.\n\n### Apple Clang Compiler\n\n#### Resolved Issues\n\n- Simulator builds of watchOS projects that emit bitcode no longer fail with the error message: “GNU-style inline assembly is disabled.” (48903352)\n\n### Build System\n\n#### Resolved Issues\n\n- Resolved an issue that would produce a spurious “ignoring build task” warning when building localized Siri Intents. (49649474)\n\n### LLDB\n\n#### Resolved Issues\n\n- When importing Swift modules, LLDB now applies the `target.source-map` and the `DBGSourcePathRemapping` dictionary in the `.dSYM` bundle to the `-fmodule-map-file` option. This impacted alternative build systems that rely on path-remapping to access debug information. (49539481)\n\n### Localization\n\n#### Resolved Issues\n\n- Fixed a crash that could occur when modernizing localized content. (49575302)\n\n### Simulator\n\n#### Known Issues\n\n- Simulators for iOS 9.3 and earlier might fail to launch Swift apps with the message: “dyld: Library not loaded: \/usr\/lib\/libauto.dylib”. (49326587)\n\n**Workaround:** Run the following command in Terminal for the relevant version of iOS:\n\n```shell\nsudo mkdir '\/Library\/Developer\/CoreSimulator\/Profiles\/Runtimes\/iOS 9.3.simruntime\/Contents\/Resources\/RuntimeRoot\/usr\/lib\/swift'\n```\n\n### Swift Compiler\n\n#### Known Issues\n\n- In some cases, compilation may fail without emitting a specific error. (49303574)\n\n**Workaround:** Disable batch mode by adding the `SWIFT_ENABLE_BATCH_MODE` custom build setting and setting it to `NO`. If you’re invoking `swift` directly, include `-disable-batch-mode` on the command line.\n- If you set the Reflection Metadata Level build setting to `None`, you might get a linker error about a missing nominal type descriptor when building a Swift project. (49710077)\n\n**Workaround:** Change the setting to `All`.\n- Using an `@objc` designated initializer as a protocol witness always creates an instance of the base class, even if the protocol requirement is called on the metatype of a subclass. (49560721)\n\nFor example, the following code should create an instance of `DerivedClass`, but actually creates an instance of `BaseClass`:\n\n```swift\nprotocol Initable {\n    init()\n}\n\nclass BaseClass: NSObject, Initable {\n    required override init() {\n        super.init()\n    }\n}\n\nclass DerivedClass: BaseClass {}\n\nlet type: Initable.Type = DerivedClass.self\nprint(type.init())\n```\n\n**Workaround:** Either declare the initializer as `@nonobjc`, or replace the protocol’s initializer requirement with a static method, as follows:\n\n```swift\nprotocol Initable {\n    static func construct() -> Self\n}\n\nclass BaseClass: NSObject, Initable {\n    required override init() {\n        super.init()\n    }\n\n    static func construct() -> Self {\n        return self.init()\n    }\n}\n\nclass DerivedClass: BaseClass {}\n```\n\n#### Resolved Issues\n\n- A build time regression associated with Swift files that define a large number of types has been resolved. (49022293)\n- The Swift compiler now applies the `-fdebug-prefix-map` to path names in Clang module import debug information records. (49539327)\n- Indexing an invalid class that has circular inheritance during a debug build no longer hangs the compiler. ([https:\/\/bugs.swift.org\/browse\/SR-10236], 49539370)\n- Resolved a memory usage issue associated with whole module optimization mode. (49586719)\n- Resolved a build-time crash that occurred when the Thread Sanitizer was enabled. (49539420)\n- Checking validity of the conditional requirements associated with constrained type extensions, such as when using synthesized protocol conformance code, now completes correctly. (49539169)\n- When you declare enumerations that contain a single case with an associated value and multiple cases without an associated value, the compiler now properly distinguishes the cases without associated values. ([https:\/\/bugs.swift.org\/browse\/SR-10221], 49539226)\n\n```swift\nenum SomeEnum {\n    case payloadCase(defaultUnknownInnerValue: Int),\n    nonPayloadCase1,\n    nonPayloadCase2\n\n    var isNonPayloadCase1: Bool {\n        switch self {\n        case .nonPayloadCase1:\n            return true\n        default:\n            return false\n        }\n    }\n}\n```\n\nThe compiler now properly distinguishes between .`nonPayloadCase1` and `.nonPayloadCase2`.\n\n### Swift Package Manager\n\n#### Resolved Issues\n\n- The `swift package generate-xcodeproj` command now handles submodules in the top-level package. (49535554)\n\n## Xcode 10\n\n- **Xcode 10.3 Release Notes**: Update your apps to use new features, and test your apps against API changes.\n- **Xcode 10.2 Release Notes**: Update your apps to use new features, and test your apps against API changes.\n- **Xcode 10.1 Release Notes**: Update your apps to use new features, and test your apps against API changes.\n- **Xcode 10 Release Notes**: Update your apps to use new features, and test your apps against API changes.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Update your apps to use new features, and test your apps against API changes.",
+          "name" : "Xcode 10.3 Release Notes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode-Release-Notes\/xcode-10_3-release-notes"
+        },
+        {
+          "description" : "Update your apps to use new features, and test your apps against API changes.",
+          "name" : "Xcode 10.2 Release Notes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode-Release-Notes\/xcode-10_2-release-notes"
+        },
+        {
+          "description" : "Update your apps to use new features, and test your apps against API changes.",
+          "name" : "Xcode 10.1 Release Notes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode-Release-Notes\/xcode-10_1-release-notes"
+        },
+        {
+          "description" : "Update your apps to use new features, and test your apps against API changes.",
+          "name" : "Xcode 10 Release Notes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode-Release-Notes\/xcode-10-release-notes"
+        }
+      ],
+      "title" : "Xcode 10"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Xcode 10.2.1 Release Notes",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Xcode-Release-Notes\/xcode-10_2_1-release-notes"
+}

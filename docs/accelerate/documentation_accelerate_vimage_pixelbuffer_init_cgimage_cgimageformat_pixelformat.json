@@ -1,0 +1,43 @@
+{
+  "abstract" : "Returns a new pixel buffer initialized from a Core Graphics image.",
+  "codeExamples" : [
+    {
+      "code" : " let cgImage = [ ... ]\n\n let pixelFormat = vImage.Planar8.self\n\n var imageFormat = vImage_CGImageFormat(\n     bitsPerComponent: pixelFormat.bitsPerComponent, \/\/ 8\n     bitsPerPixel: pixelFormat.bitsPerPixel,         \/\/ 8\n     colorSpace: CGColorSpaceCreateDeviceGray(),\n     bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue))!\n\n let buffer = vImage.PixelBuffer(\n    cgImage: cgImage,\n    cgImageFormat: &imageFormat,\n    pixelFormat: pixelFormat)",
+      "language" : "swift"
+    },
+    {
+      "code" : " let cgImage = [ ... ]\n\n let pixelFormat = vImage.InterleavedFx4.self\n\n var imageFormat = vImage_CGImageFormat(\n     bitsPerComponent: pixelFormat.bitsPerComponent, \/\/ 32\n     bitsPerPixel: pixelFormat.bitsPerPixel,         \/\/ 32 * 4\n     colorSpace: CGColorSpaceCreateDeviceRGB(),\n     bitmapInfo: CGBitmapInfo(rawValue:\n                                 kCGBitmapByteOrder32Host.rawValue |\n                                 CGBitmapInfo.floatComponents.rawValue |\n                                 CGImageAlphaInfo.noneSkipLast.rawValue))\n\n let buffer = vImage.PixelBuffer(\n     cgImage: cgImage,\n     cgImageFormat: &imageFormat,\n     pixelFormat: pixelFormat)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let cgImage = [ ... ]\n\nvar cgImageFormat = vImage_CGImageFormat()\n\nlet buffer = try vImage.PixelBuffer(\n    cgImage: cgImage,\n    cgImageFormat: &cgImageFormat,\n    pixelFormat: vImage.Interleaved8x4.self)\n\n\/\/ Prints \"8  32  1 (`CGColorSpaceModel.rgb.rawValue`)\".\nprint(cgImageFormat.bitsPerComponent,\n      cgImageFormat.bitsPerPixel,\n      cgImageFormat.colorSpace.takeRetainedValue().model.rawValue)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "236da4ae0a507b226b01f7d82adc1c8813fec1cc34261d40d4e2cdcd4d584a89",
+  "crawledAt" : "2025-12-01T13:12:39Z",
+  "declaration" : {
+    "code" : "init(cgImage: CGImage, cgImageFormat: inout vImage_CGImageFormat, pixelFormat: Format.Type = Format.self) throws",
+    "language" : "swift"
+  },
+  "id" : "F829878C-5841-4DBE-AAF9-72A2C66C44CB",
+  "kind" : "unknown",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nFor example, the following code creates a single-channel, 8-bit per pixel buffer from a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] of unknown bit depth.\n\nWhen you pass a populated `cgImageFormat`, the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)] initializer performs the conversion from the [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance’s format to the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] that you specify.\n\nNote the `bitsPerComponent`, `bitsPerPixel`, `colorSpace`, and `bitmapInfo`.\n\nThe following code shows a similar workflow, but it creates a 32-bit per channel RGBA buffer:\n\nIf you pass an empty `cgImageFormat`, the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)] initializer populates the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] with the properties of the [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance. For example, the following code initializes a pixel buffer from a 8-bit-per-channel, 4-channel RGB image:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)\ncrawled: 2025-12-01T13:12:39Z\n---\n\n# init(cgImage:cgImageFormat:pixelFormat:)\n\n**Initializer**\n\nReturns a new pixel buffer initialized from a Core Graphics image.\n\n## Declaration\n\n```swift\ninit(cgImage: CGImage, cgImageFormat: inout vImage_CGImageFormat, pixelFormat: Format.Type = Format.self) throws\n```\n\n## Parameters\n\n- **cgImage**: The source image.\n- **cgImageFormat**: The format of the image. Pass an empty [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] to specify that the function populates `cgImageFormat` with the properties of the image. Pass a populated [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] to specify that the function converts the image data to the format you specify.\n- **pixelFormat**: The pixel format of the initialized buffer.\n\n## Discussion\n\nFor example, the following code creates a single-channel, 8-bit per pixel buffer from a [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] of unknown bit depth.\n\nWhen you pass a populated `cgImageFormat`, the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)] initializer performs the conversion from the [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance’s format to the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] that you specify.\n\nNote the `bitsPerComponent`, `bitsPerPixel`, `colorSpace`, and `bitmapInfo`.\n\n```swift\n let cgImage = [ ... ]\n\n let pixelFormat = vImage.Planar8.self\n\n var imageFormat = vImage_CGImageFormat(\n     bitsPerComponent: pixelFormat.bitsPerComponent, \/\/ 8\n     bitsPerPixel: pixelFormat.bitsPerPixel,         \/\/ 8\n     colorSpace: CGColorSpaceCreateDeviceGray(),\n     bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue))!\n\n let buffer = vImage.PixelBuffer(\n    cgImage: cgImage,\n    cgImageFormat: &imageFormat,\n    pixelFormat: pixelFormat)\n```\n\nThe following code shows a similar workflow, but it creates a 32-bit per channel RGBA buffer:\n\n```swift\n let cgImage = [ ... ]\n\n let pixelFormat = vImage.InterleavedFx4.self\n\n var imageFormat = vImage_CGImageFormat(\n     bitsPerComponent: pixelFormat.bitsPerComponent, \/\/ 32\n     bitsPerPixel: pixelFormat.bitsPerPixel,         \/\/ 32 * 4\n     colorSpace: CGColorSpaceCreateDeviceRGB(),\n     bitmapInfo: CGBitmapInfo(rawValue:\n                                 kCGBitmapByteOrder32Host.rawValue |\n                                 CGBitmapInfo.floatComponents.rawValue |\n                                 CGImageAlphaInfo.noneSkipLast.rawValue))\n\n let buffer = vImage.PixelBuffer(\n     cgImage: cgImage,\n     cgImageFormat: &imageFormat,\n     pixelFormat: pixelFormat)\n```\n\nIf you pass an empty `cgImageFormat`, the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)] initializer populates the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] with the properties of the [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGImage] instance. For example, the following code initializes a pixel buffer from a 8-bit-per-channel, 4-channel RGB image:\n\n```swift\nlet cgImage = [ ... ]\n\nvar cgImageFormat = vImage_CGImageFormat()\n\nlet buffer = try vImage.PixelBuffer(\n    cgImage: cgImage,\n    cgImageFormat: &cgImageFormat,\n    pixelFormat: vImage.Interleaved8x4.self)\n\n\/\/ Prints \"8  32  1 (`CGColorSpaceModel.rgb.rawValue`)\".\nprint(cgImageFormat.bitsPerComponent,\n      cgImageFormat.bitsPerPixel,\n      cgImageFormat.colorSpace.takeRetainedValue().model.rawValue)\n```\n\n\n\n",
+  "sections" : [
+
+  ],
+  "source" : "appleJSON",
+  "title" : "init(cgImage:cgImageFormat:pixelFormat:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(cgImage:cgImageFormat:pixelFormat:)"
+}

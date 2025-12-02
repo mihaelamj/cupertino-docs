@@ -1,0 +1,75 @@
+{
+  "abstract" : "The decode array for the image.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Create a grayscale vImage pixel buffer.\nlet pixels: [Pixel_F] = [0.0, 0.125, 0.25, 0.375, 0.5]\nlet pixelBuffer = vImage.PixelBuffer(\n    pixelValues: pixels,\n    size: .init(width: 5, height: 1),\n    pixelFormat: vImage.PlanarF.self)\n\n\/\/ Define the decode array to `0 ... 0.5`.\nlet decodeArray: [CGFloat] = [0, 0.5]\n\ndecodeArray.withUnsafeBufferPointer { decodeArrayPtr in\n\n    let cgImageFormat = vImage_CGImageFormat(\n        bitsPerComponent: 32,\n        bitsPerPixel: 32,\n        colorSpace: Unmanaged.passRetained(CGColorSpaceCreateDeviceGray()),\n        bitmapInfo: CGBitmapInfo(\n            rawValue: CGBitmapInfo.byteOrder32Little.rawValue |\n                CGBitmapInfo.floatComponents.rawValue |\n                CGImageAlphaInfo.none.rawValue),\n        version: 0,\n        decode: decodeArrayPtr.baseAddress,\n        renderingIntent: .defaultIntent)\n    \n    let cgImage = pixelBuffer.makeCGImage(cgImageFormat: cgImageFormat)\n    \n    \/\/ Display the raw pixel values of the `CGImage`.\n    if let pixelData = cgImage?.dataProvider?.data {\n        let pixelPointer = (pixelData as NSData)\n            .bytes\n            .assumingMemoryBound(to: Pixel_F.self)\n        \n        let recreatedPixels = UnsafeBufferPointer<Pixel_F>(\n            start: pixelPointer,\n            count: 5)\n        \n        \/\/ Prints \"[0.0, 0.25, 0.5, 0.75, 1.0]\".\n        print(Array(recreatedPixels))\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "1f66aec1626666f4072877cd2f5a68b387dfe44a5fbc522d55b62de6865601ef",
+  "crawledAt" : "2025-12-02T01:59:34Z",
+  "declaration" : {
+    "code" : "var decode: UnsafePointer<CGFloat>!",
+    "language" : "swift"
+  },
+  "id" : "82919E34-A0C1-4DF3-A35B-309D5879D844",
+  "kind" : "property",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nThe decode array contains the upper and lower bounds for each color channel. When you define a decode array, the conversion functions that accept a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] parameter apply a linear transform to map colors to the specified bounds.\n\nA decode array for an RGB color space contains six entries: one pair for each red, green, and blue channel.\n\nThe following code shows how the vImage library remaps a buffer that contains five planar pixels in the range `0 ... 0.5` to the range `0 ... 1`. The code passes a decode array with the values `[0, 0.5]` to the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)] function that remaps the source pixel values from `[0.0, 0.125, 0.25, 0.375, 0.5]` to `[0.0, 0.25, 0.5, 0.75, 1.0]`.\n\nSet the `decodeArray` to `nil` to prevent the vImage-Core Graphics conversion functions from remapping values.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage_CGImageFormat\/decode\ncrawled: 2025-12-02T01:59:34Z\n---\n\n# decode\n\n**Instance Property**\n\nThe decode array for the image.\n\n## Declaration\n\n```swift\nvar decode: UnsafePointer<CGFloat>!\n```\n\n## Discussion\n\nThe decode array contains the upper and lower bounds for each color channel. When you define a decode array, the conversion functions that accept a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] parameter apply a linear transform to map colors to the specified bounds.\n\nA decode array for an RGB color space contains six entries: one pair for each red, green, and blue channel.\n\nThe following code shows how the vImage library remaps a buffer that contains five planar pixels in the range `0 ... 0.5` to the range `0 ... 1`. The code passes a decode array with the values `[0, 0.5]` to the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)] function that remaps the source pixel values from `[0.0, 0.125, 0.25, 0.375, 0.5]` to `[0.0, 0.25, 0.5, 0.75, 1.0]`.\n\n```swift\n\/\/ Create a grayscale vImage pixel buffer.\nlet pixels: [Pixel_F] = [0.0, 0.125, 0.25, 0.375, 0.5]\nlet pixelBuffer = vImage.PixelBuffer(\n    pixelValues: pixels,\n    size: .init(width: 5, height: 1),\n    pixelFormat: vImage.PlanarF.self)\n\n\/\/ Define the decode array to `0 ... 0.5`.\nlet decodeArray: [CGFloat] = [0, 0.5]\n\ndecodeArray.withUnsafeBufferPointer { decodeArrayPtr in\n\n    let cgImageFormat = vImage_CGImageFormat(\n        bitsPerComponent: 32,\n        bitsPerPixel: 32,\n        colorSpace: Unmanaged.passRetained(CGColorSpaceCreateDeviceGray()),\n        bitmapInfo: CGBitmapInfo(\n            rawValue: CGBitmapInfo.byteOrder32Little.rawValue |\n                CGBitmapInfo.floatComponents.rawValue |\n                CGImageAlphaInfo.none.rawValue),\n        version: 0,\n        decode: decodeArrayPtr.baseAddress,\n        renderingIntent: .defaultIntent)\n    \n    let cgImage = pixelBuffer.makeCGImage(cgImageFormat: cgImageFormat)\n    \n    \/\/ Display the raw pixel values of the `CGImage`.\n    if let pixelData = cgImage?.dataProvider?.data {\n        let pixelPointer = (pixelData as NSData)\n            .bytes\n            .assumingMemoryBound(to: Pixel_F.self)\n        \n        let recreatedPixels = UnsafeBufferPointer<Pixel_F>(\n            start: pixelPointer,\n            count: 5)\n        \n        \/\/ Prints \"[0.0, 0.25, 0.5, 0.75, 1.0]\".\n        print(Array(recreatedPixels))\n    }\n}\n```\n\nSet the `decodeArray` to `nil` to prevent the vImage-Core Graphics conversion functions from remapping values.\n\n## Instance properties\n\n- **bitsPerComponent**: The number of bits that represents one channel of data in one pixel.\n- **bitsPerPixel**: The number of bits that represents one pixel.\n- **colorSpace**: A description of the position of the pixel data in the image, relative to a reference XYZ color space.\n- **bitmapInfo**: The component information that describes the color channels.\n- **version**: The version number.\n- **renderingIntent**: A rendering intent constant that specifies how Core Graphics handles colors that aren’t within the destination color space gamut.\n- **componentCount**: The number of color and alpha channels.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The number of bits that represents one channel of data in one pixel.",
+          "name" : "bitsPerComponent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage_CGImageFormat\/bitsPerComponent"
+        },
+        {
+          "description" : "The number of bits that represents one pixel.",
+          "name" : "bitsPerPixel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage_CGImageFormat\/bitsPerPixel"
+        },
+        {
+          "description" : "A description of the position of the pixel data in the image, relative to a reference XYZ color space.",
+          "name" : "colorSpace",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage_CGImageFormat\/colorSpace"
+        },
+        {
+          "description" : "The component information that describes the color channels.",
+          "name" : "bitmapInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage_CGImageFormat\/bitmapInfo"
+        },
+        {
+          "description" : "The version number.",
+          "name" : "version",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage_CGImageFormat\/version"
+        },
+        {
+          "description" : "A rendering intent constant that specifies how Core Graphics handles colors that aren’t within the destination color space gamut.",
+          "name" : "renderingIntent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage_CGImageFormat\/renderingIntent"
+        },
+        {
+          "description" : "The number of color and alpha channels.",
+          "name" : "componentCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage_CGImageFormat\/componentCount"
+        }
+      ],
+      "title" : "Instance properties"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "decode",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage_CGImageFormat\/decode"
+}

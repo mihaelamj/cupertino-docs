@@ -1,0 +1,66 @@
+{
+  "abstract" : "Set the range of mipmap levels that a sampler can access.",
+  "codeExamples" : [
+    {
+      "code" : "constexpr sampler s(filter::linear, mip_filter::linear, lod_clamp(3.0f, MAXFLOAT))",
+      "language" : "metal"
+    },
+    {
+      "code" : "fragment float4\nsamplingShader(RasterizerData in [[stage_in]],\n               texture2d<half> colorTexture [[ texture(0) ]],\n               constant float &minimumLOD [[buffer(0)]])\n{\n    constexpr sampler textureSampler (mag_filter::linear,\n                                      min_filter::linear,\n                                      mip_filter::linear);\n\n    const half4 colorSample = colorTexture.sample(textureSampler,\n                                                  in.textureCoordinate,\n                                                  min_lod_clamp(minimumLOD));\n    \n    return float4(colorSample);\n}",
+      "language" : "metal"
+    }
+  ],
+  "contentHash" : "d45cb87f1fba3cef3e03e1194c53121eb789ee604a3fbfb934c2d77d7fe170eb",
+  "crawledAt" : "2025-12-02T05:50:29Z",
+  "id" : "16D3C41C-EB73-48EB-8953-544C0AF521B3",
+  "kind" : "article",
+  "module" : "Metal",
+  "overview" : "## Overview\n\nSometimes, you want to control the specific mipmap levels that the sampler can read from. For example, you might do this when you haven’t provided texture data for all of the mipmaps, and you want to constrain access to the mipmaps that have data. You can configure a sampler to read from a subset of the texture’s mipmaps.\n\n### Limit the sampler when you create it in your Metal app\n\nWhen you configure the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLSamplerDescriptor] instance, set the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLSamplerDescriptor\/lodMinClamp] and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLSamplerDescriptor\/lodMaxClamp] properties to the range of permitted values.\n\nThis example creates a sampler that ignores mipmaps `0`, `1`, and `2`.\n\n### Limit the sampler when you create it in your shader\n\nIf you create your sampler in your shader, specify the range of mipmap levels that it can access:\n\n### Control mipmap selection when you sample the texture\n\nSome GPUs can apply additional constraints on the sample operation itself, passing in dynamic information about which mipmap levels the GPU can sample.\n\nNot all GPUs support clamping at the moment it samples a texture. Verify that GPU’s device instance supports clamping to a minimum level-of-detail (LOD) by checking whether it supports one of the following:\n\nIn your shader, call one of the variants of the `sample` function that takes additional LOD parameters. For example, the following code limits sampling to a specific level or lower in the mipmap chain. The shader has a minimum level parameter that it uses to sample the texture:\n\nThis example limits sampling to a specific level or lower in the mipmap chain. The shader has a minimum level parameter, `minimumLOD`, that it uses to sample the texture.\n\nThe [https:\/\/developer.apple.com\/library\/archive\/documentation\/Metal\/Reference\/MetalShadingLanguageGuide\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/TP40014364] describes other options for controlling mipmap selection. You can choose to sample a specific mipmap level, specify a minimum mipmap level, bias the selection process that the hardware chooses, or use some combination of these options.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/restricting-access-to-specific-mipmaps\ncrawled: 2025-12-02T05:50:29Z\n---\n\n# Restricting access to specific mipmaps\n\n**Article**\n\nSet the range of mipmap levels that a sampler can access.\n\n## Overview\n\nSometimes, you want to control the specific mipmap levels that the sampler can read from. For example, you might do this when you haven’t provided texture data for all of the mipmaps, and you want to constrain access to the mipmaps that have data. You can configure a sampler to read from a subset of the texture’s mipmaps.\n\n### Limit the sampler when you create it in your Metal app\n\nWhen you configure the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLSamplerDescriptor] instance, set the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLSamplerDescriptor\/lodMinClamp] and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLSamplerDescriptor\/lodMaxClamp] properties to the range of permitted values.\n\n\n\nThis example creates a sampler that ignores mipmaps `0`, `1`, and `2`.\n\n### Limit the sampler when you create it in your shader\n\nIf you create your sampler in your shader, specify the range of mipmap levels that it can access:\n\n```metal\nconstexpr sampler s(filter::linear, mip_filter::linear, lod_clamp(3.0f, MAXFLOAT))\n```\n\n### Control mipmap selection when you sample the texture\n\nSome GPUs can apply additional constraints on the sample operation itself, passing in dynamic information about which mipmap levels the GPU can sample.\n\nNot all GPUs support clamping at the moment it samples a texture. Verify that GPU’s device instance supports clamping to a minimum level-of-detail (LOD) by checking whether it supports one of the following:\n\n- The [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLGPUFamily\/mac2] feature set.\n- The [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLGPUFamily\/apple6] feature set.\n\n\n\nIn your shader, call one of the variants of the `sample` function that takes additional LOD parameters. For example, the following code limits sampling to a specific level or lower in the mipmap chain. The shader has a minimum level parameter that it uses to sample the texture:\n\n```metal\nfragment float4\nsamplingShader(RasterizerData in [[stage_in]],\n               texture2d<half> colorTexture [[ texture(0) ]],\n               constant float &minimumLOD [[buffer(0)]])\n{\n    constexpr sampler textureSampler (mag_filter::linear,\n                                      min_filter::linear,\n                                      mip_filter::linear);\n\n    const half4 colorSample = colorTexture.sample(textureSampler,\n                                                  in.textureCoordinate,\n                                                  min_lod_clamp(minimumLOD));\n    \n    return float4(colorSample);\n}\n```\n\nThis example limits sampling to a specific level or lower in the mipmap chain. The shader has a minimum level parameter, `minimumLOD`, that it uses to sample the texture.\n\nThe [https:\/\/developer.apple.com\/library\/archive\/documentation\/Metal\/Reference\/MetalShadingLanguageGuide\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/TP40014364] describes other options for controlling mipmap selection. You can choose to sample a specific mipmap level, specify a minimum mipmap level, bias the selection process that the hardware chooses, or use some combination of these options.\n\n## Texture mipmapping\n\n- **Improving texture sampling quality and performance with mipmaps**: Avoid texture-rendering artifacts and reduce the GPU’s workload by creating smaller versions of a texture.\n- **Creating a mipmapped texture**: Decide whether a texture that you’re creating needs mipmaps.\n- **Copying data into or out of mipmaps**: Specify which mipmaps that the data transfer affects.\n- **Generating mipmap data**: Create your mipmaps either when you author content or at runtime.\n- **Adding mipmap filtering to samplers**: Specify how the GPU samples mipmaps in your textures.\n- **Predicting which mips the GPU samples with level-of-detail queries**: Determine in advance which mipmap levels the GPU requires to sample a texture.\n- **Dynamically adjusting texture level of detail**: Defer generating or loading larger mipmaps until that level of detail is needed.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Avoid texture-rendering artifacts and reduce the GPU’s workload by creating smaller versions of a texture.",
+          "name" : "Improving texture sampling quality and performance with mipmaps",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/improving-texture-sampling-quality-and-performance-with-mipmaps"
+        },
+        {
+          "description" : "Decide whether a texture that you’re creating needs mipmaps.",
+          "name" : "Creating a mipmapped texture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/creating-a-mipmapped-texture"
+        },
+        {
+          "description" : "Specify which mipmaps that the data transfer affects.",
+          "name" : "Copying data into or out of mipmaps",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/copying-data-into-or-out-of-mipmaps"
+        },
+        {
+          "description" : "Create your mipmaps either when you author content or at runtime.",
+          "name" : "Generating mipmap data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/generating-mipmap-data"
+        },
+        {
+          "description" : "Specify how the GPU samples mipmaps in your textures.",
+          "name" : "Adding mipmap filtering to samplers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/adding-mipmap-filtering-to-samplers"
+        },
+        {
+          "description" : "Determine in advance which mipmap levels the GPU requires to sample a texture.",
+          "name" : "Predicting which mips the GPU samples with level-of-detail queries",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/predicting-which-mips-the-gpu-samples-with-level-of-detail-queries"
+        },
+        {
+          "description" : "Defer generating or loading larger mipmaps until that level of detail is needed.",
+          "name" : "Dynamically adjusting texture level of detail",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/dynamically-adjusting-texture-level-of-detail"
+        }
+      ],
+      "title" : "Texture mipmapping"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Restricting access to specific mipmaps",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/restricting-access-to-specific-mipmaps"
+}

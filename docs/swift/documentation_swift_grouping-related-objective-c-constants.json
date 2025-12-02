@@ -1,0 +1,84 @@
+{
+  "abstract" : "Add macros to your Objective-C types to group their values in Swift.",
+  "codeExamples" : [
+    {
+      "code" : "typedef NS_ENUM(NSInteger, UITableViewCellStyle) {\n    UITableViewCellStyleDefault,\n    UITableViewCellStyleValue1,\n    UITableViewCellStyleValue2,\n    UITableViewCellStyleSubtitle\n};",
+      "language" : "occ"
+    },
+    {
+      "code" : "enum UITableViewCellStyle: Int {\n    case `default`\n    case value1\n    case value2\n    case subtitle\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "typedef NS_OPTIONS(NSUInteger, UIViewAutoresizing) {\n        UIViewAutoresizingNone                 = 0,\n        UIViewAutoresizingFlexibleLeftMargin   = 1 << 0,\n        UIViewAutoresizingFlexibleWidth        = 1 << 1,\n        UIViewAutoresizingFlexibleRightMargin  = 1 << 2,\n        UIViewAutoresizingFlexibleTopMargin    = 1 << 3,\n        UIViewAutoresizingFlexibleHeight       = 1 << 4,\n        UIViewAutoresizingFlexibleBottomMargin = 1 << 5\n};",
+      "language" : "occ"
+    },
+    {
+      "code" : "public struct UIViewAutoresizing: OptionSet {\n    public init(rawValue: UInt)\n\n    public static var flexibleLeftMargin: UIViewAutoresizing { get }\n    public static var flexibleWidth: UIViewAutoresizing { get }\n    public static var flexibleRightMargin: UIViewAutoresizing { get }\n    public static var flexibleTopMargin: UIViewAutoresizing { get }\n    public static var flexibleHeight: UIViewAutoresizing { get }\n    public static var flexibleBottomMargin: UIViewAutoresizing { get }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Store the three traffic light color options as 0, 1, and 2.\ntypedef long TrafficLightColor NS_TYPED_ENUM;\n\nTrafficLightColor const TrafficLightColorRed;\nTrafficLightColor const TrafficLightColorYellow;\nTrafficLightColor const TrafficLightColorGreen;",
+      "language" : "occ"
+    },
+    {
+      "code" : "struct TrafficLightColor: RawRepresentable, Equatable, Hashable {\n    typealias RawValue = Int\n\n    init(rawValue: RawValue)\n    var rawValue: RawValue { get }\n\n    static var red: TrafficLightColor { get }\n    static var yellow: TrafficLightColor { get }\n    static var green: TrafficLightColor { get }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "typedef long FavoriteColor NS_TYPED_EXTENSIBLE_ENUM;\nFavoriteColor const FavoriteColorBlue;",
+      "language" : "occ"
+    },
+    {
+      "code" : "struct FavoriteColor: RawRepresentable, Equatable, Hashable {\n    typealias RawValue = Int\n\n    init(_ rawValue: RawValue)\n    init(rawValue: RawValue)\n    var rawValue: RawValue { get }\n\n    static var blue: FavoriteColor { get }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension FavoriteColor {\n    static var green: FavoriteColor {\n        return FavoriteColor(1) \/\/ blue is 0, green is 1, and new favorite colors could follow\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "3906b65001e088c578d257424f94f14d09a6cd7c3ae2b4de908e03edc4180940",
+  "crawledAt" : "2025-12-02T07:34:45Z",
+  "id" : "9443C94A-458E-4261-9979-EF0238985809",
+  "kind" : "article",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nYou use one of the following macros to declare that several Objective-C constants are related to each other:\n\n### Declare Simple Enumerations\n\nUse the `NS_ENUM` macro for simple groups of constants.\n\nThe example below uses the macro to declare a `UITableViewCellStyle` enumeration that groups several different view styles for table views:\n\nIn Swift, the `UITableViewCellStyle` enumeration is imported like this:\n\nEnumerations imported using the `NS_ENUM` macro won’t fail when you initialize one with a raw value that does not correspond to an enumeration case. This characteristic facilitates compatibility with C, which allows any value to be stored in an enumeration, including values used internally but not exposed in headers.\n\nThe `NS_ENUM` macro is the only enumeration macro that results in an actual enumeration type when imported to Swift. The other enumeration macros generate structures.\n\n### Declare Closed Enumerations\n\nUse the `NS_CLOSED_ENUM` macro for a simple group of constants that you can never add new cases to. Closed enumerations are useful for representing a finite set of states that you expect people to switch over using a switch statement. The three cases of [doc:\/\/com.apple.documentation\/documentation\/Foundation\/ComparisonResult]—[doc:\/\/com.apple.documentation\/documentation\/Foundation\/ComparisonResult\/orderedAscending], [doc:\/\/com.apple.documentation\/documentation\/Foundation\/ComparisonResult\/orderedSame], and [doc:\/\/com.apple.documentation\/documentation\/Foundation\/ComparisonResult\/orderedDescending]—are an example of a finite set. They’re the only logical cases for performing an ordered comparison during tasks like sorting.\n\nDon’t use the `NS_CLOSED_ENUM` macro if:\n\nIn these scenarios, use the `NS_ENUM` macro instead.\n\n### Declare Option Sets\n\nYou use the `NS_OPTIONS` macro when two or more constants in a grouping of constants can be combined. For example, the output formatting for a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/JSONEncoder] instance can be sorted and can use ample white space at the same time, so it’s valid to specify both options in an option set: `[.sorted, .prettyPrinted]`.\n\nThe example below shows how to apply the `NS_OPTIONS` macro and assign raw values that are mutually exclusive:\n\nThe increasing sequence of nonnegative integers used along with the bitwise left shift operator (`<<`) ensures that each option in the option set takes up a unique bit in the binary representation of the raw value.\n\nHere’s how the `UIViewAutoresizing` type is imported to Swift:\n\n### Declare Typed Enumerations\n\nYou use the `NS_TYPED_ENUM` to group constants with a raw value type that you specify. Use `NS_TYPED_ENUM` for sets of constants that *can’t* logically have values added in a Swift extension, and use `NS_TYPED_EXTENSIBLE_ENUM` for sets of constants that *can* be expanded in an extension.\n\nThe example below uses the `NS_TYPED_ENUM` macro to declare the different colors used by a traffic light:\n\nThe number of colors that a traffic light uses isn’t expected to grow, so it’s not declared to be extensible.\n\nHere’s how the `TrafficLightColor` type is imported to Swift:\n\n#### Declare Typed Extensible Enumerations\n\nExtensible enumerations are imported in a similar fashion to nonextensible ones, except that they receive an additional initializer.\n\nThe examples below show how a `FavoriteColor` type is declared, imported, and extended. The first one declares the `FavoriteColor` type and adds a single enumeration case for the color blue:\n\nThe additional initializer omits the label requirement for its first parameter:\n\nYou can add extensions to extensible enumerations later in your Swift code.\n\nThe example below adds another favorite color:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/grouping-related-objective-c-constants\ncrawled: 2025-12-02T07:34:45Z\n---\n\n# Grouping Related Objective-C Constants\n\n**Article**\n\nAdd macros to your Objective-C types to group their values in Swift.\n\n## Overview\n\nYou use one of the following macros to declare that several Objective-C constants are related to each other:\n\n- `NS_ENUM` for simple enumerations\n- `NS_CLOSED_ENUM` for simple enumerations that can never gain new cases\n- `NS_OPTIONS` for enumerations whose cases can be grouped into sets of options\n- `NS_TYPED_ENUM` for enumerations with a raw value type that you specify\n- `NS_TYPED_EXTENSIBLE_ENUM` for enumerations that you expect might gain more cases\n\n### Declare Simple Enumerations\n\nUse the `NS_ENUM` macro for simple groups of constants.\n\nThe example below uses the macro to declare a `UITableViewCellStyle` enumeration that groups several different view styles for table views:\n\n```occ\ntypedef NS_ENUM(NSInteger, UITableViewCellStyle) {\n    UITableViewCellStyleDefault,\n    UITableViewCellStyleValue1,\n    UITableViewCellStyleValue2,\n    UITableViewCellStyleSubtitle\n};\n```\n\nIn Swift, the `UITableViewCellStyle` enumeration is imported like this:\n\n```swift\nenum UITableViewCellStyle: Int {\n    case `default`\n    case value1\n    case value2\n    case subtitle\n}\n```\n\nEnumerations imported using the `NS_ENUM` macro won’t fail when you initialize one with a raw value that does not correspond to an enumeration case. This characteristic facilitates compatibility with C, which allows any value to be stored in an enumeration, including values used internally but not exposed in headers.\n\nThe `NS_ENUM` macro is the only enumeration macro that results in an actual enumeration type when imported to Swift. The other enumeration macros generate structures.\n\n### Declare Closed Enumerations\n\nUse the `NS_CLOSED_ENUM` macro for a simple group of constants that you can never add new cases to. Closed enumerations are useful for representing a finite set of states that you expect people to switch over using a switch statement. The three cases of [doc:\/\/com.apple.documentation\/documentation\/Foundation\/ComparisonResult]—[doc:\/\/com.apple.documentation\/documentation\/Foundation\/ComparisonResult\/orderedAscending], [doc:\/\/com.apple.documentation\/documentation\/Foundation\/ComparisonResult\/orderedSame], and [doc:\/\/com.apple.documentation\/documentation\/Foundation\/ComparisonResult\/orderedDescending]—are an example of a finite set. They’re the only logical cases for performing an ordered comparison during tasks like sorting.\n\nDon’t use the `NS_CLOSED_ENUM` macro if:\n\n- You’ve ever added cases to an enumeration after its initial declaration\n- You can think of additional cases you might add later\n- The enumeration has any private cases\n\nIn these scenarios, use the `NS_ENUM` macro instead.\n\n### Declare Option Sets\n\nYou use the `NS_OPTIONS` macro when two or more constants in a grouping of constants can be combined. For example, the output formatting for a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/JSONEncoder] instance can be sorted and can use ample white space at the same time, so it’s valid to specify both options in an option set: `[.sorted, .prettyPrinted]`.\n\nThe example below shows how to apply the `NS_OPTIONS` macro and assign raw values that are mutually exclusive:\n\n```occ\ntypedef NS_OPTIONS(NSUInteger, UIViewAutoresizing) {\n        UIViewAutoresizingNone                 = 0,\n        UIViewAutoresizingFlexibleLeftMargin   = 1 << 0,\n        UIViewAutoresizingFlexibleWidth        = 1 << 1,\n        UIViewAutoresizingFlexibleRightMargin  = 1 << 2,\n        UIViewAutoresizingFlexibleTopMargin    = 1 << 3,\n        UIViewAutoresizingFlexibleHeight       = 1 << 4,\n        UIViewAutoresizingFlexibleBottomMargin = 1 << 5\n};\n```\n\nThe increasing sequence of nonnegative integers used along with the bitwise left shift operator (`<<`) ensures that each option in the option set takes up a unique bit in the binary representation of the raw value.\n\nHere’s how the `UIViewAutoresizing` type is imported to Swift:\n\n```swift\npublic struct UIViewAutoresizing: OptionSet {\n    public init(rawValue: UInt)\n\n    public static var flexibleLeftMargin: UIViewAutoresizing { get }\n    public static var flexibleWidth: UIViewAutoresizing { get }\n    public static var flexibleRightMargin: UIViewAutoresizing { get }\n    public static var flexibleTopMargin: UIViewAutoresizing { get }\n    public static var flexibleHeight: UIViewAutoresizing { get }\n    public static var flexibleBottomMargin: UIViewAutoresizing { get }\n}\n```\n\n### Declare Typed Enumerations\n\nYou use the `NS_TYPED_ENUM` to group constants with a raw value type that you specify. Use `NS_TYPED_ENUM` for sets of constants that *can’t* logically have values added in a Swift extension, and use `NS_TYPED_EXTENSIBLE_ENUM` for sets of constants that *can* be expanded in an extension.\n\nThe example below uses the `NS_TYPED_ENUM` macro to declare the different colors used by a traffic light:\n\n```occ\n\/\/ Store the three traffic light color options as 0, 1, and 2.\ntypedef long TrafficLightColor NS_TYPED_ENUM;\n\nTrafficLightColor const TrafficLightColorRed;\nTrafficLightColor const TrafficLightColorYellow;\nTrafficLightColor const TrafficLightColorGreen;\n```\n\nThe number of colors that a traffic light uses isn’t expected to grow, so it’s not declared to be extensible.\n\nHere’s how the `TrafficLightColor` type is imported to Swift:\n\n```swift\nstruct TrafficLightColor: RawRepresentable, Equatable, Hashable {\n    typealias RawValue = Int\n\n    init(rawValue: RawValue)\n    var rawValue: RawValue { get }\n\n    static var red: TrafficLightColor { get }\n    static var yellow: TrafficLightColor { get }\n    static var green: TrafficLightColor { get }\n}\n```\n\n#### Declare Typed Extensible Enumerations\n\nExtensible enumerations are imported in a similar fashion to nonextensible ones, except that they receive an additional initializer.\n\nThe examples below show how a `FavoriteColor` type is declared, imported, and extended. The first one declares the `FavoriteColor` type and adds a single enumeration case for the color blue:\n\n```occ\ntypedef long FavoriteColor NS_TYPED_EXTENSIBLE_ENUM;\nFavoriteColor const FavoriteColorBlue;\n```\n\nThe additional initializer omits the label requirement for its first parameter:\n\n```swift\nstruct FavoriteColor: RawRepresentable, Equatable, Hashable {\n    typealias RawValue = Int\n\n    init(_ rawValue: RawValue)\n    init(rawValue: RawValue)\n    var rawValue: RawValue { get }\n\n    static var blue: FavoriteColor { get }\n}\n```\n\nYou can add extensions to extensible enumerations later in your Swift code.\n\nThe example below adds another favorite color:\n\n```swift\nextension FavoriteColor {\n    static var green: FavoriteColor {\n        return FavoriteColor(1) \/\/ blue is 0, green is 1, and new favorite colors could follow\n    }\n}\n```\n\n\n\n## Customizing Objective-C APIs\n\n- **Designating Nullability in Objective-C APIs**: Use nullability annotations or mark regions as annotated to control how Objective-C declarations are imported into Swift.\n- **Renaming Objective-C APIs for Swift**: Use the `NS_SWIFT_NAME` macro to customize API names for Swift.\n- **Improving Objective-C API Declarations for Swift**: Use the `NS_REFINED_FOR_SWIFT` macro to change how an API is imported into Swift.\n- **Marking API Availability in Objective-C**: Use a macro to denote the availability of an Objective-C API.\n- **Making Objective-C APIs Unavailable in Swift**: Use the `NS_SWIFT_UNAVAILABLE` macro to prevent an API from being used in Swift.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Use nullability annotations or mark regions as annotated to control how Objective-C declarations are imported into Swift.",
+          "name" : "Designating Nullability in Objective-C APIs",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/designating-nullability-in-objective-c-apis"
+        },
+        {
+          "description" : "Use the `NS_SWIFT_NAME` macro to customize API names for Swift.",
+          "name" : "Renaming Objective-C APIs for Swift",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/renaming-objective-c-apis-for-swift"
+        },
+        {
+          "description" : "Use the `NS_REFINED_FOR_SWIFT` macro to change how an API is imported into Swift.",
+          "name" : "Improving Objective-C API Declarations for Swift",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/improving-objective-c-api-declarations-for-swift"
+        },
+        {
+          "description" : "Use a macro to denote the availability of an Objective-C API.",
+          "name" : "Marking API Availability in Objective-C",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/marking-api-availability-in-objective-c"
+        },
+        {
+          "description" : "Use the `NS_SWIFT_UNAVAILABLE` macro to prevent an API from being used in Swift.",
+          "name" : "Making Objective-C APIs Unavailable in Swift",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/making-objective-c-apis-unavailable-in-swift"
+        }
+      ],
+      "title" : "Customizing Objective-C APIs"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Grouping Related Objective-C Constants",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/grouping-related-objective-c-constants"
+}

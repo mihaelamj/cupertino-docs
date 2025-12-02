@@ -1,0 +1,92 @@
+{
+  "abstract" : "Combine two images by using blend modes to create a single output.",
+  "codeExamples" : [
+    {
+      "code" : "dest = 1 - (1 - 0.5) * (1 - 0.0) \/\/ dest = 0.5",
+      "language" : "swift"
+    },
+    {
+      "code" : "dest = 1 - (1 - 0.5) * (1 - 0.5) \/\/ dest = 0.75",
+      "language" : "swift"
+    },
+    {
+      "code" : "dest = 0.5 * 0.5 \/\/ dest = 0.25",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "dfc4db38417ba24777e96be6017d49b8fb6b188b1911d3546138a6613a4889c7",
+  "crawledAt" : "2025-12-02T15:55:15Z",
+  "id" : "CF19F4F9-C20C-4A60-A0A4-2895CCEF72DA",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nvImage provides a suite of functions for compositing two source images into one output. These *blend mode* functions implement different algorithms to determine the output color. For example, the multiply blend mode sets each output pixel as the product of the two corresponding input pixels.\n\nThe blend mode functions work on 8-bit RGBA source images in a premultiplied format. You can convert a nonpremultiplied buffer to a premultiplied format by using [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePremultiplyData_RGBA8888(_:_:_:)].\n\nThe blend mode functions accept two [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer] structures as the bottom and top layers of the compositing operation. The examples that follow use the image below on the left as the bottom layer and the image below on the right as the top layer.\n\n\n\nThe top-layer source image consists of four sections:\n\nBoth images are fully opaque.\n\n### Composite images using the lighten blend mode\n\nUse the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePremultipliedAlphaBlendLighten_RGBA8888(_:_:_:_:)] function to composite two layers using the lighten blend mode. You can use the lighten blend mode to apply an overall lightening effect to images.\n\nThe lighten blend mode sets each channel of the destination pixel as the lightest value for the corresponding channel of the two source layers. The image below shows the result of compositing using the lighten blend mode:\n\n\n\nThe top-left quadrant in the result is white because no pixels in the bottom layer are brighter than the corresponding pixels in the top layer.\n\nThe bottom-left quadrant in the result looks washed out because the operation selects gray pixels from the top layer over corresponding dark pixels from the bottom layer.\n\n### Composite images using the darken blend mode\n\nUse the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePremultipliedAlphaBlendDarken_RGBA8888(_:_:_:_:)] function to composite two layers using the darken blend mode. You can use the darken blend mode to apply an overall darkening effect to images.\n\nThe darken blend mode sets each channel of the destination pixel as the darkest value for the corresponding channel of the two source layers. The image below shows the result of compositing using the darken blend mode:\n\n\n\nThe bottom-right quadrant in the result is black because no pixels in the bottom layer are darker than the corresponding pixels in the top layer.\n\nThe bottom-left quadrant in the result looks darker than the corresponding quadrant in the bottom layer. This is because the operation selects gray pixels from the top layer over corresponding light pixels from the bottom layer.\n\n### Composite images using the screen blend mode\n\nUse the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePremultipliedAlphaBlendScreen_RGBA8888(_:_:_:_:)] function to composite two layers using the screen blend mode. You can use the screen blend mode to lighten images without affecting the darkest areas.\n\nThe screen blend mode sets the destination pixel as the inverted product of the inverted corresponding source pixels. The image below shows the result of compositing using the screen blend mode:\n\n\n\nThe bottom-right quadrant in the result is identical to the corresponding quadrant in the bottom layer because the operation multiplies each bottom-layer pixel value by `1.0`. For example, if the source pixel value is `0.5`, the destination pixel value is `0.5`.\n\nThe top-right quadrant in the result is brighter than the corresponding quadrant in the bottom layer. In this quadrant, the top-layer and bottom-layer pixel values are identical. For example, if the source pixel value is `0.5`, the destination pixel value is `0.75`.\n\n### Composite images using the multiply blend mode\n\nUse the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePremultipliedAlphaBlendMultiply_RGBA8888(_:_:_:_:)] function to composite two layers using the multiply blend mode. You can the use multiply blend mode to darken images without affecting the lightest areas.\n\nThe multiply blend mode sets the destination pixel as the product of the corresponding source pixels. The image below shows the result of compositing using the multiply blend mode:\n\n\n\nThe bottom-right quadrant in the result is black because the operation multiplies each bottom-layer pixel value by `0.0` from the top layer.\n\nThe top-left quadrant in the result is identical to the corresponding quadrant in the bottom layer because the operation multiplies each bottom-layer pixel value by `1.0`.\n\nThe top-right quadrant in the result is darker than the corresponding quadrant in the bottom layer. In this quadrant, the top-layer and bottom-layer pixel values are identical. For example, if the source pixel value is `0.5`, the destination pixel value is `0.25`.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/compositing-images-with-vimage-blend-modes\ncrawled: 2025-12-02T15:55:15Z\n---\n\n# Compositing images with vImage blend modes\n\n**Article**\n\nCombine two images by using blend modes to create a single output.\n\n## Overview\n\nvImage provides a suite of functions for compositing two source images into one output. These *blend mode* functions implement different algorithms to determine the output color. For example, the multiply blend mode sets each output pixel as the product of the two corresponding input pixels.\n\nThe blend mode functions work on 8-bit RGBA source images in a premultiplied format. You can convert a nonpremultiplied buffer to a premultiplied format by using [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePremultiplyData_RGBA8888(_:_:_:)].\n\nThe blend mode functions accept two [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer] structures as the bottom and top layers of the compositing operation. The examples that follow use the image below on the left as the bottom layer and the image below on the right as the top layer.\n\n\n\nThe top-layer source image consists of four sections:\n\n- The top-left quadrant is solid white (`[255, 255, 255]`).\n- The top-right quadrant is identical to the corresponding quadrant of the bottom image.\n- The bottom-left quadrant is solid mid-gray (`[127, 127, 127]`).\n- The bottom-right quadrant is solid black (`[0, 0, 0]`).\n\nBoth images are fully opaque.\n\n### Composite images using the lighten blend mode\n\nUse the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePremultipliedAlphaBlendLighten_RGBA8888(_:_:_:_:)] function to composite two layers using the lighten blend mode. You can use the lighten blend mode to apply an overall lightening effect to images.\n\nThe lighten blend mode sets each channel of the destination pixel as the lightest value for the corresponding channel of the two source layers. The image below shows the result of compositing using the lighten blend mode:\n\n\n\nThe top-left quadrant in the result is white because no pixels in the bottom layer are brighter than the corresponding pixels in the top layer.\n\nThe bottom-left quadrant in the result looks washed out because the operation selects gray pixels from the top layer over corresponding dark pixels from the bottom layer.\n\n### Composite images using the darken blend mode\n\nUse the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePremultipliedAlphaBlendDarken_RGBA8888(_:_:_:_:)] function to composite two layers using the darken blend mode. You can use the darken blend mode to apply an overall darkening effect to images.\n\nThe darken blend mode sets each channel of the destination pixel as the darkest value for the corresponding channel of the two source layers. The image below shows the result of compositing using the darken blend mode:\n\n\n\nThe bottom-right quadrant in the result is black because no pixels in the bottom layer are darker than the corresponding pixels in the top layer.\n\nThe bottom-left quadrant in the result looks darker than the corresponding quadrant in the bottom layer. This is because the operation selects gray pixels from the top layer over corresponding light pixels from the bottom layer.\n\n### Composite images using the screen blend mode\n\nUse the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePremultipliedAlphaBlendScreen_RGBA8888(_:_:_:_:)] function to composite two layers using the screen blend mode. You can use the screen blend mode to lighten images without affecting the darkest areas.\n\nThe screen blend mode sets the destination pixel as the inverted product of the inverted corresponding source pixels. The image below shows the result of compositing using the screen blend mode:\n\n\n\nThe bottom-right quadrant in the result is identical to the corresponding quadrant in the bottom layer because the operation multiplies each bottom-layer pixel value by `1.0`. For example, if the source pixel value is `0.5`, the destination pixel value is `0.5`.\n\n```swift\ndest = 1 - (1 - 0.5) * (1 - 0.0) \/\/ dest = 0.5\n```\n\nThe top-right quadrant in the result is brighter than the corresponding quadrant in the bottom layer. In this quadrant, the top-layer and bottom-layer pixel values are identical. For example, if the source pixel value is `0.5`, the destination pixel value is `0.75`.\n\n```swift\ndest = 1 - (1 - 0.5) * (1 - 0.5) \/\/ dest = 0.75\n```\n\n### Composite images using the multiply blend mode\n\nUse the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePremultipliedAlphaBlendMultiply_RGBA8888(_:_:_:_:)] function to composite two layers using the multiply blend mode. You can the use multiply blend mode to darken images without affecting the lightest areas.\n\nThe multiply blend mode sets the destination pixel as the product of the corresponding source pixels. The image below shows the result of compositing using the multiply blend mode:\n\n\n\nThe bottom-right quadrant in the result is black because the operation multiplies each bottom-layer pixel value by `0.0` from the top layer.\n\nThe top-left quadrant in the result is identical to the corresponding quadrant in the bottom layer because the operation multiplies each bottom-layer pixel value by `1.0`.\n\nThe top-right quadrant in the result is darker than the corresponding quadrant in the bottom layer. In this quadrant, the top-layer and bottom-layer pixel values are identical. For example, if the source pixel value is `0.5`, the destination pixel value is `0.25`.\n\n```swift\ndest = 0.5 * 0.5 \/\/ dest = 0.25\n```\n\n## Related Documentation\n\n- **Alpha compositing**: Composite images together.\n\n## Image Processing Essentials\n\n- **Converting bitmap data between Core Graphics images and vImage buffers**: Pass image data between Core Graphics and vImage to create and manipulate images.\n- **Creating and Populating Buffers from Core Graphics Images**: Initialize vImage buffers from Core Graphics images.\n- **Creating a Core Graphics Image from a vImage Buffer**: Create displayable representations of vImage buffers.\n- **Building a Basic Image-Processing Workflow**: Resize an image with vImage.\n- **Applying geometric transforms to images**: Reflect, shear, rotate, and scale image buffers using vImage.\n- **Compositing images with alpha blending**: Combine two images by using alpha blending to create a single output.\n- **Applying vImage operations to regions of interest**: Limit the effect of vImage operations to rectangular regions of interest.\n- **Optimizing image-processing performance**: Improve your app’s performance by converting image buffer formats from interleaved to planar.\n- **vImage**: Manipulate large images using the CPU’s vector processor.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Composite images together.",
+          "name" : "Alpha compositing",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/alpha-compositing"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Pass image data between Core Graphics and vImage to create and manipulate images.",
+          "name" : "Converting bitmap data between Core Graphics images and vImage buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/converting-bitmap-data-between-core-graphics-images-and-vimage-buffers"
+        },
+        {
+          "description" : "Initialize vImage buffers from Core Graphics images.",
+          "name" : "Creating and Populating Buffers from Core Graphics Images",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/creating-and-populating-buffers-from-core-graphics-images"
+        },
+        {
+          "description" : "Create displayable representations of vImage buffers.",
+          "name" : "Creating a Core Graphics Image from a vImage Buffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/creating-a-core-graphics-image-from-a-vimage-buffer"
+        },
+        {
+          "description" : "Resize an image with vImage.",
+          "name" : "Building a Basic Image-Processing Workflow",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/building-a-basic-image-processing-workflow"
+        },
+        {
+          "description" : "Reflect, shear, rotate, and scale image buffers using vImage.",
+          "name" : "Applying geometric transforms to images",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-geometric-transforms-to-images"
+        },
+        {
+          "description" : "Combine two images by using alpha blending to create a single output.",
+          "name" : "Compositing images with alpha blending",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/compositing-images-with-alpha-blending"
+        },
+        {
+          "description" : "Limit the effect of vImage operations to rectangular regions of interest.",
+          "name" : "Applying vImage operations to regions of interest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-vimage-operations-to-regions-of-interest"
+        },
+        {
+          "description" : "Improve your app’s performance by converting image buffer formats from interleaved to planar.",
+          "name" : "Optimizing image-processing performance",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/optimizing-image-processing-performance"
+        },
+        {
+          "description" : "Manipulate large images using the CPU’s vector processor.",
+          "name" : "vImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vimage-library"
+        }
+      ],
+      "title" : "Image Processing Essentials"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Compositing images with vImage blend modes",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/compositing-images-with-vimage-blend-modes"
+}

@@ -1,0 +1,75 @@
+{
+  "abstract" : "Save game data during play or after a game in the player’s iCloud account that’s accessible from any device.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Encode and save game-specific data.\nlet gameData = encode(score: myScore)\ndo {\n    try await GKLocalPlayer.local.saveGameData(gameData!, withName: matchName)\n} catch {\n    print(\"Error: \\(error.localizedDescription).\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Fetch the current saved games.\nlet games = try await GKLocalPlayer.local.fetchSavedGames()",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Continue a game with the data from a file.\nfunc load(game: GKSavedGame) async {\n    let data: Data\n    do {\n        \/\/ Load the game data from the file.\n        data = try await game.loadData()\n    } catch {\n        print(\"Error: \\(error.localizedDescription).\")\n        return\n    }\n    \/\/ Decode the game data and start the game.\n    if let gameData = decode(matchData: data) {\n        startGame(score: gameData.score)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "50e4c7e621534a1e963ac9a74e4a7dd8ef41b63f70f70fd0ed1fc181cb0081a3",
+  "crawledAt" : "2025-12-01T17:11:41Z",
+  "id" : "4690FB98-5EC6-4E78-9E0F-CC1E358DBC85",
+  "kind" : "article",
+  "module" : "GameKit",
+  "overview" : "## Overview\n\nGameKit provides a convenient method to save game data that needs to persist after the player quits the game. You can save game data to record a player’s progress, separate data for family members who use the same device, and support players who switch between devices. For example, let the player start your game on their iPhone, and then continue playing on their Mac when they arrive home. You can save just one game at a time using the same filename or multiple games by giving each game instance a unique filename.\n\nTo save a game, the player must have an iCloud account and enable iCloud Drive in their iCloud settings. To save space in their account and improve performance in your game, minimize the amount of data you save.\n\n### Provide a container identifier\n\nFor GameKit to store the game data in the player’s iCloud account, you need to provide an identifier for the iCloud container that stores the data. Add the iCloud capability to your project and select the iCloud Documents checkbox.\n\nFor more information, see [doc:\/\/com.apple.documentation\/documentation\/Xcode\/configuring-icloud-services].\n\n### Save a game\n\nDecide what data to save to the file and encode it as a `Data` object. For example, create a structure containing the properties you want to save to the file that conforms to the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Codable] protocol. Then encode the structure using the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/PropertyListEncoder] class.\n\nSave the `Data` object to the file using the `GKLocalPlayer` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKLocalPlayer\/saveGameData(_:withName:completionHandler:)] method. GameKit overrides an existing file with the same filename. If you want to keep the previous file, pass a unique filename when you invoke this method.\n\n### Fetch the saved games\n\nLater, use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKLocalPlayer\/fetchSavedGames(completionHandler:)] method to retrieve all the saved games. This method returns an array of [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKSavedGame] objects that contain file properties, such as the filename and modification date. For example, you can use the results to present a list of the saved games to the player.\n\nUse the `GKSavedGame` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKSavedGame\/loadData(completionHandler:)] method to load the contents of a file. For example, let the player choose the game that they want to continue playing from the list. Then restart the game with the contents of the file.\n\nOptionally, provide a similar interface for the player to remove saved games using the `GKLocalPlayer` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKLocalPlayer\/deleteSavedGames(withName:completionHandler:)] method.\n\n### Resolve conflicts\n\nOccasionally, your game may need to resolve a conflict that occurs when the player saves game data from multiple devices using the same filename. For example, your game may present an interface that lets the player choose the correct game data or determine which data to keep based on some other criteria, such as the game with the highest score.\n\nIf GameKit notices two saved games with the same filename when you either fetch saved games, load game data, or save game data, it invokes the `GKSavedGameListener` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKSavedGameListener\/player(_:hasConflictingSavedGames:)] protocol method. To resolve a conflict in your code, adopt the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKLocalPlayerListener] protocol and implement this method to save the correct data using the `GKLocalPlayer` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKLocalPlayer\/resolveConflictingSavedGames(_:with:completionHandler:)] method.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/gamekit\/saving-the-player-s-game-data-to-an-icloud-account\ncrawled: 2025-12-01T17:11:41Z\n---\n\n# Saving the player’s game data to an iCloud account\n\n**Article**\n\nSave game data during play or after a game in the player’s iCloud account that’s accessible from any device.\n\n## Overview\n\nGameKit provides a convenient method to save game data that needs to persist after the player quits the game. You can save game data to record a player’s progress, separate data for family members who use the same device, and support players who switch between devices. For example, let the player start your game on their iPhone, and then continue playing on their Mac when they arrive home. You can save just one game at a time using the same filename or multiple games by giving each game instance a unique filename.\n\nTo save a game, the player must have an iCloud account and enable iCloud Drive in their iCloud settings. To save space in their account and improve performance in your game, minimize the amount of data you save.\n\n### Provide a container identifier\n\nFor GameKit to store the game data in the player’s iCloud account, you need to provide an identifier for the iCloud container that stores the data. Add the iCloud capability to your project and select the iCloud Documents checkbox.\n\nFor more information, see [doc:\/\/com.apple.documentation\/documentation\/Xcode\/configuring-icloud-services].\n\n### Save a game\n\nDecide what data to save to the file and encode it as a `Data` object. For example, create a structure containing the properties you want to save to the file that conforms to the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Codable] protocol. Then encode the structure using the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/PropertyListEncoder] class.\n\nSave the `Data` object to the file using the `GKLocalPlayer` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKLocalPlayer\/saveGameData(_:withName:completionHandler:)] method. GameKit overrides an existing file with the same filename. If you want to keep the previous file, pass a unique filename when you invoke this method.\n\n```swift\n\/\/ Encode and save game-specific data.\nlet gameData = encode(score: myScore)\ndo {\n    try await GKLocalPlayer.local.saveGameData(gameData!, withName: matchName)\n} catch {\n    print(\"Error: \\(error.localizedDescription).\")\n}\n```\n\n### Fetch the saved games\n\nLater, use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKLocalPlayer\/fetchSavedGames(completionHandler:)] method to retrieve all the saved games. This method returns an array of [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKSavedGame] objects that contain file properties, such as the filename and modification date. For example, you can use the results to present a list of the saved games to the player.\n\n```swift\n\/\/ Fetch the current saved games.\nlet games = try await GKLocalPlayer.local.fetchSavedGames()\n```\n\nUse the `GKSavedGame` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKSavedGame\/loadData(completionHandler:)] method to load the contents of a file. For example, let the player choose the game that they want to continue playing from the list. Then restart the game with the contents of the file.\n\n```swift\n\/\/ Continue a game with the data from a file.\nfunc load(game: GKSavedGame) async {\n    let data: Data\n    do {\n        \/\/ Load the game data from the file.\n        data = try await game.loadData()\n    } catch {\n        print(\"Error: \\(error.localizedDescription).\")\n        return\n    }\n    \/\/ Decode the game data and start the game.\n    if let gameData = decode(matchData: data) {\n        startGame(score: gameData.score)\n    }\n}\n```\n\nOptionally, provide a similar interface for the player to remove saved games using the `GKLocalPlayer` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKLocalPlayer\/deleteSavedGames(withName:completionHandler:)] method.\n\n### Resolve conflicts\n\nOccasionally, your game may need to resolve a conflict that occurs when the player saves game data from multiple devices using the same filename. For example, your game may present an interface that lets the player choose the correct game data or determine which data to keep based on some other criteria, such as the game with the highest score.\n\nIf GameKit notices two saved games with the same filename when you either fetch saved games, load game data, or save game data, it invokes the `GKSavedGameListener` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKSavedGameListener\/player(_:hasConflictingSavedGames:)] protocol method. To resolve a conflict in your code, adopt the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKLocalPlayerListener] protocol and implement this method to save the correct data using the `GKLocalPlayer` [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKLocalPlayer\/resolveConflictingSavedGames(_:with:completionHandler:)] method.\n\n## Players\n\n- **Connecting players with their friends in your game**: Give players the ability to connect and interact with friends in your game.\n- **Protecting the player’s privacy using scoped identifiers**: Use the scoped identifiers that GameKit provides you as player IDs when transmitting or saving player data.\n- **GKLocalPlayer**: The local player who signs in to Game Center on the device running the game.\n- **GKPlayer**: A remote player who the local player running your game can invite and communicate with through Game Center.\n- **GKBasePlayer**: A class that provides common data and methods for the different player objects.\n- **GKLocalPlayerListener**: A protocol that handles events for Game Center players.\n- **GKPlayerAuthenticationDidChangeNotificationName**: A notification that posts after GameKit authenticates the local player.\n- **GKPlayerDidChangeNotificationName**: A notification that posts when a player object’s data changes.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Give players the ability to connect and interact with friends in your game.",
+          "name" : "Connecting players with their friends in your game",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/connecting-players-with-their-friends-in-your-game"
+        },
+        {
+          "description" : "Use the scoped identifiers that GameKit provides you as player IDs when transmitting or saving player data.",
+          "name" : "Protecting the player’s privacy using scoped identifiers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/protecting-the-player-s-privacy-using-scoped-identifiers"
+        },
+        {
+          "description" : "The local player who signs in to Game Center on the device running the game.",
+          "name" : "GKLocalPlayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKLocalPlayer"
+        },
+        {
+          "description" : "A remote player who the local player running your game can invite and communicate with through Game Center.",
+          "name" : "GKPlayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKPlayer"
+        },
+        {
+          "description" : "A class that provides common data and methods for the different player objects.",
+          "name" : "GKBasePlayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKBasePlayer"
+        },
+        {
+          "description" : "A protocol that handles events for Game Center players.",
+          "name" : "GKLocalPlayerListener",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKLocalPlayerListener"
+        },
+        {
+          "description" : "A notification that posts after GameKit authenticates the local player.",
+          "name" : "GKPlayerAuthenticationDidChangeNotificationName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSNotification\/Name-swift.struct\/GKPlayerAuthenticationDidChangeNotificationName"
+        },
+        {
+          "description" : "A notification that posts when a player object’s data changes.",
+          "name" : "GKPlayerDidChangeNotificationName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSNotification\/Name-swift.struct\/GKPlayerDidChangeNotificationName"
+        }
+      ],
+      "title" : "Players"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Saving the player’s game data to an iCloud account",
+  "url" : "https:\/\/developer.apple.com\/documentation\/gamekit\/saving-the-player-s-game-data-to-an-icloud-account"
+}

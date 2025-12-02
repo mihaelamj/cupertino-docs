@@ -1,0 +1,76 @@
+{
+  "abstract" : "Check whether your app can use ARKit and respect people’s privacy.",
+  "codeExamples" : [
+    {
+      "code" : "@main\nstruct MyApp: App {\n    @State var session = ARKitSession()\n    @State var immersionState: ImmersionStyle = .mixed\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n        ImmersiveSpace(id: \"appSpace\") {\n            MixedImmersionView()\n            .task {\n                let planeData = PlaneDetectionProvider(alignments: [.horizontal])\n                \n                if PlaneDetectionProvider.isSupported {\n                    do {\n                        try await session.run([planeData])\n                        for await update in planeData.anchorUpdates {\n                            \/\/ Update app state.\n                        }\n                    } catch {\n                        print(\"ARKit session error \\(error)\")\n                    }\n                }\n            }\n        }\n        .immersionStyle(selection: $immersionState, in: .mixed)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct ContentView: View {\n    @Environment(\\.openImmersiveSpace) private var openImmersiveSpace\n    \n    var body: some View {\n        Button(\"Start ARKit experience\") {\n            Task {\n                await openImmersiveSpace(id: \"appSpace\")\n            }\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "681af32a89ae06ce9c6c10779c6e58c41225087b4ab640d8c23661f8b8e4d96b",
+  "crawledAt" : "2025-12-02T16:24:07Z",
+  "id" : "30DF0600-8510-452D-A676-6F1FB2E19941",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\n### Add usage descriptions for ARKit data access\n\nPeople need to know why your app wants to access data from ARKit. Add the following keys to your app’s information property list to provide a user-facing usage description that explains how your app uses the data:\n\n### Choose between up-front or as-needed authorization\n\nYou can choose when someone sees an authorization request to use ARKit data. If you need precise control over when the request appears, call the [doc:\/\/com.apple.documentation\/documentation\/ARKit\/ARKitSession\/requestAuthorization(for:)] method on [doc:\/\/com.apple.documentation\/documentation\/ARKit\/ARKitSession] to explicitly authorize access at the time you call it. Otherwise, people see an authorization request when you call the [doc:\/\/com.apple.documentation\/documentation\/ARKit\/ARKitSession\/run(_:)] method. This is an implicit authorization because the timing of the request depends entirely on when you start the session.\n\n### Open a space and run a session\n\nTo help protect people’s privacy, ARKit data is available only when your app presents a Full Space and other apps are hidden. Present one of these space styles before calling the [doc:\/\/com.apple.documentation\/documentation\/ARKit\/ARKitSession\/run(_:)] method.\n\nThe following shows an app structure that’s set up to use a space with ARKit:\n\nCall [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/EnvironmentValues\/openImmersiveSpace] from your app’s user interface to create a space, start running an ARKit session, and kick off an immersive experience. The following shows a simple view with a button that opens the space:\n\n### Provide alternatives for declined and revoked authorizations\n\nSomeone might not want to give your app access to data from ARKit, or they might choose to revoke that access later in Settings. Handle these situations gracefully, and remove or transition content that depends on ARKit data. For example, you might fade out content that you need to remove, or recenter content to an appropriate starting position. If your app uses ARKit data to place content in a person’s surroundings, consider letting people place content using the system-provided interface.\n\nProviding alternatives is especially important if you’re using ARKit for user input. People using accessibility features, trackpads, keyboards, or other forms of input might need a way to use your app without ARKit.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/visionos\/setting-up-access-to-arkit-data\ncrawled: 2025-12-02T16:24:07Z\n---\n\n# Setting up access to ARKit data\n\n**Article**\n\nCheck whether your app can use ARKit and respect people’s privacy.\n\n## Overview\n\n\n\n### Add usage descriptions for ARKit data access\n\nPeople need to know why your app wants to access data from ARKit. Add the following keys to your app’s information property list to provide a user-facing usage description that explains how your app uses the data:\n\n\n\n\n\n### Choose between up-front or as-needed authorization\n\nYou can choose when someone sees an authorization request to use ARKit data. If you need precise control over when the request appears, call the [doc:\/\/com.apple.documentation\/documentation\/ARKit\/ARKitSession\/requestAuthorization(for:)] method on [doc:\/\/com.apple.documentation\/documentation\/ARKit\/ARKitSession] to explicitly authorize access at the time you call it. Otherwise, people see an authorization request when you call the [doc:\/\/com.apple.documentation\/documentation\/ARKit\/ARKitSession\/run(_:)] method. This is an implicit authorization because the timing of the request depends entirely on when you start the session.\n\n### Open a space and run a session\n\nTo help protect people’s privacy, ARKit data is available only when your app presents a Full Space and other apps are hidden. Present one of these space styles before calling the [doc:\/\/com.apple.documentation\/documentation\/ARKit\/ARKitSession\/run(_:)] method.\n\nThe following shows an app structure that’s set up to use a space with ARKit:\n\n```swift\n@main\nstruct MyApp: App {\n    @State var session = ARKitSession()\n    @State var immersionState: ImmersionStyle = .mixed\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n        }\n        ImmersiveSpace(id: \"appSpace\") {\n            MixedImmersionView()\n            .task {\n                let planeData = PlaneDetectionProvider(alignments: [.horizontal])\n                \n                if PlaneDetectionProvider.isSupported {\n                    do {\n                        try await session.run([planeData])\n                        for await update in planeData.anchorUpdates {\n                            \/\/ Update app state.\n                        }\n                    } catch {\n                        print(\"ARKit session error \\(error)\")\n                    }\n                }\n            }\n        }\n        .immersionStyle(selection: $immersionState, in: .mixed)\n    }\n}\n```\n\nCall [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/EnvironmentValues\/openImmersiveSpace] from your app’s user interface to create a space, start running an ARKit session, and kick off an immersive experience. The following shows a simple view with a button that opens the space:\n\n```swift\nstruct ContentView: View {\n    @Environment(\\.openImmersiveSpace) private var openImmersiveSpace\n    \n    var body: some View {\n        Button(\"Start ARKit experience\") {\n            Task {\n                await openImmersiveSpace(id: \"appSpace\")\n            }\n        }\n    }\n}\n```\n\n### Provide alternatives for declined and revoked authorizations\n\nSomeone might not want to give your app access to data from ARKit, or they might choose to revoke that access later in Settings. Handle these situations gracefully, and remove or transition content that depends on ARKit data. For example, you might fade out content that you need to remove, or recenter content to an appropriate starting position. If your app uses ARKit data to place content in a person’s surroundings, consider letting people place content using the system-provided interface.\n\nProviding alternatives is especially important if you’re using ARKit for user input. People using accessibility features, trackpads, keyboards, or other forms of input might need a way to use your app without ARKit.\n\n## ARKit\n\n- **Happy Beam**: Leverage a Full Space to create a fun game using ARKit.\n- **Incorporating real-world surroundings in an immersive experience**: Create an immersive experience by making your app’s content respond to the local shape of the world.\n- **Placing content on detected planes**: Detect horizontal surfaces like tables and floors, as well as vertical planes like walls and doors.\n- **Tracking specific points in world space**: Retrieve the position and orientation of anchors your app stores in ARKit.\n- **Tracking preregistered images in 3D space**: Place content based on the current position of a known image in a person’s surroundings.\n- **Exploring object tracking with ARKit**: Find and track real-world objects in visionOS using reference objects trained with Create ML.\n- **Object tracking with Reality Composer Pro experiences**: Use object tracking in visionOS to attach digital content to real objects to create engaging experiences.\n- **Building local experiences with room tracking**: Use room tracking in visionOS to provide custom interactions with physical spaces.\n- **Placing entities using head and device transform**: Query and react to changes in the position and rotation of Apple Vision Pro.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Leverage a Full Space to create a fun game using ARKit.",
+          "name" : "Happy Beam",
+          "url" : "https:\/\/developer.apple.com\/documentation\/visionOS\/happybeam"
+        },
+        {
+          "description" : "Create an immersive experience by making your app’s content respond to the local shape of the world.",
+          "name" : "Incorporating real-world surroundings in an immersive experience",
+          "url" : "https:\/\/developer.apple.com\/documentation\/visionOS\/incorporating-real-world-surroundings-in-an-immersive-experience"
+        },
+        {
+          "description" : "Detect horizontal surfaces like tables and floors, as well as vertical planes like walls and doors.",
+          "name" : "Placing content on detected planes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/visionOS\/placing-content-on-detected-planes"
+        },
+        {
+          "description" : "Retrieve the position and orientation of anchors your app stores in ARKit.",
+          "name" : "Tracking specific points in world space",
+          "url" : "https:\/\/developer.apple.com\/documentation\/visionOS\/tracking-points-in-world-space"
+        },
+        {
+          "description" : "Place content based on the current position of a known image in a person’s surroundings.",
+          "name" : "Tracking preregistered images in 3D space",
+          "url" : "https:\/\/developer.apple.com\/documentation\/visionOS\/tracking-images-in-3d-space"
+        },
+        {
+          "description" : "Find and track real-world objects in visionOS using reference objects trained with Create ML.",
+          "name" : "Exploring object tracking with ARKit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/visionOS\/exploring_object_tracking_with_arkit"
+        },
+        {
+          "description" : "Use object tracking in visionOS to attach digital content to real objects to create engaging experiences.",
+          "name" : "Object tracking with Reality Composer Pro experiences",
+          "url" : "https:\/\/developer.apple.com\/documentation\/visionOS\/object-tracking-with-reality-composer-pro-experiences"
+        },
+        {
+          "description" : "Use room tracking in visionOS to provide custom interactions with physical spaces.",
+          "name" : "Building local experiences with room tracking",
+          "url" : "https:\/\/developer.apple.com\/documentation\/visionOS\/building-local-experiences-with-room-tracking"
+        },
+        {
+          "description" : "Query and react to changes in the position and rotation of Apple Vision Pro.",
+          "name" : "Placing entities using head and device transform",
+          "url" : "https:\/\/developer.apple.com\/documentation\/visionOS\/placing-entities-using-head-and-device-transform"
+        }
+      ],
+      "title" : "ARKit"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Setting up access to ARKit data",
+  "url" : "https:\/\/developer.apple.com\/documentation\/visionos\/setting-up-access-to-arkit-data"
+}

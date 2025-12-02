@@ -1,0 +1,103 @@
+{
+  "abstract" : "A type that displays a button to present the identity verification flow.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Create an identity request.\nfunc createRequest() -> PKIdentityRequest {\n    let descriptor = PKIdentityDriversLicenseDescriptor()\n    descriptor.addElements([.age(atLeast: 18)],\n                            intentToStore: .willNotStore)\n    descriptor.addElements([.givenName, .familyName, .portrait],\n                            intentToStore: .mayStore(days: 30))\n\n    let request = PKIdentityRequest()\n    request.descriptor = descriptor\n    \/\/ The merchant ID you configured in your Apple Developer account.\n    request.merchantIdentifier = <YOUR_MERCHANT_ID> \n    \/\/ The nonce your server generates.\n    request.nonce = <YOUR_NONCE_VALUE> \n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Show the Verify Identity with Wallet button and handle the identity request result.\n@ViewBuilder var verifiyIdentityButton: some View {\n    VerifyIdentityWithWalletButton(\n        .verifyIdentity,\n        request: createRequest(),\n    ) { result in\n        switch result {\n        case .success(let document):\n            \/\/ Securely transfer the document to the server for decryption and verification.\n        case .failure(let error):\n            switch error {\n            case PKIdentityError.cancelled:\n                \/\/ Handle the cancellation error.\n            default:\n                \/\/ Handle other errors.\n            }\n        }\n    } fallback: {\n        \/\/ Verify the person's identity another way.\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Sendable",
+    "SendableMetatype",
+    "View"
+  ],
+  "contentHash" : "f196b3b5997ef0e12c949762c3629f4d02bff35df9110d2c5f481064d3c62ec0",
+  "crawledAt" : "2025-12-02T17:45:12Z",
+  "declaration" : {
+    "code" : "@MainActor @preconcurrency struct VerifyIdentityWithWalletButton<Fallback> where Fallback : View",
+    "language" : "swift"
+  },
+  "id" : "E2E68DF0-B9C4-4EBD-A625-0689F32DA0BD",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "PassKit",
+  "overview" : "## Overview\n\nUse this structure as the SwiftUI equivalent to [doc:\/\/com.apple.passkit\/documentation\/PassKit\/PKIdentityButton]. The system allows one in-progress identity request at a time. Otherwise, it returns a [doc:\/\/com.apple.passkit\/documentation\/PassKit\/PKIdentityError-swift.struct\/Code\/requestAlreadyInProgress] error.\n\nThis example shows an implementation of the Verify Identity with Wallet button. For more information, see [doc:\/\/com.apple.passkit\/documentation\/PassKit\/requesting-identity-data-from-a-wallet-pass].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/PassKit\/VerifyIdentityWithWalletButton\ncrawled: 2025-12-02T17:45:12Z\n---\n\n# VerifyIdentityWithWalletButton\n\n**Structure**\n\nA type that displays a button to present the identity verification flow.\n\n## Declaration\n\n```swift\n@MainActor @preconcurrency struct VerifyIdentityWithWalletButton<Fallback> where Fallback : View\n```\n\n## Overview\n\nUse this structure as the SwiftUI equivalent to [doc:\/\/com.apple.passkit\/documentation\/PassKit\/PKIdentityButton]. The system allows one in-progress identity request at a time. Otherwise, it returns a [doc:\/\/com.apple.passkit\/documentation\/PassKit\/PKIdentityError-swift.struct\/Code\/requestAlreadyInProgress] error.\n\nThis example shows an implementation of the Verify Identity with Wallet button. For more information, see [doc:\/\/com.apple.passkit\/documentation\/PassKit\/requesting-identity-data-from-a-wallet-pass].\n\n```swift\n\/\/ Create an identity request.\nfunc createRequest() -> PKIdentityRequest {\n    let descriptor = PKIdentityDriversLicenseDescriptor()\n    descriptor.addElements([.age(atLeast: 18)],\n                            intentToStore: .willNotStore)\n    descriptor.addElements([.givenName, .familyName, .portrait],\n                            intentToStore: .mayStore(days: 30))\n\n    let request = PKIdentityRequest()\n    request.descriptor = descriptor\n    \/\/ The merchant ID you configured in your Apple Developer account.\n    request.merchantIdentifier = <YOUR_MERCHANT_ID> \n    \/\/ The nonce your server generates.\n    request.nonce = <YOUR_NONCE_VALUE> \n}\n```\n\n```swift\n\/\/ Show the Verify Identity with Wallet button and handle the identity request result.\n@ViewBuilder var verifiyIdentityButton: some View {\n    VerifyIdentityWithWalletButton(\n        .verifyIdentity,\n        request: createRequest(),\n    ) { result in\n        switch result {\n        case .success(let document):\n            \/\/ Securely transfer the document to the server for decryption and verification.\n        case .failure(let error):\n            switch error {\n            case PKIdentityError.cancelled:\n                \/\/ Handle the cancellation error.\n            default:\n                \/\/ Handle other errors.\n            }\n        }\n    } fallback: {\n        \/\/ Verify the person's identity another way.\n    }\n}\n```\n\n## Creating the button\n\n- **init(_:action:)**: Creates a verify identity button that starts the identity authorization flow.\n- **init(_:request:onCompletion:)**: Creates a verify identity button that starts the identity authorization flow, with a completion handler.\n- **init(_:request:onCompletion:fallback:)**: Creates a verify identity button that starts the identity authorization flow, with a fallback view to use if the app can’t start the flow.\n\n## Identity sheet interactions and authorization\n\n- **PKIdentityAuthorizationController**: An object that presents a sheet that prompts the user to allow a request for identity information.\n- **PKIdentityRequest**: An object that represents a request for identity information from a Wallet pass.\n- **PKIdentityDocument**: An object that represents the response to a request.\n- **PKIdentityElement**: An object that represents the elements an app requests from identity documents.\n- **PKIdentityButton**: An object that displays a button to trigger the identity verification flow.\n- **VerifyIdentityWithWalletButtonLabel**: A type that represents the label you use with a verify identity button.\n- **VerifyIdentityWithWalletButtonStyle**: A type that represents the style you use with a verify identity button.\n\n## Conforms To\n\n- Sendable\n- SendableMetatype\n- View\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a verify identity button that starts the identity authorization flow.",
+          "name" : "init(_:action:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/VerifyIdentityWithWalletButton\/init(_:action:)"
+        },
+        {
+          "description" : "Creates a verify identity button that starts the identity authorization flow, with a completion handler.",
+          "name" : "init(_:request:onCompletion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/VerifyIdentityWithWalletButton\/init(_:request:onCompletion:)"
+        },
+        {
+          "description" : "Creates a verify identity button that starts the identity authorization flow, with a fallback view to use if the app can’t start the flow.",
+          "name" : "init(_:request:onCompletion:fallback:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/VerifyIdentityWithWalletButton\/init(_:request:onCompletion:fallback:)"
+        }
+      ],
+      "title" : "Creating the button"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that presents a sheet that prompts the user to allow a request for identity information.",
+          "name" : "PKIdentityAuthorizationController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/PKIdentityAuthorizationController"
+        },
+        {
+          "description" : "An object that represents a request for identity information from a Wallet pass.",
+          "name" : "PKIdentityRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/PKIdentityRequest"
+        },
+        {
+          "description" : "An object that represents the response to a request.",
+          "name" : "PKIdentityDocument",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/PKIdentityDocument"
+        },
+        {
+          "description" : "An object that represents the elements an app requests from identity documents.",
+          "name" : "PKIdentityElement",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/PKIdentityElement"
+        },
+        {
+          "description" : "An object that displays a button to trigger the identity verification flow.",
+          "name" : "PKIdentityButton",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/PKIdentityButton"
+        },
+        {
+          "description" : "A type that represents the label you use with a verify identity button.",
+          "name" : "VerifyIdentityWithWalletButtonLabel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/VerifyIdentityWithWalletButtonLabel"
+        },
+        {
+          "description" : "A type that represents the style you use with a verify identity button.",
+          "name" : "VerifyIdentityWithWalletButtonStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/VerifyIdentityWithWalletButtonStyle"
+        }
+      ],
+      "title" : "Identity sheet interactions and authorization"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "VerifyIdentityWithWalletButton",
+  "url" : "https:\/\/developer.apple.com\/documentation\/PassKit\/VerifyIdentityWithWalletButton"
+}

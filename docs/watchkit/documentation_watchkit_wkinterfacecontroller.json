@@ -1,0 +1,525 @@
+{
+  "abstract" : "A class that provides the infrastructure for managing the interface in a watchOS app.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol",
+    "Sendable"
+  ],
+  "contentHash" : "2757d6ac794b9b7885e3f49b5a6dd127e01b61129557309b0dcb78b45bba26ec",
+  "crawledAt" : "2025-12-01T10:46:37Z",
+  "declaration" : {
+    "code" : "@MainActor class WKInterfaceController",
+    "language" : "swift"
+  },
+  "id" : "C5BDDF65-4D64-49C1-ABC5-17AF0951AF70",
+  "inheritedBy" : [
+    "WKUserNotificationInterfaceController"
+  ],
+  "kind" : "class",
+  "module" : "WatchKit",
+  "overview" : "## Overview\n\nAn interface controller serves the same purpose as a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController] object in a UIKit app, except that it doesn’t manage any actual views. It runs in your WatchKit extension and remotely manages the behavior associated with an interface controller in your Watch app’s storyboard file. You subclass [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController] and use its methods to configure the elements of your storyboard scene and to respond to interactions with those elements.\n\nYour interface controller code runs locally on the user’s Apple Watch but is separate from the interface that it manages. When you change the value of an interface object in your code, the system forwards the needed information to your Watch app, which makes the corresponding changes onscreen.\n\n### Initialize your interface controllers\n\nWhen the user interacts with your app content, the system launches your extension and creates the appropriate interface controller objects automatically. Apps use different interface controllers to manage their notification and app interfaces; WatchKit uses the information in your app’s main storyboard file to determine which interface controller to load. Notification scenes are configured specially so that the system can identify them. For your app, WatchKit loads your app’s main interface controller initially, but you may change the initial interface controller at launch time.\n\nWhen creating an interface controller, WatchKit instantiates the class and calls its [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/init()] method. You can use this method to initialize variables and load data; however, don’t use it to configure your user interface. The controller’s user interface elements may not be properly initialized when this method runs.\n\nNext, the system calls the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/awake(withContext:)] method. If WatchKit passes a valid object to the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/awake(withContext:)] method, use the information in that object to customize the initialization process. Also, the controller’s user interface elements are guaranteed to be available at this point. This means that you can safely use this method to configure your user interface.\n\nThe [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/willActivate()] method lets you know when your interface is about to become active. Use the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/willActivate()] method to perform any last minute tasks, such as checking for updates to your content; however, don’t use it for your primary initialization.\n\nThe [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/willActivate()] method may be called at times when your interface isn’t yet onscreen. For example, WatchKit may call the method in advance so that you have time to update your content. WatchKit calls the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/didAppear()] method to let you know when your interface becomes visible. Similarly, WatchKit calls the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/willDisappear()] and [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/didDeactivate()] methods when your interface moves offscreen again.\n\nIn iOS Simulator, WatchKit calls the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/didDeactivate()] method for the current interface controller when you lock the simulator by selecting Hardware > Lock. When you subsequently unlock the simulator, WatchKit calls that interface controller’s [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/willActivate()] method again. You can use this capability to debug your activation and deactivation code.\n\n### Interface Builder configuration options\n\nXcode lets you configure information about your interface controller in your storyboard file. The following table lists the attributes you can configure in your storyboard and their meaning.\n\n### Subclassing notes\n\nSubclass `WKInterfaceController` when you have a storyboard scene that requires configuration at runtime or that handles user interactions. Typically, you define a custom subclass for each unique storyboard scene that your app manages. In your subclass, define outlets for any interface objects you need to configure and define action methods for responding to interactions with the elements of your storyboard scene.\n\nMost custom interface controllers you use in your app require a custom interface controller subclass. Even glances need an interface controller to update the glance contents. The only storyboard scene that can’t use a custom interface controller is the scene associated with a static notification interface. When implementing an interface controller for your dynamic notification interface, subclass [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKUserNotificationInterfaceController] instead.\n\nOverride any methods of the class needed to configure your interface and get it ready to display. Most interface controllers override the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/init()] and [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/awake(withContext:)] methods. Override any other methods that make sense based on your needs.",
+  "platforms" : [
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\ncrawled: 2025-12-01T10:46:37Z\n---\n\n# WKInterfaceController\n\n**Class**\n\nA class that provides the infrastructure for managing the interface in a watchOS app.\n\n## Declaration\n\n```swift\n@MainActor class WKInterfaceController\n```\n\n## Overview\n\nAn interface controller serves the same purpose as a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController] object in a UIKit app, except that it doesn’t manage any actual views. It runs in your WatchKit extension and remotely manages the behavior associated with an interface controller in your Watch app’s storyboard file. You subclass [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController] and use its methods to configure the elements of your storyboard scene and to respond to interactions with those elements.\n\nYour interface controller code runs locally on the user’s Apple Watch but is separate from the interface that it manages. When you change the value of an interface object in your code, the system forwards the needed information to your Watch app, which makes the corresponding changes onscreen.\n\n### Initialize your interface controllers\n\nWhen the user interacts with your app content, the system launches your extension and creates the appropriate interface controller objects automatically. Apps use different interface controllers to manage their notification and app interfaces; WatchKit uses the information in your app’s main storyboard file to determine which interface controller to load. Notification scenes are configured specially so that the system can identify them. For your app, WatchKit loads your app’s main interface controller initially, but you may change the initial interface controller at launch time.\n\nWhen creating an interface controller, WatchKit instantiates the class and calls its [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/init()] method. You can use this method to initialize variables and load data; however, don’t use it to configure your user interface. The controller’s user interface elements may not be properly initialized when this method runs.\n\nNext, the system calls the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/awake(withContext:)] method. If WatchKit passes a valid object to the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/awake(withContext:)] method, use the information in that object to customize the initialization process. Also, the controller’s user interface elements are guaranteed to be available at this point. This means that you can safely use this method to configure your user interface.\n\nThe [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/willActivate()] method lets you know when your interface is about to become active. Use the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/willActivate()] method to perform any last minute tasks, such as checking for updates to your content; however, don’t use it for your primary initialization.\n\nThe [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/willActivate()] method may be called at times when your interface isn’t yet onscreen. For example, WatchKit may call the method in advance so that you have time to update your content. WatchKit calls the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/didAppear()] method to let you know when your interface becomes visible. Similarly, WatchKit calls the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/willDisappear()] and [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/didDeactivate()] methods when your interface moves offscreen again.\n\n\n\nIn iOS Simulator, WatchKit calls the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/didDeactivate()] method for the current interface controller when you lock the simulator by selecting Hardware > Lock. When you subsequently unlock the simulator, WatchKit calls that interface controller’s [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/willActivate()] method again. You can use this capability to debug your activation and deactivation code.\n\n### Interface Builder configuration options\n\nXcode lets you configure information about your interface controller in your storyboard file. The following table lists the attributes you can configure in your storyboard and their meaning.\n\n\n\n### Subclassing notes\n\nSubclass `WKInterfaceController` when you have a storyboard scene that requires configuration at runtime or that handles user interactions. Typically, you define a custom subclass for each unique storyboard scene that your app manages. In your subclass, define outlets for any interface objects you need to configure and define action methods for responding to interactions with the elements of your storyboard scene.\n\nMost custom interface controllers you use in your app require a custom interface controller subclass. Even glances need an interface controller to update the glance contents. The only storyboard scene that can’t use a custom interface controller is the scene associated with a static notification interface. When implementing an interface controller for your dynamic notification interface, subclass [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKUserNotificationInterfaceController] instead.\n\nOverride any methods of the class needed to configure your interface and get it ready to display. Most interface controllers override the [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/init()] and [doc:\/\/com.apple.watchkit\/documentation\/WatchKit\/WKInterfaceController\/awake(withContext:)] methods. Override any other methods that make sense based on your needs.\n\n## Creating the interface controller\n\n- **init()**: Returns an initialized interface controller object.\n- **awake(withContext:)**: Initializes the interface controller with the specified context data.\n- **setTitle(_:)**: Sets the title of the interface.\n\n## Responding to activation and appearance events\n\n- **willActivate()**: Tells the interface controller that the system is about to activate its view.\n- **didDeactivate()**: Tells the interface controller that its view is no longer active.\n- **didAppear()**: Tells the interface controller that its view is now onscreen.\n- **willDisappear()**: Tells the interface controller that its view is now offscreen.\n\n## Implementing a navigation interface\n\n- **pushController(withName:context:)**: Pushes a new interface controller onto the screen.\n- **pop()**: Pops the current interface controller from the screen.\n- **popToRootController()**: Pops all interface controllers except the app’s initial interface controller.\n\n## Presenting interface controllers modally\n\n- **presentController(withName:context:)**: Presents a single interface controller modally.\n- **presentController(withNames:contexts:)**: Presents a page-based interface modally.\n- **presentController(withNamesAndContexts:)**: Presents a page-based interface modally.\n- **presentAlert(withTitle:message:preferredStyle:actions:)**: Presents an alert or action sheet over the current interface controller.\n- **WKAlertControllerStyle**: Constants indicating the styles for standard system alerts.\n- **dismiss()**: Dismisses the current interface controller from the screen.\n\n## Navigating a page-based interface\n\n- **reloadRootPageControllers(withNames:contexts:orientation:pageIndex:)**: Loads the specified interface controllers and rebuilds the app’s page-based interface for the given scrolling orientation.\n- **WKPageOrientation**: Scrolling orientations for page-based interfaces.\n- **reloadRootControllers(withNamesAndContexts:)**: Loads the specified interface controllers and rebuilds the app’s page-based interface.\n- **becomeCurrentPage()**: Displays the interface controller in the page-based interface.\n\n## Managing segue-based transitions\n\n- **contextForSegue(withIdentifier:)**: Returns the context object to pass to the specified interface controller when a button is tapped.\n- **contextsForSegue(withIdentifier:)**: Returns the context objects to pass to a page-based set of interface controllers when a button is tapped.\n- **contextForSegue(withIdentifier:in:rowIndex:)**: Returns the context object to pass to the specified interface controller when a row in a table is tapped.\n- **contextsForSegue(withIdentifier:in:rowIndex:)**: Returns the context objects to pass to a page-based set of interface controllers when a row in a table is tapped.\n\n## Managing Scrolling\n\n- **scroll(to:at:animated:)**: Scrolls the specified object to the given position onscreen.\n- **WKInterfaceScrollPosition**: Onscreen scroll positions.\n- **interfaceDidScrollToTop()**: Tells the interface controller that the user has performed a scroll-to-top gesture (for example, tapping the status bar) and that the scrolling animation has finished.\n- **interfaceOffsetDidScrollToTop()**: Tells the interface controller that the user has scrolled to the top of the interface and that the scrolling animation has finished.\n- **interfaceOffsetDidScrollToBottom()**: Tells the interface controller that the user has scrolled to the bottom of the interface and that the scrolling animation has finished.\n- **isTableScrollingHapticFeedbackEnabled**: A Boolean value that determines whether haptic feedback coordinates with the appearance of new rows as the user scrolls through a table.\n\n## Respecting safe areas and layout margins\n\n- **contentSafeAreaInsets**: Insets that define the area where it’s safe to display content on the screen.\n- **systemMinimumLayoutMargins**: Leading and trailing insets that represent the minimum layout margins for text elements.\n- **contentFrame**: The frame rectangle used to display your app’s content.\n\n## Animating changes to the interface\n\n- **animate(withDuration:animations:)**: Animates changes to one or more interface objects over the specified duration.\n\n## Handling text input\n\n- **presentTextInputController(withSuggestions:allowedInputMode:completion:)**: Displays a modal interface for gathering text input from the user.\n- **presentTextInputControllerWithSuggestions(forLanguage:allowedInputMode:completion:)**: Displays a modal interface for gathering language-specific text input from the user.\n- **dismissTextInputController()**: Dismisses the text input controller without returning any text.\n- **WKTextInputMode**: The input modes supported by the text input controller.\n\n## Presenting video and audio interfaces\n\n- **presentMediaPlayerController(with:options:completion:)**: Displays a modal interface for playing the specified media file.\n- **Media Player Options**: Keys indicating media playback options.\n- **dismissMediaPlayerController()**: Dismisses the media interface controller.\n- **presentAudioRecorderController(withOutputURL:preset:options:completion:)**: Display a standard interface for recording audio from the user’s Apple Watch.\n- **WKAudioRecorderPreset**: Constants indicating the quality of audio recordings.\n- **Audio Recording Options**: Options to specify when recording audio.\n- **dismissAudioRecorderController()**: Dismisses the audio recording interface controller.\n\n## Handling table-row selections\n\n- **table(_:didSelectRowAt:)**: Called to let you know that the user selected a row in the table.\n\n## Managing pickers\n\n- **pickerDidFocus(_:)**: Called to let you know that the specified picker is now receiving input from the Digital Crown.\n- **pickerDidResignFocus(_:)**: Called to let you know that the specified picker is no longer receiving input from the Digital Crown.\n- **pickerDidSettle(_:)**: Called to let you know when the user settles on a value in a picker.\n\n## Getting the crown sequencer\n\n- **crownSequencer**: The object to use when directly tracking crown events.\n\n## Coordinating Handoff activity\n\n- **update(_:)**: Registers the current user activity with the system.\n- **invalidateUserActivity()**: Invalidates the most recent user activity.\n\n## Adding PassKit passes\n\n- **presentAddPassesController(withPasses:completion:)**: Displays a modal interface for presenting passes to the user.\n- **dismissAddPassesController()**: Dismisses the pass interface controller\n\n## Managing Notifications\n\n- **WKAccessibilityVoiceOverStatusChanged**: Tells the interface controller that the VoiceOver status has changed.\n\n## Deprecated symbols\n\n- **Text Response Key**: Keys for retrieving text response information.\n- **addMenuItem(withImageNamed:title:action:)**: Adds an action to the context menu using an existing image resource in your Watch app bundle.\n- **addMenuItem(with:title:action:)**: Adds an action to the context menu using a system-provided icon.\n- **addMenuItem(with:title:action:)**: Adds an action to the context menu by using an image provided by your WatchKit extension.\n- **beginGlanceUpdates()**: Tells the system that you are about to start a potentially lengthy update task for your glance.\n- **clearAllMenuItems()**: Removes all programmatically added actions from the context menu.\n- **endGlanceUpdates()**: Tells the system that you finished updating your glance content.\n- **handleUserActivity(_:)**: Responds to Handoff–related activity.\n- **presentController(_:)**: Presents a page-based interface modally.\n- **reloadRootControllers(withNames:contexts:)**: Loads the specified interface controllers and rebuilds the app’s page-based interface.\n- **updateUserActivity(_:userInfo:webpageURL:)**: Registers the current user activity with the system.\n- **WKMenuItemIcon**: Template images that you can use for menus.\n\n## User interface basics\n\n- **Building watchOS app Interfaces Using the Storyboard**: Create the user interface for your watchOS app by nesting stacks.\n- **WKInterfaceObject**: An object that provides information that is common to all interface objects in your watchOS app.\n- **WKAlertAction**: An object that encapsulates information about a button displayed in an alert or action sheet.\n- **WKAccessibilityImageRegion**: An object that defines a portion of an image that you want to call out separately to an assistive app.\n- **WKAccessibilityIsVoiceOverRunning()**: Returns a Boolean value indicating whether VoiceOver is running.\n- **WKAccessibilityIsReduceMotionEnabled()**: Returns a Boolean value indicating whether reduced motion is enabled.\n\n## Inherits From\n\n- NSObject\n\n## Inherited By\n\n- WKUserNotificationInterfaceController\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n- Sendable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns an initialized interface controller object.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/init()"
+        },
+        {
+          "description" : "Initializes the interface controller with the specified context data.",
+          "name" : "awake(withContext:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/awake(withContext:)"
+        },
+        {
+          "description" : "Sets the title of the interface.",
+          "name" : "setTitle(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/setTitle(_:)"
+        }
+      ],
+      "title" : "Creating the interface controller"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells the interface controller that the system is about to activate its view.",
+          "name" : "willActivate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/willActivate()"
+        },
+        {
+          "description" : "Tells the interface controller that its view is no longer active.",
+          "name" : "didDeactivate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/didDeactivate()"
+        },
+        {
+          "description" : "Tells the interface controller that its view is now onscreen.",
+          "name" : "didAppear()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/didAppear()"
+        },
+        {
+          "description" : "Tells the interface controller that its view is now offscreen.",
+          "name" : "willDisappear()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/willDisappear()"
+        }
+      ],
+      "title" : "Responding to activation and appearance events"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Pushes a new interface controller onto the screen.",
+          "name" : "pushController(withName:context:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/pushController(withName:context:)"
+        },
+        {
+          "description" : "Pops the current interface controller from the screen.",
+          "name" : "pop()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/pop()"
+        },
+        {
+          "description" : "Pops all interface controllers except the app’s initial interface controller.",
+          "name" : "popToRootController()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/popToRootController()"
+        }
+      ],
+      "title" : "Implementing a navigation interface"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Presents a single interface controller modally.",
+          "name" : "presentController(withName:context:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/presentController(withName:context:)"
+        },
+        {
+          "description" : "Presents a page-based interface modally.",
+          "name" : "presentController(withNames:contexts:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/presentController(withNames:contexts:)"
+        },
+        {
+          "description" : "Presents a page-based interface modally.",
+          "name" : "presentController(withNamesAndContexts:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/presentController(withNamesAndContexts:)"
+        },
+        {
+          "description" : "Presents an alert or action sheet over the current interface controller.",
+          "name" : "presentAlert(withTitle:message:preferredStyle:actions:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/presentAlert(withTitle:message:preferredStyle:actions:)"
+        },
+        {
+          "description" : "Constants indicating the styles for standard system alerts.",
+          "name" : "WKAlertControllerStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKAlertControllerStyle"
+        },
+        {
+          "description" : "Dismisses the current interface controller from the screen.",
+          "name" : "dismiss()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/dismiss()"
+        }
+      ],
+      "title" : "Presenting interface controllers modally"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Loads the specified interface controllers and rebuilds the app’s page-based interface for the given scrolling orientation.",
+          "name" : "reloadRootPageControllers(withNames:contexts:orientation:pageIndex:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/reloadRootPageControllers(withNames:contexts:orientation:pageIndex:)"
+        },
+        {
+          "description" : "Scrolling orientations for page-based interfaces.",
+          "name" : "WKPageOrientation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKPageOrientation"
+        },
+        {
+          "description" : "Loads the specified interface controllers and rebuilds the app’s page-based interface.",
+          "name" : "reloadRootControllers(withNamesAndContexts:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/reloadRootControllers(withNamesAndContexts:)"
+        },
+        {
+          "description" : "Displays the interface controller in the page-based interface.",
+          "name" : "becomeCurrentPage()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/becomeCurrentPage()"
+        }
+      ],
+      "title" : "Navigating a page-based interface"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the context object to pass to the specified interface controller when a button is tapped.",
+          "name" : "contextForSegue(withIdentifier:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/contextForSegue(withIdentifier:)"
+        },
+        {
+          "description" : "Returns the context objects to pass to a page-based set of interface controllers when a button is tapped.",
+          "name" : "contextsForSegue(withIdentifier:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/contextsForSegue(withIdentifier:)"
+        },
+        {
+          "description" : "Returns the context object to pass to the specified interface controller when a row in a table is tapped.",
+          "name" : "contextForSegue(withIdentifier:in:rowIndex:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/contextForSegue(withIdentifier:in:rowIndex:)"
+        },
+        {
+          "description" : "Returns the context objects to pass to a page-based set of interface controllers when a row in a table is tapped.",
+          "name" : "contextsForSegue(withIdentifier:in:rowIndex:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/contextsForSegue(withIdentifier:in:rowIndex:)"
+        }
+      ],
+      "title" : "Managing segue-based transitions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Scrolls the specified object to the given position onscreen.",
+          "name" : "scroll(to:at:animated:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/scroll(to:at:animated:)"
+        },
+        {
+          "description" : "Onscreen scroll positions.",
+          "name" : "WKInterfaceScrollPosition",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceScrollPosition"
+        },
+        {
+          "description" : "Tells the interface controller that the user has performed a scroll-to-top gesture (for example, tapping the status bar) and that the scrolling animation has finished.",
+          "name" : "interfaceDidScrollToTop()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/interfaceDidScrollToTop()"
+        },
+        {
+          "description" : "Tells the interface controller that the user has scrolled to the top of the interface and that the scrolling animation has finished.",
+          "name" : "interfaceOffsetDidScrollToTop()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/interfaceOffsetDidScrollToTop()"
+        },
+        {
+          "description" : "Tells the interface controller that the user has scrolled to the bottom of the interface and that the scrolling animation has finished.",
+          "name" : "interfaceOffsetDidScrollToBottom()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/interfaceOffsetDidScrollToBottom()"
+        },
+        {
+          "description" : "A Boolean value that determines whether haptic feedback coordinates with the appearance of new rows as the user scrolls through a table.",
+          "name" : "isTableScrollingHapticFeedbackEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/isTableScrollingHapticFeedbackEnabled"
+        }
+      ],
+      "title" : "Managing Scrolling"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Insets that define the area where it’s safe to display content on the screen.",
+          "name" : "contentSafeAreaInsets",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/contentSafeAreaInsets"
+        },
+        {
+          "description" : "Leading and trailing insets that represent the minimum layout margins for text elements.",
+          "name" : "systemMinimumLayoutMargins",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/systemMinimumLayoutMargins"
+        },
+        {
+          "description" : "The frame rectangle used to display your app’s content.",
+          "name" : "contentFrame",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/contentFrame"
+        }
+      ],
+      "title" : "Respecting safe areas and layout margins"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Animates changes to one or more interface objects over the specified duration.",
+          "name" : "animate(withDuration:animations:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/animate(withDuration:animations:)"
+        }
+      ],
+      "title" : "Animating changes to the interface"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Displays a modal interface for gathering text input from the user.",
+          "name" : "presentTextInputController(withSuggestions:allowedInputMode:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/presentTextInputController(withSuggestions:allowedInputMode:completion:)"
+        },
+        {
+          "description" : "Displays a modal interface for gathering language-specific text input from the user.",
+          "name" : "presentTextInputControllerWithSuggestions(forLanguage:allowedInputMode:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/presentTextInputControllerWithSuggestions(forLanguage:allowedInputMode:completion:)"
+        },
+        {
+          "description" : "Dismisses the text input controller without returning any text.",
+          "name" : "dismissTextInputController()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/dismissTextInputController()"
+        },
+        {
+          "description" : "The input modes supported by the text input controller.",
+          "name" : "WKTextInputMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKTextInputMode"
+        }
+      ],
+      "title" : "Handling text input"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Displays a modal interface for playing the specified media file.",
+          "name" : "presentMediaPlayerController(with:options:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/presentMediaPlayerController(with:options:completion:)"
+        },
+        {
+          "description" : "Keys indicating media playback options.",
+          "name" : "Media Player Options",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/media-player-options"
+        },
+        {
+          "description" : "Dismisses the media interface controller.",
+          "name" : "dismissMediaPlayerController()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/dismissMediaPlayerController()"
+        },
+        {
+          "description" : "Display a standard interface for recording audio from the user’s Apple Watch.",
+          "name" : "presentAudioRecorderController(withOutputURL:preset:options:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/presentAudioRecorderController(withOutputURL:preset:options:completion:)"
+        },
+        {
+          "description" : "Constants indicating the quality of audio recordings.",
+          "name" : "WKAudioRecorderPreset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKAudioRecorderPreset"
+        },
+        {
+          "description" : "Options to specify when recording audio.",
+          "name" : "Audio Recording Options",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/audio-recording-options"
+        },
+        {
+          "description" : "Dismisses the audio recording interface controller.",
+          "name" : "dismissAudioRecorderController()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/dismissAudioRecorderController()"
+        }
+      ],
+      "title" : "Presenting video and audio interfaces"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Called to let you know that the user selected a row in the table.",
+          "name" : "table(_:didSelectRowAt:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/table(_:didSelectRowAt:)"
+        }
+      ],
+      "title" : "Handling table-row selections"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Called to let you know that the specified picker is now receiving input from the Digital Crown.",
+          "name" : "pickerDidFocus(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/pickerDidFocus(_:)"
+        },
+        {
+          "description" : "Called to let you know that the specified picker is no longer receiving input from the Digital Crown.",
+          "name" : "pickerDidResignFocus(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/pickerDidResignFocus(_:)"
+        },
+        {
+          "description" : "Called to let you know when the user settles on a value in a picker.",
+          "name" : "pickerDidSettle(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/pickerDidSettle(_:)"
+        }
+      ],
+      "title" : "Managing pickers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The object to use when directly tracking crown events.",
+          "name" : "crownSequencer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/crownSequencer"
+        }
+      ],
+      "title" : "Getting the crown sequencer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Registers the current user activity with the system.",
+          "name" : "update(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/update(_:)"
+        },
+        {
+          "description" : "Invalidates the most recent user activity.",
+          "name" : "invalidateUserActivity()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/invalidateUserActivity()"
+        }
+      ],
+      "title" : "Coordinating Handoff activity"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Displays a modal interface for presenting passes to the user.",
+          "name" : "presentAddPassesController(withPasses:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/presentAddPassesController(withPasses:completion:)"
+        },
+        {
+          "description" : "Dismisses the pass interface controller",
+          "name" : "dismissAddPassesController()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/dismissAddPassesController()"
+        }
+      ],
+      "title" : "Adding PassKit passes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells the interface controller that the VoiceOver status has changed.",
+          "name" : "WKAccessibilityVoiceOverStatusChanged",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKAccessibilityVoiceOverStatusChanged"
+        }
+      ],
+      "title" : "Managing Notifications"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Keys for retrieving text response information.",
+          "name" : "Text Response Key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/text-response-key"
+        },
+        {
+          "description" : "Adds an action to the context menu using an existing image resource in your Watch app bundle.",
+          "name" : "addMenuItem(withImageNamed:title:action:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/addMenuItem(withImageNamed:title:action:)"
+        },
+        {
+          "description" : "Adds an action to the context menu using a system-provided icon.",
+          "name" : "addMenuItem(with:title:action:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/addMenuItem(with:title:action:)-6pb4t"
+        },
+        {
+          "description" : "Adds an action to the context menu by using an image provided by your WatchKit extension.",
+          "name" : "addMenuItem(with:title:action:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/addMenuItem(with:title:action:)-1q2zj"
+        },
+        {
+          "description" : "Tells the system that you are about to start a potentially lengthy update task for your glance.",
+          "name" : "beginGlanceUpdates()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/beginGlanceUpdates()"
+        },
+        {
+          "description" : "Removes all programmatically added actions from the context menu.",
+          "name" : "clearAllMenuItems()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/clearAllMenuItems()"
+        },
+        {
+          "description" : "Tells the system that you finished updating your glance content.",
+          "name" : "endGlanceUpdates()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/endGlanceUpdates()"
+        },
+        {
+          "description" : "Responds to Handoff–related activity.",
+          "name" : "handleUserActivity(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/handleUserActivity(_:)"
+        },
+        {
+          "description" : "Presents a page-based interface modally.",
+          "name" : "presentController(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/presentController(_:)"
+        },
+        {
+          "description" : "Loads the specified interface controllers and rebuilds the app’s page-based interface.",
+          "name" : "reloadRootControllers(withNames:contexts:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/reloadRootControllers(withNames:contexts:)"
+        },
+        {
+          "description" : "Registers the current user activity with the system.",
+          "name" : "updateUserActivity(_:userInfo:webpageURL:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController\/updateUserActivity(_:userInfo:webpageURL:)"
+        },
+        {
+          "description" : "Template images that you can use for menus.",
+          "name" : "WKMenuItemIcon",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKMenuItemIcon"
+        }
+      ],
+      "title" : "Deprecated symbols"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create the user interface for your watchOS app by nesting stacks.",
+          "name" : "Building watchOS app Interfaces Using the Storyboard",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/building-watchos-app-interfaces-using-the-storyboard"
+        },
+        {
+          "description" : "An object that provides information that is common to all interface objects in your watchOS app.",
+          "name" : "WKInterfaceObject",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceObject"
+        },
+        {
+          "description" : "An object that encapsulates information about a button displayed in an alert or action sheet.",
+          "name" : "WKAlertAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKAlertAction"
+        },
+        {
+          "description" : "An object that defines a portion of an image that you want to call out separately to an assistive app.",
+          "name" : "WKAccessibilityImageRegion",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKAccessibilityImageRegion"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether VoiceOver is running.",
+          "name" : "WKAccessibilityIsVoiceOverRunning()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKAccessibilityIsVoiceOverRunning()"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether reduced motion is enabled.",
+          "name" : "WKAccessibilityIsReduceMotionEnabled()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKAccessibilityIsReduceMotionEnabled()"
+        }
+      ],
+      "title" : "User interface basics"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "WKInterfaceController",
+  "url" : "https:\/\/developer.apple.com\/documentation\/WatchKit\/WKInterfaceController"
+}

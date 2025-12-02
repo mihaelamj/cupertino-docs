@@ -1,0 +1,69 @@
+{
+  "abstract" : "Perform fast Fourier transforms in place on 2D real data.",
+  "codeExamples" : [
+    {
+      "code" : " \nN0 = 1 << Log2N0;\nN1 = 1 << Log2N1;\n\nif (IC1 == 0) IC1 = IC0*N0\/2;\n\nscale = 2;\n\n\/\/ Define a real matrix, h:\nfor (j1 = 0; j1 < N1  ; ++j1)\nfor (j0 = 0; j0 < N0\/2; ++j0)\n{\n    h[j1][2*j0+0] = C->realp[j1*IC1 + j0*IC0]\n              + i * C->imagp[j1*IC1 + j0*IC0];\n    h[j1][2*j0+1] = C->realp[j1*IC1 + j0*IC0]\n              + i * C->imagp[j1*IC1 + j0*IC0];\n}\n\n\/\/ Perform Discrete Fourier Transform.\nfor (k1 = 0; k1 < N1; ++k1)\nfor (k0 = 0; k0 < N0; ++k0)\n    H[k1][k0] = scale * sum(sum(h[j1][j0]\n        * e**(-Direction*2*pi*i*j0*k0\/N0), 0 <= j0 < N0)\n        * e**(-Direction*2*pi*i*j1*k1\/N1), 0 <= j1 < N1);\n\n\/\/ Pack special pure-real elements into output matrix:\nC->realp[0*IC1][0*IC0] = H[0   ][0   ].\nC->imagp[0*IC1][0*IC0] = H[0   ][N0\/2]\nC->realp[1*IC1][0*IC0] = H[N1\/2][0   ].\nC->imagp[1*IC1][0*IC0] = H[N1\/2][N0\/2]\n\n\/\/ Pack two vectors into output matrix \"vertically\":\n\/\/ (This awkward format is due to a legacy implementation.)\nfor (k1 = 1; k1 < N1\/2; ++k1)\n{\n    C->realp[(2*k1+0)*IC1][0*IC0] = Re(H[k1][0   ]);\n    C->realp[(2*k1+1)*IC1][0*IC0] = Im(H[k1][0   ]);\n    C->imagp[(2*k1+0)*IC1][0*IC0] = Re(H[k1][N0\/2]);\n    C->imagp[(2*k1+1)*IC1][0*IC0] = Im(H[k1][N0\/2]);\n}\n\n\/\/ Store regular elements:\nfor (k1 = 0; k1 < N1  ; ++k1)\nfor (k0 = 1; k0 < N0\/2; ++k0)\n{\n    C->realp[k1*IC1 + k0*IC0] = Re(H[k1][k0]);\n    C->imagp[k1*IC1 + k0*IC0] = Im(H[k1][k0]);\n}\n\n",
+      "language" : "swift"
+    },
+    {
+      "code" : "N0 = 1 << Log2N0;\nN1 = 1 << Log2N1;\n\nif (IC1 == 0) IC1 = IC0*N0\/2;\n          \nscale = 1. \/ (N1*N0);\n\n\/\/ Define a complex matrix, h, in multiple steps:\n\n\/\/ Unpack the special elements:\nh[0   ][0   ] = C->realp[0*IC1][0*IC0];\nh[0   ][N0\/2] = C->imagp[0*IC1][0*IC0];\nh[N1\/2][0   ] = C->realp[1*IC1][0*IC0];\nh[N1\/2][N0\/2] = C->imagp[1*IC1][0*IC0];\n\n\/\/ Unpack the two vectors from \"vertical\" storage:\nfor (j1 = 1; j1 < N1\/2; ++j1)\n{\n    h[j1][0   ] = C->realp[(2*j1+0)*IC1][0*IC0]\n            + i * C->realp[(2*j1+1)*IC1][0*IC0]\n    h[j1][N0\/2] = C->imagp[(2*j1+0)*IC1][0*IC0]\n            + i * C->imagp[(2*j1+1)*IC1][0*IC0]\n}\n\n\/\/ Take regular elements:\nfor (j1 = 0; j1 < N1  ; ++j1)\nfor (j0 = 1; j0 < N0\/2; ++j0)\n{\n    h[j1][j0   ] = C->realp[j1*IC1 + j0*IC0]\n             + i * C->imagp[j1*IC1 + j0*IC0];\n    h[j1][N0-j0] = conj(h[j1][j0]);\n}\n\n\/\/ Perform Discrete Fourier Transform.\nfor (k1 = 0; k1 < N1; ++k1)\nfor (k0 = 0; k0 < N0; ++k0)\n    H[k1][k0] = scale * sum(sum(h[j1][j0]\n        * e**(-Direction*2*pi*i*j0*k0\/N0), 0 <= j0 < N0)\n        * e**(-Direction*2*pi*i*j1*k1\/N1), 0 <= j1 < N1);\n\n\/\/ Store result.\nfor (k1 = 0; k1 < N1  ; ++k1)\nfor (k0 = 0; k0 < N0\/2; ++k0)\n{\n    C->realp[k1*IC1 + k0*IC0] = Re(H[k1][2*k0+0]);\n    C->imagp[k1*IC1 + k0*IC0] = Im(H[k1][2*k0+1]);\n}\n\n",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "ccae27c3ec024f9d547ace24a61d76e2a1eed3a6d319140ec41f878f33b46aa9",
+  "crawledAt" : "2025-12-02T16:28:46Z",
+  "id" : "8EFF52F5-18FF-4AB6-B743-71C7C4FB0F04",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nThe functions in this group use the following operation for a forward real-to-complex transform:\n\nThe functions in this group use the following operation for an inverse complex-to-real transform:\n\nThe temporary buffer versions perform the same operation but use a temporary buffer for improved performance.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/in-place-functions-for-2d-real-fft\ncrawled: 2025-12-02T16:28:46Z\n---\n\n# In-Place Functions for 2D Real FFT\n\n**API Collection**\n\nPerform fast Fourier transforms in place on 2D real data.\n\n## Overview\n\nThe functions in this group use the following operation for a forward real-to-complex transform:\n\n```swift\n \nN0 = 1 << Log2N0;\nN1 = 1 << Log2N1;\n\nif (IC1 == 0) IC1 = IC0*N0\/2;\n\nscale = 2;\n\n\/\/ Define a real matrix, h:\nfor (j1 = 0; j1 < N1  ; ++j1)\nfor (j0 = 0; j0 < N0\/2; ++j0)\n{\n    h[j1][2*j0+0] = C->realp[j1*IC1 + j0*IC0]\n              + i * C->imagp[j1*IC1 + j0*IC0];\n    h[j1][2*j0+1] = C->realp[j1*IC1 + j0*IC0]\n              + i * C->imagp[j1*IC1 + j0*IC0];\n}\n\n\/\/ Perform Discrete Fourier Transform.\nfor (k1 = 0; k1 < N1; ++k1)\nfor (k0 = 0; k0 < N0; ++k0)\n    H[k1][k0] = scale * sum(sum(h[j1][j0]\n        * e**(-Direction*2*pi*i*j0*k0\/N0), 0 <= j0 < N0)\n        * e**(-Direction*2*pi*i*j1*k1\/N1), 0 <= j1 < N1);\n\n\/\/ Pack special pure-real elements into output matrix:\nC->realp[0*IC1][0*IC0] = H[0   ][0   ].\nC->imagp[0*IC1][0*IC0] = H[0   ][N0\/2]\nC->realp[1*IC1][0*IC0] = H[N1\/2][0   ].\nC->imagp[1*IC1][0*IC0] = H[N1\/2][N0\/2]\n\n\/\/ Pack two vectors into output matrix \"vertically\":\n\/\/ (This awkward format is due to a legacy implementation.)\nfor (k1 = 1; k1 < N1\/2; ++k1)\n{\n    C->realp[(2*k1+0)*IC1][0*IC0] = Re(H[k1][0   ]);\n    C->realp[(2*k1+1)*IC1][0*IC0] = Im(H[k1][0   ]);\n    C->imagp[(2*k1+0)*IC1][0*IC0] = Re(H[k1][N0\/2]);\n    C->imagp[(2*k1+1)*IC1][0*IC0] = Im(H[k1][N0\/2]);\n}\n\n\/\/ Store regular elements:\nfor (k1 = 0; k1 < N1  ; ++k1)\nfor (k0 = 1; k0 < N0\/2; ++k0)\n{\n    C->realp[k1*IC1 + k0*IC0] = Re(H[k1][k0]);\n    C->imagp[k1*IC1 + k0*IC0] = Im(H[k1][k0]);\n}\n\n\n```\n\nThe functions in this group use the following operation for an inverse complex-to-real transform:\n\n```swift\nN0 = 1 << Log2N0;\nN1 = 1 << Log2N1;\n\nif (IC1 == 0) IC1 = IC0*N0\/2;\n          \nscale = 1. \/ (N1*N0);\n\n\/\/ Define a complex matrix, h, in multiple steps:\n\n\/\/ Unpack the special elements:\nh[0   ][0   ] = C->realp[0*IC1][0*IC0];\nh[0   ][N0\/2] = C->imagp[0*IC1][0*IC0];\nh[N1\/2][0   ] = C->realp[1*IC1][0*IC0];\nh[N1\/2][N0\/2] = C->imagp[1*IC1][0*IC0];\n\n\/\/ Unpack the two vectors from \"vertical\" storage:\nfor (j1 = 1; j1 < N1\/2; ++j1)\n{\n    h[j1][0   ] = C->realp[(2*j1+0)*IC1][0*IC0]\n            + i * C->realp[(2*j1+1)*IC1][0*IC0]\n    h[j1][N0\/2] = C->imagp[(2*j1+0)*IC1][0*IC0]\n            + i * C->imagp[(2*j1+1)*IC1][0*IC0]\n}\n\n\/\/ Take regular elements:\nfor (j1 = 0; j1 < N1  ; ++j1)\nfor (j0 = 1; j0 < N0\/2; ++j0)\n{\n    h[j1][j0   ] = C->realp[j1*IC1 + j0*IC0]\n             + i * C->imagp[j1*IC1 + j0*IC0];\n    h[j1][N0-j0] = conj(h[j1][j0]);\n}\n\n\/\/ Perform Discrete Fourier Transform.\nfor (k1 = 0; k1 < N1; ++k1)\nfor (k0 = 0; k0 < N0; ++k0)\n    H[k1][k0] = scale * sum(sum(h[j1][j0]\n        * e**(-Direction*2*pi*i*j0*k0\/N0), 0 <= j0 < N0)\n        * e**(-Direction*2*pi*i*j1*k1\/N1), 0 <= j1 < N1);\n\n\/\/ Store result.\nfor (k1 = 0; k1 < N1  ; ++k1)\nfor (k0 = 0; k0 < N0\/2; ++k0)\n{\n    C->realp[k1*IC1 + k0*IC0] = Re(H[k1][2*k0+0]);\n    C->imagp[k1*IC1 + k0*IC0] = Im(H[k1][2*k0+1]);\n}\n\n\n```\n\nThe temporary buffer versions perform the same operation but use a temporary buffer for improved performance.\n\n## In-Place FFT Functions\n\n- **vDSP_fft2d_zrip**: Computes a 2D forward or inverse in-place, single-precision real FFT.\n- **vDSP_fft2d_zripD**: Computes a 2D forward or inverse in-place, double-precision real FFT.\n\n## In-Place FFT Functions with Temporary Buffer\n\n- **vDSP_fft2d_zript**: Computes a 2D forward or inverse in-place, single-precision real FFT using a temporary buffer.\n- **vDSP_fft2d_zriptD**: Computes a 2D forward or inverse in-place, double-precision real FFT using a temporary buffer.\n\n## Functions for 2D Real FFT\n\n- **Out-of-Place Functions for 2D Real FFT**: Perform fast Fourier transforms out of place on 2D real data.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Computes a 2D forward or inverse in-place, single-precision real FFT.",
+          "name" : "vDSP_fft2d_zrip",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fft2d_zrip"
+        },
+        {
+          "description" : "Computes a 2D forward or inverse in-place, double-precision real FFT.",
+          "name" : "vDSP_fft2d_zripD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fft2d_zripD"
+        }
+      ],
+      "title" : "In-Place FFT Functions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Computes a 2D forward or inverse in-place, single-precision real FFT using a temporary buffer.",
+          "name" : "vDSP_fft2d_zript",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fft2d_zript"
+        },
+        {
+          "description" : "Computes a 2D forward or inverse in-place, double-precision real FFT using a temporary buffer.",
+          "name" : "vDSP_fft2d_zriptD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fft2d_zriptD"
+        }
+      ],
+      "title" : "In-Place FFT Functions with Temporary Buffer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Perform fast Fourier transforms out of place on 2D real data.",
+          "name" : "Out-of-Place Functions for 2D Real FFT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/out-of-place-functions-for-2d-real-fft"
+        }
+      ],
+      "title" : "Functions for 2D Real FFT"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "In-Place Functions for 2D Real FFT",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/in-place-functions-for-2d-real-fft"
+}

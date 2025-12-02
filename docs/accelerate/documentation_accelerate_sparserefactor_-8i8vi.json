@@ -1,0 +1,75 @@
+{
+  "abstract" : "Computes a factorization of the specified single-precision matrix using an existing factorization’s storage and specified options, and without internal memory allocation.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/\/ Define the sparsity structure of matrices `A0` and `A1`.\nlet rowIndices: [Int32] =    [ 0, 1, 1, 2]\nlet columnIndices: [Int32] = [ 2, 0, 2, 1]\n\n\/\/\/ Create the single-precision coefficient matrix _A0_.\nlet a0Values: [Float] = [10, 20, 5, 50]\nlet A0 = SparseConvertFromCoordinate(3, 3,\n                                     4, 1,\n                                     SparseAttributes_t(),\n                                     rowIndices, columnIndices,\n                                     a0Values)\n\n\/\/\/ Factorize _A0_.\nvar factorization = SparseFactor(SparseFactorizationQR, A0)\n\n\/\/\/ Solve _A0 · x = b0_ in place.\nvar b0Values: [Float] = [30, 35, 100]\nb0Values.withUnsafeMutableBufferPointer { bPtr in\n    let xb = DenseVector_Float(count: 3,\n                               data: bPtr.baseAddress!)\n    \n    SparseSolve(factorization, xb)\n}\n\n\/\/\/ Create the double-precision coefficient matrix _A1_.\nlet a1Values: [Float] = [5, 10, 2.5, 25]\nlet A1 = SparseConvertFromCoordinate(3, 3,\n                                     4, 1,\n                                     SparseAttributes_t(),\n                                     rowIndices, columnIndices,\n                                     a1Values)\n\n\/\/\/ Create the workspace.\nlet byteCount = factorization.symbolicFactorization.workspaceSize_Float\nlet workspace = UnsafeMutableRawPointer.allocate(\n    byteCount: byteCount,\n    alignment: MemoryLayout<Float>.alignment)\ndefer {\n    workspace.deallocate()\n}\n\n\/\/\/ Factorize _A1_ into the existing factorization.\nlet numericFactorOptions = SparseNumericFactorOptions()\nSparseRefactor(A1, &factorization,\n               numericFactorOptions, workspace)\n\n\/\/\/ Solve _A1 · x = b1_ in place.\nvar b1Values: [Float] = [60, 70, 200]\nb1Values.withUnsafeMutableBufferPointer { bPtr in\n    let xb = DenseVector_Float(count: 3,\n                                data: bPtr.baseAddress!)\n    \n    SparseSolve(factorization, xb)\n}\n\nSparseCleanup(A0)\nSparseCleanup(A1)\nSparseCleanup(factorization)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "6483d5605022fcfe58cce5391c6344f640b345976eb1a75abd0be530d2c061c8",
+  "crawledAt" : "2025-12-01T03:58:48Z",
+  "declaration" : {
+    "code" : "func SparseRefactor(_ Matrix: SparseMatrix_Float, _ Factored: UnsafeMutablePointer<SparseOpaqueFactorization_Float>, _ nfoptions: SparseNumericFactorOptions, _ workspace: UnsafeMutableRawPointer)",
+    "language" : "swift"
+  },
+  "id" : "6E0126C6-550D-4843-9E59-8352E31F4C46",
+  "kind" : "function",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to calculate the factorization of a sparse matrix to pass to the direct solve functions using an existing factorization’s storage. The specified matrix must have the same sparsity structure as the matrix of the original factorization. In cases where your code calls the function frequently, create and manage the workspace that the Sparse Solvers library uses and reuse it across function calls. Reusing a workspace prevents the Sparse Solvers library from allocating the temporary storage with each call.\n\nThis function provides behavior similar to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseFactor(_:_:_:_:_:)-68hki] by reusing explicit storage that you supply to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseFactor(_:_:_:_:_:)-68hki] as the argument `factorStorage`. However, in addition to providing a simplified call sequence, this call can also reuse any additional storage that you allocate to accommodate delayed pivots.\n\nThe following figure shows two systems of equations where the coefficient matrix is sparse:\n\n\n\nThe following code solves these two systems with refactoring. After factorizing and solving for the coefficient matrix *A0*, the code refactors and solves for matrix *A1*.\n\nOn return, `b0Values` contains the values `[1.0, 2.0, 3.0]`, and `b1Values` contains the values `[4.0, 8.0, 12.0]`.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseRefactor(_:_:_:_:)-8i8vi\ncrawled: 2025-12-01T03:58:48Z\n---\n\n# SparseRefactor(_:_:_:_:)\n\n**Function**\n\nComputes a factorization of the specified single-precision matrix using an existing factorization’s storage and specified options, and without internal memory allocation.\n\n## Declaration\n\n```swift\nfunc SparseRefactor(_ Matrix: SparseMatrix_Float, _ Factored: UnsafeMutablePointer<SparseOpaqueFactorization_Float>, _ nfoptions: SparseNumericFactorOptions, _ workspace: UnsafeMutableRawPointer)\n```\n\n## Parameters\n\n- **Matrix**: The matrix that contains numerical data to recompute.\n- **Factored**: The factorization to recompute.\n- **nfoptions**: The numeric factor options, such as the scaling method to use.\n- **workspace**: A pointer to a workspace of size at least `symbolicFactorization.workspaceSize_Float` bytes.\n\n## Discussion\n\nUse this function to calculate the factorization of a sparse matrix to pass to the direct solve functions using an existing factorization’s storage. The specified matrix must have the same sparsity structure as the matrix of the original factorization. In cases where your code calls the function frequently, create and manage the workspace that the Sparse Solvers library uses and reuse it across function calls. Reusing a workspace prevents the Sparse Solvers library from allocating the temporary storage with each call.\n\nThis function provides behavior similar to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseFactor(_:_:_:_:_:)-68hki] by reusing explicit storage that you supply to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseFactor(_:_:_:_:_:)-68hki] as the argument `factorStorage`. However, in addition to providing a simplified call sequence, this call can also reuse any additional storage that you allocate to accommodate delayed pivots.\n\nThe following figure shows two systems of equations where the coefficient matrix is sparse:\n\n\n\nThe following code solves these two systems with refactoring. After factorizing and solving for the coefficient matrix *A0*, the code refactors and solves for matrix *A1*.\n\n```swift\n\/\/\/ Define the sparsity structure of matrices `A0` and `A1`.\nlet rowIndices: [Int32] =    [ 0, 1, 1, 2]\nlet columnIndices: [Int32] = [ 2, 0, 2, 1]\n\n\/\/\/ Create the single-precision coefficient matrix _A0_.\nlet a0Values: [Float] = [10, 20, 5, 50]\nlet A0 = SparseConvertFromCoordinate(3, 3,\n                                     4, 1,\n                                     SparseAttributes_t(),\n                                     rowIndices, columnIndices,\n                                     a0Values)\n\n\/\/\/ Factorize _A0_.\nvar factorization = SparseFactor(SparseFactorizationQR, A0)\n\n\/\/\/ Solve _A0 · x = b0_ in place.\nvar b0Values: [Float] = [30, 35, 100]\nb0Values.withUnsafeMutableBufferPointer { bPtr in\n    let xb = DenseVector_Float(count: 3,\n                               data: bPtr.baseAddress!)\n    \n    SparseSolve(factorization, xb)\n}\n\n\/\/\/ Create the double-precision coefficient matrix _A1_.\nlet a1Values: [Float] = [5, 10, 2.5, 25]\nlet A1 = SparseConvertFromCoordinate(3, 3,\n                                     4, 1,\n                                     SparseAttributes_t(),\n                                     rowIndices, columnIndices,\n                                     a1Values)\n\n\/\/\/ Create the workspace.\nlet byteCount = factorization.symbolicFactorization.workspaceSize_Float\nlet workspace = UnsafeMutableRawPointer.allocate(\n    byteCount: byteCount,\n    alignment: MemoryLayout<Float>.alignment)\ndefer {\n    workspace.deallocate()\n}\n\n\/\/\/ Factorize _A1_ into the existing factorization.\nlet numericFactorOptions = SparseNumericFactorOptions()\nSparseRefactor(A1, &factorization,\n               numericFactorOptions, workspace)\n\n\/\/\/ Solve _A1 · x = b1_ in place.\nvar b1Values: [Float] = [60, 70, 200]\nb1Values.withUnsafeMutableBufferPointer { bPtr in\n    let xb = DenseVector_Float(count: 3,\n                                data: bPtr.baseAddress!)\n    \n    SparseSolve(factorization, xb)\n}\n\nSparseCleanup(A0)\nSparseCleanup(A1)\nSparseCleanup(factorization)\n```\n\nOn return, `b0Values` contains the values `[1.0, 2.0, 3.0]`, and `b1Values` contains the values `[4.0, 8.0, 12.0]`.\n\n## Matrix Refactorizations Functions with User-Defined Workspace\n\n- **SparseRefactor(_:_:_:)**: Computes a factorization of the specified double-precision matrix using an existing factorization’s storage, without internal memory allocation.\n- **SparseRefactor(_:_:_:)**: Computes a factorization of the specified single-precision matrix using an existing factorization’s storage, without internal memory allocation.\n- **SparseRefactor(_:_:_:_:)**: Computes a factorization of the specified double-precision matrix using an existing factorization’s storage and specified options, and without internal memory allocation.\n- **SparseRefactor(_:_:_:)**: Reuses supplied factorization object’s storage to compute a new factorization of the supplied matrix of complex float values, without any internal allocations.\n- **SparseRefactor(_:_:_:)**: Reuses supplied factorization object’s storage to compute a new factorization of the supplied matrix of complex double values, without any internal allocations.\n- **SparseRefactor(_:_:_:_:)**: Reuses supplied factorization object’s storage to compute a new factorization of the supplied matrix of complex float values, using updated options and without any internal allocations.\n- **SparseRefactor(_:_:_:_:)**: Reuses supplied factorization object’s storage to compute a new factorization of the supplied matrix of complex double values, using updated options and without any internal allocations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Computes a factorization of the specified double-precision matrix using an existing factorization’s storage, without internal memory allocation.",
+          "name" : "SparseRefactor(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseRefactor(_:_:_:)-9mqeq"
+        },
+        {
+          "description" : "Computes a factorization of the specified single-precision matrix using an existing factorization’s storage, without internal memory allocation.",
+          "name" : "SparseRefactor(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseRefactor(_:_:_:)-2dqt8"
+        },
+        {
+          "description" : "Computes a factorization of the specified double-precision matrix using an existing factorization’s storage and specified options, and without internal memory allocation.",
+          "name" : "SparseRefactor(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseRefactor(_:_:_:_:)-59ehf"
+        },
+        {
+          "description" : "Reuses supplied factorization object’s storage to compute a new factorization of the supplied matrix of complex float values, without any internal allocations.",
+          "name" : "SparseRefactor(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseRefactor(_:_:_:)-4ofvz"
+        },
+        {
+          "description" : "Reuses supplied factorization object’s storage to compute a new factorization of the supplied matrix of complex double values, without any internal allocations.",
+          "name" : "SparseRefactor(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseRefactor(_:_:_:)-593yb"
+        },
+        {
+          "description" : "Reuses supplied factorization object’s storage to compute a new factorization of the supplied matrix of complex float values, using updated options and without any internal allocations.",
+          "name" : "SparseRefactor(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseRefactor(_:_:_:_:)-201rh"
+        },
+        {
+          "description" : "Reuses supplied factorization object’s storage to compute a new factorization of the supplied matrix of complex double values, using updated options and without any internal allocations.",
+          "name" : "SparseRefactor(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseRefactor(_:_:_:_:)-20xqc"
+        }
+      ],
+      "title" : "Matrix Refactorizations Functions with User-Defined Workspace"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "SparseRefactor(_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseRefactor(_:_:_:_:)-8i8vi"
+}

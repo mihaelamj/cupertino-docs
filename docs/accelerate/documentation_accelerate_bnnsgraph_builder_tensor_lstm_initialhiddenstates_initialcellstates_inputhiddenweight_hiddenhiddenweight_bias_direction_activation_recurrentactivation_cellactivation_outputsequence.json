@@ -1,0 +1,49 @@
+{
+  "abstract" : "Adds an LSTM operation to the current graph.",
+  "codeExamples" : [
+    {
+      "code" : "i[t, ...] = RA(matmul(W_ii, x[t, ...]) + b_ii + matmul(W_hi, h[t-1, ...]) + b_hi)"
+    },
+    {
+      "code" : "f[t, ...] = RA(matmul(W_if, x[t, ...]) + b_if + matmul(W_hf, h[t-1, ...]) + b_hf)"
+    },
+    {
+      "code" : "g[t, ...] = CA(matmul(W_ig, x[t, ...]) + b_ig + matmul(W_hg, h[t-1, ...]) + b_hg)"
+    },
+    {
+      "code" : "o[t, ...] = RA(matmul(W_io, x[t, ...]) + b_io + matmul(W_ho, h[t-1, ...]) + b_ho)"
+    },
+    {
+      "code" : "c[t, ...] = f[t, ...] * c[t-1, ...] + i[t, ...] * g[t, ...]"
+    },
+    {
+      "code" : "h[t, ...] = o[t, ...] * A(c[t, ...])"
+    }
+  ],
+  "contentHash" : "5e634c44d3589f80c488e3abd383026c8a96e48461122c1188fbcd69ed2b2f81",
+  "crawledAt" : "2025-11-30T22:02:24Z",
+  "declaration" : {
+    "code" : "func lstm(initialHiddenStates: BNNSGraph.Builder.Tensor<T>, initialCellStates: BNNSGraph.Builder.Tensor<T>, inputHiddenWeight: BNNSGraph.Builder.Tensor<T>, hiddenHiddenWeight: BNNSGraph.Builder.Tensor<T>, bias: BNNSGraph.Builder.Tensor<T>, direction: BNNSGraph.Builder.Direction, activation: BNNSGraph.Builder.Activation, recurrentActivation: BNNSGraph.Builder.Activation, cellActivation: BNNSGraph.Builder.Activation, outputSequence: Bool) -> (output: BNNSGraph.Builder.Tensor<T>, hiddenStates: BNNSGraph.Builder.Tensor<T>, memoryStates: BNNSGraph.Builder.Tensor<T>)",
+    "language" : "swift"
+  },
+  "id" : "E625AD3C-4470-480C-A684-0A7B95E1A69B",
+  "kind" : "method",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nFor each time t from 0 to L-1, this operation computes the following:\n\nInput gate:\n\nForget gate:\n\nCell gate:\n\nOutput gate:\n\nCell state:\n\nHidden state:\n\nwhere:\n\nThe input tensor `x` is of shape `(L, N, Hin)`\n\n`hiddenStates` is of shape `(N, Hout)` and contains hidden states from the last step, `h[-1, ...]`\n\n`memoryStates` is of shape `(N, Hout)` and contains memory states from the last step, `c[-1, ...]`",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraph\/Builder\/Tensor\/lstm(initialHiddenStates:initialCellStates:inputHiddenWeight:hiddenHiddenWeight:bias:direction:activation:recurrentActivation:cellActivation:outputSequence:)\ncrawled: 2025-11-30T22:02:24Z\n---\n\n# lstm(initialHiddenStates:initialCellStates:inputHiddenWeight:hiddenHiddenWeight:bias:direction:activation:recurrentActivation:cellActivation:outputSequence:)\n\n**Instance Method**\n\nAdds an LSTM operation to the current graph.\n\n## Declaration\n\n```swift\nfunc lstm(initialHiddenStates: BNNSGraph.Builder.Tensor<T>, initialCellStates: BNNSGraph.Builder.Tensor<T>, inputHiddenWeight: BNNSGraph.Builder.Tensor<T>, hiddenHiddenWeight: BNNSGraph.Builder.Tensor<T>, bias: BNNSGraph.Builder.Tensor<T>, direction: BNNSGraph.Builder.Direction, activation: BNNSGraph.Builder.Activation, recurrentActivation: BNNSGraph.Builder.Activation, cellActivation: BNNSGraph.Builder.Activation, outputSequence: Bool) -> (output: BNNSGraph.Builder.Tensor<T>, hiddenStates: BNNSGraph.Builder.Tensor<T>, memoryStates: BNNSGraph.Builder.Tensor<T>)\n```\n\n## Parameters\n\n- **initialHiddenStates**: The initial hidden states  with the shape `(N, Hout)`.\n- **initialCellStates**: The initial hidden states with the shape `(N, Hout)`.\n- **hiddenHiddenWeight**: The hidden-hidden weight with the shape `(4*Hout, Hout)`.\n- **bias**: The bias (the sum of input-hidden and hidden-hidden biases)  with the shape `(4*Hout,)`.\n- **direction**: An enumeration that specifies a forward or backward RNN.\n- **activation**: An enumeration that controls the output activation function.\n- **recurrentActivation**: An enumeration that controls the recurrent activation function.\n- **cellActivation**: An enumeration that controls the cell activation function.\n- **outputSequence**: When `true`, `output` is of shape `(L, N, Hout)` and contains hidden states from every step, `h[:, ...]`. When `false`, ` output` is of shape `(1, N, Hout)` and contains hidden states from the last step, `h[-1, ...]`.\n\n## Discussion\n\nFor each time t from 0 to L-1, this operation computes the following:\n\nInput gate:\n\n```\ni[t, ...] = RA(matmul(W_ii, x[t, ...]) + b_ii + matmul(W_hi, h[t-1, ...]) + b_hi)\n```\n\nForget gate:\n\n```\nf[t, ...] = RA(matmul(W_if, x[t, ...]) + b_if + matmul(W_hf, h[t-1, ...]) + b_hf)\n```\n\nCell gate:\n\n```\ng[t, ...] = CA(matmul(W_ig, x[t, ...]) + b_ig + matmul(W_hg, h[t-1, ...]) + b_hg)\n```\n\nOutput gate:\n\n```\no[t, ...] = RA(matmul(W_io, x[t, ...]) + b_io + matmul(W_ho, h[t-1, ...]) + b_ho)\n```\n\nCell state:\n\n```\nc[t, ...] = f[t, ...] * c[t-1, ...] + i[t, ...] * g[t, ...]\n```\n\nHidden state:\n\n```\nh[t, ...] = o[t, ...] * A(c[t, ...])\n```\n\nwhere:\n\n- `A` is the `activation` function\n- `RA` is the `recurrentActivation` function\n- `CA` is the `cellActivation` function\n- `inputHiddenWeight = concat(W_ii, W_if, W_io, W_ig, axis=-2)`\n- `hiddenHiddenWeight = concat(W_hi, W_hf, W_ho, W_hg, axis=-2)`\n- `bias = concat(b_ii + b_hi, b_if + b_hf, b_ig + b_hg, b_io + b_ho, axis=-1)`\n- `initialHiddenStates` is used for `h[t-1, ...]` at the first step\n- `initialCellStates` is used for `c[t-1, ...]` at the first step\n- `*` denotes the Hadamard\/elementwise product\n\nThe input tensor `x` is of shape `(L, N, Hin)`\n\n`hiddenStates` is of shape `(N, Hout)` and contains hidden states from the last step, `h[-1, ...]`\n\n`memoryStates` is of shape `(N, Hout)` and contains memory states from the last step, `c[-1, ...]`\n\n- Parameter inputHiddenWeightL The input-hidden weight  with the shape `(4*Hout, Hin)`.\n\n",
+  "sections" : [
+
+  ],
+  "source" : "appleJSON",
+  "title" : "lstm(initialHiddenStates:initialCellStates:inputHiddenWeight:hiddenHiddenWeight:bias:direction:activation:recurrentActivation:cellActivation:outputSequence:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraph\/Builder\/Tensor\/lstm(initialHiddenStates:initialCellStates:inputHiddenWeight:hiddenHiddenWeight:bias:direction:activation:recurrentActivation:cellActivation:outputSequence:)"
+}

@@ -1,0 +1,76 @@
+{
+  "abstract" : "Create and add custom annotation and page graphics to your PDF document.",
+  "codeExamples" : [
+    {
+      "code" : "document.delegate = self\npdfView?.document = document",
+      "language" : "swift"
+    },
+    {
+      "code" : "class LineAnnotation: PDFAnnotation {\n\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func `class`(forAnnotationType annotationType: String) -> AnyClass {\n    if annotationType == \"Line\" {\n        return LineAnnotation.self\n    } else {\n        return PDFAnnotation.self\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "class LinePage: PDFPage {\n\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func classForPage() -> AnyClass {\n    return LinePage.self\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "override func draw(with box: PDFDisplayBox, in context: CGContext) {\n    \/\/ Draw original content.\n    super.draw(with: box, in: context)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "override func draw(with box: PDFDisplayBox, to context: CGContext) {\n    \/\/ Draw original content.\n    super.draw(with: box, to: context)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "class LineAnnotation: PDFAnnotation {\n    override func draw(with box: PDFDisplayBox, in context: CGContext) {\n        \/\/ Draw original content under the new content.\n        super.draw(with: box, in: context)\n        \n        \/\/ Draw a custom purple line.\n        UIGraphicsPushContext(context)\n        context.saveGState()\n        \n        let path = UIBezierPath()\n        path.lineWidth = 10\n        path.move(to: CGPoint(x: bounds.minX + startPoint.x, y: bounds.minY + startPoint.y))\n        path.addLine(to: CGPoint(x: bounds.minX + endPoint.x, y: bounds.minY + endPoint.y))\n        UIColor.systemPurple.setStroke()\n        path.stroke()\n\n        context.restoreGState()\n        UIGraphicsPopContext()\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "403bfaaa60c8f12c0f961784b62e17144b5bd61082293348e3e4c688915d6714",
+  "crawledAt" : "2025-12-02T16:11:27Z",
+  "id" : "11694A46-2A7D-4982-941A-2F483662D560",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "PDFKit",
+  "overview" : "## Overview\n\nYou can add custom annotation and page graphics to a PDF by overriding the `draw` method for [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFAnnotation] or [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage]. If the graphic applies to the whole page, like a watermark, custom border, or logo, you add it to the page using [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage]. If the graphic is something small, such as circling or highlighting a particular element on the page, or a repeatable custom graphic, such as a heart, club, spade, or diamond, then it should be added using [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFAnnotation]. Some graphics, like lines, can work as annotations or page elements.\n\nDrawings are static, unlike interactive annotation types like widgets. To learn more about widgets, see [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/adding-widgets-to-a-pdf-document].\n\n\n\n### Register a Delegate for the Document\n\nRegister a [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocumentDelegate] to the [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocument] loaded in the current [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFView]. This delegate will allow you to specify a method for building PDF annotations or PDF pages. The [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocument] is called `document`.\n\n### Implement a Custom Subclass\n\nCreate a custom subclass for your custom graphics, one that will include your drawing. This example shows how to add a custom line graphic to a PDF, either through a PDF annotation or a PDF page.\n\n#### Implement a Custom Annotation Subclass\n\nCreate a custom annotation subclass for your line graphic.\n\nImplement the [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocumentDelegate\/class(forAnnotationType:)] function in the document’s delegate. This method returns the subclass type for [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFAnnotation] for a given annotation subtype string.  In this case you return the `LineAnnotation` class for a `Line` type annotation.\n\n#### Implement a Custom Page Subclass\n\nCreate a custom subclass for [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage] that includes your line graphic.\n\nImplement the [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocumentDelegate\/classForPage()] function in the document delegate. This class returns the subclass type for [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage], the `LinePage` class:\n\n### Override the Draw Method and Add Your Custom Graphic\n\nOverride the `draw` method in your subclass to draw your custom graphic, the line. Draw the original content by calling the superclass version of the `draw` method. The `draw` methods for pages and annotations are nearly identical, the only difference being the `in context` parameter for annotations and the `to context` parameter for pages:\n\n**For annotations, use this** [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFAnnotation\/draw(with:)] **method:**\n\n**For pages, use this** [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage\/draw(with:)] **method:**\n\nIn the appropriate `draw` method, add your custom drawing, in this case the line. To ensure that your drawing maintains its [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGContext] properties and doesn’t affect other contexts in your PDF, make sure to save and restore your graphics state (before and after, respectively) you add your custom drawing code.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/PDFKit\/adding-custom-graphics-to-a-pdf\ncrawled: 2025-12-02T16:11:27Z\n---\n\n# Adding Custom Graphics to a PDF\n\n**Article**\n\nCreate and add custom annotation and page graphics to your PDF document.\n\n## Overview\n\nYou can add custom annotation and page graphics to a PDF by overriding the `draw` method for [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFAnnotation] or [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage]. If the graphic applies to the whole page, like a watermark, custom border, or logo, you add it to the page using [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage]. If the graphic is something small, such as circling or highlighting a particular element on the page, or a repeatable custom graphic, such as a heart, club, spade, or diamond, then it should be added using [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFAnnotation]. Some graphics, like lines, can work as annotations or page elements.\n\nDrawings are static, unlike interactive annotation types like widgets. To learn more about widgets, see [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/adding-widgets-to-a-pdf-document].\n\n\n\n### Register a Delegate for the Document\n\nRegister a [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocumentDelegate] to the [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocument] loaded in the current [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFView]. This delegate will allow you to specify a method for building PDF annotations or PDF pages. The [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocument] is called `document`.\n\n```swift\ndocument.delegate = self\npdfView?.document = document\n```\n\n### Implement a Custom Subclass\n\nCreate a custom subclass for your custom graphics, one that will include your drawing. This example shows how to add a custom line graphic to a PDF, either through a PDF annotation or a PDF page.\n\n#### Implement a Custom Annotation Subclass\n\nCreate a custom annotation subclass for your line graphic.\n\n```swift\nclass LineAnnotation: PDFAnnotation {\n\n}\n```\n\nImplement the [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocumentDelegate\/class(forAnnotationType:)] function in the document’s delegate. This method returns the subclass type for [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFAnnotation] for a given annotation subtype string.  In this case you return the `LineAnnotation` class for a `Line` type annotation.\n\n```swift\nfunc `class`(forAnnotationType annotationType: String) -> AnyClass {\n    if annotationType == \"Line\" {\n        return LineAnnotation.self\n    } else {\n        return PDFAnnotation.self\n    }\n}\n```\n\n#### Implement a Custom Page Subclass\n\nCreate a custom subclass for [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage] that includes your line graphic.\n\n```swift\nclass LinePage: PDFPage {\n\n}\n```\n\nImplement the [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFDocumentDelegate\/classForPage()] function in the document delegate. This class returns the subclass type for [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage], the `LinePage` class:\n\n```swift\nfunc classForPage() -> AnyClass {\n    return LinePage.self\n}\n```\n\n### Override the Draw Method and Add Your Custom Graphic\n\nOverride the `draw` method in your subclass to draw your custom graphic, the line. Draw the original content by calling the superclass version of the `draw` method. The `draw` methods for pages and annotations are nearly identical, the only difference being the `in context` parameter for annotations and the `to context` parameter for pages:\n\n**For annotations, use this** [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFAnnotation\/draw(with:)] **method:**\n\n```swift\noverride func draw(with box: PDFDisplayBox, in context: CGContext) {\n    \/\/ Draw original content.\n    super.draw(with: box, in: context)\n}\n```\n\n**For pages, use this** [doc:\/\/com.apple.pdfkit\/documentation\/PDFKit\/PDFPage\/draw(with:)] **method:**\n\n```swift\noverride func draw(with box: PDFDisplayBox, to context: CGContext) {\n    \/\/ Draw original content.\n    super.draw(with: box, to: context)\n}\n```\n\nIn the appropriate `draw` method, add your custom drawing, in this case the line. To ensure that your drawing maintains its [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGContext] properties and doesn’t affect other contexts in your PDF, make sure to save and restore your graphics state (before and after, respectively) you add your custom drawing code.\n\n\n\n```swift\nclass LineAnnotation: PDFAnnotation {\n    override func draw(with box: PDFDisplayBox, in context: CGContext) {\n        \/\/ Draw original content under the new content.\n        super.draw(with: box, in: context)\n        \n        \/\/ Draw a custom purple line.\n        UIGraphicsPushContext(context)\n        context.saveGState()\n        \n        let path = UIBezierPath()\n        path.lineWidth = 10\n        path.move(to: CGPoint(x: bounds.minX + startPoint.x, y: bounds.minY + startPoint.y))\n        path.addLine(to: CGPoint(x: bounds.minX + endPoint.x, y: bounds.minY + endPoint.y))\n        UIColor.systemPurple.setStroke()\n        path.stroke()\n\n        context.restoreGState()\n        UIGraphicsPopContext()\n    }\n}\n```\n\n\n\n## Annotations\n\n- **Adding Widgets to a PDF Document**: Add text, button, and choice widgets to a PDF document.\n- **Custom Graphics**: Demonstrates adding a watermark to a PDF page.\n- **PDF Widgets**: Demonstrates adding widgets—interactive form elements—to a PDF document.\n- **PDFAnnotation**: An annotation in a PDF document.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Add text, button, and choice widgets to a PDF document.",
+          "name" : "Adding Widgets to a PDF Document",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PDFKit\/adding-widgets-to-a-pdf-document"
+        },
+        {
+          "description" : "Demonstrates adding a watermark to a PDF page.",
+          "name" : "Custom Graphics",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PDFKit\/custom-graphics"
+        },
+        {
+          "description" : "Demonstrates adding widgets—interactive form elements—to a PDF document.",
+          "name" : "PDF Widgets",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PDFKit\/pdf-widgets"
+        },
+        {
+          "description" : "An annotation in a PDF document.",
+          "name" : "PDFAnnotation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PDFKit\/PDFAnnotation"
+        }
+      ],
+      "title" : "Annotations"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Adding Custom Graphics to a PDF",
+  "url" : "https:\/\/developer.apple.com\/documentation\/PDFKit\/adding-custom-graphics-to-a-pdf"
+}

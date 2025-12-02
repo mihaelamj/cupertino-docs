@@ -1,0 +1,132 @@
+{
+  "abstract" : "An object RealityKit passes data to a post process effect method.",
+  "codeExamples" : [
+    {
+      "code" : "func postProcess(context: borrowing PostProcessEffectContext<MTLCommandBuffer>) {\n    \/\/ Handle postprocessing here.\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "class LaplacianPostProcess: PostProcessEffect {\n    \/\/ Post process callback.\n    func postProcess(context: borrowing PostProcessEffectContext<MTLCommandBuffer>) {\n        let filter = MPSImageLaplacian()\n        filter.encode(commandBuffer: context.commandBuffer,\n                    sourceTexture: context.sourceColorTexture,\n                    destinationTexture: context.compatibleTargetTexture)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "content.renderingEffects.customPostProcessing = .none",
+      "language" : "swift"
+    },
+    {
+      "code" : "var isEnabled: Binding<Bool>\n\nfunc postProcess(context: borrowing PostProcessEffectContext<MTLCommandBuffer>) {\n    if isEnabled.wrappedValue {\n        let filter = MPSImageLaplacian()\n        filter.encode(commandBuffer: context.commandBuffer,\n                    sourceTexture: context.sourceColorTexture,\n                    destinationTexture: context.compatibleTargetTexture)\n    } else {\n        \/\/ Remove processing effects.\n        let blitEncoder = context.commandBuffer.makeBlitCommandEncoder()\n        blitEncoder?.copy(from: context.sourceColorTexture, to: context.targetColorTexture)\n        blitEncoder?.endEncoding()\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "d3f17bdcd6a2f7a0c0c9c317b1e9b6ee59d6ca6ae4cb37a47693f85616141713",
+  "crawledAt" : "2025-12-02T20:16:36Z",
+  "declaration" : {
+    "code" : "struct PostProcessEffectContext<CommandBuffer>",
+    "language" : "swift"
+  },
+  "id" : "F2883F18-D43C-4DA7-B891-4F2CE371FBFB",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "RealityKit",
+  "overview" : "## Overview\n\nYou can register a method that applies postprocessing effects to a scene RealityKit renders with a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/RealityView]. Once every frame, RealityKit calls that function before displaying the scene. You can use this to apply postprocess effects using any APIs that can modify an image texture. However, because RealityKit calls this method every frame, prioritize using APIs that execute on the GPU, such as Metal compute functions, [doc:\/\/com.apple.documentation\/documentation\/MetalPerformanceShaders], or [doc:\/\/com.apple.documentation\/documentation\/CoreImage]. You can also render additional content on top of the frame buffer, such as a SpriteKit scene.\n\nA postprocess method takes a single `PostProcessEffectContext` parameter, which contains data the callback method needs to modify the rendered scene, including the frame buffer, depth map, and a property for writing the image you modify. The postprocess method in your [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PostProcessEffect] type needs to encode to the output texture, or the frame is never displayed.\n\nA postprocess method looks like this:\n\nTo register a method as the postprocess render callback, add an implementation for [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PostProcessEffect\/postProcess(context:)] in your type that conforms to [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PostProcessEffect]:\n\nTo stop postprocessing, you can set the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/RealityViewRenderingEffects\/customPostProcessing] property to [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/RealityViewPostProcessEffect\/none].\n\nIf your app turns postprocessing on and off frequently, another option for disabling postprocess effects is to keep your callbacks registered, but use an [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLBlitCommandEncoder] to encode the unmodified frame buffer directly to the output texture whenever postprocess effects aren’t active.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/RealityKit\/PostProcessEffectContext\ncrawled: 2025-12-02T20:16:36Z\n---\n\n# PostProcessEffectContext\n\n**Structure**\n\nAn object RealityKit passes data to a post process effect method.\n\n## Declaration\n\n```swift\nstruct PostProcessEffectContext<CommandBuffer>\n```\n\n## Overview\n\nYou can register a method that applies postprocessing effects to a scene RealityKit renders with a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/RealityView]. Once every frame, RealityKit calls that function before displaying the scene. You can use this to apply postprocess effects using any APIs that can modify an image texture. However, because RealityKit calls this method every frame, prioritize using APIs that execute on the GPU, such as Metal compute functions, [doc:\/\/com.apple.documentation\/documentation\/MetalPerformanceShaders], or [doc:\/\/com.apple.documentation\/documentation\/CoreImage]. You can also render additional content on top of the frame buffer, such as a SpriteKit scene.\n\n\n\nA postprocess method takes a single `PostProcessEffectContext` parameter, which contains data the callback method needs to modify the rendered scene, including the frame buffer, depth map, and a property for writing the image you modify. The postprocess method in your [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PostProcessEffect] type needs to encode to the output texture, or the frame is never displayed.\n\nA postprocess method looks like this:\n\n```swift\nfunc postProcess(context: borrowing PostProcessEffectContext<MTLCommandBuffer>) {\n    \/\/ Handle postprocessing here.\n}\n```\n\nTo register a method as the postprocess render callback, add an implementation for [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PostProcessEffect\/postProcess(context:)] in your type that conforms to [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PostProcessEffect]:\n\n```swift\nclass LaplacianPostProcess: PostProcessEffect {\n    \/\/ Post process callback.\n    func postProcess(context: borrowing PostProcessEffectContext<MTLCommandBuffer>) {\n        let filter = MPSImageLaplacian()\n        filter.encode(commandBuffer: context.commandBuffer,\n                    sourceTexture: context.sourceColorTexture,\n                    destinationTexture: context.compatibleTargetTexture)\n    }\n}\n```\n\nTo stop postprocessing, you can set the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/RealityViewRenderingEffects\/customPostProcessing] property to [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/RealityViewPostProcessEffect\/none].\n\n```swift\ncontent.renderingEffects.customPostProcessing = .none\n```\n\nIf your app turns postprocessing on and off frequently, another option for disabling postprocess effects is to keep your callbacks registered, but use an [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLBlitCommandEncoder] to encode the unmodified frame buffer directly to the output texture whenever postprocess effects aren’t active.\n\n```swift\nvar isEnabled: Binding<Bool>\n\nfunc postProcess(context: borrowing PostProcessEffectContext<MTLCommandBuffer>) {\n    if isEnabled.wrappedValue {\n        let filter = MPSImageLaplacian()\n        filter.encode(commandBuffer: context.commandBuffer,\n                    sourceTexture: context.sourceColorTexture,\n                    destinationTexture: context.compatibleTargetTexture)\n    } else {\n        \/\/ Remove processing effects.\n        let blitEncoder = context.commandBuffer.makeBlitCommandEncoder()\n        blitEncoder?.copy(from: context.sourceColorTexture, to: context.targetColorTexture)\n        blitEncoder?.endEncoding()\n    }\n}\n```\n\n## Instance Properties\n\n- **commandBuffer**: The Metal command buffer for encoding the frame.\n- **device**: The Metal device where the scene renders.\n- **projection**: The projection matrix that renders the frame.\n- **sourceColorTexture**: The rendered frame buffer.\n- **sourceDepthTexture**: The frame’s depth buffer.\n- **targetColorTexture**: The output texture where the postprocess callback writes the modified frame buffer.\n- **time**: The scene’s elapsed time.\n\n## Visual environment adjustments\n\n- **RealityViewEnvironment**: A struct that determines the background and default lighting properties for a reality view.\n- **RealityViewRenderingEffects**: A struct for enabling and disabling rendering effects for RealityKit content.\n- **RealityViewRenderingEffectMode**: A mode that determines whether a rendering effect is enabled or disabled.\n- **RealityViewDynamicRange**: Options that determine the state of high dynamic range rendering for virtual content.\n- **AntialiasingMode**: The rendering technique used to smooth edges of virtual content.\n- **RealityViewPostProcessEffect**: A struct for enabling or disabling post processing effects for all content a reality view contains.\n- **ARView.Environment**: A description of background, lighting, and acoustic properties for a view’s content.\n- **ARView.RenderOptions**: The available rendering options that you use to selectively disable certain rendering effects.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The Metal command buffer for encoding the frame.",
+          "name" : "commandBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PostProcessEffectContext\/commandBuffer"
+        },
+        {
+          "description" : "The Metal device where the scene renders.",
+          "name" : "device",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PostProcessEffectContext\/device"
+        },
+        {
+          "description" : "The projection matrix that renders the frame.",
+          "name" : "projection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PostProcessEffectContext\/projection"
+        },
+        {
+          "description" : "The rendered frame buffer.",
+          "name" : "sourceColorTexture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PostProcessEffectContext\/sourceColorTexture"
+        },
+        {
+          "description" : "The frame’s depth buffer.",
+          "name" : "sourceDepthTexture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PostProcessEffectContext\/sourceDepthTexture"
+        },
+        {
+          "description" : "The output texture where the postprocess callback writes the modified frame buffer.",
+          "name" : "targetColorTexture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PostProcessEffectContext\/targetColorTexture"
+        },
+        {
+          "description" : "The scene’s elapsed time.",
+          "name" : "time",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PostProcessEffectContext\/time"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A struct that determines the background and default lighting properties for a reality view.",
+          "name" : "RealityViewEnvironment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/RealityViewEnvironment"
+        },
+        {
+          "description" : "A struct for enabling and disabling rendering effects for RealityKit content.",
+          "name" : "RealityViewRenderingEffects",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/RealityViewRenderingEffects"
+        },
+        {
+          "description" : "A mode that determines whether a rendering effect is enabled or disabled.",
+          "name" : "RealityViewRenderingEffectMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/RealityViewRenderingEffectMode"
+        },
+        {
+          "description" : "Options that determine the state of high dynamic range rendering for virtual content.",
+          "name" : "RealityViewDynamicRange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/RealityViewDynamicRange"
+        },
+        {
+          "description" : "The rendering technique used to smooth edges of virtual content.",
+          "name" : "AntialiasingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/AntialiasingMode"
+        },
+        {
+          "description" : "A struct for enabling or disabling post processing effects for all content a reality view contains.",
+          "name" : "RealityViewPostProcessEffect",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/RealityViewPostProcessEffect"
+        },
+        {
+          "description" : "A description of background, lighting, and acoustic properties for a view’s content.",
+          "name" : "ARView.Environment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/ARView\/Environment-swift.struct"
+        },
+        {
+          "description" : "The available rendering options that you use to selectively disable certain rendering effects.",
+          "name" : "ARView.RenderOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/ARView\/RenderOptions-swift.struct"
+        }
+      ],
+      "title" : "Visual environment adjustments"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "PostProcessEffectContext",
+  "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PostProcessEffectContext"
+}

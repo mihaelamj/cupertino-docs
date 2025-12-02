@@ -1,0 +1,250 @@
+{
+  "abstract" : "An opaque data container for large storage in MPS CNN filters.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "81b2121247ca5a27f73dc4661fd49851b7f4e15e4d5d568af0657fc8c5f0c65d",
+  "crawledAt" : "2025-12-01T18:07:35Z",
+  "declaration" : {
+    "code" : "class MPSState",
+    "language" : "swift"
+  },
+  "id" : "86438752-855A-4ED0-A5C3-3EF6C14C19F3",
+  "inheritedBy" : [
+    "MPSCNNConvolutionWeightsAndBiasesState",
+    "MPSCNNLossLabels",
+    "MPSCNNNormalizationGammaAndBetaState",
+    "MPSCNNNormalizationMeanAndVarianceState",
+    "MPSNDArrayGradientState",
+    "MPSNNBinaryGradientState",
+    "MPSNNGradientState",
+    "MPSNNMultiaryGradientState",
+    "MPSRNNMatrixTrainingState",
+    "MPSRNNRecurrentImageState",
+    "MPSRNNRecurrentMatrixState"
+  ],
+  "kind" : "class",
+  "module" : "Metal Performance Shaders",
+  "overview" : "## Overview\n\nSome MPS CNN kernels produce additional information beyond an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage]. These may be pooling indices where the result came from, convolution weights, or other information not contained in the usual [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] result from a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNKernel]. An [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] object typically contains one or more expensive [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLResource] objects such as textures or buffers to store this information. It provides a base class with interfaces for managing this storage. Child classes may add additional functionality specific to their contents.\n\nSome [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] objects are temporary. Temporary state objects, for example, [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] and [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryMatrix], are for very short lived storage, perhaps just a few lines of code within the scope of a single [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer]. They are very efficient for storage, as several temporary objects can share the same memory over the course of a command buffer. This can improve both memory usage and time spent in the kernel wiring down memory and such. You may find that some large CNN tasks can not be computed without them, as nontemporary storage would simply take up too much memory.\n\nIn exchange, the lifetime of the underlying storage in temporary [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] objects needs to be carefully managed. ARC often waits until the end of scope to release objects. Temporary storage often needs to be released sooner than that. Consequently the lifetime of the data in the underlying Metal resources is managed by a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState\/readCount] property. Each time a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNKernel] reads a temporary [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] object the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState\/readCount] is automatically decremented. When it reaches 0, the underlying storage is recycled for use by other MPS temporary objects, and the data is becomes undefined. If you need to consume the data multiple times, you should set the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState\/readCount] to a larger number to prevent the data from becoming undefined. You may set the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState\/readCount] to 0 yourself to return the storage to MPS, if for any reason, you realize that the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] object will no longer be used.\n\nThe contents of a temporary [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] object are only valid from creation to the time the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState\/readCount] reaches 0. The data is only valid for the [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] on which it was created. Nontemporary [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] objects are valid on any [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] on the same device until they are released.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\ncrawled: 2025-12-01T18:07:35Z\n---\n\n# MPSState\n\n**Class**\n\nAn opaque data container for large storage in MPS CNN filters.\n\n## Declaration\n\n```swift\nclass MPSState\n```\n\n## Overview\n\nSome MPS CNN kernels produce additional information beyond an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage]. These may be pooling indices where the result came from, convolution weights, or other information not contained in the usual [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] result from a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNKernel]. An [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] object typically contains one or more expensive [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLResource] objects such as textures or buffers to store this information. It provides a base class with interfaces for managing this storage. Child classes may add additional functionality specific to their contents.\n\nSome [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] objects are temporary. Temporary state objects, for example, [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] and [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryMatrix], are for very short lived storage, perhaps just a few lines of code within the scope of a single [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer]. They are very efficient for storage, as several temporary objects can share the same memory over the course of a command buffer. This can improve both memory usage and time spent in the kernel wiring down memory and such. You may find that some large CNN tasks can not be computed without them, as nontemporary storage would simply take up too much memory.\n\nIn exchange, the lifetime of the underlying storage in temporary [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] objects needs to be carefully managed. ARC often waits until the end of scope to release objects. Temporary storage often needs to be released sooner than that. Consequently the lifetime of the data in the underlying Metal resources is managed by a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState\/readCount] property. Each time a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNKernel] reads a temporary [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] object the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState\/readCount] is automatically decremented. When it reaches 0, the underlying storage is recycled for use by other MPS temporary objects, and the data is becomes undefined. If you need to consume the data multiple times, you should set the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState\/readCount] to a larger number to prevent the data from becoming undefined. You may set the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState\/readCount] to 0 yourself to return the storage to MPS, if for any reason, you realize that the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] object will no longer be used.\n\nThe contents of a temporary [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] object are only valid from creation to the time the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState\/readCount] reaches 0. The data is only valid for the [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] on which it was created. Nontemporary [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSState] objects are valid on any [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] on the same device until they are released.\n\n## Instance Properties\n\n- **isTemporary**\n- **label**\n- **readCount**\n- **resource**\n- **resourceCount**\n\n## Initializers\n\n- **init(device:bufferSize:)**\n- **init(device:resourceList:)**\n- **init(device:textureDescriptor:)**\n- **init(resource:)**\n- **init(resources:)**\n\n## Instance Methods\n\n- **bufferSize(at:)**\n- **destinationImageDescriptor(forSourceImages:sourceStates:for:suggestedDescriptor:)**\n- **resource(at:allocateMemory:)**\n- **resourceSize()**\n- **resourceType(at:)**\n- **synchronize(on:)**\n- **textureInfo(at:)**\n\n## Type Methods\n\n- **temporaryState(with:)**\n- **temporaryState(with:bufferSize:)**\n- **temporaryState(with:resourceList:)**\n- **temporaryState(with:textureDescriptor:)**\n\n## Instance Methods\n\n- **encode(to:sourceImages:)**\n- **encode(to:sourceImages:sourceStates:intermediateImages:destinationStates:)**\n- **MPSNNBinaryGradientState**: A class representing the state of a gradient binary kernel when it was encoded.\n- **MPSNNGradientState**: A class representing the state of a gradient kernel when it was encoded.\n- **executeAsync(withSourceImages:completionHandler:)**\n- **MPSNNGraphCompletionHandler**: A notification when an asynchronous graph execution has finished.\n- **encodeBatch(to:sourceImages:sourceStates:)**\n- **encodeBatch(to:sourceImages:sourceStates:intermediateImages:destinationStates:)**\n- **readCountForSourceImage(at:)**\n- **readCountForSourceState(at:)**\n- **reloadFromDataSources()**\n\n## Inherits From\n\n- NSObject\n\n## Inherited By\n\n- MPSCNNConvolutionWeightsAndBiasesState\n- MPSCNNLossLabels\n- MPSCNNNormalizationGammaAndBetaState\n- MPSCNNNormalizationMeanAndVarianceState\n- MPSNDArrayGradientState\n- MPSNNBinaryGradientState\n- MPSNNGradientState\n- MPSNNMultiaryGradientState\n- MPSRNNMatrixTrainingState\n- MPSRNNRecurrentImageState\n- MPSRNNRecurrentMatrixState\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "isTemporary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/isTemporary"
+        },
+        {
+          "description" : "",
+          "name" : "label",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/label"
+        },
+        {
+          "description" : "",
+          "name" : "readCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/readCount"
+        },
+        {
+          "description" : "",
+          "name" : "resource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/resource"
+        },
+        {
+          "description" : "",
+          "name" : "resourceCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/resourceCount"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "init(device:bufferSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/init(device:bufferSize:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(device:resourceList:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/init(device:resourceList:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(device:textureDescriptor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/init(device:textureDescriptor:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(resource:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/init(resource:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(resources:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/init(resources:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "bufferSize(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/bufferSize(at:)"
+        },
+        {
+          "description" : "",
+          "name" : "destinationImageDescriptor(forSourceImages:sourceStates:for:suggestedDescriptor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/destinationImageDescriptor(forSourceImages:sourceStates:for:suggestedDescriptor:)"
+        },
+        {
+          "description" : "",
+          "name" : "resource(at:allocateMemory:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/resource(at:allocateMemory:)"
+        },
+        {
+          "description" : "",
+          "name" : "resourceSize()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/resourceSize()"
+        },
+        {
+          "description" : "",
+          "name" : "resourceType(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/resourceType(at:)"
+        },
+        {
+          "description" : "",
+          "name" : "synchronize(on:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/synchronize(on:)"
+        },
+        {
+          "description" : "",
+          "name" : "textureInfo(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/textureInfo(at:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "temporaryState(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/temporaryState(with:)"
+        },
+        {
+          "description" : "",
+          "name" : "temporaryState(with:bufferSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/temporaryState(with:bufferSize:)"
+        },
+        {
+          "description" : "",
+          "name" : "temporaryState(with:resourceList:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/temporaryState(with:resourceList:)"
+        },
+        {
+          "description" : "",
+          "name" : "temporaryState(with:textureDescriptor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState\/temporaryState(with:textureDescriptor:)"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "encode(to:sourceImages:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNGraph\/encode(to:sourceImages:)"
+        },
+        {
+          "description" : "",
+          "name" : "encode(to:sourceImages:sourceStates:intermediateImages:destinationStates:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNGraph\/encode(to:sourceImages:sourceStates:intermediateImages:destinationStates:)"
+        },
+        {
+          "description" : "A class representing the state of a gradient binary kernel when it was encoded.",
+          "name" : "MPSNNBinaryGradientState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNBinaryGradientState"
+        },
+        {
+          "description" : "A class representing the state of a gradient kernel when it was encoded.",
+          "name" : "MPSNNGradientState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNGradientState"
+        },
+        {
+          "description" : "",
+          "name" : "executeAsync(withSourceImages:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNGraph\/executeAsync(withSourceImages:completionHandler:)"
+        },
+        {
+          "description" : "A notification when an asynchronous graph execution has finished.",
+          "name" : "MPSNNGraphCompletionHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNGraphCompletionHandler"
+        },
+        {
+          "description" : "",
+          "name" : "encodeBatch(to:sourceImages:sourceStates:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNGraph\/encodeBatch(to:sourceImages:sourceStates:)"
+        },
+        {
+          "description" : "",
+          "name" : "encodeBatch(to:sourceImages:sourceStates:intermediateImages:destinationStates:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNGraph\/encodeBatch(to:sourceImages:sourceStates:intermediateImages:destinationStates:)"
+        },
+        {
+          "description" : "",
+          "name" : "readCountForSourceImage(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNGraph\/readCountForSourceImage(at:)"
+        },
+        {
+          "description" : "",
+          "name" : "readCountForSourceState(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNGraph\/readCountForSourceState(at:)"
+        },
+        {
+          "description" : "",
+          "name" : "reloadFromDataSources()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSNNGraph\/reloadFromDataSources()"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MPSState",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSState"
+}

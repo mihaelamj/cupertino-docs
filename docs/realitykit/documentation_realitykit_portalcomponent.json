@@ -1,0 +1,156 @@
+{
+  "abstract" : "A component that turns mesh surfaces into portals to a different world.",
+  "codeExamples" : [
+    {
+      "code" : "let world = Entity()\nworld.components.set(WorldComponent())\n\nlet portal = Entity()\nportal.components.set(\n   ModelComponent(\n       mesh: .generatePlane(width: 0.5, height: 0.5, cornerRadius: 0.1),\n       materials: [PortalMaterial()]\n   )\n)\nportal.components.set(PortalComponent(target: world))\n\ncontent.add(world)\ncontent.add(portal)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let world = Entity()\nworld.components.set(WorldComponent())\n\n\/\/ Create an entity that doesn't cross beyond the portal bounds.\nlet notCrossing = Entity()\n\n\/\/ Create an entity that crosses beyond the portal bounds.\nlet willCross = Entity()\nwillCross.components.set(PortalCrossingComponent())\n\nworld.addChild(notCrossing)\nworld.addChild(willCross)\n\n\/\/ Set up a crossable portal, without a near clip.\nlet portal = Entity()\nportal.components.set(\n   ModelComponent(\n       mesh: .generatePlane(width: 0.5, height: 0.5, cornerRadius: 0.1),\n       materials: [PortalMaterial()]\n   )\n)\nvar portalComp = PortalComponent(target: world)\nportalComp.clippingMode = .plane(.positiveZ)\nportalComp.crossingMode = .plane(.positiveZ)\nportal.components.set(portalComp)\n\ncontent.add(world)\ncontent.add(portal)",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Component"
+  ],
+  "contentHash" : "491928db59fb2d969fb5b8ddf42cd951c4acf1f19ccfb8050f5c534b906743ab",
+  "crawledAt" : "2025-12-02T20:10:41Z",
+  "declaration" : {
+    "code" : "struct PortalComponent",
+    "language" : "swift"
+  },
+  "id" : "7935ABF5-5EAB-42F3-AE8B-A0CA3008FF4B",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "RealityKit",
+  "overview" : "## Overview\n\nA RealityKit portal defines a way to look into a different, immersive world. You define an entity as a portal when it also has a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ModelComponent] that contains a mesh part with [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalMaterial].\n\nTo create a portal, set its [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/targetEntity] property to an entity with a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/WorldComponent]. Entities under that world only render within the portal.\n\n### Clipping and Crossing\n\nYou can enable clipping by configuring [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/clippingMode-swift.property] to something other than [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/ClippingMode-swift.enum\/disabled]. For example, you can use [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/ClippingMode-swift.enum\/plane(_:)]. This ensures that the contents of the portal world don’t render beyond the portal boundary, causing depth confusion.\n\nEntities inside the portal world with a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalCrossingComponent] can freely cross in and out of the portal boundary in any of the following platforms:\n\nYou can enable the crossing feature by configuring [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/crossingMode-swift.property] to something other than [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/CrossingMode-swift.enum\/disabled]. Such as [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/CrossingMode-swift.enum\/plane(_:)].\n\nThe spaceships below have a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalCrossingComponent].\n\nThe spaceships below *don’t* have a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalCrossingComponent].\n\n### Lighting\n\nYou define the lighting in a portal world with [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ImageBasedLightComponent] and [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ImageBasedLightReceiverComponent].\n\nRealityKit provides a default IBL if you don’t specify one with [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ImageBasedLightReceiverComponent].\n\nContents within a portal world don’t receive real-world probe lighting. However, you can achieve a  similar effect in the portal world using [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/VirtualEnvironmentProbeComponent].\n\nYou can configure this virtual probe lighting contribution with [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/EnvironmentLightingConfigurationComponent].\n\nDynamic lights, such as [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PointLightComponent] and [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/DirectionalLightComponent], don’t cross world bounds.\n\nDifferent lighting environments light the portal crossing entities based on which side of the portal they are on:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\ncrawled: 2025-12-02T20:10:41Z\n---\n\n# PortalComponent\n\n**Structure**\n\nA component that turns mesh surfaces into portals to a different world.\n\n## Declaration\n\n```swift\nstruct PortalComponent\n```\n\n## Overview\n\nA RealityKit portal defines a way to look into a different, immersive world. You define an entity as a portal when it also has a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ModelComponent] that contains a mesh part with [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalMaterial].\n\nTo create a portal, set its [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/targetEntity] property to an entity with a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/WorldComponent]. Entities under that world only render within the portal.\n\n```swift\nlet world = Entity()\nworld.components.set(WorldComponent())\n\nlet portal = Entity()\nportal.components.set(\n   ModelComponent(\n       mesh: .generatePlane(width: 0.5, height: 0.5, cornerRadius: 0.1),\n       materials: [PortalMaterial()]\n   )\n)\nportal.components.set(PortalComponent(target: world))\n\ncontent.add(world)\ncontent.add(portal)\n```\n\n### Clipping and Crossing\n\nYou can enable clipping by configuring [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/clippingMode-swift.property] to something other than [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/ClippingMode-swift.enum\/disabled]. For example, you can use [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/ClippingMode-swift.enum\/plane(_:)]. This ensures that the contents of the portal world don’t render beyond the portal boundary, causing depth confusion.\n\nEntities inside the portal world with a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalCrossingComponent] can freely cross in and out of the portal boundary in any of the following platforms:\n\n- iOS 18 and later\n- macOS 15 and later\n- visionOS 2 and later\n\nYou can enable the crossing feature by configuring [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/crossingMode-swift.property] to something other than [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/CrossingMode-swift.enum\/disabled]. Such as [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalComponent\/CrossingMode-swift.enum\/plane(_:)].\n\n```swift\nlet world = Entity()\nworld.components.set(WorldComponent())\n\n\/\/ Create an entity that doesn't cross beyond the portal bounds.\nlet notCrossing = Entity()\n\n\/\/ Create an entity that crosses beyond the portal bounds.\nlet willCross = Entity()\nwillCross.components.set(PortalCrossingComponent())\n\nworld.addChild(notCrossing)\nworld.addChild(willCross)\n\n\/\/ Set up a crossable portal, without a near clip.\nlet portal = Entity()\nportal.components.set(\n   ModelComponent(\n       mesh: .generatePlane(width: 0.5, height: 0.5, cornerRadius: 0.1),\n       materials: [PortalMaterial()]\n   )\n)\nvar portalComp = PortalComponent(target: world)\nportalComp.clippingMode = .plane(.positiveZ)\nportalComp.crossingMode = .plane(.positiveZ)\nportal.components.set(portalComp)\n\ncontent.add(world)\ncontent.add(portal)\n```\n\nThe spaceships below have a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalCrossingComponent].\n\n\n\nThe spaceships below *don’t* have a [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PortalCrossingComponent].\n\n\n\n### Lighting\n\nYou define the lighting in a portal world with [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ImageBasedLightComponent] and [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ImageBasedLightReceiverComponent].\n\nRealityKit provides a default IBL if you don’t specify one with [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/ImageBasedLightReceiverComponent].\n\nContents within a portal world don’t receive real-world probe lighting. However, you can achieve a  similar effect in the portal world using [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/VirtualEnvironmentProbeComponent].\n\nYou can configure this virtual probe lighting contribution with [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/EnvironmentLightingConfigurationComponent].\n\nDynamic lights, such as [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PointLightComponent] and [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/DirectionalLightComponent], don’t cross world bounds.\n\nDifferent lighting environments light the portal crossing entities based on which side of the portal they are on:\n\n- When inside the portal, the portal world’s lighting lights the entity.\n- When outside the portal, the default world’s lighting lights the entity.\n\n## Structures\n\n- **PortalComponent.ClippingPlane**: A representation of a portal as an infinite plane.\n- **PortalComponent.Options**: Options to toggle the portal features on and off.\n- **PortalComponent.Plane**: A representation of a portal as an infinite plane.\n\n## Initializers\n\n- **init(target:clippingMode:crossingMode:)**: Creates a portal component with a target entity, clipping mode, and crossing mode.\n- **init(target:clippingPlane:)**: Creates a portal component with a target entity and a clipping plane.\n- **init(target:plane:options:)**: Creates a portal component with a target entity, a single planar definition, and portal options.\n\n## Instance Properties\n\n- **clippingMode**: The clipping behavior of the portal component.\n- **clippingPlane**: The clipping plane of the portal, using the entity’s local coordinates.\n- **crossingMode**: The crossing behavior of the portal component.\n- **targetEntity**: The root entity for the portal’s target world.\n\n## Enumerations\n\n- **PortalComponent.ClippingMode**: Specifies the mode of clipping for a portal.\n- **PortalComponent.CrossingMode**: Specifies the mode of crossing for a portal.\n\n## Portals\n\n- **PortalMaterial**: A material that makes the mesh part a portal to a different world.\n- **PortalMaterial.FaceCulling**: An alias for the cull mode object that’s appropriate for this material class.\n- **PortalMaterial.TriangleFillMode**: An alias for the triangle fill mode object that’s appropriate for this material class.\n- **WorldComponent**: A component that defines a portal world.\n- **PortalCrossingComponent**: A component that allows entities to cross portal boundaries.\n\n## Conforms To\n\n- Component\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A representation of a portal as an infinite plane.",
+          "name" : "PortalComponent.ClippingPlane",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/ClippingPlane-swift.struct"
+        },
+        {
+          "description" : "Options to toggle the portal features on and off.",
+          "name" : "PortalComponent.Options",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/Options"
+        },
+        {
+          "description" : "A representation of a portal as an infinite plane.",
+          "name" : "PortalComponent.Plane",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/Plane"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a portal component with a target entity, clipping mode, and crossing mode.",
+          "name" : "init(target:clippingMode:crossingMode:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/init(target:clippingMode:crossingMode:)"
+        },
+        {
+          "description" : "Creates a portal component with a target entity and a clipping plane.",
+          "name" : "init(target:clippingPlane:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/init(target:clippingPlane:)"
+        },
+        {
+          "description" : "Creates a portal component with a target entity, a single planar definition, and portal options.",
+          "name" : "init(target:plane:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/init(target:plane:options:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The clipping behavior of the portal component.",
+          "name" : "clippingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/clippingMode-swift.property"
+        },
+        {
+          "description" : "The clipping plane of the portal, using the entity’s local coordinates.",
+          "name" : "clippingPlane",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/clippingPlane-swift.property"
+        },
+        {
+          "description" : "The crossing behavior of the portal component.",
+          "name" : "crossingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/crossingMode-swift.property"
+        },
+        {
+          "description" : "The root entity for the portal’s target world.",
+          "name" : "targetEntity",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/targetEntity"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Specifies the mode of clipping for a portal.",
+          "name" : "PortalComponent.ClippingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/ClippingMode-swift.enum"
+        },
+        {
+          "description" : "Specifies the mode of crossing for a portal.",
+          "name" : "PortalComponent.CrossingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent\/CrossingMode-swift.enum"
+        }
+      ],
+      "title" : "Enumerations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A material that makes the mesh part a portal to a different world.",
+          "name" : "PortalMaterial",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalMaterial"
+        },
+        {
+          "description" : "An alias for the cull mode object that’s appropriate for this material class.",
+          "name" : "PortalMaterial.FaceCulling",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalMaterial\/FaceCulling-swift.typealias"
+        },
+        {
+          "description" : "An alias for the triangle fill mode object that’s appropriate for this material class.",
+          "name" : "PortalMaterial.TriangleFillMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalMaterial\/TriangleFillMode-swift.typealias"
+        },
+        {
+          "description" : "A component that defines a portal world.",
+          "name" : "WorldComponent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/WorldComponent"
+        },
+        {
+          "description" : "A component that allows entities to cross portal boundaries.",
+          "name" : "PortalCrossingComponent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalCrossingComponent"
+        }
+      ],
+      "title" : "Portals"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "PortalComponent",
+  "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PortalComponent"
+}

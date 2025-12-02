@@ -1,0 +1,93 @@
+{
+  "abstract" : "Present navigation markers in the Chapters panel to help users quickly navigate your content.",
+  "codeExamples" : [
+    {
+      "code" : "struct Chapter {\n    let title: String\n    let imageName: String\n    let startTime: TimeInterval\n    let endTime: TimeInterval\n}\n\n...\n\nfunc setupPlayback() {\n    ...\n    playerItem.navigationMarkerGroups = makeNavigationMarkerGroups()\n    ...\n}\n\nprivate func makeNavigationMarkerGroups() -> [AVNavigationMarkersGroup] {\n    \n    let chapters = [\n        Chapter(title: \"Chapter 1\", imageName: \"chapter1\", startTime: 0.0, endTime: 60.0),\n        Chapter(title: \"Chapter 2\", imageName: \"chapter2\", startTime: 60.0, endTime: 120.0),\n        Chapter(title: \"Chapter 3\", imageName: \"chapter3\", startTime: 120.0, endTime: 180.0),\n        Chapter(title: \"Chapter 4\", imageName: \"chapter4\", startTime: 180.0, endTime: 240.0)\n    ]\n    \n    var metadataGroups = [AVTimedMetadataGroup]()\n    \n    \/\/ Iterate over the defined chapters and build a timed metadata group object for each.\n    chapters.forEach { chapter in\n        metadataGroups.append(makeTimedMetadataGroup(for: chapter))\n    }\n    \n    return [AVNavigationMarkersGroup(title: nil, \n                                     timedNavigationMarkers: metadataGroups)]\n}\n\nprivate func makeTimedMetadataGroup(for chapter: Chapter) -> AVTimedMetadataGroup {\n    var metadata = [AVMetadataItem]()\n    \n    \/\/ Create a metadata item that contains the chapter title.\n    let titleItem = makeMetadataItem(.commonIdentifierTitle, value: chapter.title)\n    metadata.append(titleItem)\n    if let image = UIImage(named: chapter.imageName), \n       let pngData = image.pngData() {\n        \/\/ Create a metadata item that contains the chapter thumbnail.\n        let imageItem = makeMetadataItem(.commonIdentifierArtwork, value: pngData)\n        metadata.append(imageItem)\n    }\n    \n    \/\/ Create a time range for the metadata group.\n    let timescale: Int32 = 600\n    let startTime = CMTime(seconds: chapter.startTime, preferredTimescale: timescale)\n    let endTime = CMTime(seconds: chapter.endTime, preferredTimescale: timescale)\n    let timeRange = CMTimeRangeFromTimeToTime(start: startTime, end: endTime)\n    \n    return AVTimedMetadataGroup(items: metadata, timeRange: timeRange)\n}\n\nprivate func makeMetadataItem(_ identifier: AVMetadataIdentifier, value: Any) -> AVMetadataItem {\n    let item = AVMutableMetadataItem()\n    item.identifier = identifier\n    item.value = value as? NSCopying & NSObjectProtocol\n    item.extendedLanguageTag = \"und\"\n    return item.copy() as! AVMetadataItem\n}\n",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "42dda0077d1d526a821dc57a4d6966cf944ecab8449222f5474b055cd02207e0",
+  "crawledAt" : "2025-12-02T16:17:52Z",
+  "id" : "EF19C5BF-17C9-4161-AE68-3DE92B04A1B0",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "AVKit",
+  "overview" : "## Overview\n\nTo help users navigate your content, the Chapters panel presents navigation markers that represent points of interest within the media’s timeline. Users can skip to desired content by selecting a marker with the Siri Remote.\n\n\n\n### Set the Navigation Markers\n\nIn tvOS, a [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVPlayerItem] contains a [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVPlayerItem\/navigationMarkerGroups] property you use to supply chapter information. Set this property to an array of [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVNavigationMarkersGroup] objects to define the navigation markers for the current media.\n\nAn [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVNavigationMarkersGroup] contains one or more [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVTimedMetadataGroup] objects, each representing an individual marker presented in the player’s Info panel. Each [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVTimedMetadataGroup] stores a time range in the asset’s timeline to which this marker applies, an array of [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVMetadataItem] objects to define the marker’s title, and, optionally, its thumbnail artwork.\n\n\n\nThe following code shows how you can present a chapter list for your media:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AVKit\/presenting-navigation-markers\ncrawled: 2025-12-02T16:17:52Z\n---\n\n# Presenting Navigation Markers\n\n**Article**\n\nPresent navigation markers in the Chapters panel to help users quickly navigate your content.\n\n## Overview\n\nTo help users navigate your content, the Chapters panel presents navigation markers that represent points of interest within the media’s timeline. Users can skip to desired content by selecting a marker with the Siri Remote.\n\n\n\n### Set the Navigation Markers\n\nIn tvOS, a [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVPlayerItem] contains a [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVPlayerItem\/navigationMarkerGroups] property you use to supply chapter information. Set this property to an array of [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVNavigationMarkersGroup] objects to define the navigation markers for the current media.\n\n\n\nAn [doc:\/\/com.apple.avkit\/documentation\/AVKit\/AVNavigationMarkersGroup] contains one or more [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVTimedMetadataGroup] objects, each representing an individual marker presented in the player’s Info panel. Each [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVTimedMetadataGroup] stores a time range in the asset’s timeline to which this marker applies, an array of [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVMetadataItem] objects to define the marker’s title, and, optionally, its thumbnail artwork.\n\n\n\nThe following code shows how you can present a chapter list for your media:\n\n```swift\nstruct Chapter {\n    let title: String\n    let imageName: String\n    let startTime: TimeInterval\n    let endTime: TimeInterval\n}\n\n...\n\nfunc setupPlayback() {\n    ...\n    playerItem.navigationMarkerGroups = makeNavigationMarkerGroups()\n    ...\n}\n\nprivate func makeNavigationMarkerGroups() -> [AVNavigationMarkersGroup] {\n    \n    let chapters = [\n        Chapter(title: \"Chapter 1\", imageName: \"chapter1\", startTime: 0.0, endTime: 60.0),\n        Chapter(title: \"Chapter 2\", imageName: \"chapter2\", startTime: 60.0, endTime: 120.0),\n        Chapter(title: \"Chapter 3\", imageName: \"chapter3\", startTime: 120.0, endTime: 180.0),\n        Chapter(title: \"Chapter 4\", imageName: \"chapter4\", startTime: 180.0, endTime: 240.0)\n    ]\n    \n    var metadataGroups = [AVTimedMetadataGroup]()\n    \n    \/\/ Iterate over the defined chapters and build a timed metadata group object for each.\n    chapters.forEach { chapter in\n        metadataGroups.append(makeTimedMetadataGroup(for: chapter))\n    }\n    \n    return [AVNavigationMarkersGroup(title: nil, \n                                     timedNavigationMarkers: metadataGroups)]\n}\n\nprivate func makeTimedMetadataGroup(for chapter: Chapter) -> AVTimedMetadataGroup {\n    var metadata = [AVMetadataItem]()\n    \n    \/\/ Create a metadata item that contains the chapter title.\n    let titleItem = makeMetadataItem(.commonIdentifierTitle, value: chapter.title)\n    metadata.append(titleItem)\n    if let image = UIImage(named: chapter.imageName), \n       let pngData = image.pngData() {\n        \/\/ Create a metadata item that contains the chapter thumbnail.\n        let imageItem = makeMetadataItem(.commonIdentifierArtwork, value: pngData)\n        metadata.append(imageItem)\n    }\n    \n    \/\/ Create a time range for the metadata group.\n    let timescale: Int32 = 600\n    let startTime = CMTime(seconds: chapter.startTime, preferredTimescale: timescale)\n    let endTime = CMTime(seconds: chapter.endTime, preferredTimescale: timescale)\n    let timeRange = CMTimeRangeFromTimeToTime(start: startTime, end: endTime)\n    \n    return AVTimedMetadataGroup(items: metadata, timeRange: timeRange)\n}\n\nprivate func makeMetadataItem(_ identifier: AVMetadataIdentifier, value: Any) -> AVMetadataItem {\n    let item = AVMutableMetadataItem()\n    item.identifier = identifier\n    item.value = value as? NSCopying & NSObjectProtocol\n    item.extendedLanguageTag = \"und\"\n    return item.copy() as! AVMetadataItem\n}\n\n```\n\n## tvOS playback and capture\n\n- **Customizing the tvOS Playback Experience**: Adopt the latest features of the redesigned tvOS player user interface to provide a more streamlined way to watch your content.\n- **Working with Interstitial Content**: Present additional content alongside your main media presentation using HTTP Live Streaming support.\n- **Presenting Content Proposals in tvOS**: Display a preview of an upcoming media item at the conclusion of the currently playing media item.\n- **Working with Overlays and Parental Controls in tvOS**: Add interactive overlays, parental controls, and livestream channel flipping using a player view controller.\n- **Supporting Continuity Camera in your tvOS app**: Capture high-quality photos, video, and audio in your Apple TV app by connecting an iPhone or iPad as a continuity device.\n- **AVPlayerViewController**: A view controller that displays content from a player and presents a native user interface to control playback.\n- **AVPlayerViewControllerDelegate**: A protocol that defines the methods to implement to respond to player view controller events.\n- **AVInterstitialTimeRange**: A time range in an audiovisual presentation for content with an interstitial designation, such as advertisements or legal notices.\n- **AVNavigationMarkersGroup**: A set of markers for navigating playback of an audiovisual presentation.\n- **AVContentProposalViewController**: A view controller that proposes content to watch next.\n- **AVDisplayManager**: A tvOS management object that controls whether a TV switches modes to match the video’s native mode.\n- **AVContinuityDevicePickerViewController**: A view controller that provides an interface to a person so they can select and connect a continuity device to the system.\n- **AVContinuityDevicePickerViewControllerDelegate**: An interface that responds to events from a continuity device picker view controller.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adopt the latest features of the redesigned tvOS player user interface to provide a more streamlined way to watch your content.",
+          "name" : "Customizing the tvOS Playback Experience",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/customizing-the-tvos-playback-experience"
+        },
+        {
+          "description" : "Present additional content alongside your main media presentation using HTTP Live Streaming support.",
+          "name" : "Working with Interstitial Content",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/working-with-interstitial-content"
+        },
+        {
+          "description" : "Display a preview of an upcoming media item at the conclusion of the currently playing media item.",
+          "name" : "Presenting Content Proposals in tvOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/presenting-content-proposals-in-tvos"
+        },
+        {
+          "description" : "Add interactive overlays, parental controls, and livestream channel flipping using a player view controller.",
+          "name" : "Working with Overlays and Parental Controls in tvOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/working-with-overlays-and-parental-controls-in-tvos"
+        },
+        {
+          "description" : "Capture high-quality photos, video, and audio in your Apple TV app by connecting an iPhone or iPad as a continuity device.",
+          "name" : "Supporting Continuity Camera in your tvOS app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/supporting-continuity-camera-in-your-tvos-app"
+        },
+        {
+          "description" : "A view controller that displays content from a player and presents a native user interface to control playback.",
+          "name" : "AVPlayerViewController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVPlayerViewController"
+        },
+        {
+          "description" : "A protocol that defines the methods to implement to respond to player view controller events.",
+          "name" : "AVPlayerViewControllerDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVPlayerViewControllerDelegate"
+        },
+        {
+          "description" : "A time range in an audiovisual presentation for content with an interstitial designation, such as advertisements or legal notices.",
+          "name" : "AVInterstitialTimeRange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVInterstitialTimeRange"
+        },
+        {
+          "description" : "A set of markers for navigating playback of an audiovisual presentation.",
+          "name" : "AVNavigationMarkersGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVNavigationMarkersGroup"
+        },
+        {
+          "description" : "A view controller that proposes content to watch next.",
+          "name" : "AVContentProposalViewController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVContentProposalViewController"
+        },
+        {
+          "description" : "A tvOS management object that controls whether a TV switches modes to match the video’s native mode.",
+          "name" : "AVDisplayManager",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVDisplayManager"
+        },
+        {
+          "description" : "A view controller that provides an interface to a person so they can select and connect a continuity device to the system.",
+          "name" : "AVContinuityDevicePickerViewController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVContinuityDevicePickerViewController"
+        },
+        {
+          "description" : "An interface that responds to events from a continuity device picker view controller.",
+          "name" : "AVContinuityDevicePickerViewControllerDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/AVContinuityDevicePickerViewControllerDelegate"
+        }
+      ],
+      "title" : "tvOS playback and capture"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Presenting Navigation Markers",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AVKit\/presenting-navigation-markers"
+}

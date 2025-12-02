@@ -1,0 +1,69 @@
+{
+  "abstract" : "Perform fast Fourier transforms out of place on 1D real data.",
+  "codeExamples" : [
+    {
+      "code" : "N = 1 << Log2N;\n\nscale = 2;\n\n\/\/ Define a real vector, h:\nfor (j = 0; j < N\/2; ++j)\n{\n    h[2*j + 0] = A->realp[j*IA];\n    h[2*j + 1] = A->imagp[j*IA];\n}\n\n\/\/ Perform Discrete Fourier Transform.\nfor (k = 0; k < N; ++k)\n    H[k] = scale *\n        sum(h[j] * e**(-Direction*2*pi*i*j*k\/N), 0 <= j < N);\n\n\/\/ Pack DC and Nyquist components into C->realp[0] and C->imagp[0].\nC->realp[0*IC] = Re(H[ 0 ]).\nC->imagp[0*IC] = Re(H[N\/2]).\n\n\/\/ Store regular components:\nfor (k = 1; k < N\/2; ++k)\n{\n    C->realp[k*IC] = Re(H[k]);\n    C->imagp[k*IC] = Im(H[k]);\n}\n",
+      "language" : "c"
+    },
+    {
+      "code" : "N = 1 << Log2N;\n\nscale = 1.\/N;\n\n\/\/ Define a complex vector, h:\nh[ 0 ] = A->realp[0*IA];\nh[N\/2] = A->imagp[0*IA];\nfor (j = 1; j < N\/2; ++j)\n{\n    h[ j ] = A->realp[j*IA] + i * A->imagp[j*IA];\n    h[N-j] = conj(h[j]);\n}\n\n\/\/ Perform Discrete Fourier Transform.\nfor (k = 0; k < N; ++k)\n    H[k] = scale *\n        sum(h[j] * e**(-Direction*2*pi*i*j*k\/N), 0 <= j < N);\n\n\/\/ Coerce real results into complex structure:\nfor (k = 0; k < N\/2; ++k)\n{\n    C->realp[k*IC] = H[2*k+0];\n    C->imagp[k*IC] = H[2*k+1];\n}\n",
+      "language" : "c"
+    }
+  ],
+  "contentHash" : "cdbd07216a6d478867d39d7ac7234ebc1b4b154b767aa17dbde85260fd05aa75",
+  "crawledAt" : "2025-12-02T16:28:35Z",
+  "id" : "699B50DA-E190-4941-BDF7-4F87508D03A4",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nThe functions in this group use the following operation for a forward real-to-complex transform:\n\nThe functions in this group use the following operation for an inverse complex-to-real transform:\n\nThe temporary buffer versions perform the same operation but use a temporary buffer for improved performance.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/out-of-place-functions-for-1d-real-fft\ncrawled: 2025-12-02T16:28:35Z\n---\n\n# Out-of-Place Functions for 1D Real FFT\n\n**API Collection**\n\nPerform fast Fourier transforms out of place on 1D real data.\n\n## Overview\n\nThe functions in this group use the following operation for a forward real-to-complex transform:\n\n```c\nN = 1 << Log2N;\n\nscale = 2;\n\n\/\/ Define a real vector, h:\nfor (j = 0; j < N\/2; ++j)\n{\n    h[2*j + 0] = A->realp[j*IA];\n    h[2*j + 1] = A->imagp[j*IA];\n}\n\n\/\/ Perform Discrete Fourier Transform.\nfor (k = 0; k < N; ++k)\n    H[k] = scale *\n        sum(h[j] * e**(-Direction*2*pi*i*j*k\/N), 0 <= j < N);\n\n\/\/ Pack DC and Nyquist components into C->realp[0] and C->imagp[0].\nC->realp[0*IC] = Re(H[ 0 ]).\nC->imagp[0*IC] = Re(H[N\/2]).\n\n\/\/ Store regular components:\nfor (k = 1; k < N\/2; ++k)\n{\n    C->realp[k*IC] = Re(H[k]);\n    C->imagp[k*IC] = Im(H[k]);\n}\n\n```\n\nThe functions in this group use the following operation for an inverse complex-to-real transform:\n\n```c\nN = 1 << Log2N;\n\nscale = 1.\/N;\n\n\/\/ Define a complex vector, h:\nh[ 0 ] = A->realp[0*IA];\nh[N\/2] = A->imagp[0*IA];\nfor (j = 1; j < N\/2; ++j)\n{\n    h[ j ] = A->realp[j*IA] + i * A->imagp[j*IA];\n    h[N-j] = conj(h[j]);\n}\n\n\/\/ Perform Discrete Fourier Transform.\nfor (k = 0; k < N; ++k)\n    H[k] = scale *\n        sum(h[j] * e**(-Direction*2*pi*i*j*k\/N), 0 <= j < N);\n\n\/\/ Coerce real results into complex structure:\nfor (k = 0; k < N\/2; ++k)\n{\n    C->realp[k*IC] = H[2*k+0];\n    C->imagp[k*IC] = H[2*k+1];\n}\n\n```\n\nThe temporary buffer versions perform the same operation but use a temporary buffer for improved performance.\n\n## Out-of-Place FFT Functions\n\n- **vDSP_fft_zrop**: Computes a forward or inverse out-of-place, single-precision real FFT.\n- **vDSP_fft_zropD**: Computes a forward or inverse out-of-place, double-precision real FFT.\n\n## Out-of-Place FFT Functions with Temporary Buffer\n\n- **vDSP_fft_zropt**: Computes a forward or inverse out-of-place, single-precision real FFT using a temporary buffer.\n- **vDSP_fft_zroptD**: Computes a forward or inverse out-of-place, double-precision real FFT using a temporary buffer.\n\n## Functions for 1D Real FFT\n\n- **In-Place Functions for 1D Real FFT**: Perform fast Fourier transforms in place on 1D real data.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Computes a forward or inverse out-of-place, single-precision real FFT.",
+          "name" : "vDSP_fft_zrop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fft_zrop"
+        },
+        {
+          "description" : "Computes a forward or inverse out-of-place, double-precision real FFT.",
+          "name" : "vDSP_fft_zropD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fft_zropD"
+        }
+      ],
+      "title" : "Out-of-Place FFT Functions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Computes a forward or inverse out-of-place, single-precision real FFT using a temporary buffer.",
+          "name" : "vDSP_fft_zropt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fft_zropt"
+        },
+        {
+          "description" : "Computes a forward or inverse out-of-place, double-precision real FFT using a temporary buffer.",
+          "name" : "vDSP_fft_zroptD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fft_zroptD"
+        }
+      ],
+      "title" : "Out-of-Place FFT Functions with Temporary Buffer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Perform fast Fourier transforms in place on 1D real data.",
+          "name" : "In-Place Functions for 1D Real FFT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/in-place-functions-for-1d-real-fft"
+        }
+      ],
+      "title" : "Functions for 1D Real FFT"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Out-of-Place Functions for 1D Real FFT",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/out-of-place-functions-for-1d-real-fft"
+}

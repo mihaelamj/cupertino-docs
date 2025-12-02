@@ -1,0 +1,557 @@
+{
+  "abstract" : "A capture output for still image, Live Photos, and other photography workflows.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "2042b1670922d4f4c5103e0b7e6c27e40bf77ed3c740a8cb6d8010917d0d6c23",
+  "crawledAt" : "2025-12-02T16:09:56Z",
+  "declaration" : {
+    "code" : "class AVCapturePhotoOutput",
+    "language" : "swift"
+  },
+  "id" : "09E5DC3F-3408-4945-B4B1-54E8854728CD",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "AVFoundation",
+  "overview" : "## Overview\n\n[doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput] provides an interface for capture workflows related to still photography. In addition to basic capture of still images, a photo output supports RAW-format capture, bracketed capture of multiple images, Live Photos, and wide-gamut color. You can output captured photos in a variety of formats and codecs, including RAW format DNG files, HEVC format HEIF files, and JPEG files.\n\nTo capture photos with the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput] class, follow these steps:\n\nSome photo capture settings, such as the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoSettings\/flashMode] property, include options for automatic behavior. For such settings, the photo output determines whether to use that feature at the moment of capture—you don’t know when requesting a capture whether the feature will be enabled when the capture completes. When the photo capture output calls your [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoCaptureDelegate] methods with information about the completed or in-progress capture, it also provides an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureResolvedPhotoSettings] object that details which automatic features are set for that capture. The resolved settings object’s [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureResolvedPhotoSettings\/uniqueID] property matches the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoSettings\/uniqueID] value of the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoSettings] object you used to request capture.\n\nEnabling certain photo features (Live Photo capture and high resolution capture) requires a reconfiguration of the capture render pipeline. To opt into these features, set the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isHighResolutionCaptureEnabled], [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isLivePhotoCaptureEnabled], and [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isLivePhotoAutoTrimmingEnabled] properties before calling your [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureSession] object’s [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureSession\/startRunning()] method. Changing any of these properties while the session is running disrupts the capture render pipeline: Live Photo captures in progress end immediately, unfulfilled photo requests abort, and video preview temporarily freezes.\n\nUsing a photo capture output adds other requirements to your [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureSession] object:\n\nThe [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput] class implicitly supports wide-gamut color photography. If the source [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureDevice] object’s [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureDevice\/activeColorSpace] value is [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureColorSpace\/P3_D65], the capture output produces photos with wide color information (unless your [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoSettings] object specifies an output format that doesn’t support wide color).",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\ncrawled: 2025-12-02T16:09:56Z\n---\n\n# AVCapturePhotoOutput\n\n**Class**\n\nA capture output for still image, Live Photos, and other photography workflows.\n\n## Declaration\n\n```swift\nclass AVCapturePhotoOutput\n```\n\n## Overview\n\n[doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput] provides an interface for capture workflows related to still photography. In addition to basic capture of still images, a photo output supports RAW-format capture, bracketed capture of multiple images, Live Photos, and wide-gamut color. You can output captured photos in a variety of formats and codecs, including RAW format DNG files, HEVC format HEIF files, and JPEG files.\n\nTo capture photos with the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput] class, follow these steps:\n\n1. Create an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput] object. Use its properties to determine supported capture settings and to enable certain features (for example, whether to capture Live Photos).\n2. Create and configure an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoSettings] object to choose features and settings for a specific capture (for example, whether to enable image stabilization or flash).\n3. Capture an image by passing your photo settings object to the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput\/capturePhoto(with:delegate:)] method along with a delegate object implementing the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoCaptureDelegate] protocol. The photo capture output then calls your delegate to notify you of significant events during the capture process.\n\nSome photo capture settings, such as the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoSettings\/flashMode] property, include options for automatic behavior. For such settings, the photo output determines whether to use that feature at the moment of capture—you don’t know when requesting a capture whether the feature will be enabled when the capture completes. When the photo capture output calls your [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoCaptureDelegate] methods with information about the completed or in-progress capture, it also provides an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureResolvedPhotoSettings] object that details which automatic features are set for that capture. The resolved settings object’s [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureResolvedPhotoSettings\/uniqueID] property matches the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoSettings\/uniqueID] value of the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoSettings] object you used to request capture.\n\nEnabling certain photo features (Live Photo capture and high resolution capture) requires a reconfiguration of the capture render pipeline. To opt into these features, set the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isHighResolutionCaptureEnabled], [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isLivePhotoCaptureEnabled], and [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isLivePhotoAutoTrimmingEnabled] properties before calling your [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureSession] object’s [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureSession\/startRunning()] method. Changing any of these properties while the session is running disrupts the capture render pipeline: Live Photo captures in progress end immediately, unfulfilled photo requests abort, and video preview temporarily freezes.\n\nUsing a photo capture output adds other requirements to your [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureSession] object:\n\n- A capture session can’t support both Live Photo capture and movie file output. If your capture session includes an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureMovieFileOutput] object, the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isLivePhotoCaptureSupported] property becomes [doc:\/\/com.apple.documentation\/documentation\/Swift\/false]. (As an alternative, you can use the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureVideoDataOutput] class to output video buffers at the same resolution as a simultaneous Live Photo capture).\n- A capture session can’t contain both an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput] object and an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureStillImageOutput] object. The [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput] class includes all functionality of (and deprecates) the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureStillImageOutput] class.\n\nThe [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoOutput] class implicitly supports wide-gamut color photography. If the source [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureDevice] object’s [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureDevice\/activeColorSpace] value is [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureColorSpace\/P3_D65], the capture output produces photos with wide color information (unless your [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCapturePhotoSettings] object specifies an output format that doesn’t support wide color).\n\n## Creating a photo output\n\n- **init()**: Creates a new photo capture output object.\n\n## Capturing a photo\n\n- **capturePhoto(with:delegate:)**: Initiates a photo capture using the specified settings.\n\n## Managing responsive capture\n\n- **captureReadiness**: A value that specifies whether the photo output is ready to respond to new capture requests in a timely manner.\n- **AVCapturePhotoOutput.CaptureReadiness**: Constants that indicate whether the output is ready to receive capture requests.\n- **isAutoDeferredPhotoDeliveryEnabled**: A Boolean value that indicates the enabled state of automatic deferred photo delivery.\n- **isAutoDeferredPhotoDeliverySupported**: A Boolean value that indicates whether the photo output supports deferred photo delivery.\n- **isFastCapturePrioritizationSupported**: A Boolean value that indicates whether the photo output supports fast capture prioritization.\n- **isFastCapturePrioritizationEnabled**: A Boolean value that indicates whether the output enables fast capture prioritization.\n- **isResponsiveCaptureSupported**: A Boolean value that indicates whether the photo output supports responsive capture.\n- **isResponsiveCaptureEnabled**: A Boolean value that indicates whether the photo output configuration enables responsive capture.\n- **isZeroShutterLagSupported**: A Boolean value that indicates whether the photo output supports zero shutter lag.\n- **isZeroShutterLagEnabled**: A Boolean value that indicates whether the photo output configuration enables zero shutter lag.\n\n## Determining supported pixel formats\n\n- **availablePhotoPixelFormatTypes**: The pixel formats the capture output supports for photo capture.\n- **availableRawPhotoPixelFormatTypes**: The pixel formats the capture output supports for RAW photo capture.\n- **supportedPhotoPixelFormatTypes(for:)**: Returns the list of uncompressed pixel formats supported for photo data in the specified file type.\n- **supportedRawPhotoPixelFormatTypes(for:)**: Returns the list of Bayer RAW pixel formats supported for photo data in the specified file type.\n- **isAppleProRAWPixelFormat(_:)**: Returns a Boolean value that indicates whether the pixel format is an Apple ProRAW format.\n- **isBayerRAWPixelFormat(_:)**: Returns a Boolean value that indicates whether the pixel format is a Bayer RAW format.\n\n## Determining supported codec types\n\n- **availablePhotoCodecTypes**: The compression codecs this capture output currently supports for photo capture.\n- **supportedPhotoCodecTypes(for:)**: Returns the list of photo codecs (such as JPEG or HEVC) supported for photo data in the specified file type.\n\n## Determining supported file types\n\n- **availablePhotoFileTypes**: The list of file types currently supported for photo capture and output.\n- **availableRawPhotoFileTypes**: The list of file types currently supported for RAW format capture and output.\n\n## Suppressing the shutter sound\n\n- **isShutterSoundSuppressionSupported**: A Boolean value that indicates whether the photo output supports suppressing the system shutter sound.\n\n## Configuring ProRAW support\n\n- **isAppleProRAWSupported**: A Boolean value that indicates whether the current device and configuration supports Apple ProRAW pixel formats.\n- **isAppleProRAWEnabled**: A Boolean value that indicates whether you’ve configured the photo output to deliver Apple ProRAW formats.\n\n## Determining available settings\n\n- **isContentAwareDistortionCorrectionSupported**: A Boolean value that indicates whether the session’s current configuration supports content-aware distortion correction.\n- **isContentAwareDistortionCorrectionEnabled**: A Boolean value that indicates whether the photo render pipeline can perform content-aware distortion correction.\n- **isLensStabilizationDuringBracketedCaptureSupported**: A Boolean value indicating whether the capture output currently supports lens stabilization during bracketed image capture.\n- **maxBracketedCapturePhotoCount**: The maximum number of images that the photo capture output can support in a single bracketed capture.\n- **supportedFlashModes**: A Swift array of flash settings this capture output currently supports.\n- **isAutoRedEyeReductionSupported**: A Boolean value indicating whether the capture output supports automatic red-eye reduction.\n\n## Monitoring the visible scene\n\n- **isFlashScene**: A Boolean value indicating whether the scene currently being previewed by the camera warrants use of the flash.\n- **photoSettingsForSceneMonitoring**: A photo settings object that controls how the photo output detects and handles automatic flash and stabilization modes.\n\n## Configuring high-resolution still capture\n\n- **maxPhotoDimensions**: The maximum resolution of the requested photo.\n\n## Configuring Live Photo capture\n\n- **isLivePhotoCaptureSupported**: A Boolean value that indicates whether the capture output currently supports Live Photo capture.\n- **isLivePhotoCaptureEnabled**: A Boolean value that indicates whether to configure the capture pipeline for Live Photo capture.\n- **isLivePhotoCaptureSuspended**: A Boolean value that indicates whether Live Photo capture is currently in a suspended state.\n- **preservesLivePhotoCaptureSuspendedOnSessionStop**: A Boolean value that indicates whether to preserve the suspended state of Live Photo capture when the session stops.\n- **isLivePhotoAutoTrimmingEnabled**: A Boolean value that indicates whether to automatically trim Live Photo movie captures to avoid excessive movement.\n- **availableLivePhotoVideoCodecTypes**: An array of video codecs currently available for Live Photo movie captures.\n\n## Configuring depth data capture\n\n- **isDepthDataDeliverySupported**: A Boolean value indicating whether the capture output currently supports depth data capture.\n- **isDepthDataDeliveryEnabled**: A Boolean value that specifies whether to configure the capture pipeline for depth data capture.\n\n## Configuring Portrait Effects matte capture\n\n- **isPortraitEffectsMatteDeliveryEnabled**: A Boolean value indicating whether the capture output generates a portrait effects matte.\n- **isPortraitEffectsMatteDeliverySupported**: A Boolean value indicating whether the capture output currently supports delivery of a portrait effects matte.\n- **portraitEffectsMatte**: The portrait effects matte captured with the photo.\n\n## Configuring constant color\n\n- **isConstantColorSupported**: A Boolean value that indicates whether a photo output supports constant color capture.\n- **isConstantColorEnabled**: A Boolean value that indicates whether the photo output configures the render pipeline to perform constant color capture.\n\n## Configuring orientation compensation\n\n- **isCameraSensorOrientationCompensationSupported**\n- **isCameraSensorOrientationCompensationEnabled**\n\n## Configuring virtual device capture\n\n- **isVirtualDeviceFusionSupported**: A Boolean value that indicates whether the device supports virtual device image fusion.\n- **isVirtualDeviceConstituentPhotoDeliverySupported**: A Boolean value that indicates whether the photo output configuration supports delivery of photos from constituent cameras of a virtual device.\n- **isVirtualDeviceConstituentPhotoDeliveryEnabled**: A Boolean value that indicates whether the photo output delivers photos from constituent cameras of a virtual device.\n\n## Preparing for resource-intensive captures\n\n- **preparedPhotoSettingsArray**: An array of photo settings for which the photo output has prepared capture resources.\n- **setPreparedPhotoSettingsArray(_:completionHandler:)**: Tells the photo capture output to prepare resources for future capture requests with the specified settings.\n\n## Getting segmentation mattes\n\n- **availableSemanticSegmentationMatteTypes**: An array of semantic segmentation matte types that may be captured and delivered along with the primary photo.\n- **enabledSemanticSegmentationMatteTypes**: The semantic segmentation matte types that the photo render pipeline delivers.\n\n## Setting the capture prioritization\n\n- **maxPhotoQualityPrioritization**: The highest quality the photo output should prepare to deliver on a capture-by-capture basis.\n- **AVCapturePhotoOutput.QualityPrioritization**: Constants that indicate how to prioritize photo quality relative to capture speed.\n\n## Determining calibration data delivery support\n\n- **isCameraCalibrationDataDeliverySupported**: A Boolean value that indicates whether the photo output currently supports the delivery of camera calibration data.\n\n## Deprecated\n\n- **Deprecated symbols**: Review unsupported symbols and their replacements.\n\n## Instance properties\n\n- **availableRawPhotoCodecTypes**\n\n## Instance methods\n\n- **supportedRawPhotoCodecTypes(forRawPhotoPixelFormatType:fileType:)**\n\n## Photo capture\n\n- **Capturing consistent color images**: Add the power of a photography studio and lighting rig to your app with the new Constant Color API.\n- **Capturing still and Live Photos**: Configure and capture single or multiple still images, Live Photos, and other forms of photography.\n- **Capturing photos in RAW and Apple ProRAW formats**: Support professional photography workflows by enabling minimally processed image capture in your camera app.\n- **Supporting Continuity Camera in Your Mac App**: Incorporate scanned documents and pictures from a user’s iPhone, iPad, or iPod touch into your Mac app using Continuity Camera.\n- **AVCapturePhoto**: A container for image data from a photo capture output.\n- **AVCaptureDeferredPhotoProxy**: A lightly-processed photo with data that the system may use to process and fetch a higher-resolution asset at a later time.\n- **AVCapturePhotoCaptureDelegate**: Methods for monitoring progress and receiving results from a photo capture output.\n- **AVCapturePhotoOutputReadinessCoordinator**: An object that monitors changes to a photo output’s capture readiness.\n- **AVCapturePhotoOutputReadinessCoordinatorDelegate**: A delegate protocol to receive updates about a photo output’s capture readiness.\n- **AVCaptureStillImageOutput**: A capture output for capturing still photos.\n\n## Inherits From\n\n- AVCaptureOutput\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new photo capture output object.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/init()"
+        }
+      ],
+      "title" : "Creating a photo output"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initiates a photo capture using the specified settings.",
+          "name" : "capturePhoto(with:delegate:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/capturePhoto(with:delegate:)"
+        }
+      ],
+      "title" : "Capturing a photo"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A value that specifies whether the photo output is ready to respond to new capture requests in a timely manner.",
+          "name" : "captureReadiness",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/captureReadiness-swift.property"
+        },
+        {
+          "description" : "Constants that indicate whether the output is ready to receive capture requests.",
+          "name" : "AVCapturePhotoOutput.CaptureReadiness",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/CaptureReadiness-swift.enum"
+        },
+        {
+          "description" : "A Boolean value that indicates the enabled state of automatic deferred photo delivery.",
+          "name" : "isAutoDeferredPhotoDeliveryEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isAutoDeferredPhotoDeliveryEnabled"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the photo output supports deferred photo delivery.",
+          "name" : "isAutoDeferredPhotoDeliverySupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isAutoDeferredPhotoDeliverySupported"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the photo output supports fast capture prioritization.",
+          "name" : "isFastCapturePrioritizationSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isFastCapturePrioritizationSupported"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the output enables fast capture prioritization.",
+          "name" : "isFastCapturePrioritizationEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isFastCapturePrioritizationEnabled"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the photo output supports responsive capture.",
+          "name" : "isResponsiveCaptureSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isResponsiveCaptureSupported"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the photo output configuration enables responsive capture.",
+          "name" : "isResponsiveCaptureEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isResponsiveCaptureEnabled"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the photo output supports zero shutter lag.",
+          "name" : "isZeroShutterLagSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isZeroShutterLagSupported"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the photo output configuration enables zero shutter lag.",
+          "name" : "isZeroShutterLagEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isZeroShutterLagEnabled"
+        }
+      ],
+      "title" : "Managing responsive capture"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The pixel formats the capture output supports for photo capture.",
+          "name" : "availablePhotoPixelFormatTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/availablePhotoPixelFormatTypes-3ydgm"
+        },
+        {
+          "description" : "The pixel formats the capture output supports for RAW photo capture.",
+          "name" : "availableRawPhotoPixelFormatTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/availableRawPhotoPixelFormatTypes-9t9k5"
+        },
+        {
+          "description" : "Returns the list of uncompressed pixel formats supported for photo data in the specified file type.",
+          "name" : "supportedPhotoPixelFormatTypes(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/supportedPhotoPixelFormatTypes(for:)"
+        },
+        {
+          "description" : "Returns the list of Bayer RAW pixel formats supported for photo data in the specified file type.",
+          "name" : "supportedRawPhotoPixelFormatTypes(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/supportedRawPhotoPixelFormatTypes(for:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether the pixel format is an Apple ProRAW format.",
+          "name" : "isAppleProRAWPixelFormat(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isAppleProRAWPixelFormat(_:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether the pixel format is a Bayer RAW format.",
+          "name" : "isBayerRAWPixelFormat(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isBayerRAWPixelFormat(_:)"
+        }
+      ],
+      "title" : "Determining supported pixel formats"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The compression codecs this capture output currently supports for photo capture.",
+          "name" : "availablePhotoCodecTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/availablePhotoCodecTypes"
+        },
+        {
+          "description" : "Returns the list of photo codecs (such as JPEG or HEVC) supported for photo data in the specified file type.",
+          "name" : "supportedPhotoCodecTypes(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/supportedPhotoCodecTypes(for:)"
+        }
+      ],
+      "title" : "Determining supported codec types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The list of file types currently supported for photo capture and output.",
+          "name" : "availablePhotoFileTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/availablePhotoFileTypes"
+        },
+        {
+          "description" : "The list of file types currently supported for RAW format capture and output.",
+          "name" : "availableRawPhotoFileTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/availableRawPhotoFileTypes"
+        }
+      ],
+      "title" : "Determining supported file types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the photo output supports suppressing the system shutter sound.",
+          "name" : "isShutterSoundSuppressionSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isShutterSoundSuppressionSupported"
+        }
+      ],
+      "title" : "Suppressing the shutter sound"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the current device and configuration supports Apple ProRAW pixel formats.",
+          "name" : "isAppleProRAWSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isAppleProRAWSupported"
+        },
+        {
+          "description" : "A Boolean value that indicates whether you’ve configured the photo output to deliver Apple ProRAW formats.",
+          "name" : "isAppleProRAWEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isAppleProRAWEnabled"
+        }
+      ],
+      "title" : "Configuring ProRAW support"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the session’s current configuration supports content-aware distortion correction.",
+          "name" : "isContentAwareDistortionCorrectionSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isContentAwareDistortionCorrectionSupported"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the photo render pipeline can perform content-aware distortion correction.",
+          "name" : "isContentAwareDistortionCorrectionEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isContentAwareDistortionCorrectionEnabled"
+        },
+        {
+          "description" : "A Boolean value indicating whether the capture output currently supports lens stabilization during bracketed image capture.",
+          "name" : "isLensStabilizationDuringBracketedCaptureSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isLensStabilizationDuringBracketedCaptureSupported"
+        },
+        {
+          "description" : "The maximum number of images that the photo capture output can support in a single bracketed capture.",
+          "name" : "maxBracketedCapturePhotoCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/maxBracketedCapturePhotoCount"
+        },
+        {
+          "description" : "A Swift array of flash settings this capture output currently supports.",
+          "name" : "supportedFlashModes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/supportedFlashModes-1n6nm"
+        },
+        {
+          "description" : "A Boolean value indicating whether the capture output supports automatic red-eye reduction.",
+          "name" : "isAutoRedEyeReductionSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isAutoRedEyeReductionSupported"
+        }
+      ],
+      "title" : "Determining available settings"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value indicating whether the scene currently being previewed by the camera warrants use of the flash.",
+          "name" : "isFlashScene",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isFlashScene"
+        },
+        {
+          "description" : "A photo settings object that controls how the photo output detects and handles automatic flash and stabilization modes.",
+          "name" : "photoSettingsForSceneMonitoring",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/photoSettingsForSceneMonitoring"
+        }
+      ],
+      "title" : "Monitoring the visible scene"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The maximum resolution of the requested photo.",
+          "name" : "maxPhotoDimensions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/maxPhotoDimensions"
+        }
+      ],
+      "title" : "Configuring high-resolution still capture"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the capture output currently supports Live Photo capture.",
+          "name" : "isLivePhotoCaptureSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isLivePhotoCaptureSupported"
+        },
+        {
+          "description" : "A Boolean value that indicates whether to configure the capture pipeline for Live Photo capture.",
+          "name" : "isLivePhotoCaptureEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isLivePhotoCaptureEnabled"
+        },
+        {
+          "description" : "A Boolean value that indicates whether Live Photo capture is currently in a suspended state.",
+          "name" : "isLivePhotoCaptureSuspended",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isLivePhotoCaptureSuspended"
+        },
+        {
+          "description" : "A Boolean value that indicates whether to preserve the suspended state of Live Photo capture when the session stops.",
+          "name" : "preservesLivePhotoCaptureSuspendedOnSessionStop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/preservesLivePhotoCaptureSuspendedOnSessionStop"
+        },
+        {
+          "description" : "A Boolean value that indicates whether to automatically trim Live Photo movie captures to avoid excessive movement.",
+          "name" : "isLivePhotoAutoTrimmingEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isLivePhotoAutoTrimmingEnabled"
+        },
+        {
+          "description" : "An array of video codecs currently available for Live Photo movie captures.",
+          "name" : "availableLivePhotoVideoCodecTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/availableLivePhotoVideoCodecTypes"
+        }
+      ],
+      "title" : "Configuring Live Photo capture"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value indicating whether the capture output currently supports depth data capture.",
+          "name" : "isDepthDataDeliverySupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isDepthDataDeliverySupported"
+        },
+        {
+          "description" : "A Boolean value that specifies whether to configure the capture pipeline for depth data capture.",
+          "name" : "isDepthDataDeliveryEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isDepthDataDeliveryEnabled"
+        }
+      ],
+      "title" : "Configuring depth data capture"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value indicating whether the capture output generates a portrait effects matte.",
+          "name" : "isPortraitEffectsMatteDeliveryEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isPortraitEffectsMatteDeliveryEnabled"
+        },
+        {
+          "description" : "A Boolean value indicating whether the capture output currently supports delivery of a portrait effects matte.",
+          "name" : "isPortraitEffectsMatteDeliverySupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isPortraitEffectsMatteDeliverySupported"
+        },
+        {
+          "description" : "The portrait effects matte captured with the photo.",
+          "name" : "portraitEffectsMatte",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhoto\/portraitEffectsMatte"
+        }
+      ],
+      "title" : "Configuring Portrait Effects matte capture"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether a photo output supports constant color capture.",
+          "name" : "isConstantColorSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isConstantColorSupported"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the photo output configures the render pipeline to perform constant color capture.",
+          "name" : "isConstantColorEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isConstantColorEnabled"
+        }
+      ],
+      "title" : "Configuring constant color"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "isCameraSensorOrientationCompensationSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isCameraSensorOrientationCompensationSupported"
+        },
+        {
+          "description" : "",
+          "name" : "isCameraSensorOrientationCompensationEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isCameraSensorOrientationCompensationEnabled"
+        }
+      ],
+      "title" : "Configuring orientation compensation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the device supports virtual device image fusion.",
+          "name" : "isVirtualDeviceFusionSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isVirtualDeviceFusionSupported"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the photo output configuration supports delivery of photos from constituent cameras of a virtual device.",
+          "name" : "isVirtualDeviceConstituentPhotoDeliverySupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isVirtualDeviceConstituentPhotoDeliverySupported"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the photo output delivers photos from constituent cameras of a virtual device.",
+          "name" : "isVirtualDeviceConstituentPhotoDeliveryEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isVirtualDeviceConstituentPhotoDeliveryEnabled"
+        }
+      ],
+      "title" : "Configuring virtual device capture"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An array of photo settings for which the photo output has prepared capture resources.",
+          "name" : "preparedPhotoSettingsArray",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/preparedPhotoSettingsArray"
+        },
+        {
+          "description" : "Tells the photo capture output to prepare resources for future capture requests with the specified settings.",
+          "name" : "setPreparedPhotoSettingsArray(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/setPreparedPhotoSettingsArray(_:completionHandler:)"
+        }
+      ],
+      "title" : "Preparing for resource-intensive captures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An array of semantic segmentation matte types that may be captured and delivered along with the primary photo.",
+          "name" : "availableSemanticSegmentationMatteTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/availableSemanticSegmentationMatteTypes"
+        },
+        {
+          "description" : "The semantic segmentation matte types that the photo render pipeline delivers.",
+          "name" : "enabledSemanticSegmentationMatteTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/enabledSemanticSegmentationMatteTypes"
+        }
+      ],
+      "title" : "Getting segmentation mattes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The highest quality the photo output should prepare to deliver on a capture-by-capture basis.",
+          "name" : "maxPhotoQualityPrioritization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/maxPhotoQualityPrioritization"
+        },
+        {
+          "description" : "Constants that indicate how to prioritize photo quality relative to capture speed.",
+          "name" : "AVCapturePhotoOutput.QualityPrioritization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/QualityPrioritization"
+        }
+      ],
+      "title" : "Setting the capture prioritization"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the photo output currently supports the delivery of camera calibration data.",
+          "name" : "isCameraCalibrationDataDeliverySupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/isCameraCalibrationDataDeliverySupported"
+        }
+      ],
+      "title" : "Determining calibration data delivery support"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Review unsupported symbols and their replacements.",
+          "name" : "Deprecated symbols",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/avcapturephotooutput-deprecated-symbols"
+        }
+      ],
+      "title" : "Deprecated"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "availableRawPhotoCodecTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/availableRawPhotoCodecTypes"
+        }
+      ],
+      "title" : "Instance properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "supportedRawPhotoCodecTypes(forRawPhotoPixelFormatType:fileType:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput\/supportedRawPhotoCodecTypes(forRawPhotoPixelFormatType:fileType:)"
+        }
+      ],
+      "title" : "Instance methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Add the power of a photography studio and lighting rig to your app with the new Constant Color API.",
+          "name" : "Capturing consistent color images",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/capturing-consistent-color-images"
+        },
+        {
+          "description" : "Configure and capture single or multiple still images, Live Photos, and other forms of photography.",
+          "name" : "Capturing still and Live Photos",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/capturing-still-and-live-photos"
+        },
+        {
+          "description" : "Support professional photography workflows by enabling minimally processed image capture in your camera app.",
+          "name" : "Capturing photos in RAW and Apple ProRAW formats",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/capturing-photos-in-raw-and-apple-proraw-formats"
+        },
+        {
+          "description" : "Incorporate scanned documents and pictures from a user’s iPhone, iPad, or iPod touch into your Mac app using Continuity Camera.",
+          "name" : "Supporting Continuity Camera in Your Mac App",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/supporting-continuity-camera-in-your-mac-app"
+        },
+        {
+          "description" : "A container for image data from a photo capture output.",
+          "name" : "AVCapturePhoto",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhoto"
+        },
+        {
+          "description" : "A lightly-processed photo with data that the system may use to process and fetch a higher-resolution asset at a later time.",
+          "name" : "AVCaptureDeferredPhotoProxy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCaptureDeferredPhotoProxy"
+        },
+        {
+          "description" : "Methods for monitoring progress and receiving results from a photo capture output.",
+          "name" : "AVCapturePhotoCaptureDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoCaptureDelegate"
+        },
+        {
+          "description" : "An object that monitors changes to a photo output’s capture readiness.",
+          "name" : "AVCapturePhotoOutputReadinessCoordinator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutputReadinessCoordinator"
+        },
+        {
+          "description" : "A delegate protocol to receive updates about a photo output’s capture readiness.",
+          "name" : "AVCapturePhotoOutputReadinessCoordinatorDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutputReadinessCoordinatorDelegate"
+        },
+        {
+          "description" : "A capture output for capturing still photos.",
+          "name" : "AVCaptureStillImageOutput",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCaptureStillImageOutput"
+        }
+      ],
+      "title" : "Photo capture"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "AVCaptureOutput"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AVCapturePhotoOutput",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCapturePhotoOutput"
+}

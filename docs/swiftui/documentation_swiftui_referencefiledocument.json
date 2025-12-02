@@ -1,0 +1,122 @@
+{
+  "abstract" : "A type that you use to serialize reference type documents to and from file.",
+  "codeExamples" : [
+    {
+      "code" : "final class PDFDocument: ReferenceFileDocument {\n    struct Storage {\n        var contents: Data\n    }\n\n    static let readableContentTypes: [UTType] = [.pdf]\n    let storage: Mutex<Storage>\n\n    required init(configuration: ReadConfiguration) throws {\n       guard let data = configuration.file.regularFileContents else {\n           throw CocoaError(.fileReadCorruptFile)\n       }\n        self.storage = .init(.init(contents: data))\n    }\n\n    func snapshot(contentType: UTType) throws -> Data {\n        storage.withLock { $0.contents }\n    }\n\n    func fileWrapper(snapshot: Data, configuration: WriteConfiguration) throws -> FileWrapper {\n        return FileWrapper(regularFileWithContents: snapshot)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "fdcbe00eaca025c3a7fe578471ce09caa31867d2f87fac711d3f77ff7bcbd234",
+  "crawledAt" : "2025-12-02T17:29:12Z",
+  "declaration" : {
+    "code" : "@preconcurrency protocol ReferenceFileDocument : ObservableObject, Sendable",
+    "language" : "swift"
+  },
+  "id" : "296E77DB-08F6-42B6-9426-881A19A1FBA2",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nTo store a document as a reference type — like a class — create a type that conforms to the `ReferenceFileDocument` protocol and implement the required methods and properties. Your implementation:\n\nEnsure that types that conform to this protocol are `Sendable`. In particular, SwiftUI calls the protocol’s methods from different isolation domains. Don’t perform serialization and deserialization on `MainActor`.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocument\ncrawled: 2025-12-02T17:29:12Z\n---\n\n# ReferenceFileDocument\n\n**Protocol**\n\nA type that you use to serialize reference type documents to and from file.\n\n## Declaration\n\n```swift\n@preconcurrency protocol ReferenceFileDocument : ObservableObject, Sendable\n```\n\n## Overview\n\nTo store a document as a reference type — like a class — create a type that conforms to the `ReferenceFileDocument` protocol and implement the required methods and properties. Your implementation:\n\n- Provides a list of the content types that the document can read from and write to by defining [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ReferenceFileDocument\/readableContentTypes]. If the list of content types that the document can write to is different from those that it reads from, you can optionally also define [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ReferenceFileDocument\/writableContentTypes].\n- Loads documents from file in the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ReferenceFileDocument\/init(configuration:)] initializer.\n- Stores documents to file by providing a snapshot of the document’s content in the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ReferenceFileDocument\/snapshot(contentType:)] method, and then serializing that content in the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ReferenceFileDocument\/fileWrapper(snapshot:configuration:)] method.\n\nEnsure that types that conform to this protocol are `Sendable`. In particular, SwiftUI calls the protocol’s methods from different isolation domains. Don’t perform serialization and deserialization on `MainActor`.\n\n```swift\nfinal class PDFDocument: ReferenceFileDocument {\n    struct Storage {\n        var contents: Data\n    }\n\n    static let readableContentTypes: [UTType] = [.pdf]\n    let storage: Mutex<Storage>\n\n    required init(configuration: ReadConfiguration) throws {\n       guard let data = configuration.file.regularFileContents else {\n           throw CocoaError(.fileReadCorruptFile)\n       }\n        self.storage = .init(.init(contents: data))\n    }\n\n    func snapshot(contentType: UTType) throws -> Data {\n        storage.withLock { $0.contents }\n    }\n\n    func fileWrapper(snapshot: Data, configuration: WriteConfiguration) throws -> FileWrapper {\n        return FileWrapper(regularFileWithContents: snapshot)\n    }\n}\n```\n\n\n\n## Reading a document\n\n- **init(configuration:)**: Creates a document and initializes it with the contents of a file.\n- **readableContentTypes**: The file and data types that the document reads from.\n- **ReferenceFileDocument.ReadConfiguration**: The configuration for reading document contents.\n\n## Getting a snapshot\n\n- **snapshot(contentType:)**: Creates a snapshot that represents the current state of the document.\n- **Snapshot**: A type that represents the document’s stored content.\n\n## Writing a document\n\n- **fileWrapper(snapshot:configuration:)**: Serializes a document snapshot to a file wrapper.\n- **writableContentTypes**: The file types that the document supports saving or exporting to.\n- **ReferenceFileDocument.WriteConfiguration**: The configuration for writing document contents.\n\n## Storing document data in a class instance\n\n- **ReferenceFileDocumentConfiguration**: The properties of an open reference file document.\n- **undoManager**: The undo manager used to register a view’s undo operations.\n\n## Inherits From\n\n- ObservableObject\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a document and initializes it with the contents of a file.",
+          "name" : "init(configuration:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocument\/init(configuration:)"
+        },
+        {
+          "description" : "The file and data types that the document reads from.",
+          "name" : "readableContentTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocument\/readableContentTypes"
+        },
+        {
+          "description" : "The configuration for reading document contents.",
+          "name" : "ReferenceFileDocument.ReadConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocument\/ReadConfiguration"
+        }
+      ],
+      "title" : "Reading a document"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a snapshot that represents the current state of the document.",
+          "name" : "snapshot(contentType:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocument\/snapshot(contentType:)"
+        },
+        {
+          "description" : "A type that represents the document’s stored content.",
+          "name" : "Snapshot",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocument\/Snapshot"
+        }
+      ],
+      "title" : "Getting a snapshot"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Serializes a document snapshot to a file wrapper.",
+          "name" : "fileWrapper(snapshot:configuration:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocument\/fileWrapper(snapshot:configuration:)"
+        },
+        {
+          "description" : "The file types that the document supports saving or exporting to.",
+          "name" : "writableContentTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocument\/writableContentTypes"
+        },
+        {
+          "description" : "The configuration for writing document contents.",
+          "name" : "ReferenceFileDocument.WriteConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocument\/WriteConfiguration"
+        }
+      ],
+      "title" : "Writing a document"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The properties of an open reference file document.",
+          "name" : "ReferenceFileDocumentConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocumentConfiguration"
+        },
+        {
+          "description" : "The undo manager used to register a view’s undo operations.",
+          "name" : "undoManager",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/EnvironmentValues\/undoManager"
+        }
+      ],
+      "title" : "Storing document data in a class instance"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "ObservableObject"
+        },
+        {
+          "name" : "Sendable"
+        },
+        {
+          "name" : "SendableMetatype"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "ReferenceFileDocument",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ReferenceFileDocument"
+}

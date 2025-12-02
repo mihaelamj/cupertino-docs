@@ -1,0 +1,39 @@
+{
+  "abstract" : "Calls the given closure with a pixel buffer that references the image data within the specified region of interest.",
+  "codeExamples" : [
+    {
+      "code" : "let src = vImage.PixelBuffer<vImage.Planar8> (\n    pixelValues: [ 1, 1, 1, 1, 1,\n                   1, 1, 1, 1, 1,\n                   1, 1, 1, 1, 1,\n                   1, 1, 1, 1, 1,\n                   1, 1, 1, 1, 1 ],\n    size: vImage.Size(width: 5,\n                      height: 5))\n\nlet roi = CGRect(x: 1, y: 1,\n                 width: 3, height: 3)\n\nsrc.withUnsafeRegionOfInterest(roi) {\n    roiPixelBuffer in\n    \n    roiPixelBuffer.multiply(by: 5,\n                            divisor: 1,\n                            preBias: 0, postBias: 0,\n                            destination: roiPixelBuffer)\n}\n\n\/\/ Prints\n\/\/ \"[ 1, 1, 1, 1, 1,\n\/\/    1, 5, 5, 5, 1,\n\/\/    1, 5, 5, 5, 1,\n\/\/    1, 5, 5, 5, 1,\n\/\/    1, 1, 1, 1, 1 ]\"\nprint(src.array)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let srcImage =  imageLiteral(resourceName: \" ... \").cgImage(\n    forProposedRect: nil,\n    context: nil,\n    hints: nil)!\n\nvar cgImageFormat = vImage_CGImageFormat(\n    bitsPerComponent: 8,\n    bitsPerPixel: 8 * 4,\n    colorSpace: CGColorSpaceCreateDeviceRGB(),\n    bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipFirst.rawValue))!\n\nlet buffer = try vImage.PixelBuffer(\n    cgImage: srcImage,\n    cgImageFormat: &cgImageFormat,\n    pixelFormat: vImage.Interleaved8x4.self)\n\nlet roi = CGRect(origin: .zero,\n                 size: CGSize(width: buffer.width,\n                              height: buffer.height)).insetBy(dx: 150,\n                                                              dy: 150)\n\nbuffer.withUnsafeRegionOfInterest(roi) { buf in\n    \n    let tmp = vImage.PixelBuffer<vImage.Interleaved8x4>(\n        size: vImage.Size(exactly: roi.size)!)\n    \n    buf.boxConvolve(kernelSize: vImage.Size(width: 17,\n                                            height: 17),\n                    edgeMode: .truncateKernel,\n                    destination: tmp)\n    \n    tmp.copy(to: buf)\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "0171358db663378b8942e3dab8ecd3cb846e27adb67bd85941a54b76e763c484",
+  "crawledAt" : "2025-12-01T13:15:50Z",
+  "declaration" : {
+    "code" : "func withUnsafeRegionOfInterest<R>(_ regionOfInterest: CGRect, _ body: (vImage.PixelBuffer<Format>) throws -> R) rethrows -> R",
+    "language" : "swift"
+  },
+  "id" : "A8683222-F463-4EAF-9E4B-E939A48A2793",
+  "kind" : "method",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to apply a vImage operation to a region of interest in a pixel buffer. This region of interest pixel buffer that this function passes to the closure as an argument references the same underlying memory as `self`. Therefore, changes the pixel buffer in the closure are changes in `self`.\n\nFor example, the following code generates a 5 x 5 pixel buffer filled with `1`s. The code applies a multiplication operation to a region of interest with the pixel buffer that mutplies each pixel by 5:\n\nTo apply an operation that doesn’t work in place to a region of interest, create a temporary buffer to receive the result and call `[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/copy(to:)]` to write the result back to the region of interest buffer. For example, the following code applies a box blur to a centered rectangle within the source buffer:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/withUnsafeRegionOfInterest(_:_:)\ncrawled: 2025-12-01T13:15:50Z\n---\n\n# withUnsafeRegionOfInterest(_:_:)\n\n**Instance Method**\n\nCalls the given closure with a pixel buffer that references the image data within the specified region of interest.\n\n## Declaration\n\n```swift\nfunc withUnsafeRegionOfInterest<R>(_ regionOfInterest: CGRect, _ body: (vImage.PixelBuffer<Format>) throws -> R) rethrows -> R\n```\n\n## Parameters\n\n- **regionOfInterest**: The region of interest.\n- **body**: A closure with a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] parameter that references the region of interest.\n\n## Discussion\n\nUse this function to apply a vImage operation to a region of interest in a pixel buffer. This region of interest pixel buffer that this function passes to the closure as an argument references the same underlying memory as `self`. Therefore, changes the pixel buffer in the closure are changes in `self`.\n\nFor example, the following code generates a 5 x 5 pixel buffer filled with `1`s. The code applies a multiplication operation to a region of interest with the pixel buffer that mutplies each pixel by 5:\n\n```swift\nlet src = vImage.PixelBuffer<vImage.Planar8> (\n    pixelValues: [ 1, 1, 1, 1, 1,\n                   1, 1, 1, 1, 1,\n                   1, 1, 1, 1, 1,\n                   1, 1, 1, 1, 1,\n                   1, 1, 1, 1, 1 ],\n    size: vImage.Size(width: 5,\n                      height: 5))\n\nlet roi = CGRect(x: 1, y: 1,\n                 width: 3, height: 3)\n\nsrc.withUnsafeRegionOfInterest(roi) {\n    roiPixelBuffer in\n    \n    roiPixelBuffer.multiply(by: 5,\n                            divisor: 1,\n                            preBias: 0, postBias: 0,\n                            destination: roiPixelBuffer)\n}\n\n\/\/ Prints\n\/\/ \"[ 1, 1, 1, 1, 1,\n\/\/    1, 5, 5, 5, 1,\n\/\/    1, 5, 5, 5, 1,\n\/\/    1, 5, 5, 5, 1,\n\/\/    1, 1, 1, 1, 1 ]\"\nprint(src.array)\n```\n\nTo apply an operation that doesn’t work in place to a region of interest, create a temporary buffer to receive the result and call `[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/copy(to:)]` to write the result back to the region of interest buffer. For example, the following code applies a box blur to a centered rectangle within the source buffer:\n\n```swift\nlet srcImage =  imageLiteral(resourceName: \" ... \").cgImage(\n    forProposedRect: nil,\n    context: nil,\n    hints: nil)!\n\nvar cgImageFormat = vImage_CGImageFormat(\n    bitsPerComponent: 8,\n    bitsPerPixel: 8 * 4,\n    colorSpace: CGColorSpaceCreateDeviceRGB(),\n    bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipFirst.rawValue))!\n\nlet buffer = try vImage.PixelBuffer(\n    cgImage: srcImage,\n    cgImageFormat: &cgImageFormat,\n    pixelFormat: vImage.Interleaved8x4.self)\n\nlet roi = CGRect(origin: .zero,\n                 size: CGSize(width: buffer.width,\n                              height: buffer.height)).insetBy(dx: 150,\n                                                              dy: 150)\n\nbuffer.withUnsafeRegionOfInterest(roi) { buf in\n    \n    let tmp = vImage.PixelBuffer<vImage.Interleaved8x4>(\n        size: vImage.Size(exactly: roi.size)!)\n    \n    buf.boxConvolve(kernelSize: vImage.Size(width: 17,\n                                            height: 17),\n                    edgeMode: .truncateKernel,\n                    destination: tmp)\n    \n    tmp.copy(to: buf)\n}\n```\n\n",
+  "sections" : [
+
+  ],
+  "source" : "appleJSON",
+  "title" : "withUnsafeRegionOfInterest(_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/withUnsafeRegionOfInterest(_:_:)"
+}

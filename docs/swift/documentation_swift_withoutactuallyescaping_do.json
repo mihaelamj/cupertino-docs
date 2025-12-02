@@ -1,0 +1,47 @@
+{
+  "abstract" : "Allows a nonescaping closure to temporarily be used as if it were allowed to escape.",
+  "codeExamples" : [
+    {
+      "code" : "func allValues(in array: [Int], match predicate: (Int) -> Bool) -> Bool {\n    return array.lazy.filter { !predicate($0) }.isEmpty\n}\n\/\/ error: closure use of non-escaping parameter 'predicate'...",
+      "language" : "swift"
+    },
+    {
+      "code" : "func allValues(in array: [Int], match predicate: (Int) -> Bool) -> Bool {\n    return withoutActuallyEscaping(predicate) { escapablePredicate in\n        array.lazy.filter { !escapablePredicate($0) }.isEmpty\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func perform(_ f: () -> Void, simultaneouslyWith g: () -> Void) {\n    let queue = DispatchQueue(label: \"perform\", attributes: .concurrent)\n    queue.async(execute: f)\n    queue.async(execute: g)\n    queue.sync(flags: .barrier) {}\n}\n\/\/ error: passing non-escaping parameter 'f'...\n\/\/ error: passing non-escaping parameter 'g'...",
+      "language" : "swift"
+    },
+    {
+      "code" : "func perform(_ f: () -> Void, simultaneouslyWith g: () -> Void) {\n    withoutActuallyEscaping(f) { escapableF in\n        withoutActuallyEscaping(g) { escapableG in\n            let queue = DispatchQueue(label: \"perform\", attributes: .concurrent)\n            queue.async(execute: escapableF)\n            queue.async(execute: escapableG)\n            queue.sync(flags: .barrier) {}\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "06d8d2a38f7346f3d525ae505e98ebecd48a71ba0f94fa1a10f35ba97d4200d8",
+  "crawledAt" : "2025-12-01T21:57:54Z",
+  "declaration" : {
+    "code" : "func withoutActuallyEscaping<ClosureType, ResultType, Failure>(_ closure: ClosureType, do body: (ClosureType) throws(Failure) -> ResultType) throws(Failure) -> ResultType where Failure : Error",
+    "language" : "swift"
+  },
+  "id" : "C8159B11-ED57-4E9F-A98E-1397FE687D7C",
+  "kind" : "function",
+  "module" : "Swift",
+  "overview" : "## Return Value\n\nThe return value, if any, of the `body` closure.\n\n## Discussion\n\nYou can use this function to call an API that takes an escaping closure in a way that doesn’t allow the closure to escape in practice. The examples below demonstrate how to use `withoutActuallyEscaping(_:do:)` in conjunction with two common APIs that use escaping closures: lazy collection views and asynchronous operations.\n\nThe following code declares an `allValues(in:match:)` function that checks whether all the elements in an array match a predicate. The function won’t compile as written, because a lazy collection’s `filter(_:)` method requires an escaping closure. The lazy collection isn’t persisted, so the `predicate` closure won’t actually escape the body of the function; nevertheless, it can’t be used in this way.\n\n`withoutActuallyEscaping(_:do:)` provides a temporarily escapable copy of `predicate` that *can* be used in a call to the lazy view’s `filter(_:)` method. The second version of `allValues(in:match:)` compiles without error, with the compiler guaranteeing that the `escapablePredicate` closure doesn’t last beyond the call to `withoutActuallyEscaping(_:do:)`.\n\nAsynchronous calls are another type of API that typically escape their closure arguments. The following code declares a `perform(_:simultaneouslyWith:)` function that uses a dispatch queue to execute two closures concurrently.\n\nThe `perform(_:simultaneouslyWith:)` function ends with a call to the `sync(flags:execute:)` method using the `.barrier` flag, which forces the function to wait until both closures have completed running before returning. Even though the barrier guarantees that neither closure will escape the function, the `async(execute:)` method still requires that the closures passed be marked as `@escaping`, so the first version of the function does not compile. To resolve these errors, you can use `withoutActuallyEscaping(_:do:)` to get copies of `f` and `g` that can be passed to `async(execute:)`.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/withoutActuallyEscaping(_:do:)\ncrawled: 2025-12-01T21:57:54Z\n---\n\n# withoutActuallyEscaping(_:do:)\n\n**Function**\n\nAllows a nonescaping closure to temporarily be used as if it were allowed to escape.\n\n## Declaration\n\n```swift\nfunc withoutActuallyEscaping<ClosureType, ResultType, Failure>(_ closure: ClosureType, do body: (ClosureType) throws(Failure) -> ResultType) throws(Failure) -> ResultType where Failure : Error\n```\n\n## Parameters\n\n- **closure**: A nonescaping closure value that is made escapable for the duration of the execution of the `body` closure. If `body` has a return value, that value is also used as the return value for the `withoutActuallyEscaping(_:do:)` function.\n- **body**: A closure that is executed immediately with an escapable copy of `closure` as its argument.\n\n## Return Value\n\nThe return value, if any, of the `body` closure.\n\n## Discussion\n\nYou can use this function to call an API that takes an escaping closure in a way that doesn’t allow the closure to escape in practice. The examples below demonstrate how to use `withoutActuallyEscaping(_:do:)` in conjunction with two common APIs that use escaping closures: lazy collection views and asynchronous operations.\n\nThe following code declares an `allValues(in:match:)` function that checks whether all the elements in an array match a predicate. The function won’t compile as written, because a lazy collection’s `filter(_:)` method requires an escaping closure. The lazy collection isn’t persisted, so the `predicate` closure won’t actually escape the body of the function; nevertheless, it can’t be used in this way.\n\n```swift\nfunc allValues(in array: [Int], match predicate: (Int) -> Bool) -> Bool {\n    return array.lazy.filter { !predicate($0) }.isEmpty\n}\n\/\/ error: closure use of non-escaping parameter 'predicate'...\n```\n\n`withoutActuallyEscaping(_:do:)` provides a temporarily escapable copy of `predicate` that *can* be used in a call to the lazy view’s `filter(_:)` method. The second version of `allValues(in:match:)` compiles without error, with the compiler guaranteeing that the `escapablePredicate` closure doesn’t last beyond the call to `withoutActuallyEscaping(_:do:)`.\n\n```swift\nfunc allValues(in array: [Int], match predicate: (Int) -> Bool) -> Bool {\n    return withoutActuallyEscaping(predicate) { escapablePredicate in\n        array.lazy.filter { !escapablePredicate($0) }.isEmpty\n    }\n}\n```\n\nAsynchronous calls are another type of API that typically escape their closure arguments. The following code declares a `perform(_:simultaneouslyWith:)` function that uses a dispatch queue to execute two closures concurrently.\n\n```swift\nfunc perform(_ f: () -> Void, simultaneouslyWith g: () -> Void) {\n    let queue = DispatchQueue(label: \"perform\", attributes: .concurrent)\n    queue.async(execute: f)\n    queue.async(execute: g)\n    queue.sync(flags: .barrier) {}\n}\n\/\/ error: passing non-escaping parameter 'f'...\n\/\/ error: passing non-escaping parameter 'g'...\n```\n\nThe `perform(_:simultaneouslyWith:)` function ends with a call to the `sync(flags:execute:)` method using the `.barrier` flag, which forces the function to wait until both closures have completed running before returning. Even though the barrier guarantees that neither closure will escape the function, the `async(execute:)` method still requires that the closures passed be marked as `@escaping`, so the first version of the function does not compile. To resolve these errors, you can use `withoutActuallyEscaping(_:do:)` to get copies of `f` and `g` that can be passed to `async(execute:)`.\n\n```swift\nfunc perform(_ f: () -> Void, simultaneouslyWith g: () -> Void) {\n    withoutActuallyEscaping(f) { escapableF in\n        withoutActuallyEscaping(g) { escapableG in\n            let queue = DispatchQueue(label: \"perform\", attributes: .concurrent)\n            queue.async(execute: escapableF)\n            queue.async(execute: escapableG)\n            queue.sync(flags: .barrier) {}\n        }\n    }\n}\n```\n\n\n\n",
+  "sections" : [
+
+  ],
+  "source" : "appleJSON",
+  "title" : "withoutActuallyEscaping(_:do:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withoutActuallyEscaping(_:do:)"
+}

@@ -1,0 +1,63 @@
+{
+  "abstract" : "Fetches an activity for a given document so you can record progress on the associated task.",
+  "codeExamples" : [
+    {
+      "code" : "CLSDataStore.shared.fetchActivity(for: url) { currentActivity, error in\n    guard let activity = currentActivity else { return }\n\n    \/\/ Start tracking time.\n    activity.start()\n\n    CLSDataStore.shared.save { error in\n        \/\/ Handle errors.\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "CLSDataStore.shared.fetchActivity(for: url) { currentActivity, error in\n    guard let activity = currentActivity else { return }\n\n    \/\/ Report the number of pages read so far.\n    let pageCount = activity.primaryActivityItem as? CLSQuantityItem\n        ?? CLSQuantityItem(identifier: \"page_count\", title: \"Page Count\")\n    pageCount.quantity = 6 \n    activity.primaryActivityItem = pageCount\n\n    \/\/ Report progress through the task.\n    activity.progress = 0.75\n\n    \/\/ Stop tracking time, always done last.\n    activity.stop()\n\n    CLSDataStore.shared.save { error in\n        \/\/ Handle errors.\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "3e103503bb874eb907f61d90c987ed21c7e5a4eec12a03612cf38e236ec5ef17",
+  "crawledAt" : "2025-12-02T18:45:34Z",
+  "declaration" : {
+    "code" : "func fetchActivity(for url: URL, completion: @escaping (CLSActivity?, (any Error)?) -> Void)",
+    "language" : "swift"
+  },
+  "id" : "7C9406B6-88E5-4F81-AE6B-53E27A1CF2E4",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "ClassKit",
+  "overview" : "## Discussion\n\nUse this method to get a [doc:\/\/com.apple.classkit\/documentation\/ClassKit\/CLSActivity] instance for a task that’s associated with a particular document, as specified by its file URL. If the activity doesn’t exist, ClassKit creates one for you. You can use the activity instance provided in the completion handler to start recording progress:\n\nClassKit provides activities for documents that a teacher attaches to an assignment in the Schoolwork app. When the student receives the assignment and opens the attached document in your app, you can use the file URL of the document to fetch the associated activity.\n\nDon’t store a reference to the activity in your app. Always ask ClassKit for the activity when you need it. For example, to record progress and stop tracking time, ask for the activity again:\n\nAs the example above shows, always call the [doc:\/\/com.apple.classkit\/documentation\/ClassKit\/CLSActivity\/stop()] method last, after setting progress or adding activity items.\n\nTo determine the file permissions of a document attached to an assignment in the Schoolwork app, open the file with [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/OpenURLOptionsKey] set to true. You then check the URL resource key [doc:\/\/com.apple.documentation\/documentation\/Foundation\/URLResourceKey\/ubiquitousSharedItemCurrentUserPermissionsKey]. The resource key value, [doc:\/\/com.apple.documentation\/documentation\/Foundation\/URLUbiquitousSharedItemPermissions], indicates whether the file has read and write or read-only permissions.\n\nUse these permissions to determine whether your UI needs to be editable or view only.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/ClassKit\/CLSDataStore\/fetchActivity(for:completion:)\ncrawled: 2025-12-02T18:45:34Z\n---\n\n# fetchActivity(for:completion:)\n\n**Instance Method**\n\nFetches an activity for a given document so you can record progress on the associated task.\n\n## Declaration\n\n```swift\nfunc fetchActivity(for url: URL, completion: @escaping (CLSActivity?, (any Error)?) -> Void)\n```\n\n```swift\nfunc fetchActivity(for url: URL) async throws -> CLSActivity\n```\n\n## Parameters\n\n- **url**: The file URL of the document for which you want to fetch a [doc:\/\/com.apple.classkit\/documentation\/ClassKit\/CLSActivity] instance. A teacher must have previously attached the document to an assignment in the Schoolwork app.\n- **completion**: A handler that the method calls to return an activity if possible, and an optional error that describes the reason for a failure.\n\n## Discussion\n\n\n\nUse this method to get a [doc:\/\/com.apple.classkit\/documentation\/ClassKit\/CLSActivity] instance for a task that’s associated with a particular document, as specified by its file URL. If the activity doesn’t exist, ClassKit creates one for you. You can use the activity instance provided in the completion handler to start recording progress:\n\n```swift\nCLSDataStore.shared.fetchActivity(for: url) { currentActivity, error in\n    guard let activity = currentActivity else { return }\n\n    \/\/ Start tracking time.\n    activity.start()\n\n    CLSDataStore.shared.save { error in\n        \/\/ Handle errors.\n    }\n}\n```\n\nClassKit provides activities for documents that a teacher attaches to an assignment in the Schoolwork app. When the student receives the assignment and opens the attached document in your app, you can use the file URL of the document to fetch the associated activity.\n\nDon’t store a reference to the activity in your app. Always ask ClassKit for the activity when you need it. For example, to record progress and stop tracking time, ask for the activity again:\n\n```swift\nCLSDataStore.shared.fetchActivity(for: url) { currentActivity, error in\n    guard let activity = currentActivity else { return }\n\n    \/\/ Report the number of pages read so far.\n    let pageCount = activity.primaryActivityItem as? CLSQuantityItem\n        ?? CLSQuantityItem(identifier: \"page_count\", title: \"Page Count\")\n    pageCount.quantity = 6 \n    activity.primaryActivityItem = pageCount\n\n    \/\/ Report progress through the task.\n    activity.progress = 0.75\n\n    \/\/ Stop tracking time, always done last.\n    activity.stop()\n\n    CLSDataStore.shared.save { error in\n        \/\/ Handle errors.\n    }\n}\n```\n\nAs the example above shows, always call the [doc:\/\/com.apple.classkit\/documentation\/ClassKit\/CLSActivity\/stop()] method last, after setting progress or adding activity items.\n\nTo determine the file permissions of a document attached to an assignment in the Schoolwork app, open the file with [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/OpenURLOptionsKey] set to true. You then check the URL resource key [doc:\/\/com.apple.documentation\/documentation\/Foundation\/URLResourceKey\/ubiquitousSharedItemCurrentUserPermissionsKey]. The resource key value, [doc:\/\/com.apple.documentation\/documentation\/Foundation\/URLUbiquitousSharedItemPermissions], indicates whether the file has read and write or read-only permissions.\n\nUse these permissions to determine whether your UI needs to be editable or view only.\n\n## Accessing specific contexts and activities\n\n- **mainAppContext**: The app’s top-level context.\n- **activeContext**: The currently active context.\n- **runningActivity**: The currently running activity within the currently active context.\n- **completeAllAssignedActivities(matching:)**: Marks all of the assigned and active activities for the given context path as complete.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The app’s top-level context.",
+          "name" : "mainAppContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClassKit\/CLSDataStore\/mainAppContext"
+        },
+        {
+          "description" : "The currently active context.",
+          "name" : "activeContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClassKit\/CLSDataStore\/activeContext"
+        },
+        {
+          "description" : "The currently running activity within the currently active context.",
+          "name" : "runningActivity",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClassKit\/CLSDataStore\/runningActivity"
+        },
+        {
+          "description" : "Marks all of the assigned and active activities for the given context path as complete.",
+          "name" : "completeAllAssignedActivities(matching:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClassKit\/CLSDataStore\/completeAllAssignedActivities(matching:)"
+        }
+      ],
+      "title" : "Accessing specific contexts and activities"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "fetchActivity(for:completion:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/ClassKit\/CLSDataStore\/fetchActivity(for:completion:)"
+}

@@ -1,0 +1,212 @@
+{
+  "abstract" : "An upscaling effect that generates a higher resolution texture in a render pass by analyzing multiple input textures over time.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "792fc53319236f73f0878dfec440a624f79f44a6fb5a912f6f2e4dedfd688ffa",
+  "crawledAt" : "2025-12-02T19:53:53Z",
+  "declaration" : {
+    "code" : "protocol MTLFXTemporalScalerBase : MTLFXFrameInterpolatableScaler",
+    "language" : "swift"
+  },
+  "id" : "A0F64983-65F3-413D-B848-5FE93DD27387",
+  "inheritedBy" : [
+    "MTL4FXTemporalScaler",
+    "MTLFXTemporalScaler"
+  ],
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "MetalFX",
+  "overview" : "## Overview\n\nThe MetalFX temporal scaler increases the size of your input texture to a larger output texture. You can use the scaler to upscale every frame of your app’s scene or rendering in real time. With a scaler, you can draw more complicated scenes in less time by intentionally rendering to a lower resolution to save time before upscaling.\n\nCreate an [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScaler] instance by following these steps:\n\nUpscale a rendering by following these steps for every render pass:\n\n## Conforming to texture usage requirements\n\nTemporal scalers expose properties, such as [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/colorTextureUsage], that indicate requirements for your textures to be compatible with it. These properties indicate the minimum set of `MTLTextureUsage` bits that you are responsible for setting in your texture descriptors for this spatial scaler to use them.\n\nYour game or app can set extra usage bits on your textures without losing compatibility, as long at its maintains the minimum set the scaler requests.\n\n## Assigning input and output textures\n\nWhen you use an instance of a class that conforms to this protocol, you typically set its input and output textures, as well as other properties, and then encode its work to a command buffer.\n\nMetalFX doesn’t track that you assign the same texture instances to each property across different batches of work, the only requirement is that you provide textures that match the pixel formats and dimensions you specify in the [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScalerDescriptor] descriptor instance that creates the scaler instance.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\ncrawled: 2025-12-02T19:53:53Z\n---\n\n# MTLFXTemporalScalerBase\n\n**Protocol**\n\nAn upscaling effect that generates a higher resolution texture in a render pass by analyzing multiple input textures over time.\n\n## Declaration\n\n```swift\nprotocol MTLFXTemporalScalerBase : MTLFXFrameInterpolatableScaler\n```\n\n## Overview\n\nThe MetalFX temporal scaler increases the size of your input texture to a larger output texture. You can use the scaler to upscale every frame of your app’s scene or rendering in real time. With a scaler, you can draw more complicated scenes in less time by intentionally rendering to a lower resolution to save time before upscaling.\n\nCreate an [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScaler] instance by following these steps:\n\n1. Create and configure an [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScalerDescriptor] instance.\n2. Call the descriptor’s `newTemporalScalerWithDevice:` method.\n\nUpscale a rendering by following these steps for every render pass:\n\n1. Set the temporal scaler’s [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/colorTexture] property to the input texture.\n2. Set the scaler’s [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/inputContentWidth] and [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/inputContentHeight] properties.\n3. Set the scaler’s [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/outputTexture] property to your destination texture.\n4. Encode the upscale commands to a command buffer by calling the temporal scaler’s [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScaler\/encode(commandBuffer:)] method.\n\n## Conforming to texture usage requirements\n\nTemporal scalers expose properties, such as [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/colorTextureUsage], that indicate requirements for your textures to be compatible with it. These properties indicate the minimum set of `MTLTextureUsage` bits that you are responsible for setting in your texture descriptors for this spatial scaler to use them.\n\nYour game or app can set extra usage bits on your textures without losing compatibility, as long at its maintains the minimum set the scaler requests.\n\n## Assigning input and output textures\n\nWhen you use an instance of a class that conforms to this protocol, you typically set its input and output textures, as well as other properties, and then encode its work to a command buffer.\n\nMetalFX doesn’t track that you assign the same texture instances to each property across different batches of work, the only requirement is that you provide textures that match the pixel formats and dimensions you specify in the [doc:\/\/com.apple.metalfx\/documentation\/MetalFX\/MTLFXTemporalScalerDescriptor] descriptor instance that creates the scaler instance.\n\n## Instance Properties\n\n- **colorTexture**: An input color texture you set for the scaler that supports the correct color texture usage options.\n- **colorTextureFormat**: The pixel format of the input color texture for this this scaler.\n- **colorTextureUsage**: The minimal texture usage options that your app’s input color texture needs in order to support this scaler.\n- **depthTexture**: An input depth texture you set for the scaler that supports the correct color texture usage options.\n- **depthTextureFormat**: The pixel format of the input depth texture for this this scaler.\n- **depthTextureUsage**: The minimal texture usage options that your app’s input depth texture needs in order to support this scaler.\n- **exposureTexture**: The exposure texture this scaler uses.\n- **fence**: An optional fence that you provide to synchronize your app’s untracked resources.\n- **inputContentHeight**: The height, in pixels, of the region within the color texture the scaler uses as its input.\n- **inputContentMaxScale**: The largest scale factor the temporal scaler can use to generate output textures.\n- **inputContentMinScale**: The smallest scale factor the temporal scaler can use to generate output textures.\n- **inputContentWidth**: The width, in pixels, of the region within the color texture the scaler uses as its input.\n- **inputHeight**: The height, in pixels, of the input color texture for this scaler.\n- **inputWidth**: The width, in pixels, of the input color texture for this scaler.\n- **isDepthReversed**: A Boolean value that indicates whether the depth texture uses zero to represent the farthest distance.\n- **jitterOffsetX**: The horizontal component of the subpixel sampling coordinate you use to generate the color texture input.\n- **jitterOffsetY**: The vertical component of the subpixel sampling coordinate you use to generate the color texture input.\n- **motionTexture**: An input motion texture you set for the scaler that supports the correct color texture usage options.\n- **motionTextureFormat**: The pixel format of the input motion texture for this this scaler.\n- **motionTextureUsage**: The minimal texture usage options that your app’s motion texture needs in order to support this scaler.\n- **motionVectorScaleX**: The horizontal scale factor the scaler applies to the input motion texture.\n- **motionVectorScaleY**: The vertical scale factor the scaler applies to the input motion texture.\n- **outputHeight**: The height, in pixels, of the output color texture for this scaler.\n- **outputTexture**: The output texture into which this scaler writes its output.\n- **outputTextureFormat**: The pixel format of the output color texture for this this scaler.\n- **outputTextureUsage**: The minimal texture usage options that your output texture needs in order to support this scaler.\n- **outputWidth**: The width, in pixels, of the output color texture for this scaler.\n- **preExposure**: A pre-exposure value this scaler evaluates.\n- **reactiveMaskTexture**: The reactive-mask texture input this scaler uses.\n- **reactiveMaskTextureFormat**: The pixel format of the input reactive mask texture for this this scaler.\n- **reactiveTextureUsage**: The minimal texture usage options that your app’s reactive texture needs in order to support this scaler.\n- **reset**: A Boolean that indicates whether the temporal scaler discards historical data from previous frames.\n\n## Inherits From\n\n- MTLFXFrameInterpolatableScaler\n- NSObjectProtocol\n\n## Inherited By\n\n- MTL4FXTemporalScaler\n- MTLFXTemporalScaler\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An input color texture you set for the scaler that supports the correct color texture usage options.",
+          "name" : "colorTexture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/colorTexture"
+        },
+        {
+          "description" : "The pixel format of the input color texture for this this scaler.",
+          "name" : "colorTextureFormat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/colorTextureFormat"
+        },
+        {
+          "description" : "The minimal texture usage options that your app’s input color texture needs in order to support this scaler.",
+          "name" : "colorTextureUsage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/colorTextureUsage"
+        },
+        {
+          "description" : "An input depth texture you set for the scaler that supports the correct color texture usage options.",
+          "name" : "depthTexture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/depthTexture"
+        },
+        {
+          "description" : "The pixel format of the input depth texture for this this scaler.",
+          "name" : "depthTextureFormat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/depthTextureFormat"
+        },
+        {
+          "description" : "The minimal texture usage options that your app’s input depth texture needs in order to support this scaler.",
+          "name" : "depthTextureUsage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/depthTextureUsage"
+        },
+        {
+          "description" : "The exposure texture this scaler uses.",
+          "name" : "exposureTexture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/exposureTexture"
+        },
+        {
+          "description" : "An optional fence that you provide to synchronize your app’s untracked resources.",
+          "name" : "fence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/fence"
+        },
+        {
+          "description" : "The height, in pixels, of the region within the color texture the scaler uses as its input.",
+          "name" : "inputContentHeight",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/inputContentHeight"
+        },
+        {
+          "description" : "The largest scale factor the temporal scaler can use to generate output textures.",
+          "name" : "inputContentMaxScale",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/inputContentMaxScale"
+        },
+        {
+          "description" : "The smallest scale factor the temporal scaler can use to generate output textures.",
+          "name" : "inputContentMinScale",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/inputContentMinScale"
+        },
+        {
+          "description" : "The width, in pixels, of the region within the color texture the scaler uses as its input.",
+          "name" : "inputContentWidth",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/inputContentWidth"
+        },
+        {
+          "description" : "The height, in pixels, of the input color texture for this scaler.",
+          "name" : "inputHeight",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/inputHeight"
+        },
+        {
+          "description" : "The width, in pixels, of the input color texture for this scaler.",
+          "name" : "inputWidth",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/inputWidth"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the depth texture uses zero to represent the farthest distance.",
+          "name" : "isDepthReversed",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/isDepthReversed"
+        },
+        {
+          "description" : "The horizontal component of the subpixel sampling coordinate you use to generate the color texture input.",
+          "name" : "jitterOffsetX",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/jitterOffsetX"
+        },
+        {
+          "description" : "The vertical component of the subpixel sampling coordinate you use to generate the color texture input.",
+          "name" : "jitterOffsetY",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/jitterOffsetY"
+        },
+        {
+          "description" : "An input motion texture you set for the scaler that supports the correct color texture usage options.",
+          "name" : "motionTexture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/motionTexture"
+        },
+        {
+          "description" : "The pixel format of the input motion texture for this this scaler.",
+          "name" : "motionTextureFormat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/motionTextureFormat"
+        },
+        {
+          "description" : "The minimal texture usage options that your app’s motion texture needs in order to support this scaler.",
+          "name" : "motionTextureUsage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/motionTextureUsage"
+        },
+        {
+          "description" : "The horizontal scale factor the scaler applies to the input motion texture.",
+          "name" : "motionVectorScaleX",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/motionVectorScaleX"
+        },
+        {
+          "description" : "The vertical scale factor the scaler applies to the input motion texture.",
+          "name" : "motionVectorScaleY",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/motionVectorScaleY"
+        },
+        {
+          "description" : "The height, in pixels, of the output color texture for this scaler.",
+          "name" : "outputHeight",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/outputHeight"
+        },
+        {
+          "description" : "The output texture into which this scaler writes its output.",
+          "name" : "outputTexture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/outputTexture"
+        },
+        {
+          "description" : "The pixel format of the output color texture for this this scaler.",
+          "name" : "outputTextureFormat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/outputTextureFormat"
+        },
+        {
+          "description" : "The minimal texture usage options that your output texture needs in order to support this scaler.",
+          "name" : "outputTextureUsage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/outputTextureUsage"
+        },
+        {
+          "description" : "The width, in pixels, of the output color texture for this scaler.",
+          "name" : "outputWidth",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/outputWidth"
+        },
+        {
+          "description" : "A pre-exposure value this scaler evaluates.",
+          "name" : "preExposure",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/preExposure"
+        },
+        {
+          "description" : "The reactive-mask texture input this scaler uses.",
+          "name" : "reactiveMaskTexture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/reactiveMaskTexture"
+        },
+        {
+          "description" : "The pixel format of the input reactive mask texture for this this scaler.",
+          "name" : "reactiveMaskTextureFormat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/reactiveMaskTextureFormat"
+        },
+        {
+          "description" : "The minimal texture usage options that your app’s reactive texture needs in order to support this scaler.",
+          "name" : "reactiveTextureUsage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/reactiveTextureUsage"
+        },
+        {
+          "description" : "A Boolean that indicates whether the temporal scaler discards historical data from previous frames.",
+          "name" : "reset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase\/reset"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "MTLFXFrameInterpolatableScaler"
+        },
+        {
+          "name" : "NSObjectProtocol"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MTLFXTemporalScalerBase",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MetalFX\/MTLFXTemporalScalerBase"
+}

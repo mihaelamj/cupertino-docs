@@ -1,0 +1,62 @@
+{
+  "abstract" : "Deconvolves a floating-point 32-bit-per-channel, 4-channel interleaved image.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "7d5daf2d46f8333e9aec031d2b92dbe0e145a8e79e89ea5be2bcd3184763fe7d",
+  "crawledAt" : "2025-12-02T16:34:30Z",
+  "declaration" : {
+    "code" : "func vImageRichardsonLucyDeConvolve_ARGBFFFF(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ tempBuffer: UnsafeMutableRawPointer!, _ srcOffsetToROI_X: vImagePixelCount, _ srcOffsetToROI_Y: vImagePixelCount, _ kernel: UnsafePointer<Float>!, _ kernel2: UnsafePointer<Float>!, _ kernel_height: UInt32, _ kernel_width: UInt32, _ kernel_height2: UInt32, _ kernel_width2: UInt32, _ backgroundColor: UnsafePointer<Float>!, _ iterationCount: UInt32, _ flags: vImage_Flags) -> vImage_Error",
+    "language" : "swift"
+  },
+  "id" : "579D1CBD-4622-4FBD-AC07-56A666DF307D",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nThis function performs a Richardson-Lucy deconvolution of a region of interest within a source image by an M x N kernel, performing a specified number of iterations and placing the result in a destination buffer.\n\nIf you want to allocate the memory for the `tempBuffer` parameter yourself, call this function twice, as follows:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageRichardsonLucyDeConvolve_ARGBFFFF(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)\ncrawled: 2025-12-02T16:34:30Z\n---\n\n# vImageRichardsonLucyDeConvolve_ARGBFFFF(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)\n\n**Function**\n\nDeconvolves a floating-point 32-bit-per-channel, 4-channel interleaved image.\n\n## Declaration\n\n```swift\nfunc vImageRichardsonLucyDeConvolve_ARGBFFFF(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ tempBuffer: UnsafeMutableRawPointer!, _ srcOffsetToROI_X: vImagePixelCount, _ srcOffsetToROI_Y: vImagePixelCount, _ kernel: UnsafePointer<Float>!, _ kernel2: UnsafePointer<Float>!, _ kernel_height: UInt32, _ kernel_width: UInt32, _ kernel_height2: UInt32, _ kernel_width2: UInt32, _ backgroundColor: UnsafePointer<Float>!, _ iterationCount: UInt32, _ flags: vImage_Flags) -> vImage_Error\n```\n\n## Parameters\n\n- **src**: A pointer to a vImage buffer structure that contains data for the source image.\n- **dest**: A pointer to a vImage buffer data structure. You’re responsible for filling out the `height`, `width`, and `rowBytes` fields of this structure, and for allocating a data buffer of the appropriate size. On return, the data buffer this structure points to contains the destination image data. When you no longer need the data buffer, you must deallocate the memory.\n- **tempBuffer**: A pointer to a temporary buffer. If you pass `NULL`, the function allocates the buffer, then deallocates it before returning. Alternatively, you can allocate the buffer yourself, in which case you are responsible for deallocating it when you is no longer need it.\n\nIf you want to allocate the buffer yourself, see the Discussion for information on how to determine the minimum size that you must allocate.\n- **srcOffsetToROI_X**: The horizontal offset, in pixels, to the upper-left pixel of the region of interest within the source image.\n- **srcOffsetToROI_Y**: The vertical offset, in pixels, to the upper-left pixel of the region of interest within the source image.\n- **kernel**: A pointer to the deconvolution kernel data, which must be a packed array without any padding. The kernel expresses a blurring convolution or point-spread function.\n- **kernel2**: A pointer to the data of a second kernel, which must be a packed array without any padding. Supply this kernel only if the first kernel is asymmetrical; otherwise pass `NULL`.\n- **kernel_height**: The height of the first kernel in pixels. This value must be odd.\n- **kernel_width**: The width of the first kernel in pixels. This value must be odd.\n- **kernel_height2**: The height of the second kernel in pixels (ignored if `kernel2` is `NULL`). This value must be odd.\n- **kernel_width2**: The width of the second kernel in pixels (ignored if `kernel2` is `NULL`). This value must be odd.\n- **backgroundColor**: A background color. If you supply a color, you must also set the `kvImageBackgroundColorFill` flag, otherwise the function ignores the color.\n- **iterationCount**: The number of times to iterate the deconvolution algorithm.\n- **flags**: The options to use when performing the operation. If your code implements its own tiling or its own multithreading, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageDoNotTile].\n\nPass one of the following flags to specify how vImage handles pixel locations beyond the edge of the source image: [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageCopyInPlace], [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageTruncateKernel], [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageBackgroundColorFill], or [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageEdgeExtend].\n\n## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nThis function performs a Richardson-Lucy deconvolution of a region of interest within a source image by an M x N kernel, performing a specified number of iterations and placing the result in a destination buffer.\n\nIf you want to allocate the memory for the `tempBuffer` parameter yourself, call this function twice, as follows:\n\n1. To determine the minimum size for the temporary buffer, the first time you call this function pass the `kvImageGetTempBufferSize` flag. Pass the same values for all other parameters that you intend to use in for the second call. The function returns the required minimum size, which should be a positive value. (A negative returned value indicates an error.) The `kvImageGetTempBufferSize` flag prevents the function from performing any processing other than to determine the minimum buffer size.\n2. After you allocate enough space for a buffer of the returned size, call the function a second time, passing a valid pointer in the `tempBuffer` parameter. This time, do not pass the `kvImageGetTempBufferSize` flag.\n\n## Related Documentation\n\n- **vImage Programming Guide**\n\n## Deconvolving\n\n- **vImageRichardsonLucyDeConvolve_Planar8(_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:)**: Deconvolves an 8-bit planar image.\n- **vImageRichardsonLucyDeConvolve_PlanarF(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)**: Deconvolves a floating-point 32-bit planar image.\n- **vImageRichardsonLucyDeConvolve_ARGB8888(_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:)**: Deconvolves an 8-bit-per-channel, 4-channel interleaved image.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "vImage Programming Guide"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Deconvolves an 8-bit planar image.",
+          "name" : "vImageRichardsonLucyDeConvolve_Planar8(_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageRichardsonLucyDeConvolve_Planar8(_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Deconvolves a floating-point 32-bit planar image.",
+          "name" : "vImageRichardsonLucyDeConvolve_PlanarF(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageRichardsonLucyDeConvolve_PlanarF(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Deconvolves an 8-bit-per-channel, 4-channel interleaved image.",
+          "name" : "vImageRichardsonLucyDeConvolve_ARGB8888(_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageRichardsonLucyDeConvolve_ARGB8888(_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Deconvolving"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vImageRichardsonLucyDeConvolve_ARGBFFFF(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageRichardsonLucyDeConvolve_ARGBFFFF(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)"
+}

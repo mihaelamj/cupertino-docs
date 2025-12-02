@@ -1,0 +1,129 @@
+{
+  "abstract" : "A pooling kernel.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCoding",
+    "NSCopying",
+    "NSObjectProtocol",
+    "NSSecureCoding"
+  ],
+  "contentHash" : "56e82a00dbcf07f35f2cd42da3d5a7efd861296ea6bd1fd9905559d41bd42c42",
+  "crawledAt" : "2025-12-02T20:02:16Z",
+  "declaration" : {
+    "code" : "class MPSCNNPooling",
+    "language" : "swift"
+  },
+  "id" : "36192E30-3365-4233-92DC-10820D963E9D",
+  "inheritedBy" : [
+    "MPSCNNDilatedPoolingMax",
+    "MPSCNNPoolingAverage",
+    "MPSCNNPoolingL2Norm",
+    "MPSCNNPoolingMax"
+  ],
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Metal Performance Shaders",
+  "overview" : "## Overview\n\nPooling is a form of non-linear sub-sampling. Pooling partitions the input image into a set of rectangles (overlapping or non-overlapping) and, for each such sub-region, outputs a value. The pooling operation is used in computer vision to reduce the dimensionality of intermediate representations.\n\nThe encode methods in the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNKernel] class can be used to encode an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNPooling] object to a [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] object. The exact location of the pooling window for each output value is determined as follows:\n\nFor example,  the pooling window center `w(x,y)` for the output value at coordinate `(x,y)` of the destination clip rectangle (`(x,y)` computed with regard to clipping rectangle origin) is at `w(x,y) = (offset.x + strideInPixelsX * x , offset.y + strideInPixelsY * y)`.\n\nQuite often it is desirable to distribute the pooling windows as evenly as possible in the input image. As explained above, if the `offset` is zero, then the center of the first pooling window is at the top left corner of the input image, which means that the left and top stripes of the pooling window are read from outside the input image boundaries (when filter size is larger than unity). Also it may mean that some values from the bottom and right stripes are not included at all in the pooling, resulting in loss of valuable information.\n\nA scheme used in some common libraries is to shift the source `offset` according to the following formula:\n\nWhere `L` is the size of the input image (or more accurately the size corresponding to the scaled `clipRect` value in source coordinates, which commonly coincides with the source image itself), `s.xy` is `(``strideInPixelsX`, `strideInPixelsY``)` and `f.xy` is `(kernelWidth, kernelHeight)`.\n\nThis offset distributes the pooling window centers evenly in the effective source `clipRect`, when the output size is rounded up with regards to stride (`output size = ceil(input size \/ stride)`) and is commonly used in CNN libraries (for example *TensorFlow* uses this offset scheme in its maximum pooling implementation `tf.nn.max_pool` with `'S``AME``'` - padding, for `'VALID'` padding one can simply set `offset.xy += floor(f.xy\/2)` to get the first pooling window inside the source image completely).\n\nFor an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingMax] object, the way the input image borders are handled can become important: if there are negative values in the source image near the borders of the image and the pooling window crosses the borders, then using a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImageEdgeMode\/zero] edge modemay cause the maximum pooling operation to override the negative input data values with zeros coming from outside the source image borders, resulting in large boundary effects. A simple way to avoid this is to use a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImageEdgeMode\/clamp] edge mode, which for an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingMax] object effectively causes all pooling windows to remain within the source image.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPooling\ncrawled: 2025-12-02T20:02:16Z\n---\n\n# MPSCNNPooling\n\n**Class**\n\nA pooling kernel.\n\n## Declaration\n\n```swift\nclass MPSCNNPooling\n```\n\n## Overview\n\nPooling is a form of non-linear sub-sampling. Pooling partitions the input image into a set of rectangles (overlapping or non-overlapping) and, for each such sub-region, outputs a value. The pooling operation is used in computer vision to reduce the dimensionality of intermediate representations.\n\nThe encode methods in the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNKernel] class can be used to encode an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNPooling] object to a [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] object. The exact location of the pooling window for each output value is determined as follows:\n\n- The pooling window center for the first (top left) output pixel of the clip rectangle is at spatial coordinates `(offset.x, offset.y)` in the input image.\n- From this, the top left corner of the pooling window is at `(offset.x - floor(kernelWidth\/2)`, `offset.y - floor(kernelHeight\/2))` and extends `(kernelWidth, kernelHeight)` pixels to the right and down direction, which means that the last pixel to be included into the pooling window is at `(offset.x + floor((kernelWidth-1)\/2)`, `offset.y + floor((kernelHeight-1)\/2))`, so that for even kernel sizes the pooling window extends one pixel more into the left and up direction.\n- The following pooling windows can be then easily deduced from the first one by simple shifting the source coordinates according to the values of the `strideInPixelsX` and `strideInPixelsY` properties.\n\nFor example,  the pooling window center `w(x,y)` for the output value at coordinate `(x,y)` of the destination clip rectangle (`(x,y)` computed with regard to clipping rectangle origin) is at `w(x,y) = (offset.x + strideInPixelsX * x , offset.y + strideInPixelsY * y)`.\n\nQuite often it is desirable to distribute the pooling windows as evenly as possible in the input image. As explained above, if the `offset` is zero, then the center of the first pooling window is at the top left corner of the input image, which means that the left and top stripes of the pooling window are read from outside the input image boundaries (when filter size is larger than unity). Also it may mean that some values from the bottom and right stripes are not included at all in the pooling, resulting in loss of valuable information.\n\nA scheme used in some common libraries is to shift the source `offset` according to the following formula:\n\n- `offset.xy += {(int)ceil(((L.xy - 1) % s.xy) \/ 2)}`, for odd `f.xy`\n- `offset.xy += {(int)floor(((L.xy - 1) % s.xy) \/ 2) + 1},` for even `f.xy`\n\nWhere `L` is the size of the input image (or more accurately the size corresponding to the scaled `clipRect` value in source coordinates, which commonly coincides with the source image itself), `s.xy` is `(``strideInPixelsX`, `strideInPixelsY``)` and `f.xy` is `(kernelWidth, kernelHeight)`.\n\nThis offset distributes the pooling window centers evenly in the effective source `clipRect`, when the output size is rounded up with regards to stride (`output size = ceil(input size \/ stride)`) and is commonly used in CNN libraries (for example *TensorFlow* uses this offset scheme in its maximum pooling implementation `tf.nn.max_pool` with `'S``AME``'` - padding, for `'VALID'` padding one can simply set `offset.xy += floor(f.xy\/2)` to get the first pooling window inside the source image completely).\n\nFor an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingMax] object, the way the input image borders are handled can become important: if there are negative values in the source image near the borders of the image and the pooling window crosses the borders, then using a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImageEdgeMode\/zero] edge modemay cause the maximum pooling operation to override the negative input data values with zeros coming from outside the source image borders, resulting in large boundary effects. A simple way to avoid this is to use a [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImageEdgeMode\/clamp] edge mode, which for an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingMax] object effectively causes all pooling windows to remain within the source image.\n\n## Instance Methods\n\n- **init(coder:device:)**: Initializes a pooling filter.\n- **init(device:kernelWidth:kernelHeight:)**: Initializes a pooling filter.\n- **init(device:kernelWidth:kernelHeight:strideInPixelsX:strideInPixelsY:)**: Initializes a pooling filter.\n\n## Pooling Layers\n\n- **MPSCNNPoolingAverage**: An average pooling filter.\n- **MPSCNNPoolingAverageGradient**: A gradient average pooling filter.\n- **MPSCNNPoolingL2Norm**: An L2-norm pooling filter.\n- **MPSCNNPoolingMax**: A max pooling filter.\n- **MPSCNNDilatedPoolingMax**: A dilated max pooling filter.\n- **MPSCNNPoolingGradient**: A gradient pooling kernel.\n- **MPSCNNDilatedPoolingMaxGradient**: A gradient dilated max pooling filter.\n- **MPSCNNPoolingL2NormGradient**: A gradient L2-norm pooling filter.\n- **MPSCNNPoolingMaxGradient**: A gradient max pooling filter.\n\n## Inherits From\n\n- MPSCNNKernel\n\n## Inherited By\n\n- MPSCNNDilatedPoolingMax\n- MPSCNNPoolingAverage\n- MPSCNNPoolingL2Norm\n- MPSCNNPoolingMax\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCoding\n- NSCopying\n- NSObjectProtocol\n- NSSecureCoding\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a pooling filter.",
+          "name" : "init(coder:device:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPooling\/init(coder:device:)"
+        },
+        {
+          "description" : "Initializes a pooling filter.",
+          "name" : "init(device:kernelWidth:kernelHeight:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPooling\/init(device:kernelWidth:kernelHeight:)"
+        },
+        {
+          "description" : "Initializes a pooling filter.",
+          "name" : "init(device:kernelWidth:kernelHeight:strideInPixelsX:strideInPixelsY:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPooling\/init(device:kernelWidth:kernelHeight:strideInPixelsX:strideInPixelsY:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An average pooling filter.",
+          "name" : "MPSCNNPoolingAverage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingAverage"
+        },
+        {
+          "description" : "A gradient average pooling filter.",
+          "name" : "MPSCNNPoolingAverageGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingAverageGradient"
+        },
+        {
+          "description" : "An L2-norm pooling filter.",
+          "name" : "MPSCNNPoolingL2Norm",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingL2Norm"
+        },
+        {
+          "description" : "A max pooling filter.",
+          "name" : "MPSCNNPoolingMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingMax"
+        },
+        {
+          "description" : "A dilated max pooling filter.",
+          "name" : "MPSCNNDilatedPoolingMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNDilatedPoolingMax"
+        },
+        {
+          "description" : "A gradient pooling kernel.",
+          "name" : "MPSCNNPoolingGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingGradient"
+        },
+        {
+          "description" : "A gradient dilated max pooling filter.",
+          "name" : "MPSCNNDilatedPoolingMaxGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNDilatedPoolingMaxGradient"
+        },
+        {
+          "description" : "A gradient L2-norm pooling filter.",
+          "name" : "MPSCNNPoolingL2NormGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingL2NormGradient"
+        },
+        {
+          "description" : "A gradient max pooling filter.",
+          "name" : "MPSCNNPoolingMaxGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPoolingMaxGradient"
+        }
+      ],
+      "title" : "Pooling Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "MPSCNNKernel"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MPSCNNPooling",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNPooling"
+}

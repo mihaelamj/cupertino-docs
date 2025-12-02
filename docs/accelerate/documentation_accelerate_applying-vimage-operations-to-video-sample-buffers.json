@@ -1,0 +1,88 @@
+{
+  "abstract" : "Use the vImage convert-any-to-any functionality to perform real-time image processing of video frames streamed from your device’s camera.",
+  "codeExamples" : [
+    {
+      "code" : "pixelFormat = CMFormatDescriptionGetMediaSubType(camera.activeFormat.formatDescription)\nvideoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: pixelFormat]",
+      "language" : "swift"
+    },
+    {
+      "code" : "CVPixelBufferLockBaseAddress(\n    pixelBuffer,\n    CVPixelBufferLockFlags.readOnly)\n\ndo {\n    try convertVideoFormatToRGB(cvPixelBuffer: pixelBuffer)\n} catch {\n    fatalError(\"Unable to perform conversion.\")\n}\n\nCVPixelBufferUnlockBaseAddress(\n    pixelBuffer,\n    CVPixelBufferLockFlags.readOnly)",
+      "language" : "swift"
+    },
+    {
+      "code" : "guard let cvImageFormat = vImageCVImageFormat.make(buffer: cvPixelBuffer) else {\n    fatalError(\"Unable to derive Core Video pixel format from buffer.\")\n}\n\nif cvImageFormat.colorSpace == nil {\n    cvImageFormat.colorSpace = CGColorSpaceCreateDeviceRGB()\n}\n\nif cvImageFormat.chromaSiting == nil {\n    cvImageFormat.chromaSiting = .center\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let cgImageFormat = vImage_CGImageFormat(\n    bitsPerComponent: 8,\n    bitsPerPixel: 8 * 3,\n    colorSpace: CGColorSpaceCreateDeviceRGB(),\n    bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue))!",
+      "language" : "swift"
+    },
+    {
+      "code" : "converter = try? vImageConverter.make(sourceFormat: cvImageFormat,\n                                      destinationFormat: cgImageFormat)\n\nif converter == nil {\n    fatalError(\"Unable to create Core Video to Core Graphics converter.\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "var destinationBuffer: vImage.PixelBuffer<vImage.Interleaved8x3>!",
+      "language" : "swift"
+    },
+    {
+      "code" : "let size = vImage.Size(cvPixelBuffer: cvPixelBuffer)\ndestinationBuffer = vImage.PixelBuffer<vImage.Interleaved8x3>(size: size)",
+      "language" : "swift"
+    },
+    {
+      "code" : "var sourceBuffers: [vImage.PixelBuffer<vImage.DynamicPixelFormat>]!",
+      "language" : "swift"
+    },
+    {
+      "code" : "sourceBuffers = try converter.makeCVToCGPixelBuffers(referencing: cvPixelBuffer)",
+      "language" : "swift"
+    },
+    {
+      "code" : "try converter.convert(from: sourceBuffers, to: [destinationBuffer])",
+      "language" : "swift"
+    },
+    {
+      "code" : "let rgbImage = destinationBuffer.makeCGImage(cgImageFormat: cgImageFormat)!",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "5eede5154b48e7b8f2d50769bc7c2c5af5a1501890b1bcb1fdf691ec8d7193e0",
+  "crawledAt" : "2025-12-02T15:45:57Z",
+  "id" : "32BFD88A-C3CA-48F2-BE69-841FDFADCFC3",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nThe vImage library provides the high-level convert-any-to-any [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter] class to convert image data between Core Video and Core Graphics formats. The convert-any-to-any functionality is suited for apps that work across different platforms where [https:\/\/developer.apple.com\/av-foundation\/] may provide video frames in different formats.\n\nThis sample code app uses [https:\/\/developer.apple.com\/av-foundation\/] to access the Mac camera and vImage to convert the camera image to an RGB image that the app displays onscreen.\n\n### Specify the pixel format\n\nTo ensure that AVCapture doesn’t have to perform a conversion from the capture format to the output format, the sample code specifies the output format as the camera’s active format. After declaring `videoOutput` as an [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVCaptureVideoDataOutput] instance, the following code defines the output pixel format by creating the [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVCaptureVideoDataOutput\/videoSettings] dictionary:\n\n### Lock the Core Video pixel buffer\n\nWhen the app starts the flow of data through the capture pipeline, [https:\/\/developer.apple.com\/av-foundation\/] calls [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVCaptureVideoDataOutputSampleBufferDelegate\/captureOutput(_:didOutput:from:)] for each new video frame. The following code locks the [doc:\/\/com.apple.documentation\/documentation\/CoreVideo\/CVPixelBuffer] structure’s underlying memory to make it available exclusively to the vImage conversion function:\n\n### Create a Core Video-to-Core Graphics converter\n\nThe vImage convert-any-to-any function requires a converter that describes the source and destination formats. The sample code app converts a Core Video pixel buffer to a Core Graphics image. The code calls the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageCVImageFormat\/make(buffer:)] function to derive the source Core Video image format from the [doc:\/\/com.apple.documentation\/documentation\/CoreVideo\/CVPixelBuffer]. In some cases, the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageCVImageFormat] instance that the make function returns may have incomplete information. The following code ensures that the format has a color space and chrominance siting information:\n\nThe sample app specifies a three-channel, 8-bit-per-channel [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] as the conversion destination format.\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter\/make(sourceFormat:destinationFormat:flags:)-8iupf] type method creates a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter] instance from the source and destination formats.\n\n### Initialize the destination buffer\n\nThe destination pixel buffer contains the RGB image after conversion. The code defines it as a three-channel, 8-bit-per-channel [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] structure.\n\nThe first time that the app calls the conversion function, it runs the following code to initialize the destination pixel buffer with the same dimensions as the Core Video pixel buffer:\n\n### Initialize the source buffers\n\nAlthough the sample code app knows that the Core Graphics image format requires only a single buffer at compile time, the camera’s active format defines the number of source buffers and their pixel formats at runtime. Therefore, the code defines the source buffers as an array of [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/DynamicPixelFormat] pixel buffers.\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter] provides the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter\/makeCVToCGPixelBuffers(referencing:)] function that returns an array of pixel buffers. These pixel buffers reference the underlying memory of each plane of the Core Video pixel buffer.\n\n### Convert the Core Video buffer contents to a Core Graphics format image\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter\/convert(from:to:)-9s7p7] function accepts the source and destination pixel buffers and converts the Core Video pixel buffer’s contents to a Core Graphics image.\n\n### Create an output Core Graphics image\n\nFinally, the code calls [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)] to create a Core Graphics image that it displays in the user interface.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-vimage-operations-to-video-sample-buffers\ncrawled: 2025-12-02T15:45:57Z\n---\n\n# Applying vImage operations to video sample buffers\n\n**Sample Code**\n\nUse the vImage convert-any-to-any functionality to perform real-time image processing of video frames streamed from your device’s camera.\n\n## Overview\n\nThe vImage library provides the high-level convert-any-to-any [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter] class to convert image data between Core Video and Core Graphics formats. The convert-any-to-any functionality is suited for apps that work across different platforms where [https:\/\/developer.apple.com\/av-foundation\/] may provide video frames in different formats.\n\nThis sample code app uses [https:\/\/developer.apple.com\/av-foundation\/] to access the Mac camera and vImage to convert the camera image to an RGB image that the app displays onscreen.\n\n### Specify the pixel format\n\nTo ensure that AVCapture doesn’t have to perform a conversion from the capture format to the output format, the sample code specifies the output format as the camera’s active format. After declaring `videoOutput` as an [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVCaptureVideoDataOutput] instance, the following code defines the output pixel format by creating the [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVCaptureVideoDataOutput\/videoSettings] dictionary:\n\n```swift\npixelFormat = CMFormatDescriptionGetMediaSubType(camera.activeFormat.formatDescription)\nvideoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: pixelFormat]\n```\n\n### Lock the Core Video pixel buffer\n\nWhen the app starts the flow of data through the capture pipeline, [https:\/\/developer.apple.com\/av-foundation\/] calls [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVCaptureVideoDataOutputSampleBufferDelegate\/captureOutput(_:didOutput:from:)] for each new video frame. The following code locks the [doc:\/\/com.apple.documentation\/documentation\/CoreVideo\/CVPixelBuffer] structure’s underlying memory to make it available exclusively to the vImage conversion function:\n\n```swift\nCVPixelBufferLockBaseAddress(\n    pixelBuffer,\n    CVPixelBufferLockFlags.readOnly)\n\ndo {\n    try convertVideoFormatToRGB(cvPixelBuffer: pixelBuffer)\n} catch {\n    fatalError(\"Unable to perform conversion.\")\n}\n\nCVPixelBufferUnlockBaseAddress(\n    pixelBuffer,\n    CVPixelBufferLockFlags.readOnly)\n```\n\n### Create a Core Video-to-Core Graphics converter\n\nThe vImage convert-any-to-any function requires a converter that describes the source and destination formats. The sample code app converts a Core Video pixel buffer to a Core Graphics image. The code calls the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageCVImageFormat\/make(buffer:)] function to derive the source Core Video image format from the [doc:\/\/com.apple.documentation\/documentation\/CoreVideo\/CVPixelBuffer]. In some cases, the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageCVImageFormat] instance that the make function returns may have incomplete information. The following code ensures that the format has a color space and chrominance siting information:\n\n```swift\nguard let cvImageFormat = vImageCVImageFormat.make(buffer: cvPixelBuffer) else {\n    fatalError(\"Unable to derive Core Video pixel format from buffer.\")\n}\n\nif cvImageFormat.colorSpace == nil {\n    cvImageFormat.colorSpace = CGColorSpaceCreateDeviceRGB()\n}\n\nif cvImageFormat.chromaSiting == nil {\n    cvImageFormat.chromaSiting = .center\n}\n```\n\nThe sample app specifies a three-channel, 8-bit-per-channel [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] as the conversion destination format.\n\n```swift\nlet cgImageFormat = vImage_CGImageFormat(\n    bitsPerComponent: 8,\n    bitsPerPixel: 8 * 3,\n    colorSpace: CGColorSpaceCreateDeviceRGB(),\n    bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue))!\n```\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter\/make(sourceFormat:destinationFormat:flags:)-8iupf] type method creates a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter] instance from the source and destination formats.\n\n```swift\nconverter = try? vImageConverter.make(sourceFormat: cvImageFormat,\n                                      destinationFormat: cgImageFormat)\n\nif converter == nil {\n    fatalError(\"Unable to create Core Video to Core Graphics converter.\")\n}\n```\n\n### Initialize the destination buffer\n\nThe destination pixel buffer contains the RGB image after conversion. The code defines it as a three-channel, 8-bit-per-channel [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer] structure.\n\n```swift\nvar destinationBuffer: vImage.PixelBuffer<vImage.Interleaved8x3>!\n```\n\nThe first time that the app calls the conversion function, it runs the following code to initialize the destination pixel buffer with the same dimensions as the Core Video pixel buffer:\n\n```swift\nlet size = vImage.Size(cvPixelBuffer: cvPixelBuffer)\ndestinationBuffer = vImage.PixelBuffer<vImage.Interleaved8x3>(size: size)\n```\n\n### Initialize the source buffers\n\nAlthough the sample code app knows that the Core Graphics image format requires only a single buffer at compile time, the camera’s active format defines the number of source buffers and their pixel formats at runtime. Therefore, the code defines the source buffers as an array of [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/DynamicPixelFormat] pixel buffers.\n\n```swift\nvar sourceBuffers: [vImage.PixelBuffer<vImage.DynamicPixelFormat>]!\n```\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter] provides the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter\/makeCVToCGPixelBuffers(referencing:)] function that returns an array of pixel buffers. These pixel buffers reference the underlying memory of each plane of the Core Video pixel buffer.\n\n```swift\nsourceBuffers = try converter.makeCVToCGPixelBuffers(referencing: cvPixelBuffer)\n```\n\n### Convert the Core Video buffer contents to a Core Graphics format image\n\nThe [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter\/convert(from:to:)-9s7p7] function accepts the source and destination pixel buffers and converts the Core Video pixel buffer’s contents to a Core Graphics image.\n\n```swift\ntry converter.convert(from: sourceBuffers, to: [destinationBuffer])\n```\n\n### Create an output Core Graphics image\n\nFinally, the code calls [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)] to create a Core Graphics image that it displays in the user interface.\n\n```swift\nlet rgbImage = destinationBuffer.makeCGImage(cgImageFormat: cgImageFormat)!\n```\n\n## Core Video Interoperation\n\n- **Using vImage pixel buffers to generate video effects**: Render real-time video effects with the vImage Pixel Buffer.\n- **Integrating vImage pixel buffers into a Core Image workflow**: Share image data between Core Video pixel buffers and vImage buffers to integrate vImage operations into a Core Image workflow.\n- **Improving the quality of quantized images with dithering**: Apply dithering to simulate colors that are unavailable in reduced bit depths.\n- **Core Video interoperability**: Pass image data between Core Video and vImage.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Render real-time video effects with the vImage Pixel Buffer.",
+          "name" : "Using vImage pixel buffers to generate video effects",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/using-vimage-pixel-buffers-to-generate-video-effects"
+        },
+        {
+          "description" : "Share image data between Core Video pixel buffers and vImage buffers to integrate vImage operations into a Core Image workflow.",
+          "name" : "Integrating vImage pixel buffers into a Core Image workflow",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/integrating-vimage-pixel-buffers-into-a-core-image-workflow"
+        },
+        {
+          "description" : "Apply dithering to simulate colors that are unavailable in reduced bit depths.",
+          "name" : "Improving the quality of quantized images with dithering",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/improving-the-quality-of-quantized-images-with-dithering"
+        },
+        {
+          "description" : "Pass image data between Core Video and vImage.",
+          "name" : "Core Video interoperability",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/core-video-interoperability"
+        }
+      ],
+      "title" : "Core Video Interoperation"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Applying vImage operations to video sample buffers",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-vimage-operations-to-video-sample-buffers"
+}

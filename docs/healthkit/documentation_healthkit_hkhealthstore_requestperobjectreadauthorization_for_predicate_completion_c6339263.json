@@ -1,0 +1,94 @@
+{
+  "abstract" : "Asynchronously requests permission to read a data type that requires per-object authorization (such as vision prescriptions).",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Read the newest prescription from the HealthKit store.\nlet queryDescriptor = HKSampleQueryDescriptor(predicates: [.visionPrescription()],\n  sortDescriptors: [SortDescriptor(\\.startDate, order: .reverse)],\n  limit: 1)\n\nlet prescription: HKVisionPrescription\n\ndo {\nguard let result = try await queryDescriptor.result(for: store).first else {\nprint(\"*** No prescription found. ***\")\nreturn\n}\n\nprescription = result\n} catch {\n\/\/ Handle the error here.\nfatalError(\"*** An error occurred while reading the most recent vision prescriptions: \\(error.localizedDescription) ***\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Request authorization to read vision prescriptions.\ndo {\ntry await store.requestPerObjectReadAuthorization(for: .visionPrescriptionType(),\n  predicate: nil)\n} catch HKError.errorUserCanceled {\n\/\/ Handle the user canceling the authorization request.\nprint(\"*** The user canceled the authorization request. ***\")\nreturn\n} catch {\n\/\/ Handle the error here.\nfatalError(\"*** An error occurred while requesting permission to read vision prescriptions: \\(error.localizedDescription) ***\")\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "6962976c98fa158993e4f57220a8ba9ce3da85bf0c982653ca36c74dc19ba32e",
+  "crawledAt" : "2025-12-02T18:08:22Z",
+  "declaration" : {
+    "code" : "func requestPerObjectReadAuthorization(for objectType: HKObjectType, predicate: NSPredicate?, completion: @escaping (Bool, (any Error)?) -> Void)",
+    "language" : "swift"
+  },
+  "id" : "6463AA74-B9A4-4B57-951D-2BC0E89135AB",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "HealthKit",
+  "overview" : "## Discussion\n\nSome samples require per-object authorization. For these samples, people can select which ones your app can read on a sample-by-sample basis. By default, your app can read any of the per-object authorization samples that it has saved to the HealthKit store; however, you may not always have access to those samples. People can update the authorization status for any of these samples at any time.\n\nYour app can begin by querying for any samples that it already has permission to read.\n\nBased on the results, you can then decide whether you need to request authorization for additional samples. Call [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/requestPerObjectReadAuthorization(for:predicate:completion:)] to prompt someone to modify the samples your app has access to read.\n\nWhen your app calls this method, HealthKit displays an authorization sheet that asks for permission to read the samples that match the predicate and object type. The person using your app can then select individual samples to share with your app. The system always asks for permission, regardless of whether they previously granted it.\n\n\n\nAfter the person responds, the system calls the callback handler on an arbitrary background queue.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/HealthKit\/HKHealthStore\/requestPerObjectReadAuthorization(for:predicate:completion:)\ncrawled: 2025-12-02T18:08:22Z\n---\n\n# requestPerObjectReadAuthorization(for:predicate:completion:)\n\n**Instance Method**\n\nAsynchronously requests permission to read a data type that requires per-object authorization (such as vision prescriptions).\n\n## Declaration\n\n```swift\nfunc requestPerObjectReadAuthorization(for objectType: HKObjectType, predicate: NSPredicate?, completion: @escaping (Bool, (any Error)?) -> Void)\n```\n\n```swift\nfunc requestPerObjectReadAuthorization(for objectType: HKObjectType, predicate: NSPredicate?) async throws\n```\n\n## Parameters\n\n- **objectType**: The data type you want to read.\n- **predicate**: A predicate that further restricts the data type.\n- **completion**: A completion handler that the system calls after the user responds to the request. The completion handler has the following parameters:\n\n\n\n## Discussion\n\nSome samples require per-object authorization. For these samples, people can select which ones your app can read on a sample-by-sample basis. By default, your app can read any of the per-object authorization samples that it has saved to the HealthKit store; however, you may not always have access to those samples. People can update the authorization status for any of these samples at any time.\n\nYour app can begin by querying for any samples that it already has permission to read.\n\n```swift\n\/\/ Read the newest prescription from the HealthKit store.\nlet queryDescriptor = HKSampleQueryDescriptor(predicates: [.visionPrescription()],\n  sortDescriptors: [SortDescriptor(\\.startDate, order: .reverse)],\n  limit: 1)\n\nlet prescription: HKVisionPrescription\n\ndo {\nguard let result = try await queryDescriptor.result(for: store).first else {\nprint(\"*** No prescription found. ***\")\nreturn\n}\n\nprescription = result\n} catch {\n\/\/ Handle the error here.\nfatalError(\"*** An error occurred while reading the most recent vision prescriptions: \\(error.localizedDescription) ***\")\n}\n```\n\nBased on the results, you can then decide whether you need to request authorization for additional samples. Call [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/requestPerObjectReadAuthorization(for:predicate:completion:)] to prompt someone to modify the samples your app has access to read.\n\n```swift\n\/\/ Request authorization to read vision prescriptions.\ndo {\ntry await store.requestPerObjectReadAuthorization(for: .visionPrescriptionType(),\n  predicate: nil)\n} catch HKError.errorUserCanceled {\n\/\/ Handle the user canceling the authorization request.\nprint(\"*** The user canceled the authorization request. ***\")\nreturn\n} catch {\n\/\/ Handle the error here.\nfatalError(\"*** An error occurred while requesting permission to read vision prescriptions: \\(error.localizedDescription) ***\")\n}\n```\n\n\n\nWhen your app calls this method, HealthKit displays an authorization sheet that asks for permission to read the samples that match the predicate and object type. The person using your app can then select individual samples to share with your app. The system always asks for permission, regardless of whether they previously granted it.\n\n\n\nAfter the person responds, the system calls the callback handler on an arbitrary background queue.\n\n## Accessing HealthKit\n\n- **authorizationStatus(for:)**: Returns the app’s authorization status for sharing the specified data type.\n- **HKAuthorizationStatus**: Constants indicating the authorization status for a particular data type.\n- **getRequestStatusForAuthorization(toShare:read:completion:)**: Indicates whether the system presents the user with a permission sheet if your app requests authorization for the provided types.\n- **HKAuthorizationRequestStatus**: Values that indicate whether your app needs to request authorization from the user.\n- **isHealthDataAvailable()**: Returns a Boolean value that indicates whether HealthKit is available on this device.\n- **supportsHealthRecords()**: Returns a Boolean value that indicates whether the current device supports clinical records.\n- **requestAuthorization(toShare:read:completion:)**: Requests permission to save and read the specified data types.\n- **requestAuthorization(toShare:read:)**: Asynchronously requests permission to save and read the specified data types.\n- **handleAuthorizationForExtension(completion:)**: Requests permission to save and read the data types specified by an extension.\n- **authorizationViewControllerPresenter**: The view controller that presents HealthKit authorization sheets.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the app’s authorization status for sharing the specified data type.",
+          "name" : "authorizationStatus(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKHealthStore\/authorizationStatus(for:)"
+        },
+        {
+          "description" : "Constants indicating the authorization status for a particular data type.",
+          "name" : "HKAuthorizationStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKAuthorizationStatus"
+        },
+        {
+          "description" : "Indicates whether the system presents the user with a permission sheet if your app requests authorization for the provided types.",
+          "name" : "getRequestStatusForAuthorization(toShare:read:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKHealthStore\/getRequestStatusForAuthorization(toShare:read:completion:)"
+        },
+        {
+          "description" : "Values that indicate whether your app needs to request authorization from the user.",
+          "name" : "HKAuthorizationRequestStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKAuthorizationRequestStatus"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether HealthKit is available on this device.",
+          "name" : "isHealthDataAvailable()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKHealthStore\/isHealthDataAvailable()"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether the current device supports clinical records.",
+          "name" : "supportsHealthRecords()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKHealthStore\/supportsHealthRecords()"
+        },
+        {
+          "description" : "Requests permission to save and read the specified data types.",
+          "name" : "requestAuthorization(toShare:read:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKHealthStore\/requestAuthorization(toShare:read:completion:)"
+        },
+        {
+          "description" : "Asynchronously requests permission to save and read the specified data types.",
+          "name" : "requestAuthorization(toShare:read:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKHealthStore\/requestAuthorization(toShare:read:)"
+        },
+        {
+          "description" : "Requests permission to save and read the data types specified by an extension.",
+          "name" : "handleAuthorizationForExtension(completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKHealthStore\/handleAuthorizationForExtension(completion:)"
+        },
+        {
+          "description" : "The view controller that presents HealthKit authorization sheets.",
+          "name" : "authorizationViewControllerPresenter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKHealthStore\/authorizationViewControllerPresenter"
+        }
+      ],
+      "title" : "Accessing HealthKit"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "requestPerObjectReadAuthorization(for:predicate:completion:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKHealthStore\/requestPerObjectReadAuthorization(for:predicate:completion:)"
+}

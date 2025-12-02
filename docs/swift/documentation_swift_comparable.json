@@ -1,0 +1,322 @@
+{
+  "abstract" : "A type that can be compared using the relational operators `<`, `<=`, `>=`, and `>`.",
+  "codeExamples" : [
+    {
+      "code" : "let currentTemp = 73\n\nif currentTemp >= 90 {\n    print(\"It's a scorcher!\")\n} else if currentTemp < 65 {\n    print(\"Might need a sweater today.\")\n} else {\n    print(\"Seems like picnic weather!\")\n}\n\/\/ Prints \"Seems like picnic weather!\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "var measurements = [1.1, 1.5, 2.9, 1.2, 1.5, 1.3, 1.2]\nmeasurements.sort()\nprint(measurements)\n\/\/ Prints \"[1.1, 1.2, 1.2, 1.3, 1.5, 1.5, 2.9]\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct Date {\n    let year: Int\n    let month: Int\n    let day: Int\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension Date: Comparable {\n    static func < (lhs: Date, rhs: Date) -> Bool {\n        if lhs.year != rhs.year {\n            return lhs.year < rhs.year\n        } else if lhs.month != rhs.month {\n            return lhs.month < rhs.month\n        } else {\n            return lhs.day < rhs.day\n        }\n    }",
+      "language" : "swift"
+    },
+    {
+      "code" : "    static func == (lhs: Date, rhs: Date) -> Bool {\n        return lhs.year == rhs.year && lhs.month == rhs.month\n            && lhs.day == rhs.day\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let spaceOddity = Date(year: 1969, month: 7, day: 11)   \/\/ July 11, 1969\nlet moonLanding = Date(year: 1969, month: 7, day: 20)   \/\/ July 20, 1969\nif moonLanding > spaceOddity {\n    print(\"Major Tom stepped through the door first.\")\n} else {\n    print(\"David Bowie was following in Neil Armstrong's footsteps.\")\n}\n\/\/ Prints \"Major Tom stepped through the door first.\"",
+      "language" : "swift"
+    }
+  ],
+  "conformingTypes" : [
+    "AnyIndex",
+    "AutoreleasingUnsafeMutablePointer",
+    "Character",
+    "ClosedRange.Index",
+    "CollectionDifference.Index",
+    "ContinuousClock.Instant",
+    "Dictionary.Index",
+    "DiscontiguousSlice.Index",
+    "Double",
+    "Duration",
+    "EnumeratedSequence.Index",
+    "FlattenSequence.Index",
+    "Float",
+    "Float16",
+    "Float80",
+    "Int",
+    "Int128",
+    "Int16",
+    "Int32",
+    "Int64",
+    "Int8",
+    "JobPriority",
+    "LazyPrefixWhileSequence.Index",
+    "Never",
+    "ObjectIdentifier",
+    "ReversedCollection.Index",
+    "Set.Index",
+    "String",
+    "String.Index",
+    "Substring",
+    "SuspendingClock.Instant",
+    "TaskPriority",
+    "UInt",
+    "UInt128",
+    "UInt16",
+    "UInt32",
+    "UInt64",
+    "UInt8",
+    "Unicode.CanonicalCombiningClass",
+    "Unicode.Scalar",
+    "UnsafeMutablePointer",
+    "UnsafeMutableRawPointer",
+    "UnsafePointer",
+    "UnsafeRawPointer",
+    "WordPair"
+  ],
+  "contentHash" : "5c5b0f187258d0a2d46162139047bc93781ef77c07d7aa4cfbf6181cf6a891c8",
+  "crawledAt" : "2025-12-02T20:34:19Z",
+  "declaration" : {
+    "code" : "protocol Comparable : Equatable",
+    "language" : "swift"
+  },
+  "id" : "FABCA14F-1B69-4BB4-B4C8-A053CA82DD5B",
+  "inheritedBy" : [
+    "BinaryFloatingPoint",
+    "BinaryInteger",
+    "DurationProtocol",
+    "FixedWidthInteger",
+    "FloatingPoint",
+    "InstantProtocol",
+    "SignedInteger",
+    "Strideable",
+    "StringProtocol",
+    "UnsignedInteger"
+  ],
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nThe `Comparable` protocol is used for types that have an inherent order, such as numbers and strings. Many types in the standard library already conform to the `Comparable` protocol. Add `Comparable` conformance to your own custom types when you want to be able to compare instances using relational operators or use standard library methods that are designed for `Comparable` types.\n\nThe most familiar use of relational operators is to compare numbers, as in the following example:\n\nYou can use special versions of some sequence and collection operations when working with a `Comparable` type. For example, if your array’s elements conform to `Comparable`, you can call the `sort()` method without using arguments to sort the elements of your array in ascending order.\n\n# Conforming to the Comparable Protocol\n\nTypes with Comparable conformance implement the less-than operator (`<`) and the equal-to operator (`==`). These two operations impose a strict total order on the values of a type, in which exactly one of the following must be true for any two values `a` and `b`:\n\nIn addition, the following conditions must hold:\n\nTo add `Comparable` conformance to your custom types, define the `<` and `==` operators as static methods of your types. The `==` operator is a requirement of the `Equatable` protocol, which `Comparable` extends—see that protocol’s documentation for more information about equality in Swift. Because default implementations of the remainder of the relational operators are provided by the standard library, you’ll be able to use `!=`, `>`, `<=`, and `>=` with instances of your type without any further code.\n\nAs an example, here’s an implementation of a `Date` structure that stores the year, month, and day of a date:\n\nTo add `Comparable` conformance to `Date`, first declare conformance to `Comparable` and implement the `<` operator function.\n\nThis function uses the least specific nonmatching property of the date to determine the result of the comparison. For example, if the two `year` properties are equal but the two `month` properties are not, the date with the lesser value for `month` is the lesser of the two dates.\n\nNext, implement the `==` operator function, the requirement inherited from the `Equatable` protocol.\n\nTwo `Date` instances are equal if each of their corresponding properties is equal.\n\nNow that `Date` conforms to `Comparable`, you can compare instances of the type with any of the relational operators. The following example compares the date of the first moon landing with the release of David Bowie’s song “Space Oddity”:\n\nNote that the `>` operator provided by the standard library is used in this example, not the `<` operator implemented above.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/Comparable\ncrawled: 2025-12-02T20:34:19Z\n---\n\n# Comparable\n\n**Protocol**\n\nA type that can be compared using the relational operators `<`, `<=`, `>=`, and `>`.\n\n## Declaration\n\n```swift\nprotocol Comparable : Equatable\n```\n\n## Overview\n\nThe `Comparable` protocol is used for types that have an inherent order, such as numbers and strings. Many types in the standard library already conform to the `Comparable` protocol. Add `Comparable` conformance to your own custom types when you want to be able to compare instances using relational operators or use standard library methods that are designed for `Comparable` types.\n\nThe most familiar use of relational operators is to compare numbers, as in the following example:\n\n```swift\nlet currentTemp = 73\n\nif currentTemp >= 90 {\n    print(\"It's a scorcher!\")\n} else if currentTemp < 65 {\n    print(\"Might need a sweater today.\")\n} else {\n    print(\"Seems like picnic weather!\")\n}\n\/\/ Prints \"Seems like picnic weather!\"\n```\n\nYou can use special versions of some sequence and collection operations when working with a `Comparable` type. For example, if your array’s elements conform to `Comparable`, you can call the `sort()` method without using arguments to sort the elements of your array in ascending order.\n\n```swift\nvar measurements = [1.1, 1.5, 2.9, 1.2, 1.5, 1.3, 1.2]\nmeasurements.sort()\nprint(measurements)\n\/\/ Prints \"[1.1, 1.2, 1.2, 1.3, 1.5, 1.5, 2.9]\"\n```\n\n# Conforming to the Comparable Protocol\n\nTypes with Comparable conformance implement the less-than operator (`<`) and the equal-to operator (`==`). These two operations impose a strict total order on the values of a type, in which exactly one of the following must be true for any two values `a` and `b`:\n\n- `a == b`\n- `a < b`\n- `b < a`\n\nIn addition, the following conditions must hold:\n\n- `a < a` is always `false` (Irreflexivity)\n- `a < b` implies `!(b < a)` (Asymmetry)\n- `a < b` and `b < c` implies `a < c` (Transitivity)\n\nTo add `Comparable` conformance to your custom types, define the `<` and `==` operators as static methods of your types. The `==` operator is a requirement of the `Equatable` protocol, which `Comparable` extends—see that protocol’s documentation for more information about equality in Swift. Because default implementations of the remainder of the relational operators are provided by the standard library, you’ll be able to use `!=`, `>`, `<=`, and `>=` with instances of your type without any further code.\n\nAs an example, here’s an implementation of a `Date` structure that stores the year, month, and day of a date:\n\n```swift\nstruct Date {\n    let year: Int\n    let month: Int\n    let day: Int\n}\n```\n\nTo add `Comparable` conformance to `Date`, first declare conformance to `Comparable` and implement the `<` operator function.\n\n```swift\nextension Date: Comparable {\n    static func < (lhs: Date, rhs: Date) -> Bool {\n        if lhs.year != rhs.year {\n            return lhs.year < rhs.year\n        } else if lhs.month != rhs.month {\n            return lhs.month < rhs.month\n        } else {\n            return lhs.day < rhs.day\n        }\n    }\n```\n\nThis function uses the least specific nonmatching property of the date to determine the result of the comparison. For example, if the two `year` properties are equal but the two `month` properties are not, the date with the lesser value for `month` is the lesser of the two dates.\n\nNext, implement the `==` operator function, the requirement inherited from the `Equatable` protocol.\n\n```swift\n    static func == (lhs: Date, rhs: Date) -> Bool {\n        return lhs.year == rhs.year && lhs.month == rhs.month\n            && lhs.day == rhs.day\n    }\n}\n```\n\nTwo `Date` instances are equal if each of their corresponding properties is equal.\n\nNow that `Date` conforms to `Comparable`, you can compare instances of the type with any of the relational operators. The following example compares the date of the first moon landing with the release of David Bowie’s song “Space Oddity”:\n\n```swift\nlet spaceOddity = Date(year: 1969, month: 7, day: 11)   \/\/ July 11, 1969\nlet moonLanding = Date(year: 1969, month: 7, day: 20)   \/\/ July 20, 1969\nif moonLanding > spaceOddity {\n    print(\"Major Tom stepped through the door first.\")\n} else {\n    print(\"David Bowie was following in Neil Armstrong's footsteps.\")\n}\n\/\/ Prints \"Major Tom stepped through the door first.\"\n```\n\nNote that the `>` operator provided by the standard library is used in this example, not the `<` operator implemented above.\n\n\n\n## Range Expressions\n\n- **...(_:_:)**: Returns a closed range that contains both of its bounds.\n- **...(_:)**: Returns a partial range extending upward from a lower bound.\n- **...(_:)**: Returns a partial range up to, and including, its upper bound.\n\n## Tuple Comparison\n\n- **<(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.\n- **<(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.\n- **<(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.\n- **<(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.\n- **<(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.\n- **<(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.\n- **<=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.\n- **<=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.\n- **<=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.\n- **<=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.\n- **<=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.\n- **<=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.\n- **>(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.\n- **>(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.\n- **>(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.\n- **>(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.\n- **>(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.\n- **>(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.\n- **>=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.\n- **>=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.\n- **>=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.\n- **>=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.\n- **>=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.\n- **>=(_:_:)**: Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.\n\n## Operators\n\n- **..<(_:)**: Returns a partial range up to, but not including, its upper bound.\n- **..<(_:_:)**: Returns a half-open range that contains its lower bound but not its upper bound.\n- **>(_:_:)**: Returns a Boolean value indicating whether the value of the first argument is greater than that of the second argument.\n- **<(_:_:)**: Returns a Boolean value indicating whether the value of the first argument is less than that of the second argument.\n- **>=(_:_:)**: Returns a Boolean value indicating whether the value of the first argument is greater than or equal to that of the second argument.\n- **<=(_:_:)**: Returns a Boolean value indicating whether the value of the first argument is less than or equal to that of the second argument.\n\n## Equality and Ordering\n\n- **Equatable**: A type that can be compared for value equality.\n- **Identifiable**: A class of types whose instances hold the value of an entity with stable identity.\n\n## Inherits From\n\n- Equatable\n\n## Inherited By\n\n- BinaryFloatingPoint\n- BinaryInteger\n- DurationProtocol\n- FixedWidthInteger\n- FloatingPoint\n- InstantProtocol\n- SignedInteger\n- Strideable\n- StringProtocol\n- UnsignedInteger\n\n## Conforming Types\n\n- AnyIndex\n- AutoreleasingUnsafeMutablePointer\n- Character\n- ClosedRange.Index\n- CollectionDifference.Index\n- ContinuousClock.Instant\n- Dictionary.Index\n- DiscontiguousSlice.Index\n- Double\n- Duration\n- EnumeratedSequence.Index\n- FlattenSequence.Index\n- Float\n- Float16\n- Float80\n- Int\n- Int128\n- Int16\n- Int32\n- Int64\n- Int8\n- JobPriority\n- LazyPrefixWhileSequence.Index\n- Never\n- ObjectIdentifier\n- ReversedCollection.Index\n- Set.Index\n- String\n- String.Index\n- Substring\n- SuspendingClock.Instant\n- TaskPriority\n- UInt\n- UInt128\n- UInt16\n- UInt32\n- UInt64\n- UInt8\n- Unicode.CanonicalCombiningClass\n- Unicode.Scalar\n- UnsafeMutablePointer\n- UnsafeMutableRawPointer\n- UnsafePointer\n- UnsafeRawPointer\n- WordPair\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a closed range that contains both of its bounds.",
+          "name" : "...(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Comparable\/...(_:_:)"
+        },
+        {
+          "description" : "Returns a partial range extending upward from a lower bound.",
+          "name" : "...(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Comparable\/...(_:)-6mvrh"
+        },
+        {
+          "description" : "Returns a partial range up to, and including, its upper bound.",
+          "name" : "...(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Comparable\/...(_:)-1quco"
+        }
+      ],
+      "title" : "Range Expressions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.",
+          "name" : "<(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-1b1cu"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.",
+          "name" : "<(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-4ck5h"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.",
+          "name" : "<(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-23151"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.",
+          "name" : "<(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-6p1tf"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.",
+          "name" : "<(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-3hhjy"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before the second in a lexicographical ordering.",
+          "name" : "<(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-8mgtp"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.",
+          "name" : "<=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-16p1e"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.",
+          "name" : "<=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-3jpod"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.",
+          "name" : "<=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-8u5uu"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.",
+          "name" : "<=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-6kea2"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.",
+          "name" : "<=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-1hzxz"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered before or the same as the second in a lexicographical ordering.",
+          "name" : "<=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-7n746"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.",
+          "name" : ">(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-yktb"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.",
+          "name" : ">(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-4xg09"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.",
+          "name" : ">(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-7p512"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.",
+          "name" : ">(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-5gb41"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.",
+          "name" : ">(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-3ewuy"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after the second in a lexicographical ordering.",
+          "name" : ">(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_(_:_:)-kqsy"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.",
+          "name" : ">=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-1ak1k"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.",
+          "name" : ">=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-6kwvw"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.",
+          "name" : ">=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-7p28b"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.",
+          "name" : ">=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-43xgn"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.",
+          "name" : ">=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-6i1ov"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the first tuple is ordered after or the same as the second in a lexicographical ordering.",
+          "name" : ">=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/_=(_:_:)-1n7oc"
+        }
+      ],
+      "title" : "Tuple Comparison"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a partial range up to, but not including, its upper bound.",
+          "name" : "..<(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Comparable\/.._(_:)"
+        },
+        {
+          "description" : "Returns a half-open range that contains its lower bound but not its upper bound.",
+          "name" : "..<(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Comparable\/.._(_:_:)"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the value of the first argument is greater than that of the second argument.",
+          "name" : ">(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Comparable\/_(_:_:)-8j02g"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the value of the first argument is less than that of the second argument.",
+          "name" : "<(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Comparable\/_(_:_:)-9jp4d"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the value of the first argument is greater than or equal to that of the second argument.",
+          "name" : ">=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Comparable\/_=(_:_:)-4hu01"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the value of the first argument is less than or equal to that of the second argument.",
+          "name" : "<=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Comparable\/_=(_:_:)-buc5"
+        }
+      ],
+      "title" : "Operators"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A type that can be compared for value equality.",
+          "name" : "Equatable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Equatable"
+        },
+        {
+          "description" : "A class of types whose instances hold the value of an entity with stable identity.",
+          "name" : "Identifiable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Identifiable"
+        }
+      ],
+      "title" : "Equality and Ordering"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "Equatable"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Comparable",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Comparable"
+}

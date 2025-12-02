@@ -1,0 +1,64 @@
+{
+  "abstract" : "An action that dismisses the current presentation.",
+  "codeExamples" : [
+    {
+      "code" : "private struct SheetContents: View {\n    @Environment(\\.dismiss) private var dismiss\n\n    var body: some View {\n        Button(\"Done\") {\n            dismiss()\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "private struct DetailView: View {\n    @State private var isSheetPresented = false\n\n    var body: some View {\n        Button(\"Show Sheet\") {\n            isSheetPresented = true\n        }\n        .sheet(isPresented: $isSheetPresented) {\n            SheetContents()\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "private struct DetailView: View {\n    @State private var isSheetPresented = false\n    @Environment(\\.dismiss) private var dismiss \/\/ Applies to DetailView.\n\n    var body: some View {\n        Button(\"Show Sheet\") {\n            isSheetPresented = true\n        }\n        .sheet(isPresented: $isSheetPresented) {\n            Button(\"Done\") {\n                dismiss() \/\/ Fails to dismiss the sheet.\n            }\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "3de88b95f9df6b51a309598652d6b5b8f1514d63d8889aa206d806669a4cce7f",
+  "crawledAt" : "2025-12-02T17:21:09Z",
+  "declaration" : {
+    "code" : "var dismiss: DismissAction { get }",
+    "language" : "swift"
+  },
+  "id" : "4651EFE0-3F26-4FD5-A442-552D8BA3B3C7",
+  "kind" : "property",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Discussion\n\nUse this environment value to get the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/DismissAction] instance for the current [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Environment]. Then call the instance to perform the dismissal. You call the instance directly because it defines a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/DismissAction\/callAsFunction()] method that Swift calls when you call the instance.\n\nYou can use this action to:\n\nOn apps targetting iOS 18 and aligned releases, you also use the dismiss action to pop the implicit stack of a collapsed [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationSplitView], or clear the equivalent state in an expanded split view.\n\nThe specific behavior of the action depends on where you call it from. For example, you can create a button that calls the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/DismissAction] inside a view that acts as a sheet:\n\nWhen you present the `SheetContents` view, someone can dismiss the sheet by tapping or clicking the sheet’s button:\n\nBe sure that you define the action in the appropriate environment. For example, don’t reorganize the `DetailView` in the example above so that it creates the `dismiss` property and calls it from the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/sheet(item:onDismiss:content:)] view modifier’s `content` closure:\n\nIf you do this, the sheet fails to dismiss because the action applies to the environment where you declared it, which is that of the detail view, rather than the sheet. In fact, in macOS and iPadOS, if the `DetailView` is the root view of a window, the dismiss action closes the window instead.\n\nThe dismiss action has no effect on a view that isn’t currently presented. If you need to query whether SwiftUI is currently presenting a view, read the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues\/isPresented] environment value.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/EnvironmentValues\/dismiss\ncrawled: 2025-12-02T17:21:09Z\n---\n\n# dismiss\n\n**Instance Property**\n\nAn action that dismisses the current presentation.\n\n## Declaration\n\n```swift\nvar dismiss: DismissAction { get }\n```\n\n## Discussion\n\nUse this environment value to get the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/DismissAction] instance for the current [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Environment]. Then call the instance to perform the dismissal. You call the instance directly because it defines a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/DismissAction\/callAsFunction()] method that Swift calls when you call the instance.\n\nYou can use this action to:\n\n- Dismiss a modal presentation, like a sheet or a popover.\n- Pop the current view from a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationStack].\n\nOn apps targetting iOS 18 and aligned releases, you also use the dismiss action to pop the implicit stack of a collapsed [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/NavigationSplitView], or clear the equivalent state in an expanded split view.\n\nThe specific behavior of the action depends on where you call it from. For example, you can create a button that calls the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/DismissAction] inside a view that acts as a sheet:\n\n```swift\nprivate struct SheetContents: View {\n    @Environment(\\.dismiss) private var dismiss\n\n    var body: some View {\n        Button(\"Done\") {\n            dismiss()\n        }\n    }\n}\n```\n\nWhen you present the `SheetContents` view, someone can dismiss the sheet by tapping or clicking the sheet’s button:\n\n```swift\nprivate struct DetailView: View {\n    @State private var isSheetPresented = false\n\n    var body: some View {\n        Button(\"Show Sheet\") {\n            isSheetPresented = true\n        }\n        .sheet(isPresented: $isSheetPresented) {\n            SheetContents()\n        }\n    }\n}\n```\n\nBe sure that you define the action in the appropriate environment. For example, don’t reorganize the `DetailView` in the example above so that it creates the `dismiss` property and calls it from the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/sheet(item:onDismiss:content:)] view modifier’s `content` closure:\n\n```swift\nprivate struct DetailView: View {\n    @State private var isSheetPresented = false\n    @Environment(\\.dismiss) private var dismiss \/\/ Applies to DetailView.\n\n    var body: some View {\n        Button(\"Show Sheet\") {\n            isSheetPresented = true\n        }\n        .sheet(isPresented: $isSheetPresented) {\n            Button(\"Done\") {\n                dismiss() \/\/ Fails to dismiss the sheet.\n            }\n        }\n    }\n}\n```\n\nIf you do this, the sheet fails to dismiss because the action applies to the environment where you declared it, which is that of the detail view, rather than the sheet. In fact, in macOS and iPadOS, if the `DetailView` is the root view of a window, the dismiss action closes the window instead.\n\nThe dismiss action has no effect on a view that isn’t currently presented. If you need to query whether SwiftUI is currently presenting a view, read the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues\/isPresented] environment value.\n\n\n\n## Dismissing a presentation\n\n- **isPresented**: A Boolean value that indicates whether the view associated with this environment is currently presented.\n- **DismissAction**: An action that dismisses a presentation.\n- **interactiveDismissDisabled(_:)**: Conditionally prevents interactive dismissal of presentations like popovers, sheets, and inspectors.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the view associated with this environment is currently presented.",
+          "name" : "isPresented",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/EnvironmentValues\/isPresented"
+        },
+        {
+          "description" : "An action that dismisses a presentation.",
+          "name" : "DismissAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/DismissAction"
+        },
+        {
+          "description" : "Conditionally prevents interactive dismissal of presentations like popovers, sheets, and inspectors.",
+          "name" : "interactiveDismissDisabled(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/interactiveDismissDisabled(_:)"
+        }
+      ],
+      "title" : "Dismissing a presentation"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "dismiss",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/EnvironmentValues\/dismiss"
+}

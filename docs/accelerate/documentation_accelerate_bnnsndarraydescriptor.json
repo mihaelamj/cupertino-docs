@@ -1,0 +1,284 @@
+{
+  "abstract" : "A structure that describes the shape, stride, data type, and, optionally, the memory location of an n-dimensional array.",
+  "codeExamples" : [
+    {
+      "code" : "let weights: [Float] = [ ... ]\n\nweights.withUnsafeBufferPointer { weightsPtr in\n    \n    let weightsDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                  layout: BNNSDataLayoutConvolutionWeightsOIHW,\n                                                  size: (3, 3, 1, 1, 0, 0, 0, 0),\n                                                  stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                  data: UnsafeMutableRawPointer(mutating: weightsPtr.baseAddress!),\n                                                  data_type: .float,\n                                                  table_data: nil,\n                                                  table_data_type: .float,\n                                                  data_scale: 1,\n                                                  data_bias: 0)\n\n    \/\/ Create and apply convolution layer.\n\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let inputDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                           layout: BNNSDataLayoutRowMajorMatrix,\n                                           size: (3, 3, 0, 0, 0, 0, 0, 0),\n                                           stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                           data: nil,\n                                           data_type: .float,\n                                           table_data: nil,\n                                           table_data_type: .float,\n                                           data_scale: 1,\n                                           data_bias: 0)\n\nlet inputDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                           layout: BNNSDataLayoutRowMajorMatrix,\n                                           size: (3, 3, 0, 0, 0, 0, 0, 0),\n                                           stride: (1, 3, 0, 0, 0, 0, 0, 0),\n                                           data: nil,\n                                           data_type: .float,\n                                           table_data: nil,\n                                           table_data_type: .float,\n                                           data_scale: 1,\n                                           data_bias: 0)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let input: [Float] = [ ... ]\nvar output: [Float] = [ ... ]\n\nlet inDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                         layout: BNNSDataLayoutImageCHW,\n                                         size: (6, 6, 1, 0, 0, 0, 0, 0),\n                                         stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                         data: nil,\n                                         data_type: .float,\n                                         table_data: nil,\n                                         table_data_type: .float,\n                                         data_scale: 1,\n                                         data_bias: 0)\n\nlet outDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                          layout: BNNSDataLayoutImageCHW,\n                                          size: (4, 4, 1, 0, 0, 0, 0, 0),\n                                          stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                          data: nil,\n                                          data_type: .float,\n                                          table_data: nil,\n                                          table_data_type: .float,\n                                          data_scale: 1,\n                                          data_bias: 0)\n\nvar parameters = BNNSLayerParametersConvolution(i_desc: inDescriptor,\n                                                w_desc: weightsDescriptor,\n                                                o_desc: outDescriptor,\n                                                bias: biasDescriptor,\n                                                activation: .identity,\n                                                x_stride: 1, y_stride: 1,\n                                                x_dilation_stride: 0, y_dilation_stride: 0,\n                                                x_padding: 0, y_padding: 0,\n                                                groups: 1,\n                                                pad: (0, 0, 0, 0))\n\n\/\/ `convolutionLayer` is a `BNNSFilter` created by `BNNSFilterCreateLayerConvolution` using `parameters`.\n\nlet error = BNNSFilterApplyBatch(convolutionLayer, 1,\n                                 input, inStride,\n                                 &output, outStride)\n",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "BitwiseCopyable"
+  ],
+  "contentHash" : "e86e89adbee155e4b436cf21b1841b7cf46c9f8a99d7ba96bbfa1f78b997c2d2",
+  "crawledAt" : "2025-12-02T01:30:40Z",
+  "declaration" : {
+    "code" : "struct BNNSNDArrayDescriptor",
+    "language" : "swift"
+  },
+  "id" : "1AD3CD1C-2430-4E7F-B274-04E68FA8E206",
+  "kind" : "struct",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nYou use a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSNDArrayDescriptor] structure as the primary mechanism to pass the description of data to and from BNNS functions. The description may include a pointer to the memory location.\n\nFor example, use the following code when you’re passing immutable weights to a convolution layer:\n\nSetting a stride value of `0` indicates that BNNS calculates stride, without padding, for that axis. For example, the stride for both of the following n-dimensional array descriptors is the same:\n\nYou don’t need to specify the data when, for example, you’re passing that data directly to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSFilterApplyBatch(_:_:_:_:_:_:)]. The following code creates [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSNDArrayDescriptor] structures for the input and output of a convolution operation. The data property of both descriptors is nil, and the input and output data are passed directly to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSFilterApplyBatch(_:_:_:_:_:_:)]:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\ncrawled: 2025-12-02T01:30:40Z\n---\n\n# BNNSNDArrayDescriptor\n\n**Structure**\n\nA structure that describes the shape, stride, data type, and, optionally, the memory location of an n-dimensional array.\n\n## Declaration\n\n```swift\nstruct BNNSNDArrayDescriptor\n```\n\n## Overview\n\nYou use a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSNDArrayDescriptor] structure as the primary mechanism to pass the description of data to and from BNNS functions. The description may include a pointer to the memory location.\n\nFor example, use the following code when you’re passing immutable weights to a convolution layer:\n\n```swift\nlet weights: [Float] = [ ... ]\n\nweights.withUnsafeBufferPointer { weightsPtr in\n    \n    let weightsDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                  layout: BNNSDataLayoutConvolutionWeightsOIHW,\n                                                  size: (3, 3, 1, 1, 0, 0, 0, 0),\n                                                  stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                  data: UnsafeMutableRawPointer(mutating: weightsPtr.baseAddress!),\n                                                  data_type: .float,\n                                                  table_data: nil,\n                                                  table_data_type: .float,\n                                                  data_scale: 1,\n                                                  data_bias: 0)\n\n    \/\/ Create and apply convolution layer.\n\n}\n```\n\nSetting a stride value of `0` indicates that BNNS calculates stride, without padding, for that axis. For example, the stride for both of the following n-dimensional array descriptors is the same:\n\n```swift\nlet inputDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                           layout: BNNSDataLayoutRowMajorMatrix,\n                                           size: (3, 3, 0, 0, 0, 0, 0, 0),\n                                           stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                           data: nil,\n                                           data_type: .float,\n                                           table_data: nil,\n                                           table_data_type: .float,\n                                           data_scale: 1,\n                                           data_bias: 0)\n\nlet inputDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                           layout: BNNSDataLayoutRowMajorMatrix,\n                                           size: (3, 3, 0, 0, 0, 0, 0, 0),\n                                           stride: (1, 3, 0, 0, 0, 0, 0, 0),\n                                           data: nil,\n                                           data_type: .float,\n                                           table_data: nil,\n                                           table_data_type: .float,\n                                           data_scale: 1,\n                                           data_bias: 0)\n```\n\nYou don’t need to specify the data when, for example, you’re passing that data directly to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSFilterApplyBatch(_:_:_:_:_:_:)]. The following code creates [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSNDArrayDescriptor] structures for the input and output of a convolution operation. The data property of both descriptors is nil, and the input and output data are passed directly to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSFilterApplyBatch(_:_:_:_:_:_:)]:\n\n```swift\nlet input: [Float] = [ ... ]\nvar output: [Float] = [ ... ]\n\nlet inDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                         layout: BNNSDataLayoutImageCHW,\n                                         size: (6, 6, 1, 0, 0, 0, 0, 0),\n                                         stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                         data: nil,\n                                         data_type: .float,\n                                         table_data: nil,\n                                         table_data_type: .float,\n                                         data_scale: 1,\n                                         data_bias: 0)\n\nlet outDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                          layout: BNNSDataLayoutImageCHW,\n                                          size: (4, 4, 1, 0, 0, 0, 0, 0),\n                                          stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                          data: nil,\n                                          data_type: .float,\n                                          table_data: nil,\n                                          table_data_type: .float,\n                                          data_scale: 1,\n                                          data_bias: 0)\n\nvar parameters = BNNSLayerParametersConvolution(i_desc: inDescriptor,\n                                                w_desc: weightsDescriptor,\n                                                o_desc: outDescriptor,\n                                                bias: biasDescriptor,\n                                                activation: .identity,\n                                                x_stride: 1, y_stride: 1,\n                                                x_dilation_stride: 0, y_dilation_stride: 0,\n                                                x_padding: 0, y_padding: 0,\n                                                groups: 1,\n                                                pad: (0, 0, 0, 0))\n\n\/\/ `convolutionLayer` is a `BNNSFilter` created by `BNNSFilterCreateLayerConvolution` using `parameters`.\n\nlet error = BNNSFilterApplyBatch(convolutionLayer, 1,\n                                 input, inStride,\n                                 &output, outStride)\n\n```\n\n## Creating an Array Descriptor\n\n- **init(flags:layout:size:stride:data:data_type:table_data:table_data_type:data_scale:data_bias:)**: Returns a new n-dimensional array descriptor with the specified parameters.\n- **init(data:scalarType:shape:)**: Returns a new n-dimensional array descriptor that references the same data as the specified raw pointer.\n- **init(data:shape:)**: Returns a new n-dimensional array descriptor that references the same data as the specified pointer.\n- **init(dataType:shape:)**: Returns a new n-dimensional array descriptor from the specified data type and shape.\n- **init()**: Returns a new n-dimensional array descriptor.\n\n## Specifying the Behavior of an N-Dimensional Array.\n\n- **BNNSNDArrayFlags**: Options that control the behavior of an n-dimensional array.\n\n## Accessing the Properties of an Array Descriptor\n\n- **flags**: Flags that control some behaviors of the n-dimensional array.\n- **layout**: The dimension of the n-dimensional array.\n- **size**: The number of values in each dimension.\n- **stride**: The increment, in values, between consecutive elements in each dimension.\n- **data**: A pointer that is optional and points to the underlying data.\n- **data_type**: The data type of the n-dimensional array.\n- **table_data**: The lookup table for indexed data types.\n- **table_data_type**: The data type of the lookup table.\n- **data_scale**: The scale you use to convert integer and unsigned integer data to floating point.\n- **data_bias**: The bias you use to convert integer and unsigned integer data to floating point.\n- **shape**: The shape of the n-dimensional array.\n\n## Allocating and Deallocating Memory\n\n- **allocate(initializingFrom:shape:batchSize:)**: Returns a new n-dimensional array descriptor that’s initialized with a copy of the elements in the specified collection.\n- **allocate(randomUniformUsing:range:shape:batchSize:)**: Returns a new array descriptor that’s initialized with random integer values from the continuous uniform distribution.\n- **allocate(randomUniformUsing:range:shape:batchSize:)**: Returns a new array descriptor that’s initialized with random floating-point values from the continuous uniform distribution.\n- **allocate(randomIn:shape:batchSize:)**: Returns a new n-dimensional array descriptor that’s initialized with random values within the specified range.\n- **allocate(randomIn:shape:batchSize:)**: Returns a new n-dimensional array descriptor that’s initialized with random values within the specified range.\n- **allocate(randomIn:using:shape:batchSize:)**: Returns a new array descriptor that’s initialized with random values within the specified range, using the given generator as a source for randomness.\n- **allocate(randomIn:using:shape:batchSize:)**: Returns a new array descriptor that’s initialized with random values within the specified range, using the given generator as a source for randomness.\n- **allocate(repeating:shape:batchSize:)**: Returns a new n-dimensional array descriptor that’s initialized with a single, repeated scalar value.\n- **allocateUninitialized(scalarType:shape:batchSize:)**: Returns a new n-dimensional array descriptor that’s allocated with uninitialized memory.\n- **deallocate()**: Deallocates the memory block previously allocated to this n-dimensional array descriptor.\n\n## Generating an Array from an Array Descriptor’s Data\n\n- **makeArray(of:batchSize:)**: Returns a new array that contains a copy of the n-dimensional array descriptor’s data.\n\n## Initializers\n\n- **init(data:scalarType:shape:batchSize:)**\n- **init(data:shape:batchSize:)**\n\n## Instance Properties\n\n- **dataSize**\n\n## Type Methods\n\n- **allocate(randomNormalUsing:mean:standardDeviation:shape:batchSize:)**\n\n## N-dimensional array descriptor essentials\n\n- **BNNSLayerData**: A structure containing common layer parameters.\n- **BNNS.Shape**: Constants that describe the size and data layout of an n-dimensional array descriptor.\n- **BNNSDataLayout**: Constants that describe the data type of an n-dimensional array.\n- **BNNSDataType**: BNNS Data Types.\n- **BNNSDataLayoutGetRank(_:)**\n\n## Conforms To\n\n- BitwiseCopyable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a new n-dimensional array descriptor with the specified parameters.",
+          "name" : "init(flags:layout:size:stride:data:data_type:table_data:table_data_type:data_scale:data_bias:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/init(flags:layout:size:stride:data:data_type:table_data:table_data_type:data_scale:data_bias:)"
+        },
+        {
+          "description" : "Returns a new n-dimensional array descriptor that references the same data as the specified raw pointer.",
+          "name" : "init(data:scalarType:shape:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/init(data:scalarType:shape:)"
+        },
+        {
+          "description" : "Returns a new n-dimensional array descriptor that references the same data as the specified pointer.",
+          "name" : "init(data:shape:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/init(data:shape:)"
+        },
+        {
+          "description" : "Returns a new n-dimensional array descriptor from the specified data type and shape.",
+          "name" : "init(dataType:shape:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/init(dataType:shape:)"
+        },
+        {
+          "description" : "Returns a new n-dimensional array descriptor.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/init()"
+        }
+      ],
+      "title" : "Creating an Array Descriptor"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Options that control the behavior of an n-dimensional array.",
+          "name" : "BNNSNDArrayFlags",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayFlags"
+        }
+      ],
+      "title" : "Specifying the Behavior of an N-Dimensional Array."
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Flags that control some behaviors of the n-dimensional array.",
+          "name" : "flags",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/flags"
+        },
+        {
+          "description" : "The dimension of the n-dimensional array.",
+          "name" : "layout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/layout"
+        },
+        {
+          "description" : "The number of values in each dimension.",
+          "name" : "size",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/size"
+        },
+        {
+          "description" : "The increment, in values, between consecutive elements in each dimension.",
+          "name" : "stride",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/stride"
+        },
+        {
+          "description" : "A pointer that is optional and points to the underlying data.",
+          "name" : "data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/data"
+        },
+        {
+          "description" : "The data type of the n-dimensional array.",
+          "name" : "data_type",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/data_type"
+        },
+        {
+          "description" : "The lookup table for indexed data types.",
+          "name" : "table_data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/table_data"
+        },
+        {
+          "description" : "The data type of the lookup table.",
+          "name" : "table_data_type",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/table_data_type"
+        },
+        {
+          "description" : "The scale you use to convert integer and unsigned integer data to floating point.",
+          "name" : "data_scale",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/data_scale"
+        },
+        {
+          "description" : "The bias you use to convert integer and unsigned integer data to floating point.",
+          "name" : "data_bias",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/data_bias"
+        },
+        {
+          "description" : "The shape of the n-dimensional array.",
+          "name" : "shape",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/shape"
+        }
+      ],
+      "title" : "Accessing the Properties of an Array Descriptor"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a new n-dimensional array descriptor that’s initialized with a copy of the elements in the specified collection.",
+          "name" : "allocate(initializingFrom:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/allocate(initializingFrom:shape:batchSize:)"
+        },
+        {
+          "description" : "Returns a new array descriptor that’s initialized with random integer values from the continuous uniform distribution.",
+          "name" : "allocate(randomUniformUsing:range:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/allocate(randomUniformUsing:range:shape:batchSize:)-2rorb"
+        },
+        {
+          "description" : "Returns a new array descriptor that’s initialized with random floating-point values from the continuous uniform distribution.",
+          "name" : "allocate(randomUniformUsing:range:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/allocate(randomUniformUsing:range:shape:batchSize:)-761hg"
+        },
+        {
+          "description" : "Returns a new n-dimensional array descriptor that’s initialized with random values within the specified range.",
+          "name" : "allocate(randomIn:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/allocate(randomIn:shape:batchSize:)-1697a"
+        },
+        {
+          "description" : "Returns a new n-dimensional array descriptor that’s initialized with random values within the specified range.",
+          "name" : "allocate(randomIn:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/allocate(randomIn:shape:batchSize:)-5a2p2"
+        },
+        {
+          "description" : "Returns a new array descriptor that’s initialized with random values within the specified range, using the given generator as a source for randomness.",
+          "name" : "allocate(randomIn:using:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/allocate(randomIn:using:shape:batchSize:)-5kbi8"
+        },
+        {
+          "description" : "Returns a new array descriptor that’s initialized with random values within the specified range, using the given generator as a source for randomness.",
+          "name" : "allocate(randomIn:using:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/allocate(randomIn:using:shape:batchSize:)-3w6ig"
+        },
+        {
+          "description" : "Returns a new n-dimensional array descriptor that’s initialized with a single, repeated scalar value.",
+          "name" : "allocate(repeating:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/allocate(repeating:shape:batchSize:)"
+        },
+        {
+          "description" : "Returns a new n-dimensional array descriptor that’s allocated with uninitialized memory.",
+          "name" : "allocateUninitialized(scalarType:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/allocateUninitialized(scalarType:shape:batchSize:)"
+        },
+        {
+          "description" : "Deallocates the memory block previously allocated to this n-dimensional array descriptor.",
+          "name" : "deallocate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/deallocate()"
+        }
+      ],
+      "title" : "Allocating and Deallocating Memory"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a new array that contains a copy of the n-dimensional array descriptor’s data.",
+          "name" : "makeArray(of:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/makeArray(of:batchSize:)"
+        }
+      ],
+      "title" : "Generating an Array from an Array Descriptor’s Data"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "init(data:scalarType:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/init(data:scalarType:shape:batchSize:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(data:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/init(data:shape:batchSize:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "dataSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/dataSize"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "allocate(randomNormalUsing:mean:standardDeviation:shape:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor\/allocate(randomNormalUsing:mean:standardDeviation:shape:batchSize:)"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A structure containing common layer parameters.",
+          "name" : "BNNSLayerData",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerData"
+        },
+        {
+          "description" : "Constants that describe the size and data layout of an n-dimensional array descriptor.",
+          "name" : "BNNS.Shape",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/Shape"
+        },
+        {
+          "description" : "Constants that describe the data type of an n-dimensional array.",
+          "name" : "BNNSDataLayout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSDataLayout"
+        },
+        {
+          "description" : "BNNS Data Types.",
+          "name" : "BNNSDataType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSDataType"
+        },
+        {
+          "description" : "",
+          "name" : "BNNSDataLayoutGetRank(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSDataLayoutGetRank(_:)"
+        }
+      ],
+      "title" : "N-dimensional array descriptor essentials"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSNDArrayDescriptor",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSNDArrayDescriptor"
+}

@@ -1,0 +1,88 @@
+{
+  "abstract" : "A collection of state exported by the focused scene or view and its ancestors.",
+  "codeExamples" : [
+    {
+      "code" : "extension FocusedValues {\n    @Entry var focusedDocument: Binding<MyDocument>?\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct DocumentCellView: View {\n    @Binding var document: MyDocument\n\n    var body: some View {\n        Text(\"Document Content\")\n            .focusedValue(\\.focusedDocument, $document)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct DocumentViewer: View {\n    @Binding var document: MyDocument\n\n    var body: some View {\n        Text(\"Document Content\")\n            .focusedSceneValue(\\.focusedDocument, $document)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@main\nstruct DocumentApp: App {\n    @FocusedBinding(\\.focusedDocument) var currentDocument: MyDocument?\n\n    var body: some Scene {\n        DocumentGroup(newDocument: MyDocument()) { file in\n            ContentView(document: file.$document)\n                .focusedValue(\\.focusedDocument, file.$document)\n        }\n        .commands {\n            CommandGroup(after: .undoRedo) {\n                Button(\"Increment\") {\n                    currentDocument?.value += 1\n                }.disabled(currentDocument == nil)\n            }\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "Equatable"
+  ],
+  "contentHash" : "e772a09c7d1be44e5f491b080288872830a8b8b2843f0445cc34aec826db5c18",
+  "crawledAt" : "2025-12-02T17:43:11Z",
+  "declaration" : {
+    "code" : "struct FocusedValues",
+    "language" : "swift"
+  },
+  "id" : "D7F840CF-54AE-407D-9AF2-DB8D43067944",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Creating Custom Focused Values\n\nUse the `Entry` macro to create custom focused values by extending `FocusedValues` with new properties:\n\nThe `Entry` macro automatically generates the underlying key type and provides the getter and setter for the focused value. Since the default value for focused values is always `nil`, all focused values must be optional.\n\n### Publishing Values in Your Views\n\nViews publish focused values using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/focusedValue(_:_:)] modifier:\n\nFor scene-wide values that should be available depending on the focused scene, use [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/focusedSceneValue(_:_:)]:\n\n### Accessing the current focused value\n\nUse the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/FocusedValue] property wrapper in your [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/App] or [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View] to read the current value in the `body`. The [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/FocusedBinding] can be used as a convenient way to access the `wrappedValue` if the value type of the focused value is a `Binding`:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/FocusedValues\ncrawled: 2025-12-02T17:43:11Z\n---\n\n# FocusedValues\n\n**Structure**\n\nA collection of state exported by the focused scene or view and its ancestors.\n\n## Declaration\n\n```swift\nstruct FocusedValues\n```\n\n## Creating Custom Focused Values\n\nUse the `Entry` macro to create custom focused values by extending `FocusedValues` with new properties:\n\n```swift\nextension FocusedValues {\n    @Entry var focusedDocument: Binding<MyDocument>?\n}\n```\n\nThe `Entry` macro automatically generates the underlying key type and provides the getter and setter for the focused value. Since the default value for focused values is always `nil`, all focused values must be optional.\n\n### Publishing Values in Your Views\n\nViews publish focused values using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/focusedValue(_:_:)] modifier:\n\n```swift\nstruct DocumentCellView: View {\n    @Binding var document: MyDocument\n\n    var body: some View {\n        Text(\"Document Content\")\n            .focusedValue(\\.focusedDocument, $document)\n    }\n}\n```\n\nFor scene-wide values that should be available depending on the focused scene, use [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/focusedSceneValue(_:_:)]:\n\n```swift\nstruct DocumentViewer: View {\n    @Binding var document: MyDocument\n\n    var body: some View {\n        Text(\"Document Content\")\n            .focusedSceneValue(\\.focusedDocument, $document)\n    }\n}\n```\n\n### Accessing the current focused value\n\nUse the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/FocusedValue] property wrapper in your [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/App] or [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View] to read the current value in the `body`. The [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/FocusedBinding] can be used as a convenient way to access the `wrappedValue` if the value type of the focused value is a `Binding`:\n\n```swift\n@main\nstruct DocumentApp: App {\n    @FocusedBinding(\\.focusedDocument) var currentDocument: MyDocument?\n\n    var body: some Scene {\n        DocumentGroup(newDocument: MyDocument()) { file in\n            ContentView(document: file.$document)\n                .focusedValue(\\.focusedDocument, file.$document)\n        }\n        .commands {\n            CommandGroup(after: .undoRedo) {\n                Button(\"Increment\") {\n                    currentDocument?.value += 1\n                }.disabled(currentDocument == nil)\n            }\n        }\n    }\n}\n```\n\n## Getting the value for a key\n\n- **subscript(_:)**: Reads and writes values associated with a given focused value key.\n\n## Exposing value types to focused views\n\n- **focusedValue(_:)**: Sets the focused value for the given object type.\n- **focusedValue(_:_:)**: Modifies this view by injecting a value that you provide for use by other views whose state depends on the focused view hierarchy.\n- **focusedSceneValue(_:)**: Sets the focused value for the given object type at a scene-wide scope.\n- **focusedSceneValue(_:_:)**: Modifies this view by injecting a value that you provide for use by other views whose state depends on the focused scene.\n\n## Conforms To\n\n- Copyable\n- Equatable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Reads and writes values associated with a given focused value key.",
+          "name" : "subscript(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/FocusedValues\/subscript(_:)"
+        }
+      ],
+      "title" : "Getting the value for a key"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the focused value for the given object type.",
+          "name" : "focusedValue(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/focusedValue(_:)"
+        },
+        {
+          "description" : "Modifies this view by injecting a value that you provide for use by other views whose state depends on the focused view hierarchy.",
+          "name" : "focusedValue(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/focusedValue(_:_:)"
+        },
+        {
+          "description" : "Sets the focused value for the given object type at a scene-wide scope.",
+          "name" : "focusedSceneValue(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/focusedSceneValue(_:)"
+        },
+        {
+          "description" : "Modifies this view by injecting a value that you provide for use by other views whose state depends on the focused scene.",
+          "name" : "focusedSceneValue(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/focusedSceneValue(_:_:)"
+        }
+      ],
+      "title" : "Exposing value types to focused views"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "FocusedValues",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/FocusedValues"
+}

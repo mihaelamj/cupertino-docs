@@ -1,0 +1,279 @@
+{
+  "abstract" : "Information that represents the customer’s purchase of a product in your app.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "Equatable",
+    "Hashable",
+    "Identifiable",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "8ad082d5cdc628da6b68bc4745acaa467d9a09cb95a43d47329fca9911438187",
+  "crawledAt" : "2025-12-02T17:05:00Z",
+  "declaration" : {
+    "code" : "struct Transaction",
+    "language" : "swift"
+  },
+  "id" : "180D304F-C3C1-45A4-A743-A24FDBDB1FA8",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "StoreKit",
+  "overview" : "## Overview\n\nA *transaction* represents a successful In-App Purchase. The App Store generates a transaction each time a customer purchases an In-App Purchase product or renews a subscription. For each transaction that represents a current purchase, your app unlocks the purchased content or service and finishes the transaction.\n\nUse the `Transaction` type to perform these transaction-related tasks:\n\n### Access transaction history and current entitlements\n\nYour app doesn’t create transaction objects. Instead, StoreKit automatically makes up-to-date transactions available to your app, including when someone launches the app for the first time.\n\nYou access transactions in several ways:\n\nThe most important use of transaction information is for determining which In-App Purchases the customer has paid access to, so your app can unlock the content or service. The [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Transaction\/currentEntitlements] API provides the information you need to unlock all of the customer’s paid content in your app. Use `currentEntitlements` to get a list of transactions for all the products the customer is currently entitled to, including non-consumable In-App Purchases and currently active subscriptions.\n\n### Verify transactions\n\nThe App Store cryptographically signs transaction information in JWS format. StoreKit automatically validates and returns the signed information, wrapped in a [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult]. When the `VerificationResult` wraps a `Transaction` value, it provides the raw JWS string in the [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/jwsRepresentation-21vgo] property. If you get a transaction through [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/verified(_:)], the information passed validation. If you get it through [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/unverified(_:_:)], the information didn’t pass StoreKit’s automatic validation. Your app can immediately access the transaction information in the [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/transaction-properties].\n\nTo perform your own validation on the device, use the verification result’s [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/jwsRepresentation-21vgo] string, and use the provided convenience properties [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/headerData-9egfp], [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/payloadData-uyle], and [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/signatureData-4pyv8]. For added control and security, send the `jwsRepresentation` to your server to verify. Consider using the App Store Server Library to implement your verification. The library provides the functions `verifyAndDecodeTransaction` and `verifyAndDecodeRenewalInfo` in each language the library supports. For more information, see [doc:\/\/com.apple.documentation\/documentation\/AppStoreServerAPI\/simplifying-your-implementation-by-using-the-app-store-server-library].\n\nIf StoreKit returns a transaction as verified, the transaction is valid for the device. For information about performing your own verification for a device, see [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Transaction\/deviceVerification].\n\nFor more information about JWS, see the [https:\/\/datatracker.ietf.org\/doc\/html\/rfc7515] specification.\n\n### Access purchases made with the original API\n\nAll In-App Purchases that customers make are equally available to your app in this `Transaction` API, and in receipts using the [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/original-api-for-in-app-purchase], as follows:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\ncrawled: 2025-12-02T17:05:00Z\n---\n\n# Transaction\n\n**Structure**\n\nInformation that represents the customer’s purchase of a product in your app.\n\n## Declaration\n\n```swift\nstruct Transaction\n```\n\n## Overview\n\nA *transaction* represents a successful In-App Purchase. The App Store generates a transaction each time a customer purchases an In-App Purchase product or renews a subscription. For each transaction that represents a current purchase, your app unlocks the purchased content or service and finishes the transaction.\n\nUse the `Transaction` type to perform these transaction-related tasks:\n\n- Get the customer’s transaction history, latest transactions, and current entitlements to unlock content and services.\n- Access transaction properties.\n- Finish a transaction after your app delivers the purchased content or service.\n- Access the raw JSON Web Signature (JWS) string and supporting values to verify the transaction information.\n- Listen for new transactions while the app is running.\n- Begin a refund request from within your app.\n\n### Access transaction history and current entitlements\n\nYour app doesn’t create transaction objects. Instead, StoreKit automatically makes up-to-date transactions available to your app, including when someone launches the app for the first time.\n\n\n\nYou access transactions in several ways:\n\n- Get transaction history anytime by accessing the static [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Transaction\/all] sequence, or get just the most recent transaction for a product with the [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Product\/latestTransaction] property of [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Product].\n- Receive notifications for new transactions while your app is running when customers complete a purchase outside of the app, including on another device, through the transaction listener, [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Transaction\/updates].\n- Access the latest transaction for a subscription group through the subscription status API, using [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Product\/SubscriptionInfo\/Status-swift.struct\/transaction].\n- After a successful In-App Purchase, StoreKit returns the transaction through [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Product\/PurchaseResult\/success(_:)].\n\nThe most important use of transaction information is for determining which In-App Purchases the customer has paid access to, so your app can unlock the content or service. The [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Transaction\/currentEntitlements] API provides the information you need to unlock all of the customer’s paid content in your app. Use `currentEntitlements` to get a list of transactions for all the products the customer is currently entitled to, including non-consumable In-App Purchases and currently active subscriptions.\n\n### Verify transactions\n\nThe App Store cryptographically signs transaction information in JWS format. StoreKit automatically validates and returns the signed information, wrapped in a [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult]. When the `VerificationResult` wraps a `Transaction` value, it provides the raw JWS string in the [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/jwsRepresentation-21vgo] property. If you get a transaction through [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/verified(_:)], the information passed validation. If you get it through [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/unverified(_:_:)], the information didn’t pass StoreKit’s automatic validation. Your app can immediately access the transaction information in the [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/transaction-properties].\n\nTo perform your own validation on the device, use the verification result’s [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/jwsRepresentation-21vgo] string, and use the provided convenience properties [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/headerData-9egfp], [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/payloadData-uyle], and [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/VerificationResult\/signatureData-4pyv8]. For added control and security, send the `jwsRepresentation` to your server to verify. Consider using the App Store Server Library to implement your verification. The library provides the functions `verifyAndDecodeTransaction` and `verifyAndDecodeRenewalInfo` in each language the library supports. For more information, see [doc:\/\/com.apple.documentation\/documentation\/AppStoreServerAPI\/simplifying-your-implementation-by-using-the-app-store-server-library].\n\n\n\nIf StoreKit returns a transaction as verified, the transaction is valid for the device. For information about performing your own verification for a device, see [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Transaction\/deviceVerification].\n\nFor more information about JWS, see the [https:\/\/datatracker.ietf.org\/doc\/html\/rfc7515] specification.\n\n### Access purchases made with the original API\n\nAll In-App Purchases that customers make are equally available to your app in this `Transaction` API, and in receipts using the [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/original-api-for-in-app-purchase], as follows:\n\n- New purchases that customers make with the original API are available immediately using the `Transaction` API.\n- Purchases that customers make with the [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/Product\/purchase(options:)] method are available in the original API when your app refreshes the receipt. For more information, see [doc:\/\/com.apple.storekit\/documentation\/StoreKit\/SKReceiptRefreshRequest].\n\n## Transaction properties\n\n- **Transaction properties**: The properties of a transaction, including identifiers, purchase and revocation dates and details, status, and offer details.\n- **appTransactionID**: The unique identifier of the app download transaction.\n\n## Monitoring transaction-related changes\n\n- **updates**: The asynchronous sequence that emits a transaction when the system creates or updates transactions that occur outside the app or on other devices.\n- **Transaction.Transactions**: An asynchronous sequence of transactions.\n\n## Getting transaction history\n\n- **latest(for:)**: Gets the customer’s most recent transaction for an In-App Purchase.\n- **all**: A sequence that emits all the customer’s transactions for your app.\n- **unfinished**: A sequence that emits unfinished transactions for the customer.\n- **SKIncludeConsumableInAppPurchaseHistory**: A Boolean value that determines whether StoreKit includes finished consumable In-App Purchases in transaction information.\n\n## Getting current entitlements\n\n- **currentEntitlements**: A sequence of the latest transactions that entitle a customer to In-App Purchases and subscriptions.\n\n## Getting transactions for a product\n\n- **all(for:)**: Gets all the transactions associated with this product ID.\n\n## Finishing the transaction\n\n- **finish()**: Indicates to the App Store that the app delivered the purchased content or enabled the service to finish the transaction.\n- **unfinished**: A sequence that emits unfinished transactions for the customer.\n\n## Verifying transactions\n\n- **deviceVerification**: The device verification value you use to verify whether the transaction belongs to the device.\n- **deviceVerificationNonce**: The UUID for computing the device verification value.\n- **signedDate**: The date that the App Store signed the JWS transaction.\n\n## Getting transaction info in JSON format\n\n- **jsonRepresentation**: The JSON representation of the transaction information.\n\n## Requesting refunds\n\n- **Testing refund requests**: Test your app’s implementation of refund requests, and your app’s and server’s handling of approved and declined refunds.\n- **beginRefundRequest(in:)**: Presents the refund request sheet for the transaction in a window scene.\n- **beginRefundRequest(in:)**: Presents the refund request sheet for the transaction in a view controller.\n- **beginRefundRequest(for:in:)**: Presents the refund request sheet for the specified transaction in a window scene.\n- **beginRefundRequest(for:in:)**: Presents the refund request sheet for the specified transaction in a view controller.\n- **Transaction.RefundRequestError**: The error codes for refund requests.\n- **Transaction.RefundRequestStatus**: The status codes for refund requests.\n\n## Advanced Commerce transaction data\n\n- **advancedCommerceInfo**: Metadata for transactions that use the Advanced Commerce API.\n- **Transaction.AdvancedCommerceInfo**: Metadata for transactions that use the Advanced Commerce API.\n\n## Getting offer types\n\n- **Transaction.OfferType**: The types of offers that apply to a transaction.\n\n## Deprecated\n\n- **currentEntitlement(for:)**: Gets the latest transactions that entitle the customer to a specified product.\n- **currentEntitlements(for:)**: Gets the transactions that entitle the user to items purchased under a product ID.\n- **offerPeriodStringRepresentation**: The string representation of the offer period applied to the subscription offer for this transaction.\n\n## Transaction history and entitlements\n\n- **updates**: The asynchronous sequence that emits a transaction when the system creates or updates transactions that occur outside the app or on other devices.\n- **all**: A sequence that emits all the customer’s transactions for your app.\n- **currentEntitlements**: A sequence of the latest transactions that entitle a customer to In-App Purchases and subscriptions.\n\n## Conforms To\n\n- Copyable\n- CustomDebugStringConvertible\n- Equatable\n- Hashable\n- Identifiable\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The properties of a transaction, including identifiers, purchase and revocation dates and details, status, and offer details.",
+          "name" : "Transaction properties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/transaction-properties"
+        },
+        {
+          "description" : "The unique identifier of the app download transaction.",
+          "name" : "appTransactionID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/appTransactionID"
+        }
+      ],
+      "title" : "Transaction properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The asynchronous sequence that emits a transaction when the system creates or updates transactions that occur outside the app or on other devices.",
+          "name" : "updates",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/updates"
+        },
+        {
+          "description" : "An asynchronous sequence of transactions.",
+          "name" : "Transaction.Transactions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/Transactions"
+        }
+      ],
+      "title" : "Monitoring transaction-related changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Gets the customer’s most recent transaction for an In-App Purchase.",
+          "name" : "latest(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/latest(for:)"
+        },
+        {
+          "description" : "A sequence that emits all the customer’s transactions for your app.",
+          "name" : "all",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/all"
+        },
+        {
+          "description" : "A sequence that emits unfinished transactions for the customer.",
+          "name" : "unfinished",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/unfinished"
+        },
+        {
+          "description" : "A Boolean value that determines whether StoreKit includes finished consumable In-App Purchases in transaction information.",
+          "name" : "SKIncludeConsumableInAppPurchaseHistory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Information-Property-List\/SKIncludeConsumableInAppPurchaseHistory"
+        }
+      ],
+      "title" : "Getting transaction history"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A sequence of the latest transactions that entitle a customer to In-App Purchases and subscriptions.",
+          "name" : "currentEntitlements",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/currentEntitlements"
+        }
+      ],
+      "title" : "Getting current entitlements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Gets all the transactions associated with this product ID.",
+          "name" : "all(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/all(for:)"
+        }
+      ],
+      "title" : "Getting transactions for a product"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Indicates to the App Store that the app delivered the purchased content or enabled the service to finish the transaction.",
+          "name" : "finish()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/finish()"
+        },
+        {
+          "description" : "A sequence that emits unfinished transactions for the customer.",
+          "name" : "unfinished",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/unfinished"
+        }
+      ],
+      "title" : "Finishing the transaction"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The device verification value you use to verify whether the transaction belongs to the device.",
+          "name" : "deviceVerification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/deviceVerification"
+        },
+        {
+          "description" : "The UUID for computing the device verification value.",
+          "name" : "deviceVerificationNonce",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/deviceVerificationNonce"
+        },
+        {
+          "description" : "The date that the App Store signed the JWS transaction.",
+          "name" : "signedDate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/signedDate"
+        }
+      ],
+      "title" : "Verifying transactions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The JSON representation of the transaction information.",
+          "name" : "jsonRepresentation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/jsonRepresentation"
+        }
+      ],
+      "title" : "Getting transaction info in JSON format"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Test your app’s implementation of refund requests, and your app’s and server’s handling of approved and declined refunds.",
+          "name" : "Testing refund requests",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/testing-refund-requests"
+        },
+        {
+          "description" : "Presents the refund request sheet for the transaction in a window scene.",
+          "name" : "beginRefundRequest(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/beginRefundRequest(in:)-9k0pj"
+        },
+        {
+          "description" : "Presents the refund request sheet for the transaction in a view controller.",
+          "name" : "beginRefundRequest(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/beginRefundRequest(in:)-63bvd"
+        },
+        {
+          "description" : "Presents the refund request sheet for the specified transaction in a window scene.",
+          "name" : "beginRefundRequest(for:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/beginRefundRequest(for:in:)-65tph"
+        },
+        {
+          "description" : "Presents the refund request sheet for the specified transaction in a view controller.",
+          "name" : "beginRefundRequest(for:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/beginRefundRequest(for:in:)-9mscy"
+        },
+        {
+          "description" : "The error codes for refund requests.",
+          "name" : "Transaction.RefundRequestError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/RefundRequestError"
+        },
+        {
+          "description" : "The status codes for refund requests.",
+          "name" : "Transaction.RefundRequestStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/RefundRequestStatus"
+        }
+      ],
+      "title" : "Requesting refunds"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Metadata for transactions that use the Advanced Commerce API.",
+          "name" : "advancedCommerceInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/advancedCommerceInfo-swift.property"
+        },
+        {
+          "description" : "Metadata for transactions that use the Advanced Commerce API.",
+          "name" : "Transaction.AdvancedCommerceInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/AdvancedCommerceInfo-swift.struct"
+        }
+      ],
+      "title" : "Advanced Commerce transaction data"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The types of offers that apply to a transaction.",
+          "name" : "Transaction.OfferType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/OfferType-swift.struct"
+        }
+      ],
+      "title" : "Getting offer types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Gets the latest transactions that entitle the customer to a specified product.",
+          "name" : "currentEntitlement(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/currentEntitlement(for:)"
+        },
+        {
+          "description" : "Gets the transactions that entitle the user to items purchased under a product ID.",
+          "name" : "currentEntitlements(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/currentEntitlements(for:)"
+        },
+        {
+          "description" : "The string representation of the offer period applied to the subscription offer for this transaction.",
+          "name" : "offerPeriodStringRepresentation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/offerPeriodStringRepresentation"
+        }
+      ],
+      "title" : "Deprecated"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The asynchronous sequence that emits a transaction when the system creates or updates transactions that occur outside the app or on other devices.",
+          "name" : "updates",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/updates"
+        },
+        {
+          "description" : "A sequence that emits all the customer’s transactions for your app.",
+          "name" : "all",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/all"
+        },
+        {
+          "description" : "A sequence of the latest transactions that entitle a customer to In-App Purchases and subscriptions.",
+          "name" : "currentEntitlements",
+          "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction\/currentEntitlements"
+        }
+      ],
+      "title" : "Transaction history and entitlements"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Transaction",
+  "url" : "https:\/\/developer.apple.com\/documentation\/StoreKit\/Transaction"
+}

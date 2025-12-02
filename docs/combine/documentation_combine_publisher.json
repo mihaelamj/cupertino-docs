@@ -1,0 +1,936 @@
+{
+  "abstract" : "Declares that a type can transmit a sequence of values over time.",
+  "codeExamples" : [
+    {
+      "code" : "let cancellable = [1, 2, 3, 4, 5].publisher\n    .filter {\n        $0 % 2 == 0\n    }\n    .sink {\n        print (\"Even number: \\($0)\")\n    }\n\/\/ Prints:\n\/\/ Even number: 2\n\/\/ Even number: 4",
+      "language" : "swift"
+    }
+  ],
+  "conformingTypes" : [
+    "AnyPublisher",
+    "CurrentValueSubject",
+    "Deferred",
+    "Empty",
+    "Fail",
+    "Future",
+    "Just",
+    "ObservableObjectPublisher",
+    "PassthroughSubject",
+    "Published.Publisher",
+    "Publishers.AllSatisfy",
+    "Publishers.AssertNoFailure",
+    "Publishers.Autoconnect",
+    "Publishers.Breakpoint",
+    "Publishers.Buffer",
+    "Publishers.Catch",
+    "Publishers.Collect",
+    "Publishers.CollectByCount",
+    "Publishers.CollectByTime",
+    "Publishers.CombineLatest",
+    "Publishers.CombineLatest3",
+    "Publishers.CombineLatest4",
+    "Publishers.CompactMap",
+    "Publishers.Comparison",
+    "Publishers.Concatenate",
+    "Publishers.Contains",
+    "Publishers.ContainsWhere",
+    "Publishers.Count",
+    "Publishers.Debounce",
+    "Publishers.Decode",
+    "Publishers.Delay",
+    "Publishers.Drop",
+    "Publishers.DropUntilOutput",
+    "Publishers.DropWhile",
+    "Publishers.Encode",
+    "Publishers.Filter",
+    "Publishers.First",
+    "Publishers.FirstWhere",
+    "Publishers.FlatMap",
+    "Publishers.HandleEvents",
+    "Publishers.IgnoreOutput",
+    "Publishers.Last",
+    "Publishers.LastWhere",
+    "Publishers.MakeConnectable",
+    "Publishers.Map",
+    "Publishers.MapError",
+    "Publishers.MapKeyPath",
+    "Publishers.MapKeyPath2",
+    "Publishers.MapKeyPath3",
+    "Publishers.MeasureInterval",
+    "Publishers.Merge",
+    "Publishers.Merge3",
+    "Publishers.Merge4",
+    "Publishers.Merge5",
+    "Publishers.Merge6",
+    "Publishers.Merge7",
+    "Publishers.Merge8",
+    "Publishers.MergeMany",
+    "Publishers.Multicast",
+    "Publishers.Output",
+    "Publishers.PrefixUntilOutput",
+    "Publishers.PrefixWhile",
+    "Publishers.Print",
+    "Publishers.ReceiveOn",
+    "Publishers.Reduce",
+    "Publishers.RemoveDuplicates",
+    "Publishers.ReplaceEmpty",
+    "Publishers.ReplaceError",
+    "Publishers.Retry",
+    "Publishers.Scan",
+    "Publishers.Sequence",
+    "Publishers.SetFailureType",
+    "Publishers.Share",
+    "Publishers.SubscribeOn",
+    "Publishers.SwitchToLatest",
+    "Publishers.Throttle",
+    "Publishers.Timeout",
+    "Publishers.TryAllSatisfy",
+    "Publishers.TryCatch",
+    "Publishers.TryCompactMap",
+    "Publishers.TryComparison",
+    "Publishers.TryContainsWhere",
+    "Publishers.TryDropWhile",
+    "Publishers.TryFilter",
+    "Publishers.TryFirstWhere",
+    "Publishers.TryLastWhere",
+    "Publishers.TryMap",
+    "Publishers.TryPrefixWhile",
+    "Publishers.TryReduce",
+    "Publishers.TryRemoveDuplicates",
+    "Publishers.TryScan",
+    "Publishers.Zip",
+    "Publishers.Zip3",
+    "Publishers.Zip4",
+    "Record"
+  ],
+  "contentHash" : "4f3c1935f373fedc3f40f881560ed84a5fe56d5ddbd485e68343079d98462680",
+  "crawledAt" : "2025-12-01T22:06:28Z",
+  "declaration" : {
+    "code" : "protocol Publisher<Output, Failure>",
+    "language" : "swift"
+  },
+  "id" : "D1A1B945-3A27-4EAD-AFA5-C5E27D790DF5",
+  "inheritedBy" : [
+    "ConnectablePublisher",
+    "Subject"
+  ],
+  "kind" : "protocol",
+  "module" : "Combine",
+  "overview" : "## Overview\n\nA publisher delivers elements to one or more [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber] instances. The subscriber’s [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber\/Input] and [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber\/Failure] associated types must match the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/Output] and [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/Failure] types declared by the publisher. The publisher implements the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/receive(subscriber:)]method to accept a subscriber.\n\nAfter this, the publisher can call the following methods on the subscriber:\n\nEvery `Publisher` must adhere to this contract for downstream subscribers to function correctly.\n\n### Using operators\n\nExtensions on `Publisher` define a wide variety of *operators* that you compose to create sophisticated event-processing chains. Each operator returns a type that implements the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher] protocol Most of these types exist as extensions on the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publishers] enumeration. For example, the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/map(_:)-99evh] operator returns an instance of [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publishers\/Map].\n\nUse operators to assemble a chain of republishers, optionally ending with a subscriber, that processes elements produced by upstream publishers. Each operator creates and configures an instance of a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher] or [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber], and subscribes it to the publisher that you call the method on.\n\nIn the following example, a sequence publisher emits the integers 1, 2, 3, 4, and 5. A [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/filter(_:)] operator creates a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publishers\/Filter] publisher to only republish even values. A second operator creates a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscribers\/Sink] subscriber to print out each value received. The sink subscriber automatically subscribes to the filter publisher, at which point the filter publisher subscribes to its upstream publisher, the sequence publisher.\n\n## Creating Your Own Publishers\n\nRather than implementing the `Publisher` protocol yourself, you can create your own publisher by using one of several types provided by the Combine framework:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\ncrawled: 2025-12-01T22:06:28Z\n---\n\n# Publisher\n\n**Protocol**\n\nDeclares that a type can transmit a sequence of values over time.\n\n## Declaration\n\n```swift\nprotocol Publisher<Output, Failure>\n```\n\n## Overview\n\nA publisher delivers elements to one or more [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber] instances. The subscriber’s [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber\/Input] and [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber\/Failure] associated types must match the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/Output] and [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/Failure] types declared by the publisher. The publisher implements the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/receive(subscriber:)]method to accept a subscriber.\n\nAfter this, the publisher can call the following methods on the subscriber:\n\n- [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber\/receive(subscription:)]: Acknowledges the subscribe request and returns a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscription] instance. The subscriber uses the subscription to demand elements from the publisher and can use it to cancel publishing.\n- [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber\/receive(_:)]: Delivers one element from the publisher to the subscriber.\n- [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber\/receive(completion:)]: Informs the subscriber that publishing has ended, either normally or with an error.\n\nEvery `Publisher` must adhere to this contract for downstream subscribers to function correctly.\n\n\n\n### Using operators\n\nExtensions on `Publisher` define a wide variety of *operators* that you compose to create sophisticated event-processing chains. Each operator returns a type that implements the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher] protocol Most of these types exist as extensions on the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publishers] enumeration. For example, the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/map(_:)-99evh] operator returns an instance of [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publishers\/Map].\n\nUse operators to assemble a chain of republishers, optionally ending with a subscriber, that processes elements produced by upstream publishers. Each operator creates and configures an instance of a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher] or [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber], and subscribes it to the publisher that you call the method on.\n\nIn the following example, a sequence publisher emits the integers 1, 2, 3, 4, and 5. A [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/filter(_:)] operator creates a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publishers\/Filter] publisher to only republish even values. A second operator creates a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscribers\/Sink] subscriber to print out each value received. The sink subscriber automatically subscribes to the filter publisher, at which point the filter publisher subscribes to its upstream publisher, the sequence publisher.\n\n```swift\nlet cancellable = [1, 2, 3, 4, 5].publisher\n    .filter {\n        $0 % 2 == 0\n    }\n    .sink {\n        print (\"Even number: \\($0)\")\n    }\n\/\/ Prints:\n\/\/ Even number: 2\n\/\/ Even number: 4\n```\n\n## Creating Your Own Publishers\n\nRather than implementing the `Publisher` protocol yourself, you can create your own publisher by using one of several types provided by the Combine framework:\n\n- Use a concrete subclass of [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subject], such as [doc:\/\/com.apple.Combine\/documentation\/Combine\/PassthroughSubject], to publish values on-demand by calling its [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subject\/send(_:)] method.\n- Use a [doc:\/\/com.apple.Combine\/documentation\/Combine\/CurrentValueSubject] to publish whenever you update the subject’s underlying value.\n- Add the `@Published` annotation to a property of one of your own types. In doing so, the property gains a publisher that emits an event whenever the property’s value changes. See the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Published] type for an example of this approach.\n\n## Declaring supporting types\n\n- **Output**: The kind of values published by this publisher.\n- **Failure**: The kind of errors this publisher might publish.\n\n## Working with subscribers\n\n- **receive(subscriber:)**: Attaches the specified subscriber to this publisher.\n- **subscribe(_:)**: Attaches the specified subscriber to this publisher.\n- **subscribe(_:)**: Attaches the specified subject to this publisher.\n\n## Mapping elements\n\n- **map(_:)**: Transforms all elements from the upstream publisher with a provided closure.\n- **tryMap(_:)**: Transforms all elements from the upstream publisher with a provided error-throwing closure.\n- **mapError(_:)**: Converts any failure from the upstream publisher into a new error.\n- **replaceNil(with:)**: Replaces nil elements in the stream with the provided element.\n- **scan(_:_:)**: Transforms elements from the upstream publisher by providing the current element to a closure along with the last value returned by the closure.\n- **tryScan(_:_:)**: Transforms elements from the upstream publisher by providing the current element to an error-throwing closure along with the last value returned by the closure.\n- **setFailureType(to:)**: Changes the failure type declared by the upstream publisher.\n\n## Filtering elements\n\n- **filter(_:)**: Republishes all elements that match a provided closure.\n- **tryFilter(_:)**: Republishes all elements that match a provided error-throwing closure.\n- **compactMap(_:)**: Calls a closure with each received element and publishes any returned optional that has a value.\n- **tryCompactMap(_:)**: Calls an error-throwing closure with each received element and publishes any returned optional that has a value.\n- **removeDuplicates()**: Publishes only elements that don’t match the previous element.\n- **removeDuplicates(by:)**: Publishes only elements that don’t match the previous element, as evaluated by a provided closure.\n- **tryRemoveDuplicates(by:)**: Publishes only elements that don’t match the previous element, as evaluated by a provided error-throwing closure.\n- **replaceEmpty(with:)**: Replaces an empty stream with the provided element.\n- **replaceError(with:)**: Replaces any errors in the stream with the provided element.\n\n## Reducing elements\n\n- **collect()**: Collects all received elements, and emits a single array of the collection when the upstream publisher finishes.\n- **collect(_:)**: Collects up to the specified number of elements, and then emits a single array of the collection.\n- **collect(_:options:)**: Collects elements by a given time-grouping strategy, and emits a single array of the collection.\n- **Publishers.TimeGroupingStrategy**: A strategy for collecting received elements.\n- **ignoreOutput()**: Ignores all upstream elements, but passes along the upstream publisher’s completion state (finished or failed).\n- **reduce(_:_:)**: Applies a closure that collects each element of a stream and publishes a final result upon completion.\n- **tryReduce(_:_:)**: Applies an error-throwing closure that collects each element of a stream and publishes a final result upon completion.\n\n## Applying mathematical operations on elements\n\n- **count()**: Publishes the number of elements received from the upstream publisher.\n- **max()**: Publishes the maximum value received from the upstream publisher, after it finishes.\n- **max(by:)**: Publishes the maximum value received from the upstream publisher, using the provided ordering closure.\n- **tryMax(by:)**: Publishes the maximum value received from the upstream publisher, using the provided error-throwing closure to order the items.\n- **min()**: Publishes the minimum value received from the upstream publisher, after it finishes.\n- **min(by:)**: Publishes the minimum value received from the upstream publisher, after it finishes.\n- **tryMin(by:)**: Publishes the minimum value received from the upstream publisher, using the provided error-throwing closure to order the items.\n\n## Applying matching criteria to elements\n\n- **contains(_:)**: Publishes a Boolean value upon receiving an element equal to the argument.\n- **contains(where:)**: Publishes a Boolean value upon receiving an element that satisfies the predicate closure.\n- **tryContains(where:)**: Publishes a Boolean value upon receiving an element that satisfies the throwing predicate closure.\n- **allSatisfy(_:)**: Publishes a single Boolean value that indicates whether all received elements pass a given predicate.\n- **tryAllSatisfy(_:)**: Publishes a single Boolean value that indicates whether all received elements pass a given error-throwing predicate.\n\n## Applying sequence operations to elements\n\n- **drop(untilOutputFrom:)**: Ignores elements from the upstream publisher until it receives an element from a second publisher.\n- **dropFirst(_:)**: Omits the specified number of elements before republishing subsequent elements.\n- **drop(while:)**: Omits elements from the upstream publisher until a given closure returns false, before republishing all remaining elements.\n- **tryDrop(while:)**: Omits elements from the upstream publisher until an error-throwing closure returns false, before republishing all remaining elements.\n- **append(_:)**: Appends a publisher’s output with the specified elements.\n- **append(_:)**: Appends a publisher’s output with the specified sequence.\n- **append(_:)**: Appends the output of this publisher with the elements emitted by the given publisher.\n- **prepend(_:)**: Prefixes a publisher’s output with the specified values.\n- **prepend(_:)**: Prefixes a publisher’s output with the specified sequence.\n- **prepend(_:)**: Prefixes the output of this publisher with the elements emitted by the given publisher.\n- **prefix(_:)**: Republishes elements up to the specified maximum count.\n- **prefix(while:)**: Republishes elements while a predicate closure indicates publishing should continue.\n- **tryPrefix(while:)**: Republishes elements while an error-throwing predicate closure indicates publishing should continue.\n- **prefix(untilOutputFrom:)**: Republishes elements until another publisher emits an element.\n\n## Selecting specific elements\n\n- **first()**: Publishes the first element of a stream, then finishes.\n- **first(where:)**: Publishes the first element of a stream to satisfy a predicate closure, then finishes normally.\n- **tryFirst(where:)**: Publishes the first element of a stream to satisfy a throwing predicate closure, then finishes normally.\n- **last()**: Publishes the last element of a stream, after the stream finishes.\n- **last(where:)**: Publishes the last element of a stream that satisfies a predicate closure, after upstream finishes.\n- **tryLast(where:)**: Publishes the last element of a stream that satisfies an error-throwing predicate closure, after the stream finishes.\n- **output(at:)**: Publishes a specific element, indicated by its index in the sequence of published elements.\n- **output(in:)**: Publishes elements specified by their range in the sequence of published elements.\n\n## Collecting and republishing the latest elements from multiple publishers\n\n- **combineLatest(_:_:)**: Subscribes to an additional publisher and invokes a closure upon receiving output from either publisher.\n- **combineLatest(_:)**: Subscribes to an additional publisher and publishes a tuple upon receiving output from either publisher.\n- **combineLatest(_:_:_:)**: Subscribes to two additional publishers and invokes a closure upon receiving output from any of the publishers.\n- **combineLatest(_:_:)**: Subscribes to two additional publishers and publishes a tuple upon receiving output from any of the publishers.\n- **combineLatest(_:_:_:_:)**: Subscribes to three additional publishers and invokes a closure upon receiving output from any of the publishers.\n- **combineLatest(_:_:_:)**: Subscribes to three additional publishers and publishes a tuple upon receiving output from any of the publishers.\n\n## Republishing elements from multiple publishers as an interleaved stream\n\n- **merge(with:)**: Combines elements from this publisher with those from another publisher of the same type, delivering an interleaved sequence of elements.\n- **merge(with:)**: Combines elements from this publisher with those from another publisher, delivering an interleaved sequence of elements.\n- **merge(with:_:)**: Combines elements from this publisher with those from two other publishers, delivering an interleaved sequence of elements.\n- **merge(with:_:_:)**: Combines elements from this publisher with those from three other publishers, delivering an interleaved sequence of elements.\n- **merge(with:_:_:_:)**: Combines elements from this publisher with those from four other publishers, delivering an interleaved sequence of elements.\n- **merge(with:_:_:_:_:)**: Combines elements from this publisher with those from five other publishers, delivering an interleaved sequence of elements.\n- **merge(with:_:_:_:_:_:)**: Combines elements from this publisher with those from six other publishers, delivering an interleaved sequence of elements.\n- **merge(with:_:_:_:_:_:_:)**: Combines elements from this publisher with those from seven other publishers, delivering an interleaved sequence of elements.\n\n## Collecting and republishing the oldest unconsumed elements from multiple publishers\n\n- **zip(_:)**: Combines elements from another publisher and deliver pairs of elements as tuples.\n- **zip(_:_:)**: Combines elements from another publisher and delivers a transformed output.\n- **zip(_:_:)**: Combines elements from two other publishers and delivers groups of elements as tuples.\n- **zip(_:_:_:)**: Combines elements from two other publishers and delivers a transformed output.\n- **zip(_:_:_:)**: Combines elements from three other publishers and delivers groups of elements as tuples.\n- **zip(_:_:_:_:)**: Combines elements from three other publishers and delivers a transformed output.\n\n## Republishing elements by subscribing to new publishers\n\n- **flatMap(maxPublishers:_:)**: Transforms all elements from an upstream publisher into a new publisher up to a maximum number of publishers you specify.\n- **flatMap(maxPublishers:_:)**: Transforms all elements from an upstream publisher into a new publisher up to a maximum number of publishers you specify.\n- **flatMap(maxPublishers:_:)**: Transforms all elements from an upstream publisher into a new publisher up to a maximum number of publishers you specify.\n- **flatMap(maxPublishers:_:)**: Transforms all elements from an upstream publisher into a new publisher up to a maximum number of publishers you specify.\n- **switchToLatest()**: Republishes elements sent by the most recently received publisher.\n- **switchToLatest()**: Republishes elements sent by the most recently received publisher.\n- **switchToLatest()**: Republishes elements sent by the most recently received publisher.\n- **switchToLatest()**: Republishes elements sent by the most recently received publisher.\n\n## Handling errors\n\n- **assertNoFailure(_:file:line:)**: Raises a fatal error when its upstream publisher fails, and otherwise republishes all received input.\n- **catch(_:)**: Handles errors from an upstream publisher by replacing it with another publisher.\n- **tryCatch(_:)**: Handles errors from an upstream publisher by either replacing it with another publisher or throwing a new error.\n- **retry(_:)**: Attempts to recreate a failed subscription with the upstream publisher up to the number of times you specify.\n\n## Controlling timing\n\n- **measureInterval(using:options:)**: Measures and emits the time interval between events received from an upstream publisher.\n- **debounce(for:scheduler:options:)**: Publishes elements only after a specified time interval elapses between events.\n- **delay(for:tolerance:scheduler:options:)**: Delays delivery of all output to the downstream receiver by a specified amount of time on a particular scheduler.\n- **throttle(for:scheduler:latest:)**: Publishes either the most-recent or first element published by the upstream publisher in the specified time interval.\n- **timeout(_:scheduler:options:customError:)**: Terminates publishing if the upstream publisher exceeds the specified time interval without producing an element.\n\n## Encoding and decoding\n\n- **encode(encoder:)**: Encodes the output from upstream using a specified encoder.\n- **decode(type:decoder:)**: Decodes the output from the upstream using a specified decoder.\n\n## Identifying properties with key paths\n\n- **map(_:)**: Publishes the value of a key path.\n- **map(_:_:)**: Publishes the values of two key paths as a tuple.\n- **map(_:_:_:)**: Publishes the values of three key paths as a tuple.\n\n## Working with multiple subscribers\n\n- **multicast(_:)**: Applies a closure to create a subject that delivers elements to subscribers.\n- **multicast(subject:)**: Provides a subject to deliver elements to multiple subscribers.\n- **share()**: Shares the output of an upstream publisher with multiple subscribers.\n\n## Buffering elements\n\n- **buffer(size:prefetch:whenFull:)**: Buffers elements received from an upstream publisher.\n- **Publishers.PrefetchStrategy**: A strategy for filling a buffer.\n- **Publishers.BufferingStrategy**: A strategy that handles exhaustion of a buffer’s capacity.\n\n## Performing type erasure\n\n- **eraseToAnyPublisher()**: Wraps this publisher with a type eraser.\n\n## Specifying schedulers\n\n- **subscribe(on:options:)**: Specifies the scheduler on which to perform subscribe, cancel, and request operations.\n- **receive(on:options:)**: Specifies the scheduler on which to receive elements from the publisher.\n\n## Adding explicit connectability\n\n- **makeConnectable()**: Creates a connectable wrapper around the publisher.\n\n## Connecting simple subscribers\n\n- **assign(to:on:)**: Assigns each element from a publisher to a property on an object.\n- **assign(to:)**: Republishes elements received from a publisher, by assigning them to a property marked as a publisher.\n- **sink(receiveCompletion:receiveValue:)**: Attaches a subscriber with closure-based behavior.\n- **sink(receiveValue:)**: Attaches a subscriber with closure-based behavior to a publisher that never fails.\n\n## Accessing elements asynchronously\n\n- **values**: The elements produced by the publisher, as an asynchronous sequence.\n- **values**: The elements produced by the publisher, as a throwing asynchronous sequence.\n\n## Debugging\n\n- **breakpoint(receiveSubscription:receiveOutput:receiveCompletion:)**: Raises a debugger signal when a provided closure needs to stop the process in the debugger.\n- **breakpointOnError()**: Raises a debugger signal upon receiving a failure.\n- **handleEvents(receiveSubscription:receiveOutput:receiveCompletion:receiveCancel:receiveRequest:)**: Performs the specified closures when publisher events occur.\n- **print(_:to:)**: Prints log messages for all publishing events.\n\n## Publishers\n\n- **Publishers**: A namespace for types that serve as publishers.\n- **AnyPublisher**: A publisher that performs type erasure by wrapping another publisher.\n- **Published**: A type that publishes a property marked with an attribute.\n- **Cancellable**: A protocol indicating that an activity or action supports cancellation.\n- **AnyCancellable**: A type-erasing cancellable object that executes a provided closure when canceled.\n\n## Inherited By\n\n- ConnectablePublisher\n- Subject\n\n## Conforming Types\n\n- AnyPublisher\n- CurrentValueSubject\n- Deferred\n- Empty\n- Fail\n- Future\n- Just\n- ObservableObjectPublisher\n- PassthroughSubject\n- Published.Publisher\n- Publishers.AllSatisfy\n- Publishers.AssertNoFailure\n- Publishers.Autoconnect\n- Publishers.Breakpoint\n- Publishers.Buffer\n- Publishers.Catch\n- Publishers.Collect\n- Publishers.CollectByCount\n- Publishers.CollectByTime\n- Publishers.CombineLatest\n- Publishers.CombineLatest3\n- Publishers.CombineLatest4\n- Publishers.CompactMap\n- Publishers.Comparison\n- Publishers.Concatenate\n- Publishers.Contains\n- Publishers.ContainsWhere\n- Publishers.Count\n- Publishers.Debounce\n- Publishers.Decode\n- Publishers.Delay\n- Publishers.Drop\n- Publishers.DropUntilOutput\n- Publishers.DropWhile\n- Publishers.Encode\n- Publishers.Filter\n- Publishers.First\n- Publishers.FirstWhere\n- Publishers.FlatMap\n- Publishers.HandleEvents\n- Publishers.IgnoreOutput\n- Publishers.Last\n- Publishers.LastWhere\n- Publishers.MakeConnectable\n- Publishers.Map\n- Publishers.MapError\n- Publishers.MapKeyPath\n- Publishers.MapKeyPath2\n- Publishers.MapKeyPath3\n- Publishers.MeasureInterval\n- Publishers.Merge\n- Publishers.Merge3\n- Publishers.Merge4\n- Publishers.Merge5\n- Publishers.Merge6\n- Publishers.Merge7\n- Publishers.Merge8\n- Publishers.MergeMany\n- Publishers.Multicast\n- Publishers.Output\n- Publishers.PrefixUntilOutput\n- Publishers.PrefixWhile\n- Publishers.Print\n- Publishers.ReceiveOn\n- Publishers.Reduce\n- Publishers.RemoveDuplicates\n- Publishers.ReplaceEmpty\n- Publishers.ReplaceError\n- Publishers.Retry\n- Publishers.Scan\n- Publishers.Sequence\n- Publishers.SetFailureType\n- Publishers.Share\n- Publishers.SubscribeOn\n- Publishers.SwitchToLatest\n- Publishers.Throttle\n- Publishers.Timeout\n- Publishers.TryAllSatisfy\n- Publishers.TryCatch\n- Publishers.TryCompactMap\n- Publishers.TryComparison\n- Publishers.TryContainsWhere\n- Publishers.TryDropWhile\n- Publishers.TryFilter\n- Publishers.TryFirstWhere\n- Publishers.TryLastWhere\n- Publishers.TryMap\n- Publishers.TryPrefixWhile\n- Publishers.TryReduce\n- Publishers.TryRemoveDuplicates\n- Publishers.TryScan\n- Publishers.Zip\n- Publishers.Zip3\n- Publishers.Zip4\n- Record\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The kind of values published by this publisher.",
+          "name" : "Output",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/Output"
+        },
+        {
+          "description" : "The kind of errors this publisher might publish.",
+          "name" : "Failure",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/Failure"
+        }
+      ],
+      "title" : "Declaring supporting types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Attaches the specified subscriber to this publisher.",
+          "name" : "receive(subscriber:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/receive(subscriber:)"
+        },
+        {
+          "description" : "Attaches the specified subscriber to this publisher.",
+          "name" : "subscribe(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/subscribe(_:)-4u8kn"
+        },
+        {
+          "description" : "Attaches the specified subject to this publisher.",
+          "name" : "subscribe(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/subscribe(_:)-3fk20"
+        }
+      ],
+      "title" : "Working with subscribers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Transforms all elements from the upstream publisher with a provided closure.",
+          "name" : "map(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/map(_:)-99evh"
+        },
+        {
+          "description" : "Transforms all elements from the upstream publisher with a provided error-throwing closure.",
+          "name" : "tryMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryMap(_:)"
+        },
+        {
+          "description" : "Converts any failure from the upstream publisher into a new error.",
+          "name" : "mapError(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/mapError(_:)"
+        },
+        {
+          "description" : "Replaces nil elements in the stream with the provided element.",
+          "name" : "replaceNil(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/replaceNil(with:)"
+        },
+        {
+          "description" : "Transforms elements from the upstream publisher by providing the current element to a closure along with the last value returned by the closure.",
+          "name" : "scan(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/scan(_:_:)"
+        },
+        {
+          "description" : "Transforms elements from the upstream publisher by providing the current element to an error-throwing closure along with the last value returned by the closure.",
+          "name" : "tryScan(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryScan(_:_:)"
+        },
+        {
+          "description" : "Changes the failure type declared by the upstream publisher.",
+          "name" : "setFailureType(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/setFailureType(to:)"
+        }
+      ],
+      "title" : "Mapping elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Republishes all elements that match a provided closure.",
+          "name" : "filter(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/filter(_:)"
+        },
+        {
+          "description" : "Republishes all elements that match a provided error-throwing closure.",
+          "name" : "tryFilter(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryFilter(_:)"
+        },
+        {
+          "description" : "Calls a closure with each received element and publishes any returned optional that has a value.",
+          "name" : "compactMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/compactMap(_:)"
+        },
+        {
+          "description" : "Calls an error-throwing closure with each received element and publishes any returned optional that has a value.",
+          "name" : "tryCompactMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryCompactMap(_:)"
+        },
+        {
+          "description" : "Publishes only elements that don’t match the previous element.",
+          "name" : "removeDuplicates()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/removeDuplicates()"
+        },
+        {
+          "description" : "Publishes only elements that don’t match the previous element, as evaluated by a provided closure.",
+          "name" : "removeDuplicates(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/removeDuplicates(by:)"
+        },
+        {
+          "description" : "Publishes only elements that don’t match the previous element, as evaluated by a provided error-throwing closure.",
+          "name" : "tryRemoveDuplicates(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryRemoveDuplicates(by:)"
+        },
+        {
+          "description" : "Replaces an empty stream with the provided element.",
+          "name" : "replaceEmpty(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/replaceEmpty(with:)"
+        },
+        {
+          "description" : "Replaces any errors in the stream with the provided element.",
+          "name" : "replaceError(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/replaceError(with:)"
+        }
+      ],
+      "title" : "Filtering elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Collects all received elements, and emits a single array of the collection when the upstream publisher finishes.",
+          "name" : "collect()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/collect()"
+        },
+        {
+          "description" : "Collects up to the specified number of elements, and then emits a single array of the collection.",
+          "name" : "collect(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/collect(_:)"
+        },
+        {
+          "description" : "Collects elements by a given time-grouping strategy, and emits a single array of the collection.",
+          "name" : "collect(_:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/collect(_:options:)"
+        },
+        {
+          "description" : "A strategy for collecting received elements.",
+          "name" : "Publishers.TimeGroupingStrategy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publishers\/TimeGroupingStrategy"
+        },
+        {
+          "description" : "Ignores all upstream elements, but passes along the upstream publisher’s completion state (finished or failed).",
+          "name" : "ignoreOutput()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/ignoreOutput()"
+        },
+        {
+          "description" : "Applies a closure that collects each element of a stream and publishes a final result upon completion.",
+          "name" : "reduce(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/reduce(_:_:)"
+        },
+        {
+          "description" : "Applies an error-throwing closure that collects each element of a stream and publishes a final result upon completion.",
+          "name" : "tryReduce(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryReduce(_:_:)"
+        }
+      ],
+      "title" : "Reducing elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Publishes the number of elements received from the upstream publisher.",
+          "name" : "count()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/count()"
+        },
+        {
+          "description" : "Publishes the maximum value received from the upstream publisher, after it finishes.",
+          "name" : "max()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/max()"
+        },
+        {
+          "description" : "Publishes the maximum value received from the upstream publisher, using the provided ordering closure.",
+          "name" : "max(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/max(by:)"
+        },
+        {
+          "description" : "Publishes the maximum value received from the upstream publisher, using the provided error-throwing closure to order the items.",
+          "name" : "tryMax(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryMax(by:)"
+        },
+        {
+          "description" : "Publishes the minimum value received from the upstream publisher, after it finishes.",
+          "name" : "min()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/min()"
+        },
+        {
+          "description" : "Publishes the minimum value received from the upstream publisher, after it finishes.",
+          "name" : "min(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/min(by:)"
+        },
+        {
+          "description" : "Publishes the minimum value received from the upstream publisher, using the provided error-throwing closure to order the items.",
+          "name" : "tryMin(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryMin(by:)"
+        }
+      ],
+      "title" : "Applying mathematical operations on elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Publishes a Boolean value upon receiving an element equal to the argument.",
+          "name" : "contains(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/contains(_:)"
+        },
+        {
+          "description" : "Publishes a Boolean value upon receiving an element that satisfies the predicate closure.",
+          "name" : "contains(where:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/contains(where:)"
+        },
+        {
+          "description" : "Publishes a Boolean value upon receiving an element that satisfies the throwing predicate closure.",
+          "name" : "tryContains(where:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryContains(where:)"
+        },
+        {
+          "description" : "Publishes a single Boolean value that indicates whether all received elements pass a given predicate.",
+          "name" : "allSatisfy(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/allSatisfy(_:)"
+        },
+        {
+          "description" : "Publishes a single Boolean value that indicates whether all received elements pass a given error-throwing predicate.",
+          "name" : "tryAllSatisfy(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryAllSatisfy(_:)"
+        }
+      ],
+      "title" : "Applying matching criteria to elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Ignores elements from the upstream publisher until it receives an element from a second publisher.",
+          "name" : "drop(untilOutputFrom:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/drop(untilOutputFrom:)"
+        },
+        {
+          "description" : "Omits the specified number of elements before republishing subsequent elements.",
+          "name" : "dropFirst(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/dropFirst(_:)"
+        },
+        {
+          "description" : "Omits elements from the upstream publisher until a given closure returns false, before republishing all remaining elements.",
+          "name" : "drop(while:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/drop(while:)"
+        },
+        {
+          "description" : "Omits elements from the upstream publisher until an error-throwing closure returns false, before republishing all remaining elements.",
+          "name" : "tryDrop(while:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryDrop(while:)"
+        },
+        {
+          "description" : "Appends a publisher’s output with the specified elements.",
+          "name" : "append(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/append(_:)-1qb8d"
+        },
+        {
+          "description" : "Appends a publisher’s output with the specified sequence.",
+          "name" : "append(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/append(_:)-69sdn"
+        },
+        {
+          "description" : "Appends the output of this publisher with the elements emitted by the given publisher.",
+          "name" : "append(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/append(_:)-5yh02"
+        },
+        {
+          "description" : "Prefixes a publisher’s output with the specified values.",
+          "name" : "prepend(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/prepend(_:)-7wk5l"
+        },
+        {
+          "description" : "Prefixes a publisher’s output with the specified sequence.",
+          "name" : "prepend(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/prepend(_:)-v9sb"
+        },
+        {
+          "description" : "Prefixes the output of this publisher with the elements emitted by the given publisher.",
+          "name" : "prepend(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/prepend(_:)-5dj9c"
+        },
+        {
+          "description" : "Republishes elements up to the specified maximum count.",
+          "name" : "prefix(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/prefix(_:)"
+        },
+        {
+          "description" : "Republishes elements while a predicate closure indicates publishing should continue.",
+          "name" : "prefix(while:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/prefix(while:)"
+        },
+        {
+          "description" : "Republishes elements while an error-throwing predicate closure indicates publishing should continue.",
+          "name" : "tryPrefix(while:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryPrefix(while:)"
+        },
+        {
+          "description" : "Republishes elements until another publisher emits an element.",
+          "name" : "prefix(untilOutputFrom:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/prefix(untilOutputFrom:)"
+        }
+      ],
+      "title" : "Applying sequence operations to elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Publishes the first element of a stream, then finishes.",
+          "name" : "first()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/first()"
+        },
+        {
+          "description" : "Publishes the first element of a stream to satisfy a predicate closure, then finishes normally.",
+          "name" : "first(where:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/first(where:)"
+        },
+        {
+          "description" : "Publishes the first element of a stream to satisfy a throwing predicate closure, then finishes normally.",
+          "name" : "tryFirst(where:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryFirst(where:)"
+        },
+        {
+          "description" : "Publishes the last element of a stream, after the stream finishes.",
+          "name" : "last()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/last()"
+        },
+        {
+          "description" : "Publishes the last element of a stream that satisfies a predicate closure, after upstream finishes.",
+          "name" : "last(where:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/last(where:)"
+        },
+        {
+          "description" : "Publishes the last element of a stream that satisfies an error-throwing predicate closure, after the stream finishes.",
+          "name" : "tryLast(where:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryLast(where:)"
+        },
+        {
+          "description" : "Publishes a specific element, indicated by its index in the sequence of published elements.",
+          "name" : "output(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/output(at:)"
+        },
+        {
+          "description" : "Publishes elements specified by their range in the sequence of published elements.",
+          "name" : "output(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/output(in:)"
+        }
+      ],
+      "title" : "Selecting specific elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Subscribes to an additional publisher and invokes a closure upon receiving output from either publisher.",
+          "name" : "combineLatest(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:)-1n30g"
+        },
+        {
+          "description" : "Subscribes to an additional publisher and publishes a tuple upon receiving output from either publisher.",
+          "name" : "combineLatest(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:)"
+        },
+        {
+          "description" : "Subscribes to two additional publishers and invokes a closure upon receiving output from any of the publishers.",
+          "name" : "combineLatest(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:_:)-6ekpz"
+        },
+        {
+          "description" : "Subscribes to two additional publishers and publishes a tuple upon receiving output from any of the publishers.",
+          "name" : "combineLatest(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:)-5crqg"
+        },
+        {
+          "description" : "Subscribes to three additional publishers and invokes a closure upon receiving output from any of the publishers.",
+          "name" : "combineLatest(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:_:_:)"
+        },
+        {
+          "description" : "Subscribes to three additional publishers and publishes a tuple upon receiving output from any of the publishers.",
+          "name" : "combineLatest(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:_:)-48buc"
+        }
+      ],
+      "title" : "Collecting and republishing the latest elements from multiple publishers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Combines elements from this publisher with those from another publisher of the same type, delivering an interleaved sequence of elements.",
+          "name" : "merge(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/merge(with:)-7fk3a"
+        },
+        {
+          "description" : "Combines elements from this publisher with those from another publisher, delivering an interleaved sequence of elements.",
+          "name" : "merge(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/merge(with:)-7qt71"
+        },
+        {
+          "description" : "Combines elements from this publisher with those from two other publishers, delivering an interleaved sequence of elements.",
+          "name" : "merge(with:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/merge(with:_:)"
+        },
+        {
+          "description" : "Combines elements from this publisher with those from three other publishers, delivering an interleaved sequence of elements.",
+          "name" : "merge(with:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/merge(with:_:_:)"
+        },
+        {
+          "description" : "Combines elements from this publisher with those from four other publishers, delivering an interleaved sequence of elements.",
+          "name" : "merge(with:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/merge(with:_:_:_:)"
+        },
+        {
+          "description" : "Combines elements from this publisher with those from five other publishers, delivering an interleaved sequence of elements.",
+          "name" : "merge(with:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/merge(with:_:_:_:_:)"
+        },
+        {
+          "description" : "Combines elements from this publisher with those from six other publishers, delivering an interleaved sequence of elements.",
+          "name" : "merge(with:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/merge(with:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Combines elements from this publisher with those from seven other publishers, delivering an interleaved sequence of elements.",
+          "name" : "merge(with:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/merge(with:_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Republishing elements from multiple publishers as an interleaved stream"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Combines elements from another publisher and deliver pairs of elements as tuples.",
+          "name" : "zip(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:)"
+        },
+        {
+          "description" : "Combines elements from another publisher and delivers a transformed output.",
+          "name" : "zip(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:)-4xn21"
+        },
+        {
+          "description" : "Combines elements from two other publishers and delivers groups of elements as tuples.",
+          "name" : "zip(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:)-8d7k7"
+        },
+        {
+          "description" : "Combines elements from two other publishers and delivers a transformed output.",
+          "name" : "zip(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:_:)-9yqi1"
+        },
+        {
+          "description" : "Combines elements from three other publishers and delivers groups of elements as tuples.",
+          "name" : "zip(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:_:)-16rcy"
+        },
+        {
+          "description" : "Combines elements from three other publishers and delivers a transformed output.",
+          "name" : "zip(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:_:_:)"
+        }
+      ],
+      "title" : "Collecting and republishing the oldest unconsumed elements from multiple publishers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Transforms all elements from an upstream publisher into a new publisher up to a maximum number of publishers you specify.",
+          "name" : "flatMap(maxPublishers:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/flatMap(maxPublishers:_:)-3k7z5"
+        },
+        {
+          "description" : "Transforms all elements from an upstream publisher into a new publisher up to a maximum number of publishers you specify.",
+          "name" : "flatMap(maxPublishers:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/flatMap(maxPublishers:_:)-qxf"
+        },
+        {
+          "description" : "Transforms all elements from an upstream publisher into a new publisher up to a maximum number of publishers you specify.",
+          "name" : "flatMap(maxPublishers:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/flatMap(maxPublishers:_:)-hyb0"
+        },
+        {
+          "description" : "Transforms all elements from an upstream publisher into a new publisher up to a maximum number of publishers you specify.",
+          "name" : "flatMap(maxPublishers:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/flatMap(maxPublishers:_:)-4of8w"
+        },
+        {
+          "description" : "Republishes elements sent by the most recently received publisher.",
+          "name" : "switchToLatest()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/switchToLatest()-453ht"
+        },
+        {
+          "description" : "Republishes elements sent by the most recently received publisher.",
+          "name" : "switchToLatest()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/switchToLatest()-1c51y"
+        },
+        {
+          "description" : "Republishes elements sent by the most recently received publisher.",
+          "name" : "switchToLatest()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/switchToLatest()-20v3t"
+        },
+        {
+          "description" : "Republishes elements sent by the most recently received publisher.",
+          "name" : "switchToLatest()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/switchToLatest()-9eb3r"
+        }
+      ],
+      "title" : "Republishing elements by subscribing to new publishers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Raises a fatal error when its upstream publisher fails, and otherwise republishes all received input.",
+          "name" : "assertNoFailure(_:file:line:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/assertNoFailure(_:file:line:)"
+        },
+        {
+          "description" : "Handles errors from an upstream publisher by replacing it with another publisher.",
+          "name" : "catch(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/catch(_:)"
+        },
+        {
+          "description" : "Handles errors from an upstream publisher by either replacing it with another publisher or throwing a new error.",
+          "name" : "tryCatch(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryCatch(_:)"
+        },
+        {
+          "description" : "Attempts to recreate a failed subscription with the upstream publisher up to the number of times you specify.",
+          "name" : "retry(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/retry(_:)"
+        }
+      ],
+      "title" : "Handling errors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Measures and emits the time interval between events received from an upstream publisher.",
+          "name" : "measureInterval(using:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/measureInterval(using:options:)"
+        },
+        {
+          "description" : "Publishes elements only after a specified time interval elapses between events.",
+          "name" : "debounce(for:scheduler:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/debounce(for:scheduler:options:)"
+        },
+        {
+          "description" : "Delays delivery of all output to the downstream receiver by a specified amount of time on a particular scheduler.",
+          "name" : "delay(for:tolerance:scheduler:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/delay(for:tolerance:scheduler:options:)"
+        },
+        {
+          "description" : "Publishes either the most-recent or first element published by the upstream publisher in the specified time interval.",
+          "name" : "throttle(for:scheduler:latest:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/throttle(for:scheduler:latest:)"
+        },
+        {
+          "description" : "Terminates publishing if the upstream publisher exceeds the specified time interval without producing an element.",
+          "name" : "timeout(_:scheduler:options:customError:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/timeout(_:scheduler:options:customError:)"
+        }
+      ],
+      "title" : "Controlling timing"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Encodes the output from upstream using a specified encoder.",
+          "name" : "encode(encoder:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/encode(encoder:)"
+        },
+        {
+          "description" : "Decodes the output from the upstream using a specified decoder.",
+          "name" : "decode(type:decoder:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/decode(type:decoder:)"
+        }
+      ],
+      "title" : "Encoding and decoding"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Publishes the value of a key path.",
+          "name" : "map(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/map(_:)-6sm0a"
+        },
+        {
+          "description" : "Publishes the values of two key paths as a tuple.",
+          "name" : "map(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/map(_:_:)"
+        },
+        {
+          "description" : "Publishes the values of three key paths as a tuple.",
+          "name" : "map(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/map(_:_:_:)"
+        }
+      ],
+      "title" : "Identifying properties with key paths"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Applies a closure to create a subject that delivers elements to subscribers.",
+          "name" : "multicast(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/multicast(_:)"
+        },
+        {
+          "description" : "Provides a subject to deliver elements to multiple subscribers.",
+          "name" : "multicast(subject:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/multicast(subject:)"
+        },
+        {
+          "description" : "Shares the output of an upstream publisher with multiple subscribers.",
+          "name" : "share()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/share()"
+        }
+      ],
+      "title" : "Working with multiple subscribers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Buffers elements received from an upstream publisher.",
+          "name" : "buffer(size:prefetch:whenFull:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/buffer(size:prefetch:whenFull:)"
+        },
+        {
+          "description" : "A strategy for filling a buffer.",
+          "name" : "Publishers.PrefetchStrategy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publishers\/PrefetchStrategy"
+        },
+        {
+          "description" : "A strategy that handles exhaustion of a buffer’s capacity.",
+          "name" : "Publishers.BufferingStrategy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publishers\/BufferingStrategy"
+        }
+      ],
+      "title" : "Buffering elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Wraps this publisher with a type eraser.",
+          "name" : "eraseToAnyPublisher()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/eraseToAnyPublisher()"
+        }
+      ],
+      "title" : "Performing type erasure"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Specifies the scheduler on which to perform subscribe, cancel, and request operations.",
+          "name" : "subscribe(on:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/subscribe(on:options:)"
+        },
+        {
+          "description" : "Specifies the scheduler on which to receive elements from the publisher.",
+          "name" : "receive(on:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/receive(on:options:)"
+        }
+      ],
+      "title" : "Specifying schedulers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a connectable wrapper around the publisher.",
+          "name" : "makeConnectable()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/makeConnectable()"
+        }
+      ],
+      "title" : "Adding explicit connectability"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Assigns each element from a publisher to a property on an object.",
+          "name" : "assign(to:on:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/assign(to:on:)"
+        },
+        {
+          "description" : "Republishes elements received from a publisher, by assigning them to a property marked as a publisher.",
+          "name" : "assign(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/assign(to:)"
+        },
+        {
+          "description" : "Attaches a subscriber with closure-based behavior.",
+          "name" : "sink(receiveCompletion:receiveValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/sink(receiveCompletion:receiveValue:)"
+        },
+        {
+          "description" : "Attaches a subscriber with closure-based behavior to a publisher that never fails.",
+          "name" : "sink(receiveValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/sink(receiveValue:)"
+        }
+      ],
+      "title" : "Connecting simple subscribers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The elements produced by the publisher, as an asynchronous sequence.",
+          "name" : "values",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/values-1dm9r"
+        },
+        {
+          "description" : "The elements produced by the publisher, as a throwing asynchronous sequence.",
+          "name" : "values",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/values-v7nz"
+        }
+      ],
+      "title" : "Accessing elements asynchronously"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Raises a debugger signal when a provided closure needs to stop the process in the debugger.",
+          "name" : "breakpoint(receiveSubscription:receiveOutput:receiveCompletion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/breakpoint(receiveSubscription:receiveOutput:receiveCompletion:)"
+        },
+        {
+          "description" : "Raises a debugger signal upon receiving a failure.",
+          "name" : "breakpointOnError()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/breakpointOnError()"
+        },
+        {
+          "description" : "Performs the specified closures when publisher events occur.",
+          "name" : "handleEvents(receiveSubscription:receiveOutput:receiveCompletion:receiveCancel:receiveRequest:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/handleEvents(receiveSubscription:receiveOutput:receiveCompletion:receiveCancel:receiveRequest:)"
+        },
+        {
+          "description" : "Prints log messages for all publishing events.",
+          "name" : "print(_:to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/print(_:to:)"
+        }
+      ],
+      "title" : "Debugging"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A namespace for types that serve as publishers.",
+          "name" : "Publishers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publishers"
+        },
+        {
+          "description" : "A publisher that performs type erasure by wrapping another publisher.",
+          "name" : "AnyPublisher",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/AnyPublisher"
+        },
+        {
+          "description" : "A type that publishes a property marked with an attribute.",
+          "name" : "Published",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Published"
+        },
+        {
+          "description" : "A protocol indicating that an activity or action supports cancellation.",
+          "name" : "Cancellable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Cancellable"
+        },
+        {
+          "description" : "A type-erasing cancellable object that executes a provided closure when canceled.",
+          "name" : "AnyCancellable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/AnyCancellable"
+        }
+      ],
+      "title" : "Publishers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Publisher",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher"
+}

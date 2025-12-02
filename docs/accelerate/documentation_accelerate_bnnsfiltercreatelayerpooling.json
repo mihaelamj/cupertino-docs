@@ -1,0 +1,115 @@
+{
+  "abstract" : "Returns a new pooling layer.",
+  "codeExamples" : [
+    {
+      "code" : "let input: [Float] = [1, 2,\n                      3, 4]\n\nvar output = [Float](repeating: 0, count: 9)\n\nlet inDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                         layout: BNNSDataLayoutImageCHW,\n                                         size: (2, 2, 1, 0, 0, 0, 0, 0),\n                                         stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                         data: nil,\n                                         data_type: .float,\n                                         table_data: nil,\n                                         table_data_type: .float,\n                                         data_scale: 0,\n                                         data_bias: 0)\n\nlet outDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                          layout: BNNSDataLayoutImageCHW,\n                                          size: (3, 3, 1, 0, 0, 0, 0, 0),\n                                          stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                          data: nil,\n                                          data_type: .float,\n                                          table_data: nil,\n                                          table_data_type: .float,\n                                          data_scale: 0,\n                                          data_bias: 0)\n\nvar parameters = BNNSLayerParametersPooling(i_desc: inDescriptor,\n                                            o_desc: outDescriptor,\n                                            bias: BNNSNDArrayDescriptor(),\n                                            activation: .identity,\n                                            pooling_function: .max    ,\n                                            k_width: 2,\n                                            k_height: 2,\n                                            x_stride: 1,\n                                            y_stride: 1,\n                                            x_dilation_stride: 0,\n                                            y_dilation_stride: 0,\n                                            x_padding: 1,\n                                            y_padding: 1,\n                                            pad: (0, 0, 0, 0))\n\nlet filter = BNNSFilterCreateLayerPooling(&parameters, nil)\n\ndefer {\n    BNNSFilterDestroy(filter)\n}\n\nBNNSPoolingFilterApplyBatch(filter, 1,\n                            input, input.count,\n                            &output, output.count,\n                            nil, 0)",
+      "language" : "swift"
+    },
+    {
+      "code" : "[ 1.0, 2.0, 2.0, \n  3.0, 4.0, 4.0, \n  3.0, 4.0, 4.0 ]",
+      "language" : "swift"
+    },
+    {
+      "code" : "let input: [Float] = [1, 1, 1, 9,\n                      1, 9, 9, 1,\n                      1, 1, 1, 1,\n                      1, 9, 1, 9]",
+      "language" : "swift"
+    },
+    {
+      "code" : "var output = [Float](repeating: 0, count: 3 * 3)\n\nlet inDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                         layout: BNNSDataLayoutImageCHW,\n                                         size: (4, 4, 1, 0, 0, 0, 0, 0),\n                                         stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                         data: nil,\n                                         data_type: .float,\n                                         table_data: nil,\n                                         table_data_type: .float,\n                                         data_scale: 0,\n                                         data_bias: 0)\n\nlet outDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                          layout: BNNSDataLayoutImageCHW,\n                                          size: (3, 3, 1, 0, 0, 0, 0, 0),\n                                          stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                          data: nil,\n                                          data_type: .float,\n                                          table_data: nil,\n                                          table_data_type: .float,\n                                          data_scale: 0,\n                                          data_bias: 0)\n\nvar parameters = BNNSLayerParametersPooling(i_desc: inDescriptor,\n                                            o_desc: outDescriptor,\n                                            bias: BNNSNDArrayDescriptor(),\n                                            activation: .identity,\n                                            pooling_function: .max    ,\n                                            k_width: 2,\n                                            k_height: 2,\n                                            x_stride: 1,\n                                            y_stride: 1,\n                                            x_dilation_stride: 0,\n                                            y_dilation_stride: 0,\n                                            x_padding: 0,\n                                            y_padding: 0,\n                                            pad: (0, 0, 0, 0))\n\nlet filter = BNNSFilterCreateLayerPooling(&parameters, nil)\n\ndefer {\n    BNNSFilterDestroy(filter)\n}\n\nvar indices = [Int](repeating: 0, count: input.count)\n\nBNNSPoolingFilterApplyBatch(filter, 1,\n                            input, input.count,\n                            &output, output.count,\n                            &indices, indices.count)",
+      "language" : "swift"
+    },
+    {
+      "code" : "var recreatedInput = [Float](repeating: 0, count: input.count)\n\nparameters.i_desc = outDescriptor\nparameters.o_desc = inDescriptor\nparameters.pooling_function = BNNSPoolingFunctionUnMax\n\nlet unMaxFilter = BNNSFilterCreateLayerPooling(&parameters, nil)\n\ndefer {\n    BNNSFilterDestroy(unMaxFilter)\n}\n\nBNNSPoolingFilterApplyBatch(unMaxFilter, 1,\n                            output, output.count,\n                            &recreatedInput, recreatedInput.count,\n                            &indices, indices.count)",
+      "language" : "swift"
+    },
+    {
+      "code" : "[ 0.0, 0.0, 0.0, 9.0,\n  0.0, 9.0, 9.0, 0.0,\n  0.0, 0.0, 0.0, 0.0,\n  0.0, 9.0, 0.0, 9.0 ]",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "4b1c49a0ca66b9ff5346bed3351a8c8fe3935b8f7e4dcc0db7b261bd5e28632d",
+  "crawledAt" : "2025-12-02T01:23:13Z",
+  "declaration" : {
+    "code" : "func BNNSFilterCreateLayerPooling(_ layer_params: UnsafePointer<BNNSLayerParametersPooling>, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> BNNSFilter?",
+    "language" : "swift"
+  },
+  "id" : "8EB91012-75CD-4B43-A1BD-72FD7D5D3E90",
+  "kind" : "function",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse a pooling layer to downsample an input, selecting, for example, the average or the maximum value in a specified kernel size. The following figure illustrates how a 2 x 2 maximum pooling kernel samples each 2 x 2 block of values of 4 x 4 source. The highlighted block contains the values `[3, 4, 0, 0]`, so the maximum value passed to the destination element in `output` is `4`.\n\n\n\nThe following code shows how you apply pooling to the input in the above figure. Note that the input is a 2 x 2 x 1 [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSDataLayoutImageCHW] tensor. Definie [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerParametersPooling\/x_padding] and [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerParametersPooling\/y_padding] as 1 to add zero padding:\n\nOn return, `output` contains the following values:\n\n### UnMax Pooling\n\nUse [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSPoolingFunctionUnMax] in conjunction with the indices generated by [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSPoolingFunctionMax] to partially recreate the original data of a maximum pooling operation. UnMax pooling is a partial inverse of maximum pooling that sets all non-maximal values to zero.\n\nFor example, given the following input data:\n\nUse [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSPoolingFilterApplyBatch(_:_:_:_:_:_:_:_:)] to perform the maximum pooling and populate an indices array with positional information of maximum elements in each window:\n\nTo perform the UnMax pooling, reuse the parameters structure, but swap the input and output descriptors:\n\nOn return, `recreatedInput` is similar to `input`, but the non-maximal values are zero:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateLayerPooling(_:_:)\ncrawled: 2025-12-02T01:23:13Z\n---\n\n# BNNSFilterCreateLayerPooling(_:_:)\n\n**Function**\n\nReturns a new pooling layer.\n\n## Declaration\n\n```swift\nfunc BNNSFilterCreateLayerPooling(_ layer_params: UnsafePointer<BNNSLayerParametersPooling>, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> BNNSFilter?\n```\n\n## Parameters\n\n- **layer_params**: Layer parameters.\n- **filter_params**: The filter runtime parameters.\n\n## Discussion\n\nUse a pooling layer to downsample an input, selecting, for example, the average or the maximum value in a specified kernel size. The following figure illustrates how a 2 x 2 maximum pooling kernel samples each 2 x 2 block of values of 4 x 4 source. The highlighted block contains the values `[3, 4, 0, 0]`, so the maximum value passed to the destination element in `output` is `4`.\n\n\n\nThe following code shows how you apply pooling to the input in the above figure. Note that the input is a 2 x 2 x 1 [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSDataLayoutImageCHW] tensor. Definie [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerParametersPooling\/x_padding] and [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerParametersPooling\/y_padding] as 1 to add zero padding:\n\n```swift\nlet input: [Float] = [1, 2,\n                      3, 4]\n\nvar output = [Float](repeating: 0, count: 9)\n\nlet inDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                         layout: BNNSDataLayoutImageCHW,\n                                         size: (2, 2, 1, 0, 0, 0, 0, 0),\n                                         stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                         data: nil,\n                                         data_type: .float,\n                                         table_data: nil,\n                                         table_data_type: .float,\n                                         data_scale: 0,\n                                         data_bias: 0)\n\nlet outDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                          layout: BNNSDataLayoutImageCHW,\n                                          size: (3, 3, 1, 0, 0, 0, 0, 0),\n                                          stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                          data: nil,\n                                          data_type: .float,\n                                          table_data: nil,\n                                          table_data_type: .float,\n                                          data_scale: 0,\n                                          data_bias: 0)\n\nvar parameters = BNNSLayerParametersPooling(i_desc: inDescriptor,\n                                            o_desc: outDescriptor,\n                                            bias: BNNSNDArrayDescriptor(),\n                                            activation: .identity,\n                                            pooling_function: .max    ,\n                                            k_width: 2,\n                                            k_height: 2,\n                                            x_stride: 1,\n                                            y_stride: 1,\n                                            x_dilation_stride: 0,\n                                            y_dilation_stride: 0,\n                                            x_padding: 1,\n                                            y_padding: 1,\n                                            pad: (0, 0, 0, 0))\n\nlet filter = BNNSFilterCreateLayerPooling(&parameters, nil)\n\ndefer {\n    BNNSFilterDestroy(filter)\n}\n\nBNNSPoolingFilterApplyBatch(filter, 1,\n                            input, input.count,\n                            &output, output.count,\n                            nil, 0)\n```\n\nOn return, `output` contains the following values:\n\n```swift\n[ 1.0, 2.0, 2.0, \n  3.0, 4.0, 4.0, \n  3.0, 4.0, 4.0 ]\n```\n\n### UnMax Pooling\n\nUse [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSPoolingFunctionUnMax] in conjunction with the indices generated by [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSPoolingFunctionMax] to partially recreate the original data of a maximum pooling operation. UnMax pooling is a partial inverse of maximum pooling that sets all non-maximal values to zero.\n\nFor example, given the following input data:\n\n```swift\nlet input: [Float] = [1, 1, 1, 9,\n                      1, 9, 9, 1,\n                      1, 1, 1, 1,\n                      1, 9, 1, 9]\n```\n\nUse [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSPoolingFilterApplyBatch(_:_:_:_:_:_:_:_:)] to perform the maximum pooling and populate an indices array with positional information of maximum elements in each window:\n\n```swift\nvar output = [Float](repeating: 0, count: 3 * 3)\n\nlet inDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                         layout: BNNSDataLayoutImageCHW,\n                                         size: (4, 4, 1, 0, 0, 0, 0, 0),\n                                         stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                         data: nil,\n                                         data_type: .float,\n                                         table_data: nil,\n                                         table_data_type: .float,\n                                         data_scale: 0,\n                                         data_bias: 0)\n\nlet outDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                          layout: BNNSDataLayoutImageCHW,\n                                          size: (3, 3, 1, 0, 0, 0, 0, 0),\n                                          stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                          data: nil,\n                                          data_type: .float,\n                                          table_data: nil,\n                                          table_data_type: .float,\n                                          data_scale: 0,\n                                          data_bias: 0)\n\nvar parameters = BNNSLayerParametersPooling(i_desc: inDescriptor,\n                                            o_desc: outDescriptor,\n                                            bias: BNNSNDArrayDescriptor(),\n                                            activation: .identity,\n                                            pooling_function: .max    ,\n                                            k_width: 2,\n                                            k_height: 2,\n                                            x_stride: 1,\n                                            y_stride: 1,\n                                            x_dilation_stride: 0,\n                                            y_dilation_stride: 0,\n                                            x_padding: 0,\n                                            y_padding: 0,\n                                            pad: (0, 0, 0, 0))\n\nlet filter = BNNSFilterCreateLayerPooling(&parameters, nil)\n\ndefer {\n    BNNSFilterDestroy(filter)\n}\n\nvar indices = [Int](repeating: 0, count: input.count)\n\nBNNSPoolingFilterApplyBatch(filter, 1,\n                            input, input.count,\n                            &output, output.count,\n                            &indices, indices.count)\n```\n\nTo perform the UnMax pooling, reuse the parameters structure, but swap the input and output descriptors:\n\n```swift\nvar recreatedInput = [Float](repeating: 0, count: input.count)\n\nparameters.i_desc = outDescriptor\nparameters.o_desc = inDescriptor\nparameters.pooling_function = BNNSPoolingFunctionUnMax\n\nlet unMaxFilter = BNNSFilterCreateLayerPooling(&parameters, nil)\n\ndefer {\n    BNNSFilterDestroy(unMaxFilter)\n}\n\nBNNSPoolingFilterApplyBatch(unMaxFilter, 1,\n                            output, output.count,\n                            &recreatedInput, recreatedInput.count,\n                            &indices, indices.count)\n```\n\nOn return, `recreatedInput` is similar to `input`, but the non-maximal values are zero:\n\n```swift\n[ 0.0, 0.0, 0.0, 9.0,\n  0.0, 9.0, 9.0, 0.0,\n  0.0, 0.0, 0.0, 0.0,\n  0.0, 9.0, 0.0, 9.0 ]\n```\n\n## Pooling layers\n\n- **BNNSPoolingLayerParameters**: A structure containing pooling layer parameters.\n- **BNNSFilterCreatePoolingLayer(_:_:_:_:)**: Returns a pooling  filter, initialized with input, output, layer, and filter parameters.\n- **BNNS.PoolingLayer**: A layer object that wraps a pooling filter and manages its deinitialization.\n- **BNNSPoolingFunction**: Constants that describe pooling functions.\n- **BNNSPoolingFunctionAverage**\n- **BNNSPoolingFunctionMax**\n- **BNNSLayerParametersPooling**: A structure that contains the parameters of a pooling layer.\n- **BNNSPoolingFilterApplyBatch(_:_:_:_:_:_:_:_:)**: Applies a pooling filter to a set of input objects, writing the result to a set of output objects.\n- **BNNSPoolingFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:_:_:)**: Applies a pooling filter backward to generate gradients.\n- **BNNSPoolingFilterApplyBatchEx(_:_:_:_:_:_:_:_:_:)**: Applies a pooling filter to a set of input objects with support for multiple data types for indices.\n- **BNNSPoolingFilterApplyBackwardBatchEx(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)**: Applies a pooling filter backward to generate gradients with support for multiple data types for indices.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A structure containing pooling layer parameters.",
+          "name" : "BNNSPoolingLayerParameters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSPoolingLayerParameters"
+        },
+        {
+          "description" : "Returns a pooling  filter, initialized with input, output, layer, and filter parameters.",
+          "name" : "BNNSFilterCreatePoolingLayer(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreatePoolingLayer(_:_:_:_:)"
+        },
+        {
+          "description" : "A layer object that wraps a pooling filter and manages its deinitialization.",
+          "name" : "BNNS.PoolingLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/PoolingLayer"
+        },
+        {
+          "description" : "Constants that describe pooling functions.",
+          "name" : "BNNSPoolingFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSPoolingFunction"
+        },
+        {
+          "description" : "",
+          "name" : "BNNSPoolingFunctionAverage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSPoolingFunctionAverage"
+        },
+        {
+          "description" : "",
+          "name" : "BNNSPoolingFunctionMax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSPoolingFunctionMax"
+        },
+        {
+          "description" : "A structure that contains the parameters of a pooling layer.",
+          "name" : "BNNSLayerParametersPooling",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerParametersPooling"
+        },
+        {
+          "description" : "Applies a pooling filter to a set of input objects, writing the result to a set of output objects.",
+          "name" : "BNNSPoolingFilterApplyBatch(_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSPoolingFilterApplyBatch(_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a pooling filter backward to generate gradients.",
+          "name" : "BNNSPoolingFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSPoolingFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a pooling filter to a set of input objects with support for multiple data types for indices.",
+          "name" : "BNNSPoolingFilterApplyBatchEx(_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSPoolingFilterApplyBatchEx(_:_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a pooling filter backward to generate gradients with support for multiple data types for indices.",
+          "name" : "BNNSPoolingFilterApplyBackwardBatchEx(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSPoolingFilterApplyBackwardBatchEx(_:_:_:_:_:_:_:_:_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Pooling layers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSFilterCreateLayerPooling(_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateLayerPooling(_:_:)"
+}

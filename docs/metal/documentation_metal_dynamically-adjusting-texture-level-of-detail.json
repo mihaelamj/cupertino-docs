@@ -1,0 +1,59 @@
+{
+  "abstract" : "Defer generating or loading larger mipmaps until that level of detail is needed.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "f2e771baac983919278dde9c9155988e4bd06c96da78aa14a1c5edd1ca2e3289",
+  "crawledAt" : "2025-12-02T05:50:30Z",
+  "id" : "A058611B-5107-44F9-9E02-D4A2CE43F340",
+  "kind" : "article",
+  "module" : "Metal",
+  "overview" : "## Overview\n\nWhile the most common use for mipmaps is to improve sampling quality and performance, they have other uses, such as texture streaming. If you are loading texture data over a network or generating textures procedurally at runtime, it can be expensive to create a full set of mipmaps, especially if mipmap 0 is large. Further, if the objects being rendered are far away from the camera, the detail in mipmap 0 may never be needed. But because you aren’t required to provide mipmaps when you create the texture, you can bring in additional levels of detail only when needed.\n\n### Provide data for smaller mipmaps\n\nStart by creating the textures, as described in [doc:\/\/com.apple.metal\/documentation\/Metal\/creating-a-mipmapped-texture]. Remember that Metal allocates memory for all of the mipmaps when you create the texture. Instead of loading data for all mipmaps, pick a lower mipmap, and provide data for it and any mipmaps lower in the chain. For example, if you started at mipmap level 3, as shown in the figure below, you are loading only about 2% of the total texture data required for the entire mipmap chain.\n\n\n\n### Limit access to higher mipmaps\n\nYou need to keep track of the highest mipmap you’ve loaded and pass this information to your shader so that it samples only from mipmaps that contain data. You can do this by passing in an appropriately configured sampler, or, on some GPUs, by passing in the minimum level of detail (LOD) to your shader and using it as the minimum LOD when you sample the texture. See [doc:\/\/com.apple.metal\/documentation\/Metal\/restricting-access-to-specific-mipmaps#Control-mipmap-selection-when-you-sample-the-texture].\n\n### Determine when objects get closer to the camera\n\nAs the scene animates, some objects may get closer to the camera. Detect when this happens by asking the shader which mipmap it needs to access or by performing a calculation based on the rendered image size, as described in [doc:\/\/com.apple.metal\/documentation\/Metal\/predicting-which-mips-the-gpu-samples-with-level-of-detail-queries] and [doc:\/\/com.apple.metal\/documentation\/Metal\/using-function-specialization-to-build-pipeline-variants].\n\n### Update the mipmaps\n\nWhen it seems likely that an app needs more detailed textures, start preparing new mipmap data. Depending on what kind of system you are implementing, you might make a network request to your server or render a new mipmap procedurally on the device. When you have the data, copy it into the appropriate mipmaps, and update the range of mipmaps that your shaders can sample. For example, in the following diagram, two additional levels of mipmaps were loaded and copied into the texture.\n\n",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/dynamically-adjusting-texture-level-of-detail\ncrawled: 2025-12-02T05:50:30Z\n---\n\n# Dynamically adjusting texture level of detail\n\n**Article**\n\nDefer generating or loading larger mipmaps until that level of detail is needed.\n\n## Overview\n\nWhile the most common use for mipmaps is to improve sampling quality and performance, they have other uses, such as texture streaming. If you are loading texture data over a network or generating textures procedurally at runtime, it can be expensive to create a full set of mipmaps, especially if mipmap 0 is large. Further, if the objects being rendered are far away from the camera, the detail in mipmap 0 may never be needed. But because you aren’t required to provide mipmaps when you create the texture, you can bring in additional levels of detail only when needed.\n\n### Provide data for smaller mipmaps\n\nStart by creating the textures, as described in [doc:\/\/com.apple.metal\/documentation\/Metal\/creating-a-mipmapped-texture]. Remember that Metal allocates memory for all of the mipmaps when you create the texture. Instead of loading data for all mipmaps, pick a lower mipmap, and provide data for it and any mipmaps lower in the chain. For example, if you started at mipmap level 3, as shown in the figure below, you are loading only about 2% of the total texture data required for the entire mipmap chain.\n\n\n\n### Limit access to higher mipmaps\n\nYou need to keep track of the highest mipmap you’ve loaded and pass this information to your shader so that it samples only from mipmaps that contain data. You can do this by passing in an appropriately configured sampler, or, on some GPUs, by passing in the minimum level of detail (LOD) to your shader and using it as the minimum LOD when you sample the texture. See [doc:\/\/com.apple.metal\/documentation\/Metal\/restricting-access-to-specific-mipmaps#Control-mipmap-selection-when-you-sample-the-texture].\n\n### Determine when objects get closer to the camera\n\nAs the scene animates, some objects may get closer to the camera. Detect when this happens by asking the shader which mipmap it needs to access or by performing a calculation based on the rendered image size, as described in [doc:\/\/com.apple.metal\/documentation\/Metal\/predicting-which-mips-the-gpu-samples-with-level-of-detail-queries] and [doc:\/\/com.apple.metal\/documentation\/Metal\/using-function-specialization-to-build-pipeline-variants].\n\n### Update the mipmaps\n\nWhen it seems likely that an app needs more detailed textures, start preparing new mipmap data. Depending on what kind of system you are implementing, you might make a network request to your server or render a new mipmap procedurally on the device. When you have the data, copy it into the appropriate mipmaps, and update the range of mipmaps that your shaders can sample. For example, in the following diagram, two additional levels of mipmaps were loaded and copied into the texture.\n\n\n\n## Texture mipmapping\n\n- **Improving texture sampling quality and performance with mipmaps**: Avoid texture-rendering artifacts and reduce the GPU’s workload by creating smaller versions of a texture.\n- **Creating a mipmapped texture**: Decide whether a texture that you’re creating needs mipmaps.\n- **Copying data into or out of mipmaps**: Specify which mipmaps that the data transfer affects.\n- **Generating mipmap data**: Create your mipmaps either when you author content or at runtime.\n- **Adding mipmap filtering to samplers**: Specify how the GPU samples mipmaps in your textures.\n- **Restricting access to specific mipmaps**: Set the range of mipmap levels that a sampler can access.\n- **Predicting which mips the GPU samples with level-of-detail queries**: Determine in advance which mipmap levels the GPU requires to sample a texture.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Avoid texture-rendering artifacts and reduce the GPU’s workload by creating smaller versions of a texture.",
+          "name" : "Improving texture sampling quality and performance with mipmaps",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/improving-texture-sampling-quality-and-performance-with-mipmaps"
+        },
+        {
+          "description" : "Decide whether a texture that you’re creating needs mipmaps.",
+          "name" : "Creating a mipmapped texture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/creating-a-mipmapped-texture"
+        },
+        {
+          "description" : "Specify which mipmaps that the data transfer affects.",
+          "name" : "Copying data into or out of mipmaps",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/copying-data-into-or-out-of-mipmaps"
+        },
+        {
+          "description" : "Create your mipmaps either when you author content or at runtime.",
+          "name" : "Generating mipmap data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/generating-mipmap-data"
+        },
+        {
+          "description" : "Specify how the GPU samples mipmaps in your textures.",
+          "name" : "Adding mipmap filtering to samplers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/adding-mipmap-filtering-to-samplers"
+        },
+        {
+          "description" : "Set the range of mipmap levels that a sampler can access.",
+          "name" : "Restricting access to specific mipmaps",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/restricting-access-to-specific-mipmaps"
+        },
+        {
+          "description" : "Determine in advance which mipmap levels the GPU requires to sample a texture.",
+          "name" : "Predicting which mips the GPU samples with level-of-detail queries",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/predicting-which-mips-the-gpu-samples-with-level-of-detail-queries"
+        }
+      ],
+      "title" : "Texture mipmapping"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Dynamically adjusting texture level of detail",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/dynamically-adjusting-texture-level-of-detail"
+}

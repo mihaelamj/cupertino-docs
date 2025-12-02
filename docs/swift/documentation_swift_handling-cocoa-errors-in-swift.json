@@ -1,0 +1,71 @@
+{
+  "abstract" : "Throw and catch errors that use Cocoa’s error types.",
+  "codeExamples" : [
+    {
+      "code" : "NSFileManager *fileManager = [NSFileManager defaultManager];\nNSURL *fromURL = [NSURL fileURLWithPath:@\"\/path\/to\/old\"];\nNSURL *toURL = [NSURL fileURLWithPath:@\"\/path\/to\/new\"];\nNSError *error = nil;\nBOOL success = [fileManager moveItemAtURL:fromURL toURL:toURL error:&error];\nif (!success) {\n    NSLog(@\"Error: %@\", error.domain);\n}",
+      "language" : "occ"
+    },
+    {
+      "code" : "let fileManager = FileManager.default\nlet fromURL = URL(fileURLWithPath: \"\/path\/to\/old\")\nlet toURL = URL(fileURLWithPath: \"\/path\/to\/new\")\ndo {\n    try fileManager.moveItem(at: fromURL, to: toURL)\n} catch let error as NSError {\n    print(\"Error: \\(error.domain)\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "do {\n    try fileManager.moveItem(at: fromURL, to: toURL)\n} catch CocoaError.fileNoSuchFile {\n    print(\"Error: no such file exists\")\n} catch CocoaError.fileReadUnsupportedScheme {\n    print(\"Error: unsupported scheme (should be 'file:\/\/')\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "throw NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotOpenFile, userInfo: nil)",
+      "language" : "swift"
+    },
+    {
+      "code" : "extern NSErrorDomain const MyErrorDomain;\ntypedef NS_ERROR_ENUM(MyErrorDomain, MyError) {\n    specificError1 = 0,\n    specificError2 = 1\n};",
+      "language" : "occ"
+    },
+    {
+      "code" : "func customThrow() throws {\n    throw NSError(\n        domain: MyErrorDomain,\n        code: MyError.specificError2.rawValue,\n        userInfo: [\n            NSLocalizedDescriptionKey: \"A customized error from MyErrorDomain.\"\n        ]\n    )\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "do {\n    try customThrow()\n} catch MyError.specificError1 {\n    print(\"Caught specific error #1\")\n} catch let error as MyError where error.code == .specificError2 {\n    print(\"Caught specific error #2, \", error.localizedDescription)\n    \/\/ Prints \"Caught specific error #2. A customized error from MyErrorDomain.\"\n} catch let error {\n    fatalError(\"Some other error: \\(error)\")\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "a6e50e84f257b99f0bd14c959e03e137b1933cf9fedd4ebff5529c12b55b2958",
+  "crawledAt" : "2025-12-02T07:34:52Z",
+  "id" : "2EE82BE3-D794-4512-A6E9-FDCF02E042C1",
+  "kind" : "article",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nYou use Swift’s `throw` statement and `do`-`catch` statement to throw and catch errors from Cocoa APIs.  Swift imports Cocoa methods with error parameters as throwing methods, as described in [doc:\/\/com.apple.Swift\/documentation\/Swift\/about-imported-cocoa-error-parameters].\n\n### Catch Errors\n\nIn Swift, calling a method that throws requires explicit error handling. Because Cocoa methods with errors parameters are imported as throwing methods, you handle them using Swift’s `do`-`catch` statement.\n\nHere’s an example of how you handle an error when calling a method in Objective-C:\n\nHere’s how you handle the same error in Swift:\n\nYou can also use the `do`-`catch` statement to match on specific Cocoa error codes to differentiate possible failure conditions:\n\n### Throw Errors\n\nYou throw Cocoa errors by initializing a Cocoa error type and passing in the relevant error domain and code:\n\nIf Objective-C code calls a Swift method that throws an error, the error is automatically propagated to the error pointer argument of the bridged Objective-C method.\n\n### Throw and Catch Errors from Custom Error Domains\n\nYou use custom error domains in Cocoa to group related categories of errors. The example below uses the `NS_ERROR_ENUM` macro to group error constants:\n\nThis example shows how to throw errors using that custom error type in Swift:\n\nThis example shows how to catch errors from a particular error domain and bring attention to unhandled errors from other error domains:\n\n### Handle Exceptions in Objective-C Only\n\nIn Objective-C, exceptions are distinct from errors. Objective-C exception handling uses the `@try`, `@catch`, and `@throw` syntax to indicate unrecoverable programmer errors. This is distinct from the Cocoa pattern—described above—that uses a trailing [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSError] parameter to indicate recoverable errors that you plan for during development.\n\nIn Swift, you can recover from errors passed using Cocoa’s error pattern, as described above in [doc:\/\/com.apple.Swift\/documentation\/Swift\/handling-cocoa-errors-in-swift#Catch-Errors]. However, there’s no safe way to recover from Objective-C exceptions in Swift. To handle Objective-C exceptions, write Objective-C code that catches exceptions before they reach any Swift code.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/handling-cocoa-errors-in-swift\ncrawled: 2025-12-02T07:34:52Z\n---\n\n# Handling Cocoa Errors in Swift\n\n**Article**\n\nThrow and catch errors that use Cocoa’s error types.\n\n## Overview\n\nYou use Swift’s `throw` statement and `do`-`catch` statement to throw and catch errors from Cocoa APIs.  Swift imports Cocoa methods with error parameters as throwing methods, as described in [doc:\/\/com.apple.Swift\/documentation\/Swift\/about-imported-cocoa-error-parameters].\n\n### Catch Errors\n\nIn Swift, calling a method that throws requires explicit error handling. Because Cocoa methods with errors parameters are imported as throwing methods, you handle them using Swift’s `do`-`catch` statement.\n\nHere’s an example of how you handle an error when calling a method in Objective-C:\n\n```occ\nNSFileManager *fileManager = [NSFileManager defaultManager];\nNSURL *fromURL = [NSURL fileURLWithPath:@\"\/path\/to\/old\"];\nNSURL *toURL = [NSURL fileURLWithPath:@\"\/path\/to\/new\"];\nNSError *error = nil;\nBOOL success = [fileManager moveItemAtURL:fromURL toURL:toURL error:&error];\nif (!success) {\n    NSLog(@\"Error: %@\", error.domain);\n}\n```\n\nHere’s how you handle the same error in Swift:\n\n```swift\nlet fileManager = FileManager.default\nlet fromURL = URL(fileURLWithPath: \"\/path\/to\/old\")\nlet toURL = URL(fileURLWithPath: \"\/path\/to\/new\")\ndo {\n    try fileManager.moveItem(at: fromURL, to: toURL)\n} catch let error as NSError {\n    print(\"Error: \\(error.domain)\")\n}\n```\n\nYou can also use the `do`-`catch` statement to match on specific Cocoa error codes to differentiate possible failure conditions:\n\n```swift\ndo {\n    try fileManager.moveItem(at: fromURL, to: toURL)\n} catch CocoaError.fileNoSuchFile {\n    print(\"Error: no such file exists\")\n} catch CocoaError.fileReadUnsupportedScheme {\n    print(\"Error: unsupported scheme (should be 'file:\/\/')\")\n}\n```\n\n### Throw Errors\n\nYou throw Cocoa errors by initializing a Cocoa error type and passing in the relevant error domain and code:\n\n```swift\nthrow NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotOpenFile, userInfo: nil)\n```\n\nIf Objective-C code calls a Swift method that throws an error, the error is automatically propagated to the error pointer argument of the bridged Objective-C method.\n\n### Throw and Catch Errors from Custom Error Domains\n\nYou use custom error domains in Cocoa to group related categories of errors. The example below uses the `NS_ERROR_ENUM` macro to group error constants:\n\n```occ\nextern NSErrorDomain const MyErrorDomain;\ntypedef NS_ERROR_ENUM(MyErrorDomain, MyError) {\n    specificError1 = 0,\n    specificError2 = 1\n};\n```\n\nThis example shows how to throw errors using that custom error type in Swift:\n\n```swift\nfunc customThrow() throws {\n    throw NSError(\n        domain: MyErrorDomain,\n        code: MyError.specificError2.rawValue,\n        userInfo: [\n            NSLocalizedDescriptionKey: \"A customized error from MyErrorDomain.\"\n        ]\n    )\n}\n```\n\nThis example shows how to catch errors from a particular error domain and bring attention to unhandled errors from other error domains:\n\n```swift\ndo {\n    try customThrow()\n} catch MyError.specificError1 {\n    print(\"Caught specific error #1\")\n} catch let error as MyError where error.code == .specificError2 {\n    print(\"Caught specific error #2, \", error.localizedDescription)\n    \/\/ Prints \"Caught specific error #2. A customized error from MyErrorDomain.\"\n} catch let error {\n    fatalError(\"Some other error: \\(error)\")\n}\n```\n\n### Handle Exceptions in Objective-C Only\n\nIn Objective-C, exceptions are distinct from errors. Objective-C exception handling uses the `@try`, `@catch`, and `@throw` syntax to indicate unrecoverable programmer errors. This is distinct from the Cocoa pattern—described above—that uses a trailing [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSError] parameter to indicate recoverable errors that you plan for during development.\n\nIn Swift, you can recover from errors passed using Cocoa’s error pattern, as described above in [doc:\/\/com.apple.Swift\/documentation\/Swift\/handling-cocoa-errors-in-swift#Catch-Errors]. However, there’s no safe way to recover from Objective-C exceptions in Swift. To handle Objective-C exceptions, write Objective-C code that catches exceptions before they reach any Swift code.\n\n## Common Patterns\n\n- **Using Key-Value Observing in Swift**: Notify objects about changes to the properties of other objects.\n- **Using Delegates to Customize Object Behavior**: Respond to events on behalf of a delegator.\n- **Managing a Shared Resource Using a Singleton**: Provide access to a shared resource using a single, shared class instance.\n- **About Imported Cocoa Error Parameters**: Learn how Cocoa error parameters are converted to Swift throwing methods.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Notify objects about changes to the properties of other objects.",
+          "name" : "Using Key-Value Observing in Swift",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/using-key-value-observing-in-swift"
+        },
+        {
+          "description" : "Respond to events on behalf of a delegator.",
+          "name" : "Using Delegates to Customize Object Behavior",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/using-delegates-to-customize-object-behavior"
+        },
+        {
+          "description" : "Provide access to a shared resource using a single, shared class instance.",
+          "name" : "Managing a Shared Resource Using a Singleton",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/managing-a-shared-resource-using-a-singleton"
+        },
+        {
+          "description" : "Learn how Cocoa error parameters are converted to Swift throwing methods.",
+          "name" : "About Imported Cocoa Error Parameters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/about-imported-cocoa-error-parameters"
+        }
+      ],
+      "title" : "Common Patterns"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Handling Cocoa Errors in Swift",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/handling-cocoa-errors-in-swift"
+}

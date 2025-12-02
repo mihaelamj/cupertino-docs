@@ -1,0 +1,76 @@
+{
+  "abstract" : "Manage data store presentation using predicates and dynamic queries.",
+  "codeExamples" : [
+    {
+      "code" : "@Query private var quakes: [Quake]",
+      "language" : "swift"
+    },
+    {
+      "code" : ".navigationTitle(quakes[selectedId]?.location.name ?? \"Earthquakes\")\n.navigationSubtitle(quakes[selectedId]?.fullDate ?? \"\")",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension Array where Element: Quake {\n    subscript(id: Quake.ID?) -> Quake? {\n        first { $0.id == id }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@Query(sort: \\Quake.magnitude, order: .reverse)\nprivate var quakes: [Quake]",
+      "language" : "swift"
+    },
+    {
+      "code" : "Map(selection: $selectedIdMap) {\n    ForEach(quakes) { quake in\n        QuakeMarker(\n            quake: quake,\n            selected: quake.id == selectedId)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "static func predicate(\n    searchText: String,\n    searchDate: Date\n) -> Predicate<Quake> {\n    let calendar = Calendar.autoupdatingCurrent\n    let start = calendar.startOfDay(for: searchDate)\n    let end = calendar.date(byAdding: .init(day: 1), to: start) ?? start\n\n    return #Predicate<Quake> { quake in\n        (searchText.isEmpty || quake.location.name.contains(searchText))\n        &&\n        (quake.time > start && quake.time < end)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "init(\n    selectedId: Binding<Quake.ID?>,\n    selectedIdMap: Binding<Quake.ID?>,\n    searchDate: Date = .now,\n    searchText: String = \"\"\n) {\n    _selectedId = selectedId\n    _selectedIdMap = selectedIdMap\n\n    _quakes = Query(\n        filter: Quake.predicate(\n            searchText: searchText,\n            searchDate: searchDate),\n        sort: \\.magnitude,\n        order: .reverse\n    )\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "init(\n    selectedId: Binding<Quake.ID?>,\n    selectedIdMap: Binding<Quake.ID?>,\n    \n    searchText: String = \"\",\n    searchDate: Date = .now,\n    sortParameter: SortParameter = .time,\n    sortOrder: SortOrder = .reverse\n) {\n    _selectedId = selectedId\n    _selectedIdMap = selectedIdMap\n\n    let predicate = Quake.predicate(searchText: searchText, searchDate: searchDate)\n    switch sortParameter {\n    case .time: _quakes = Query(filter: predicate, sort: \\.time, order: sortOrder)\n    case .magnitude: _quakes = Query(filter: predicate, sort: \\.magnitude, order: sortOrder)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "5f4f5ffa78d7ae9c7a3b69a14028b55c5ba15a84e8a7a00c1f84e867d166a838",
+  "crawledAt" : "2025-12-02T15:50:46Z",
+  "id" : "02B68388-52B7-490E-B333-A0ECCDD4F339",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "SwiftData",
+  "overview" : "## Overview\n\nThis sample app displays a list of earthquakes, showing the time, location, and size of each earthquake. To help people visualize the list, the app also pinpoints each earthquake on a map. You can select an earthquake in the list to highlight it on the map.\n\nThe app uses SwiftData to store and manage the earthquake data, and relies on dynamic queries to present the data in different ways. For example, people can select which day’s earthquakes to display, sort the earthquakes by magnitude or time in forward or reverse order, and filter by location name.\n\n### Read the entire collection with a simple query\n\nThe app’s `ContentView` fetches a complete list of earthquakes by applying the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/Query] macro to its `quakes` property:\n\nThe query macro injects code that keeps the array of earthquake instances synchronized with items in the data store. The view uses this list of earthquakes to configure the navigation bar based on the selected earthquake. For example, it sets the title and subtitle in macOS:\n\nThe above code relies on a subscript method that the app defines in an extension of [doc:\/\/com.apple.documentation\/documentation\/Swift\/Array]:\n\nThe subscript definition relies on the fact that model objects — types attributed with the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/Model()] macro, like `Quake` — automatically conform to the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Identifiable] protocol, which means that each earthquake instance has a unique `id` parameter. When someone selects an earthquake in the list or map view, the app sets `selectedId` to the selected earthquake’s identifier.\n\n### Add a sort parameter to order data\n\nThe map view draws circles to represent quakes at particular locations, using a size for the circle that corresponds to the earthquake’s magnitude. To keep the circles visible when several overlap, `MapView` sorts its query by magnitude so that the map draws larger circles behind smaller ones.\n\n\n\nIt introduces the sorting by adding parameters to the query macro:\n\nThe output of this query drives the generation of the map content builder’s `QuakeMarker` instances, and always appears in the desired order:\n\n### Define a filter using a predicate\n\nTo ensure that the app’s interface remains approachable, the app limits how many earthquakes it displays based on:\n\nTo implement this filtering, the app defines a static method that returns a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Predicate] that takes into account both a search date and search text:\n\nThe app applies this predicate to the queries it creates dynamically, as the next section describes. By defining the predicate once in a central location, queries in multiple views can use it. This makes it easy to synchronize related views, like the list and map views, when the views have distinct queries.\n\n### Update a query dynamically\n\nWhen someone selects a new date or changes the search text, the app needs to update the query to match. The map view achieves this by providing an initializer with `searchDate` and `searchText` inputs, and rebuilding the stored query using those values:\n\nBecause these values are inputs to the view’s initializer, SwiftUI reevaluates the initializer to produce a new query whenever either value changes. This in turn updates the appearance of the view.\n\nThe earthquake list view does something similar, although in this case it takes sort configuration inputs as well:\n\nThese two initializers have different sorting constraints to match the needs of their respective appearances, but they use the same predicate to ensure that the set of quakes that appears in the list always matches the set that appears on the map.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftData\/Filtering-and-sorting-persistent-data\ncrawled: 2025-12-02T15:50:46Z\n---\n\n# Filtering and sorting persistent data\n\n**Sample Code**\n\nManage data store presentation using predicates and dynamic queries.\n\n## Overview\n\nThis sample app displays a list of earthquakes, showing the time, location, and size of each earthquake. To help people visualize the list, the app also pinpoints each earthquake on a map. You can select an earthquake in the list to highlight it on the map.\n\nThe app uses SwiftData to store and manage the earthquake data, and relies on dynamic queries to present the data in different ways. For example, people can select which day’s earthquakes to display, sort the earthquakes by magnitude or time in forward or reverse order, and filter by location name.\n\n\n\n\n\n### Read the entire collection with a simple query\n\nThe app’s `ContentView` fetches a complete list of earthquakes by applying the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/Query] macro to its `quakes` property:\n\n```swift\n@Query private var quakes: [Quake]\n```\n\nThe query macro injects code that keeps the array of earthquake instances synchronized with items in the data store. The view uses this list of earthquakes to configure the navigation bar based on the selected earthquake. For example, it sets the title and subtitle in macOS:\n\n```swift\n.navigationTitle(quakes[selectedId]?.location.name ?? \"Earthquakes\")\n.navigationSubtitle(quakes[selectedId]?.fullDate ?? \"\")\n```\n\nThe above code relies on a subscript method that the app defines in an extension of [doc:\/\/com.apple.documentation\/documentation\/Swift\/Array]:\n\n```swift\nextension Array where Element: Quake {\n    subscript(id: Quake.ID?) -> Quake? {\n        first { $0.id == id }\n    }\n}\n```\n\nThe subscript definition relies on the fact that model objects — types attributed with the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/Model()] macro, like `Quake` — automatically conform to the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Identifiable] protocol, which means that each earthquake instance has a unique `id` parameter. When someone selects an earthquake in the list or map view, the app sets `selectedId` to the selected earthquake’s identifier.\n\n### Add a sort parameter to order data\n\nThe map view draws circles to represent quakes at particular locations, using a size for the circle that corresponds to the earthquake’s magnitude. To keep the circles visible when several overlap, `MapView` sorts its query by magnitude so that the map draws larger circles behind smaller ones.\n\n\n\nIt introduces the sorting by adding parameters to the query macro:\n\n```swift\n@Query(sort: \\Quake.magnitude, order: .reverse)\nprivate var quakes: [Quake]\n```\n\nThe output of this query drives the generation of the map content builder’s `QuakeMarker` instances, and always appears in the desired order:\n\n```swift\nMap(selection: $selectedIdMap) {\n    ForEach(quakes) { quake in\n        QuakeMarker(\n            quake: quake,\n            selected: quake.id == selectedId)\n    }\n}\n```\n\n\n\n### Define a filter using a predicate\n\nTo ensure that the app’s interface remains approachable, the app limits how many earthquakes it displays based on:\n\n- **A date** — To avoid overwhelming the map with too many markers, the app displays only one day’s worth of earthquakes at a time. People can choose which day to view.\n- **A location name** — To enable people to focus on specific earthquakes, people can enter text in a search field that the app matches against earthquake location names.\n\nTo implement this filtering, the app defines a static method that returns a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Predicate] that takes into account both a search date and search text:\n\n```swift\nstatic func predicate(\n    searchText: String,\n    searchDate: Date\n) -> Predicate<Quake> {\n    let calendar = Calendar.autoupdatingCurrent\n    let start = calendar.startOfDay(for: searchDate)\n    let end = calendar.date(byAdding: .init(day: 1), to: start) ?? start\n\n    return #Predicate<Quake> { quake in\n        (searchText.isEmpty || quake.location.name.contains(searchText))\n        &&\n        (quake.time > start && quake.time < end)\n    }\n}\n```\n\nThe app applies this predicate to the queries it creates dynamically, as the next section describes. By defining the predicate once in a central location, queries in multiple views can use it. This makes it easy to synchronize related views, like the list and map views, when the views have distinct queries.\n\n### Update a query dynamically\n\nWhen someone selects a new date or changes the search text, the app needs to update the query to match. The map view achieves this by providing an initializer with `searchDate` and `searchText` inputs, and rebuilding the stored query using those values:\n\n```swift\ninit(\n    selectedId: Binding<Quake.ID?>,\n    selectedIdMap: Binding<Quake.ID?>,\n    searchDate: Date = .now,\n    searchText: String = \"\"\n) {\n    _selectedId = selectedId\n    _selectedIdMap = selectedIdMap\n\n    _quakes = Query(\n        filter: Quake.predicate(\n            searchText: searchText,\n            searchDate: searchDate),\n        sort: \\.magnitude,\n        order: .reverse\n    )\n}\n```\n\nBecause these values are inputs to the view’s initializer, SwiftUI reevaluates the initializer to produce a new query whenever either value changes. This in turn updates the appearance of the view.\n\nThe earthquake list view does something similar, although in this case it takes sort configuration inputs as well:\n\n```swift\ninit(\n    selectedId: Binding<Quake.ID?>,\n    selectedIdMap: Binding<Quake.ID?>,\n    \n    searchText: String = \"\",\n    searchDate: Date = .now,\n    sortParameter: SortParameter = .time,\n    sortOrder: SortOrder = .reverse\n) {\n    _selectedId = selectedId\n    _selectedIdMap = selectedIdMap\n\n    let predicate = Quake.predicate(searchText: searchText, searchDate: searchDate)\n    switch sortParameter {\n    case .time: _quakes = Query(filter: predicate, sort: \\.time, order: sortOrder)\n    case .magnitude: _quakes = Query(filter: predicate, sort: \\.magnitude, order: sortOrder)\n    }\n}\n```\n\nThese two initializers have different sorting constraints to match the needs of their respective appearances, but they use the same predicate to ensure that the set of quakes that appears in the list always matches the set that appears on the map.\n\n## Model fetch\n\n- **Query()**: Fetches all instances of the attached model type.\n- **Additional query macros**: Supplementary macros that enable you to narrow query results and tell SwiftData how to sort and order those results.\n- **Query**: A type that fetches models using the specified criteria, and manages those models so they remain in sync with the underlying data.\n- **FetchDescriptor**: A type that describes the criteria, sort order, and any additional configuration to use when performing a fetch.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Fetches all instances of the attached model type.",
+          "name" : "Query()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Query()"
+        },
+        {
+          "description" : "Supplementary macros that enable you to narrow query results and tell SwiftData how to sort and order those results.",
+          "name" : "Additional query macros",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/AdditionalQueryMacros"
+        },
+        {
+          "description" : "A type that fetches models using the specified criteria, and manages those models so they remain in sync with the underlying data.",
+          "name" : "Query",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Query"
+        },
+        {
+          "description" : "A type that describes the criteria, sort order, and any additional configuration to use when performing a fetch.",
+          "name" : "FetchDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor"
+        }
+      ],
+      "title" : "Model fetch"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Filtering and sorting persistent data",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Filtering-and-sorting-persistent-data"
+}

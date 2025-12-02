@@ -1,0 +1,62 @@
+{
+  "abstract" : "Use the rate map data to scale the content to fill your destination texture.",
+  "codeExamples" : [
+    {
+      "code" : "typedef struct\n{\n    float4 position [[position]];\n} PassThroughVertexOutput;\n\nfragment float4 transformMappedToScreenFragments(\n        PassThroughVertexOutput in [[stage_in]],\n        constant rasterization_rate_map_data &data [[buffer(0)]],\n        texture2d<half> intermediateColorMap    [[ texture(0) ]])\n                                                 \n{\n    constexpr sampler s(coord::pixel, address::clamp_to_edge, filter::linear);\n\n    rasterization_rate_map_decoder map(data);\n    float2 physCoords = map.map_screen_to_physical_coordinates(in.position.xy);\n    \n    return float4(intermediateColorMap.sample(s, physCoords));\n     \n}",
+      "language" : "metal"
+    }
+  ],
+  "contentHash" : "c77d761986421d91f80b1bcbea7f3e6ce2418d7a51df7792a60c76d974f30141",
+  "crawledAt" : "2025-12-01T17:58:34Z",
+  "id" : "4440766E-30B2-4351-AEC9-4381AECB8171",
+  "kind" : "article",
+  "module" : "Metal",
+  "overview" : "## Overview\n\nAt some point in the rendering process, you need to scale your content up to a full-rate image. Most often, this means performing a render or compute pass that reads the pixel data from the intermediate texture and copies or transforms it to generate the final target texture. Scaling the content might be your final step, or you might follow the scaling process with additional work on the full-rate image. For example, you should usually render text and user-interface elements at the full rate on top of the scaled image.\n\n### Copy the rate map data into a Metal buffer\n\nYou do the rate conversions in a fragment shader. First, copy the rate map’s transformation data into a Metal buffer and then send that data to the shader.\n\nThe following example code asks the rate map for the size of its internal rate data, allocates a Metal buffer just for that data, and copies the data into the buffer.\n\nYou need to reserve enough space in the buffer for the data, and specify an offset that’s a multiple of the alignment value returned by [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRasterizationRateMap\/parameterDataSizeAndAlign]. You can copy the data into a Metal buffer that contains other data.\n\nPass the buffer as an argument to your shader when you encode the command to draw the scaled data:\n\n### Convert between screen and physical coordinates\n\nMetal Shading Language provides functions that work with the rate map data to convert between screen (logical viewport) coordinates and physical texture coordinates. The fragment shader below scales the intermediate texture and copies it into the destination texture. It passes the rate map data you provided to a rate map decoder object and uses that object to convert the target screen coordinates to physical coordinates in the intermediate texture. Then it samples that location and returns the result. For more details, see the “Variable Rasterization Rate” section of the [https:\/\/developer.apple.com\/metal\/Metal-Shading-Language-Specification.pdf].\n\nTo reduce memory bandwidth usage on iOS, combine this render pass with other rendering that follows the scaling process rather than creating a separate pass.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/scaling-variable-rasterization-rate-content\ncrawled: 2025-12-01T17:58:34Z\n---\n\n# Scaling variable rasterization rate content\n\n**Article**\n\nUse the rate map data to scale the content to fill your destination texture.\n\n## Overview\n\nAt some point in the rendering process, you need to scale your content up to a full-rate image. Most often, this means performing a render or compute pass that reads the pixel data from the intermediate texture and copies or transforms it to generate the final target texture. Scaling the content might be your final step, or you might follow the scaling process with additional work on the full-rate image. For example, you should usually render text and user-interface elements at the full rate on top of the scaled image.\n\n### Copy the rate map data into a Metal buffer\n\nYou do the rate conversions in a fragment shader. First, copy the rate map’s transformation data into a Metal buffer and then send that data to the shader.\n\nThe following example code asks the rate map for the size of its internal rate data, allocates a Metal buffer just for that data, and copies the data into the buffer.\n\n\n\nYou need to reserve enough space in the buffer for the data, and specify an offset that’s a multiple of the alignment value returned by [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRasterizationRateMap\/parameterDataSizeAndAlign]. You can copy the data into a Metal buffer that contains other data.\n\nPass the buffer as an argument to your shader when you encode the command to draw the scaled data:\n\n\n\n### Convert between screen and physical coordinates\n\nMetal Shading Language provides functions that work with the rate map data to convert between screen (logical viewport) coordinates and physical texture coordinates. The fragment shader below scales the intermediate texture and copies it into the destination texture. It passes the rate map data you provided to a rate map decoder object and uses that object to convert the target screen coordinates to physical coordinates in the intermediate texture. Then it samples that location and returns the result. For more details, see the “Variable Rasterization Rate” section of the [https:\/\/developer.apple.com\/metal\/Metal-Shading-Language-Specification.pdf].\n\n```metal\ntypedef struct\n{\n    float4 position [[position]];\n} PassThroughVertexOutput;\n\nfragment float4 transformMappedToScreenFragments(\n        PassThroughVertexOutput in [[stage_in]],\n        constant rasterization_rate_map_data &data [[buffer(0)]],\n        texture2d<half> intermediateColorMap    [[ texture(0) ]])\n                                                 \n{\n    constexpr sampler s(coord::pixel, address::clamp_to_edge, filter::linear);\n\n    rasterization_rate_map_decoder map(data);\n    float2 physCoords = map.map_screen_to_physical_coordinates(in.position.xy);\n    \n    return float4(intermediateColorMap.sample(s, physCoords));\n     \n}\n```\n\nTo reduce memory bandwidth usage on iOS, combine this render pass with other rendering that follows the scaling process rather than creating a separate pass.\n\n## Rasterization settings\n\n- **Rendering at different rasterization rates**: Configure a rasterization rate map to vary rasterization rates depending on the amount of detail needed.\n- **Creating a rasterization rate map**: Define the rasterization rates for each part of your render target.\n- **Rendering with a rasterization rate map**: Create offscreen textures to hold intermediate rasterized data.\n- **MTLRasterizationRateMapDescriptor**: An object that you use to configure new rasterization rate maps.\n- **MTLRasterizationRateMap**: A compiled read-only instance that determines how to apply variable rasterization rates when rendering.\n- **MTLCoordinate2D**: A coordinate in the viewport.\n- **MTLCoordinate2DMake(_:_:)**: Returns a new 2D point with the specified coordinates.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Configure a rasterization rate map to vary rasterization rates depending on the amount of detail needed.",
+          "name" : "Rendering at different rasterization rates",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/rendering-at-different-rasterization-rates"
+        },
+        {
+          "description" : "Define the rasterization rates for each part of your render target.",
+          "name" : "Creating a rasterization rate map",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/creating-a-rasterization-rate-map"
+        },
+        {
+          "description" : "Create offscreen textures to hold intermediate rasterized data.",
+          "name" : "Rendering with a rasterization rate map",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/rendering-with-a-rasterization-rate-map"
+        },
+        {
+          "description" : "An object that you use to configure new rasterization rate maps.",
+          "name" : "MTLRasterizationRateMapDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRasterizationRateMapDescriptor"
+        },
+        {
+          "description" : "A compiled read-only instance that determines how to apply variable rasterization rates when rendering.",
+          "name" : "MTLRasterizationRateMap",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRasterizationRateMap"
+        },
+        {
+          "description" : "A coordinate in the viewport.",
+          "name" : "MTLCoordinate2D",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLCoordinate2D"
+        },
+        {
+          "description" : "Returns a new 2D point with the specified coordinates.",
+          "name" : "MTLCoordinate2DMake(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLCoordinate2DMake(_:_:)"
+        }
+      ],
+      "title" : "Rasterization settings"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Scaling variable rasterization rate content",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/scaling-variable-rasterization-rate-content"
+}

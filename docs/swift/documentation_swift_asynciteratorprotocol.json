@@ -1,0 +1,124 @@
+{
+  "abstract" : "A type that asynchronously supplies the values of a sequence one at a time.",
+  "codeExamples" : [
+    {
+      "code" : "struct Counter: AsyncSequence {\n    typealias Element = Int\n    let howHigh: Int\n\n    struct AsyncIterator: AsyncIteratorProtocol {\n        let howHigh: Int\n        var current = 1\n\n        mutating func next() async -> Int? {\n            \/\/ A genuinely asynchronous implementation uses the `Task`\n            \/\/ API to check for cancellation here and return early.\n            guard current <= howHigh else {\n                return nil\n            }\n\n            let result = current\n            current += 1\n            return result\n        }\n    }\n\n    func makeAsyncIterator() -> AsyncIterator {\n        return AsyncIterator(howHigh: howHigh)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "for await number in Counter(howHigh: 10) {\n  print(number, terminator: \" \")\n}\n\/\/ Prints \"1 2 3 4 5 6 7 8 9 10 \"",
+      "language" : "swift"
+    }
+  ],
+  "conformingTypes" : [
+    "AsyncCompactMapSequence.Iterator",
+    "AsyncDropFirstSequence.Iterator",
+    "AsyncDropWhileSequence.Iterator",
+    "AsyncFilterSequence.Iterator",
+    "AsyncFlatMapSequence.Iterator",
+    "AsyncMapSequence.Iterator",
+    "AsyncPrefixSequence.Iterator",
+    "AsyncPrefixWhileSequence.Iterator",
+    "AsyncStream.Iterator",
+    "AsyncThrowingCompactMapSequence.Iterator",
+    "AsyncThrowingDropWhileSequence.Iterator",
+    "AsyncThrowingFilterSequence.Iterator",
+    "AsyncThrowingFlatMapSequence.Iterator",
+    "AsyncThrowingMapSequence.Iterator",
+    "AsyncThrowingPrefixWhileSequence.Iterator",
+    "AsyncThrowingStream.Iterator",
+    "Observations.Iterator",
+    "TaskGroup.Iterator",
+    "ThrowingTaskGroup.Iterator"
+  ],
+  "contentHash" : "6310ce21a23666c828977d99f6e548791cc94b312c44ff43f60703b53e645a8f",
+  "crawledAt" : "2025-12-02T01:13:10Z",
+  "declaration" : {
+    "code" : "protocol AsyncIteratorProtocol<Element, Failure>",
+    "language" : "swift"
+  },
+  "id" : "CD995814-03C3-4704-BF14-9EA0FBD8C880",
+  "kind" : "protocol",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nThe `AsyncIteratorProtocol` defines the type returned by the `makeAsyncIterator()` method of the `AsyncSequence` protocol. In short, the iterator is what produces the asynchronous sequence’s values. The protocol defines a single asynchronous method, `next()`, which either produces the next element of the sequence, or returns `nil` to signal the end of the sequence.\n\nTo implement your own `AsyncSequence`, implement a wrapped type that conforms to `AsyncIteratorProtocol`. The following example shows a `Counter` type that uses an inner iterator to monotonically generate `Int` values until reaching a `howHigh` value. While this example isn’t itself asynchronous, it shows the shape of a custom sequence and iterator, and how to use it as if it were asynchronous:\n\nAt the call site, this looks like:\n\n### End of Iteration\n\nThe iterator returns `nil` to indicate the end of the sequence. After returning `nil` (or throwing an error) from `next()`, the iterator enters a terminal state, and all future calls to `next()` must return `nil`.\n\n### Cancellation\n\nTypes conforming to `AsyncIteratorProtocol` should use the cancellation primitives provided by Swift’s `Task` API. The iterator can choose how to handle and respond to cancellation, including:\n\nIf the iterator needs to clean up on cancellation, it can do so after checking for cancellation as described above, or in `deinit` if it’s a reference type.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/AsyncIteratorProtocol\ncrawled: 2025-12-02T01:13:10Z\n---\n\n# AsyncIteratorProtocol\n\n**Protocol**\n\nA type that asynchronously supplies the values of a sequence one at a time.\n\n## Declaration\n\n```swift\nprotocol AsyncIteratorProtocol<Element, Failure>\n```\n\n## Overview\n\nThe `AsyncIteratorProtocol` defines the type returned by the `makeAsyncIterator()` method of the `AsyncSequence` protocol. In short, the iterator is what produces the asynchronous sequence’s values. The protocol defines a single asynchronous method, `next()`, which either produces the next element of the sequence, or returns `nil` to signal the end of the sequence.\n\nTo implement your own `AsyncSequence`, implement a wrapped type that conforms to `AsyncIteratorProtocol`. The following example shows a `Counter` type that uses an inner iterator to monotonically generate `Int` values until reaching a `howHigh` value. While this example isn’t itself asynchronous, it shows the shape of a custom sequence and iterator, and how to use it as if it were asynchronous:\n\n```swift\nstruct Counter: AsyncSequence {\n    typealias Element = Int\n    let howHigh: Int\n\n    struct AsyncIterator: AsyncIteratorProtocol {\n        let howHigh: Int\n        var current = 1\n\n        mutating func next() async -> Int? {\n            \/\/ A genuinely asynchronous implementation uses the `Task`\n            \/\/ API to check for cancellation here and return early.\n            guard current <= howHigh else {\n                return nil\n            }\n\n            let result = current\n            current += 1\n            return result\n        }\n    }\n\n    func makeAsyncIterator() -> AsyncIterator {\n        return AsyncIterator(howHigh: howHigh)\n    }\n}\n```\n\nAt the call site, this looks like:\n\n```swift\nfor await number in Counter(howHigh: 10) {\n  print(number, terminator: \" \")\n}\n\/\/ Prints \"1 2 3 4 5 6 7 8 9 10 \"\n```\n\n### End of Iteration\n\nThe iterator returns `nil` to indicate the end of the sequence. After returning `nil` (or throwing an error) from `next()`, the iterator enters a terminal state, and all future calls to `next()` must return `nil`.\n\n### Cancellation\n\nTypes conforming to `AsyncIteratorProtocol` should use the cancellation primitives provided by Swift’s `Task` API. The iterator can choose how to handle and respond to cancellation, including:\n\n- Checking the `isCancelled` value of the current `Task` inside `next()` and returning `nil` to terminate the sequence.\n- Calling `checkCancellation()` on the `Task`, which throws a `CancellationError`.\n- Implementing `next()` with a `withTaskCancellationHandler(handler:operation:)` invocation to immediately react to cancellation.\n\nIf the iterator needs to clean up on cancellation, it can do so after checking for cancellation as described above, or in `deinit` if it’s a reference type.\n\n## Declaring Iterator Topography\n\n- **Element**\n\n## Producing Iterator Values\n\n- **next()**: Asynchronously advances to the next element and returns it, or ends the sequence if there is no next element.\n\n## Associated Types\n\n- **Failure**: The type of failure produced by iteration.\n\n## Instance Methods\n\n- **next(isolation:)**: Asynchronously advances to the next element and returns it, or ends the sequence if there is no next element.\n\n## Creating an Iterator\n\n- **makeAsyncIterator()**: Creates the asynchronous iterator that produces elements of this asynchronous sequence.\n- **AsyncIterator**: The type of asynchronous iterator that produces elements of this asynchronous sequence.\n- **Element**: The type of element produced by this asynchronous sequence.\n\n## Conforming Types\n\n- AsyncCompactMapSequence.Iterator\n- AsyncDropFirstSequence.Iterator\n- AsyncDropWhileSequence.Iterator\n- AsyncFilterSequence.Iterator\n- AsyncFlatMapSequence.Iterator\n- AsyncMapSequence.Iterator\n- AsyncPrefixSequence.Iterator\n- AsyncPrefixWhileSequence.Iterator\n- AsyncStream.Iterator\n- AsyncThrowingCompactMapSequence.Iterator\n- AsyncThrowingDropWhileSequence.Iterator\n- AsyncThrowingFilterSequence.Iterator\n- AsyncThrowingFlatMapSequence.Iterator\n- AsyncThrowingMapSequence.Iterator\n- AsyncThrowingPrefixWhileSequence.Iterator\n- AsyncThrowingStream.Iterator\n- Observations.Iterator\n- TaskGroup.Iterator\n- ThrowingTaskGroup.Iterator\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Element",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncIteratorProtocol\/Element"
+        }
+      ],
+      "title" : "Declaring Iterator Topography"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Asynchronously advances to the next element and returns it, or ends the sequence if there is no next element.",
+          "name" : "next()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncIteratorProtocol\/next()"
+        }
+      ],
+      "title" : "Producing Iterator Values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The type of failure produced by iteration.",
+          "name" : "Failure",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncIteratorProtocol\/Failure"
+        }
+      ],
+      "title" : "Associated Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Asynchronously advances to the next element and returns it, or ends the sequence if there is no next element.",
+          "name" : "next(isolation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncIteratorProtocol\/next(isolation:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates the asynchronous iterator that produces elements of this asynchronous sequence.",
+          "name" : "makeAsyncIterator()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/makeAsyncIterator()"
+        },
+        {
+          "description" : "The type of asynchronous iterator that produces elements of this asynchronous sequence.",
+          "name" : "AsyncIterator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/AsyncIterator"
+        },
+        {
+          "description" : "The type of element produced by this asynchronous sequence.",
+          "name" : "Element",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncSequence\/Element"
+        }
+      ],
+      "title" : "Creating an Iterator"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AsyncIteratorProtocol",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/AsyncIteratorProtocol"
+}

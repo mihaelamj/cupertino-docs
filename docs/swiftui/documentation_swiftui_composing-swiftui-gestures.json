@@ -1,0 +1,66 @@
+{
+  "abstract" : "Combine gestures to create complex interactions.",
+  "codeExamples" : [
+    {
+      "code" : "struct DraggableCircle: View {\n\n    enum DragState {\n        case inactive\n        case pressing\n        case dragging(translation: CGSize)\n        \n        var translation: CGSize {\n            switch self {\n            case .inactive, .pressing:\n                return .zero\n            case .dragging(let translation):\n                return translation\n            }\n        }\n        \n        var isActive: Bool {\n            switch self {\n            case .inactive:\n                return false\n            case .pressing, .dragging:\n                return true\n            }\n        }\n        \n        var isDragging: Bool {\n            switch self {\n            case .inactive, .pressing:\n                return false\n            case .dragging:\n                return true\n            }\n        }\n    }\n    \n    @GestureState private var dragState = DragState.inactive\n    @State private var viewState = CGSize.zero",
+      "language" : "swift"
+    },
+    {
+      "code" : "var body: some View {\n        let minimumLongPressDuration = 0.5\n        let longPressDrag = LongPressGesture(minimumDuration: minimumLongPressDuration)\n            .sequenced(before: DragGesture())\n            .updating($dragState) { value, state, transaction in\n                switch value {\n                \/\/ Long press begins.\n                case .first(true):\n                    state = .pressing\n                \/\/ Long press confirmed, dragging may begin.\n                case .second(true, let drag):\n                    state = .dragging(translation: drag?.translation ?? .zero)\n                \/\/ Dragging ended or the long press cancelled.\n                default:\n                    state = .inactive\n                }\n            }\n            .onEnded { value in\n                guard case .second(true, let drag?) = value else { return }\n                self.viewState.width += drag.translation.width\n                self.viewState.height += drag.translation.height\n            }",
+      "language" : "swift"
+    },
+    {
+      "code" : "        return Circle()\n            .fill(Color.blue)\n            .overlay(dragState.isDragging ? Circle().stroke(Color.white, lineWidth: 2) : nil)\n            .frame(width: 100, height: 100, alignment: .center)\n            .offset(\n                x: viewState.width + dragState.translation.width,\n                y: viewState.height + dragState.translation.height\n            )\n            .animation(nil)\n            .shadow(radius: dragState.isActive ? 8 : 0)\n            .animation(.linear(duration: minimumLongPressDuration))\n            .gesture(longPressDrag)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "e8d2d3986596c91320b02ab0ecd8d52ce91549e2752fc766bbf26ed77b9b41c7",
+  "crawledAt" : "2025-12-02T17:41:10Z",
+  "id" : "D4B24E8C-C8B9-42AF-A53C-3A958A311781",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nWhen you add multiple gestures to your app’s view hierarchy, you need to decide how the gestures interact with each other. You use gesture composition to define the order SwiftUI recognizes gestures. There are three gesture composition types:\n\nWhen you combine gesture modifiers simultaneously, SwiftUI must recognize all subgesture patterns at the same time for it to recognize the combining gesture. When you sequence gesture modifiers one after the other, SwiftUI must recognize each subgesture in order. Finally, when you combine gestures exclusively, SwiftUI recognizes the entire gesture pattern when SwiftUI only recognizes one subgesture but not the others.\n\n### Sequence one gesture after another\n\nWhen you sequence one gesture after another, SwiftUI recognizes the first gesture before it recognizes the second. For example, to require a long press before the user can drag a view, you sequence a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/DragGesture] after a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LongPressGesture].\n\n#### Model sequenced gesture states\n\nTo make it easier to track complicated states, use an enumeration that captures all of the states you need to configure your views. In the following example, there are three important states: no interaction (`inactive`), long press in progress (`pressing`), and dragging (`dragging`).\n\n#### Create gestures and update the UI state\n\nWhen you sequence two gestures, the callbacks capture the state of both gestures. In the update callback, the new `value` uses an enumeration to represent the combination of the possible gesture states. The code below converts the underlying gesture states into the high-level `DragState` enumeration defined above.\n\nWhen the user begins pressing the view, the drag state changes to `pressing` and a shadow animates under the shape. After the user finishes the long press and the drag state changes to `dragging`, a border appears around the shape to indicate that the user may begin moving the view.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/Composing-SwiftUI-Gestures\ncrawled: 2025-12-02T17:41:10Z\n---\n\n# Composing SwiftUI gestures\n\n**Article**\n\nCombine gestures to create complex interactions.\n\n## Overview\n\nWhen you add multiple gestures to your app’s view hierarchy, you need to decide how the gestures interact with each other. You use gesture composition to define the order SwiftUI recognizes gestures. There are three gesture composition types:\n\n- Simultaneous\n- Sequenced\n- Exclusive\n\nWhen you combine gesture modifiers simultaneously, SwiftUI must recognize all subgesture patterns at the same time for it to recognize the combining gesture. When you sequence gesture modifiers one after the other, SwiftUI must recognize each subgesture in order. Finally, when you combine gestures exclusively, SwiftUI recognizes the entire gesture pattern when SwiftUI only recognizes one subgesture but not the others.\n\n### Sequence one gesture after another\n\nWhen you sequence one gesture after another, SwiftUI recognizes the first gesture before it recognizes the second. For example, to require a long press before the user can drag a view, you sequence a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/DragGesture] after a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LongPressGesture].\n\n#### Model sequenced gesture states\n\nTo make it easier to track complicated states, use an enumeration that captures all of the states you need to configure your views. In the following example, there are three important states: no interaction (`inactive`), long press in progress (`pressing`), and dragging (`dragging`).\n\n```swift\nstruct DraggableCircle: View {\n\n    enum DragState {\n        case inactive\n        case pressing\n        case dragging(translation: CGSize)\n        \n        var translation: CGSize {\n            switch self {\n            case .inactive, .pressing:\n                return .zero\n            case .dragging(let translation):\n                return translation\n            }\n        }\n        \n        var isActive: Bool {\n            switch self {\n            case .inactive:\n                return false\n            case .pressing, .dragging:\n                return true\n            }\n        }\n        \n        var isDragging: Bool {\n            switch self {\n            case .inactive, .pressing:\n                return false\n            case .dragging:\n                return true\n            }\n        }\n    }\n    \n    @GestureState private var dragState = DragState.inactive\n    @State private var viewState = CGSize.zero\n```\n\n#### Create gestures and update the UI state\n\nWhen you sequence two gestures, the callbacks capture the state of both gestures. In the update callback, the new `value` uses an enumeration to represent the combination of the possible gesture states. The code below converts the underlying gesture states into the high-level `DragState` enumeration defined above.\n\n```swift\nvar body: some View {\n        let minimumLongPressDuration = 0.5\n        let longPressDrag = LongPressGesture(minimumDuration: minimumLongPressDuration)\n            .sequenced(before: DragGesture())\n            .updating($dragState) { value, state, transaction in\n                switch value {\n                \/\/ Long press begins.\n                case .first(true):\n                    state = .pressing\n                \/\/ Long press confirmed, dragging may begin.\n                case .second(true, let drag):\n                    state = .dragging(translation: drag?.translation ?? .zero)\n                \/\/ Dragging ended or the long press cancelled.\n                default:\n                    state = .inactive\n                }\n            }\n            .onEnded { value in\n                guard case .second(true, let drag?) = value else { return }\n                self.viewState.width += drag.translation.width\n                self.viewState.height += drag.translation.height\n            }\n```\n\nWhen the user begins pressing the view, the drag state changes to `pressing` and a shadow animates under the shape. After the user finishes the long press and the drag state changes to `dragging`, a border appears around the shape to indicate that the user may begin moving the view.\n\n```swift\n        return Circle()\n            .fill(Color.blue)\n            .overlay(dragState.isDragging ? Circle().stroke(Color.white, lineWidth: 2) : nil)\n            .frame(width: 100, height: 100, alignment: .center)\n            .offset(\n                x: viewState.width + dragState.translation.width,\n                y: viewState.height + dragState.translation.height\n            )\n            .animation(nil)\n            .shadow(radius: dragState.isActive ? 8 : 0)\n            .animation(.linear(duration: minimumLongPressDuration))\n            .gesture(longPressDrag)\n    }\n}\n```\n\n## Combining gestures\n\n- **simultaneousGesture(_:including:)**: Attaches a gesture to the view to process simultaneously with gestures defined by the view.\n- **simultaneousGesture(_:isEnabled:)**: Attaches a gesture to the view to process simultaneously with gestures defined by the view.\n- **simultaneousGesture(_:name:isEnabled:)**: Attaches a gesture to the view to process simultaneously with gestures defined by the view.\n- **SequenceGesture**: A gesture that’s a sequence of two gestures.\n- **SimultaneousGesture**: A gesture containing two gestures that can happen at the same time with neither of them preceding the other.\n- **ExclusiveGesture**: A gesture that consists of two gestures where only one of them can succeed.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Attaches a gesture to the view to process simultaneously with gestures defined by the view.",
+          "name" : "simultaneousGesture(_:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/simultaneousGesture(_:including:)"
+        },
+        {
+          "description" : "Attaches a gesture to the view to process simultaneously with gestures defined by the view.",
+          "name" : "simultaneousGesture(_:isEnabled:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/simultaneousGesture(_:isEnabled:)"
+        },
+        {
+          "description" : "Attaches a gesture to the view to process simultaneously with gestures defined by the view.",
+          "name" : "simultaneousGesture(_:name:isEnabled:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/simultaneousGesture(_:name:isEnabled:)"
+        },
+        {
+          "description" : "A gesture that’s a sequence of two gestures.",
+          "name" : "SequenceGesture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/SequenceGesture"
+        },
+        {
+          "description" : "A gesture containing two gestures that can happen at the same time with neither of them preceding the other.",
+          "name" : "SimultaneousGesture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/SimultaneousGesture"
+        },
+        {
+          "description" : "A gesture that consists of two gestures where only one of them can succeed.",
+          "name" : "ExclusiveGesture",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/ExclusiveGesture"
+        }
+      ],
+      "title" : "Combining gestures"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Composing SwiftUI gestures",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Composing-SwiftUI-Gestures"
+}

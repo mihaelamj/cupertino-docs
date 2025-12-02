@@ -1,0 +1,327 @@
+{
+  "abstract" : "A view into a subsequence of elements of another collection.",
+  "codeExamples" : [
+    {
+      "code" : "var absences = [0, 2, 0, 4, 0, 3, 1, 0]",
+      "language" : "swift"
+    },
+    {
+      "code" : "let secondHalf = absences.suffix(absences.count \/ 2)\nif let i = secondHalf.indices.max(by: { secondHalf[$0] < secondHalf[$1] }) {\n    print(\"Highest second-half absences: \\(absences[i])\")\n}\n\/\/ Prints \"Highest second-half absences: 3\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "absences[7] = 2\nprint(absences)\n\/\/ Prints \"[0, 2, 0, 4, 0, 3, 1, 2]\"\nprint(secondHalf)\n\/\/ Prints \"[0, 3, 1, 0]\"",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "AccelerateBuffer",
+    "AccelerateMutableBuffer",
+    "BidirectionalCollection",
+    "Collection",
+    "ContiguousBytes",
+    "Copyable",
+    "DataProtocol",
+    "LazySequenceProtocol",
+    "MutableCollection",
+    "RandomAccessCollection",
+    "RangeReplaceableCollection",
+    "Sendable",
+    "SendableMetatype",
+    "Sequence"
+  ],
+  "contentHash" : "775e229c93549415a21d1507c9a6322c8637319026c4e32b28a31498383f4ff1",
+  "crawledAt" : "2025-12-01T21:32:03Z",
+  "declaration" : {
+    "code" : "@frozen struct Slice<Base> where Base : Collection",
+    "language" : "swift"
+  },
+  "id" : "6C53BBA2-63A4-401F-B302-7B26A4515B2F",
+  "kind" : "struct",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nA slice stores a base collection and the start and end indices of the view. It does not copy the elements from the collection into separate storage. Thus, creating a slice has O(1) complexity.\n\n## Slices Share Indices\n\nIndices of a slice can be used interchangeably with indices of the base collection. An element of a slice is located under the same index in the slice and in the base collection, as long as neither the collection nor the slice has been mutated since the slice was created.\n\nFor example, suppose you have an array holding the number of absences from each class during a session.\n\nYou’re tasked with finding the day with the most absences in the second half of the session. To find the index of the day in question, follow these steps:\n\nHere’s an implementation of those steps:\n\n## Slices Inherit Semantics\n\nA slice inherits the value or reference semantics of its base collection. That is, if a `Slice` instance is wrapped around a mutable collection that has value semantics, such as an array, mutating the original collection would trigger a copy of that collection, and not affect the base collection stored inside of the slice.\n\nFor example, if you update the last element of the `absences` array from `0` to `2`, the `secondHalf` slice is unchanged.\n\nUse slices only for transient computation. A slice may hold a reference to the entire storage of a larger collection, not just to the portion it presents, even after the base collection’s lifetime ends. Long-term storage of a slice may therefore prolong the lifetime of elements that are no longer otherwise accessible, which can erroneously appear to be memory leakage.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/swift\/slice\ncrawled: 2025-12-01T21:32:03Z\n---\n\n# Slice\n\n**Structure**\n\nA view into a subsequence of elements of another collection.\n\n## Declaration\n\n```swift\n@frozen struct Slice<Base> where Base : Collection\n```\n\n## Overview\n\nA slice stores a base collection and the start and end indices of the view. It does not copy the elements from the collection into separate storage. Thus, creating a slice has O(1) complexity.\n\n## Slices Share Indices\n\nIndices of a slice can be used interchangeably with indices of the base collection. An element of a slice is located under the same index in the slice and in the base collection, as long as neither the collection nor the slice has been mutated since the slice was created.\n\nFor example, suppose you have an array holding the number of absences from each class during a session.\n\n```swift\nvar absences = [0, 2, 0, 4, 0, 3, 1, 0]\n```\n\nYou’re tasked with finding the day with the most absences in the second half of the session. To find the index of the day in question, follow these steps:\n\n1. Create a slice of the `absences` array that holds the second half of the days.\n2. Use the `max(by:)` method to determine the index of the day with the most absences.\n3. Print the result using the index found in step 2 on the original `absences` array.\n\nHere’s an implementation of those steps:\n\n```swift\nlet secondHalf = absences.suffix(absences.count \/ 2)\nif let i = secondHalf.indices.max(by: { secondHalf[$0] < secondHalf[$1] }) {\n    print(\"Highest second-half absences: \\(absences[i])\")\n}\n\/\/ Prints \"Highest second-half absences: 3\"\n```\n\n## Slices Inherit Semantics\n\nA slice inherits the value or reference semantics of its base collection. That is, if a `Slice` instance is wrapped around a mutable collection that has value semantics, such as an array, mutating the original collection would trigger a copy of that collection, and not affect the base collection stored inside of the slice.\n\nFor example, if you update the last element of the `absences` array from `0` to `2`, the `secondHalf` slice is unchanged.\n\n```swift\nabsences[7] = 2\nprint(absences)\n\/\/ Prints \"[0, 2, 0, 4, 0, 3, 1, 2]\"\nprint(secondHalf)\n\/\/ Prints \"[0, 3, 1, 0]\"\n```\n\nUse slices only for transient computation. A slice may hold a reference to the entire storage of a larger collection, not just to the portion it presents, even after the base collection’s lifetime ends. Long-term storage of a slice may therefore prolong the lifetime of elements that are no longer otherwise accessible, which can erroneously appear to be memory leakage.\n\n\n\n## Initializers\n\n- **init(base:bounds:)**: Creates a view into the given collection that allows access to elements within the specified range.\n\n## Instance Properties\n\n- **base**: The underlying collection of the slice.\n\n## Instance Methods\n\n- **assumingMemoryBound(to:)**: Returns a typed buffer to the memory referenced by this buffer slice, assuming that the memory is already bound to the specified type.\n- **assumingMemoryBound(to:)**: Returns a typed buffer to the memory referenced by this buffer slice, assuming that the memory is already bound to the specified type.\n- **bindMemory(to:)**: Binds this buffer slice’s memory to the specified type and returns a typed buffer of the bound memory.\n- **bindMemory(to:)**: Binds this buffer slice’s memory to the specified type and returns a typed buffer of the bound memory.\n- **copyBytes(from:)**: Copies from a collection of `UInt8` into this buffer slice’s memory.\n- **deinitialize()**: Deinitializes every instance in this buffer slice.\n- **deinitializeElement(at:)**: Deinitializes the memory underlying the element at `index`.\n- **initialize(from:)**: Initializes the buffer slice’s memory with the given elements.\n- **initialize(fromContentsOf:)**: Initializes the buffer slice’s memory with with every element of the source.\n- **initialize(repeating:)**: Initializes every element in this buffer slice’s memory to a copy of the given value.\n- **initializeElement(at:to:)**: Initializes the element at `index` to the given value.\n- **initializeMemory(as:from:)**: Initializes the buffer’s memory with the given elements, binding the initialized memory to the elements’ type.\n- **initializeMemory(as:fromContentsOf:)**: Initializes the buffer slice’s memory with every element of the source, binding the initialized memory to the elements’ type.\n- **initializeMemory(as:repeating:)**: Initializes the memory referenced by this buffer slice with the given value, binds the memory to the value’s type, and returns a typed buffer of the initialized memory.\n- **insert(_:at:)**\n- **insert(contentsOf:at:)**\n- **load(fromByteOffset:as:)**: Returns a new instance of the given type, read from the specified offset into the buffer pointer slice’s raw memory.\n- **load(fromByteOffset:as:)**: Returns a new instance of the given type, read from the specified offset into the buffer pointer slice’s raw memory.\n- **loadUnaligned(fromByteOffset:as:)**\n- **loadUnaligned(fromByteOffset:as:)**: Returns a new instance of the given type, read from the specified offset into the buffer pointer slice’s raw memory.\n- **loadUnaligned(fromByteOffset:as:)**: Returns a new instance of the given type, read from the specified offset into the buffer pointer slice’s raw memory.\n- **loadUnaligned(fromByteOffset:as:)**\n- **moveElement(from:)**: Retrieves and returns the element at `index`, leaving that element’s underlying memory uninitialized.\n- **moveInitialize(fromContentsOf:)**: Moves every element of an initialized source buffer into the uninitialized memory referenced by this buffer slice, leaving the source memory uninitialized and this buffer slice’s memory initialized.\n- **moveInitialize(fromContentsOf:)**: Moves every element of an initialized source buffer slice into the uninitialized memory referenced by this buffer slice, leaving the source memory uninitialized and this buffer slice’s memory initialized.\n- **moveInitializeMemory(as:fromContentsOf:)**: Moves every element of an initialized source buffer into the uninitialized memory referenced by this buffer slice, leaving the source memory uninitialized and this slice’s memory initialized.\n- **moveInitializeMemory(as:fromContentsOf:)**: Moves every element from an initialized source buffer slice into the uninitialized memory referenced by this buffer slice, leaving the source memory uninitialized and this slice’s memory initialized.\n- **moveUpdate(fromContentsOf:)**: Updates this buffer slice’s initialized memory by moving every element from the source buffer, leaving the source memory uninitialized.\n- **moveUpdate(fromContentsOf:)**: Updates this buffer slice’s initialized memory initialized memory by moving every element from the source buffer slice, leaving the source memory uninitialized.\n- **remove(at:)**\n- **removeSubrange(_:)**\n- **replaceSubrange(_:with:)**\n- **storeBytes(of:toByteOffset:as:)**: Stores a value’s bytes into the buffer pointer slice’s raw memory at the specified byte offset.\n- **update(from:)**: Updates the buffer slice’s initialized memory with the given elements.\n- **update(fromContentsOf:)**: Updates the buffer slice’s initialized memory with every element of the source.\n- **update(repeating:)**: Updates every element of this buffer slice’s initialized memory.\n- **withContiguousMutableStorageIfAvailable(_:)**\n- **withMemoryRebound(to:_:)**: Executes the given closure while temporarily binding the buffer slice to instances of type `T`.\n- **withMemoryRebound(to:_:)**: Executes the given closure while temporarily binding the buffer slice to instances of type `T`.\n- **withMemoryRebound(to:_:)**: Executes the given closure while temporarily binding the memory referenced by this buffer slice to the given type.\n- **withMemoryRebound(to:_:)**: Executes the given closure while temporarily binding the memory referenced by this buffer slice to the given type.\n\n## Default Implementations\n\n- **BidirectionalCollection Implementations**\n- **Collection Implementations**\n- **LazySequenceProtocol Implementations**\n- **MutableCollection Implementations**\n- **RangeReplaceableCollection Implementations**\n- **Sequence Implementations**\n\n## Conforms To\n\n- AccelerateBuffer\n- AccelerateMutableBuffer\n- BidirectionalCollection\n- Collection\n- ContiguousBytes\n- Copyable\n- DataProtocol\n- LazySequenceProtocol\n- MutableCollection\n- RandomAccessCollection\n- RangeReplaceableCollection\n- Sendable\n- SendableMetatype\n- Sequence\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a view into the given collection that allows access to elements within the specified range.",
+          "name" : "init(base:bounds:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/init(base:bounds:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The underlying collection of the slice.",
+          "name" : "base",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/base"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a typed buffer to the memory referenced by this buffer slice, assuming that the memory is already bound to the specified type.",
+          "name" : "assumingMemoryBound(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/assumingMemoryBound(to:)-5fkwu"
+        },
+        {
+          "description" : "Returns a typed buffer to the memory referenced by this buffer slice, assuming that the memory is already bound to the specified type.",
+          "name" : "assumingMemoryBound(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/assumingMemoryBound(to:)-7a4sa"
+        },
+        {
+          "description" : "Binds this buffer slice’s memory to the specified type and returns a typed buffer of the bound memory.",
+          "name" : "bindMemory(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/bindMemory(to:)-4ombl"
+        },
+        {
+          "description" : "Binds this buffer slice’s memory to the specified type and returns a typed buffer of the bound memory.",
+          "name" : "bindMemory(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/bindMemory(to:)-92fs7"
+        },
+        {
+          "description" : "Copies from a collection of `UInt8` into this buffer slice’s memory.",
+          "name" : "copyBytes(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/copyBytes(from:)"
+        },
+        {
+          "description" : "Deinitializes every instance in this buffer slice.",
+          "name" : "deinitialize()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/deinitialize()"
+        },
+        {
+          "description" : "Deinitializes the memory underlying the element at `index`.",
+          "name" : "deinitializeElement(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/deinitializeElement(at:)"
+        },
+        {
+          "description" : "Initializes the buffer slice’s memory with the given elements.",
+          "name" : "initialize(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/initialize(from:)"
+        },
+        {
+          "description" : "Initializes the buffer slice’s memory with with every element of the source.",
+          "name" : "initialize(fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/initialize(fromContentsOf:)"
+        },
+        {
+          "description" : "Initializes every element in this buffer slice’s memory to a copy of the given value.",
+          "name" : "initialize(repeating:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/initialize(repeating:)"
+        },
+        {
+          "description" : "Initializes the element at `index` to the given value.",
+          "name" : "initializeElement(at:to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/initializeElement(at:to:)"
+        },
+        {
+          "description" : "Initializes the buffer’s memory with the given elements, binding the initialized memory to the elements’ type.",
+          "name" : "initializeMemory(as:from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/initializeMemory(as:from:)"
+        },
+        {
+          "description" : "Initializes the buffer slice’s memory with every element of the source, binding the initialized memory to the elements’ type.",
+          "name" : "initializeMemory(as:fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/initializeMemory(as:fromContentsOf:)"
+        },
+        {
+          "description" : "Initializes the memory referenced by this buffer slice with the given value, binds the memory to the value’s type, and returns a typed buffer of the initialized memory.",
+          "name" : "initializeMemory(as:repeating:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/initializeMemory(as:repeating:)"
+        },
+        {
+          "description" : "",
+          "name" : "insert(_:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/insert(_:at:)-4n5zz"
+        },
+        {
+          "description" : "",
+          "name" : "insert(contentsOf:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/insert(contentsOf:at:)-3z6ts"
+        },
+        {
+          "description" : "Returns a new instance of the given type, read from the specified offset into the buffer pointer slice’s raw memory.",
+          "name" : "load(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/load(fromByteOffset:as:)-3vjps"
+        },
+        {
+          "description" : "Returns a new instance of the given type, read from the specified offset into the buffer pointer slice’s raw memory.",
+          "name" : "load(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/load(fromByteOffset:as:)-45bko"
+        },
+        {
+          "description" : "",
+          "name" : "loadUnaligned(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/loadUnaligned(fromByteOffset:as:)-6jvd4"
+        },
+        {
+          "description" : "Returns a new instance of the given type, read from the specified offset into the buffer pointer slice’s raw memory.",
+          "name" : "loadUnaligned(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/loadUnaligned(fromByteOffset:as:)-6u1jm"
+        },
+        {
+          "description" : "Returns a new instance of the given type, read from the specified offset into the buffer pointer slice’s raw memory.",
+          "name" : "loadUnaligned(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/loadUnaligned(fromByteOffset:as:)-7jjnt"
+        },
+        {
+          "description" : "",
+          "name" : "loadUnaligned(fromByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/loadUnaligned(fromByteOffset:as:)-9gtr0"
+        },
+        {
+          "description" : "Retrieves and returns the element at `index`, leaving that element’s underlying memory uninitialized.",
+          "name" : "moveElement(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/moveElement(from:)"
+        },
+        {
+          "description" : "Moves every element of an initialized source buffer into the uninitialized memory referenced by this buffer slice, leaving the source memory uninitialized and this buffer slice’s memory initialized.",
+          "name" : "moveInitialize(fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/moveInitialize(fromContentsOf:)-82ebd"
+        },
+        {
+          "description" : "Moves every element of an initialized source buffer slice into the uninitialized memory referenced by this buffer slice, leaving the source memory uninitialized and this buffer slice’s memory initialized.",
+          "name" : "moveInitialize(fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/moveInitialize(fromContentsOf:)-iasq"
+        },
+        {
+          "description" : "Moves every element of an initialized source buffer into the uninitialized memory referenced by this buffer slice, leaving the source memory uninitialized and this slice’s memory initialized.",
+          "name" : "moveInitializeMemory(as:fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/moveInitializeMemory(as:fromContentsOf:)-1jll"
+        },
+        {
+          "description" : "Moves every element from an initialized source buffer slice into the uninitialized memory referenced by this buffer slice, leaving the source memory uninitialized and this slice’s memory initialized.",
+          "name" : "moveInitializeMemory(as:fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/moveInitializeMemory(as:fromContentsOf:)-1uz4a"
+        },
+        {
+          "description" : "Updates this buffer slice’s initialized memory by moving every element from the source buffer, leaving the source memory uninitialized.",
+          "name" : "moveUpdate(fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/moveUpdate(fromContentsOf:)-5i98g"
+        },
+        {
+          "description" : "Updates this buffer slice’s initialized memory initialized memory by moving every element from the source buffer slice, leaving the source memory uninitialized.",
+          "name" : "moveUpdate(fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/moveUpdate(fromContentsOf:)-ou4d"
+        },
+        {
+          "description" : "",
+          "name" : "remove(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/remove(at:)-pbti"
+        },
+        {
+          "description" : "",
+          "name" : "removeSubrange(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/removeSubrange(_:)-8hbh1"
+        },
+        {
+          "description" : "",
+          "name" : "replaceSubrange(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/replaceSubrange(_:with:)-904p8"
+        },
+        {
+          "description" : "Stores a value’s bytes into the buffer pointer slice’s raw memory at the specified byte offset.",
+          "name" : "storeBytes(of:toByteOffset:as:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/storeBytes(of:toByteOffset:as:)"
+        },
+        {
+          "description" : "Updates the buffer slice’s initialized memory with the given elements.",
+          "name" : "update(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/update(from:)"
+        },
+        {
+          "description" : "Updates the buffer slice’s initialized memory with every element of the source.",
+          "name" : "update(fromContentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/update(fromContentsOf:)"
+        },
+        {
+          "description" : "Updates every element of this buffer slice’s initialized memory.",
+          "name" : "update(repeating:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/update(repeating:)"
+        },
+        {
+          "description" : "",
+          "name" : "withContiguousMutableStorageIfAvailable(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/withContiguousMutableStorageIfAvailable(_:)-2ader"
+        },
+        {
+          "description" : "Executes the given closure while temporarily binding the buffer slice to instances of type `T`.",
+          "name" : "withMemoryRebound(to:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/withMemoryRebound(to:_:)-1nqta"
+        },
+        {
+          "description" : "Executes the given closure while temporarily binding the buffer slice to instances of type `T`.",
+          "name" : "withMemoryRebound(to:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/withMemoryRebound(to:_:)-3oirt"
+        },
+        {
+          "description" : "Executes the given closure while temporarily binding the memory referenced by this buffer slice to the given type.",
+          "name" : "withMemoryRebound(to:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/withMemoryRebound(to:_:)-6kxii"
+        },
+        {
+          "description" : "Executes the given closure while temporarily binding the memory referenced by this buffer slice to the given type.",
+          "name" : "withMemoryRebound(to:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/withMemoryRebound(to:_:)-ibp7"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "BidirectionalCollection Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/BidirectionalCollection-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Collection Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/Collection-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "LazySequenceProtocol Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/LazySequenceProtocol-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "MutableCollection Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/MutableCollection-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "RangeReplaceableCollection Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/RangeReplaceableCollection-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Sequence Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Slice\/Sequence-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Slice",
+  "url" : "https:\/\/developer.apple.com\/documentation\/swift\/slice"
+}

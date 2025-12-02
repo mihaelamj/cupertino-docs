@@ -1,0 +1,80 @@
+{
+  "abstract" : "Inject a script that you write for a Safari app extension into a webpage.",
+  "codeExamples" : [
+    {
+      "code" : "var newElement = document.createElement(\"img\");\nnewElement.src = safari.extension.baseURI + \"myDog.jpeg\";",
+      "language" : "javascript"
+    },
+    {
+      "code" : "document.addEventListener(\"DOMContentLoaded\", function(event) {\n    safari.extension.dispatchMessage(\"Hello World!\");\n});",
+      "language" : "javascript"
+    },
+    {
+      "code" : "\/\/ Create an image and insert it at the top of the body.\ndocument.addEventListener(\"DOMContentLoaded\", function(event) {\n    var newElement = document.createElement(\"img\");\n    newElement.src = safari.extension.baseURI + \"myCat.jpg\";\n    document.body.insertBefore(newElement,\n    document.body.firstChild);\n});",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "cf3997b1c35257dafc5e38de9cdfcddb3cbefb06489c45e41e3332decdf18252",
+  "crawledAt" : "2025-12-01T02:50:42Z",
+  "id" : "5375079D-1318-4860-9521-EEEEDEDD7595",
+  "kind" : "article",
+  "module" : "Safari Services",
+  "overview" : "## Overview\n\nAfter you write a script that can read and modify browser content, you need to add it to your Safari app extension and apply it to webpages, where it can perform the defined actions and change the appearance and behavior of the webpages.\n\nA script can apply to a single webpage, all webpages, or only some webpages — for example, webpages from certain domains. To inject your script, you specify either `Some` or `All` website access for your app extension. In Safari 17 or later, users also need to grant your extension access to a website. For more information, see [doc:\/\/com.apple.safariservices\/documentation\/SafariServices\/adjusting-website-access-permissions]. For more information about injected scripts, see [doc:\/\/com.apple.safariservices\/documentation\/SafariServices\/using-injected-style-sheets-and-scripts].\n\n### Add a script\n\nAfter specifying website access, add the script to your Safari app extension.\n\nIf your app extension specifies multiple scripts to inject into the webpage, the scripts execute in the order in which they appear in the `Info.plist` file.\n\n### Access resources within your app extension’s bundle\n\nTo access the resources in your app extension’s bundle from within your scripts, create a URL at runtime that references the resource relative to the root of the app extension’s bundle. The `safari.extension.baseURI` property specifies the location of the bundle’s resource directory.\n\nThe code example below demonstrates how to use this property. This code adds a new image element to the webpage. The system stores the image inside the Resources folder and references it at runtime.\n\n### Execute your code after the webpage loads\n\nThe injected scripts execute before the webpage fully loads, so you can take action as the system adds resources to the webpage. During that time, `document.body` is `null`. To take action after the document loads, listen for the `DOMContentLoaded` event. The code example below registers a document event handler to call after the content loads:\n\n### Add an element to the webpage\n\nThe example code below injects a new element into the webpage after the webpage loads. This example uses a resource stored in the bundle and shows how to register the document event handler:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SafariServices\/injecting-a-script-into-a-webpage\ncrawled: 2025-12-01T02:50:42Z\n---\n\n# Injecting a script into a webpage\n\n**Article**\n\nInject a script that you write for a Safari app extension into a webpage.\n\n## Overview\n\nAfter you write a script that can read and modify browser content, you need to add it to your Safari app extension and apply it to webpages, where it can perform the defined actions and change the appearance and behavior of the webpages.\n\nA script can apply to a single webpage, all webpages, or only some webpages — for example, webpages from certain domains. To inject your script, you specify either `Some` or `All` website access for your app extension. In Safari 17 or later, users also need to grant your extension access to a website. For more information, see [doc:\/\/com.apple.safariservices\/documentation\/SafariServices\/adjusting-website-access-permissions]. For more information about injected scripts, see [doc:\/\/com.apple.safariservices\/documentation\/SafariServices\/using-injected-style-sheets-and-scripts].\n\n### Add a script\n\nAfter specifying website access, add the script to your Safari app extension.\n\n1. Add the script files to your extension’s Xcode target.\n2. Add an `SFSafariContentScript` key to the `NSExtension` element in your extension’s `Info.plist` file. The value for this key is an array of dictionaries.\n3. For each script file, add a dictionary to the array. Each dictionary must have a `Script` key with a value that specifies the path (relative to the Resources directory of the bundle) to the script file to include.\n\n\n\nIf your app extension specifies multiple scripts to inject into the webpage, the scripts execute in the order in which they appear in the `Info.plist` file.\n\n### Access resources within your app extension’s bundle\n\nTo access the resources in your app extension’s bundle from within your scripts, create a URL at runtime that references the resource relative to the root of the app extension’s bundle. The `safari.extension.baseURI` property specifies the location of the bundle’s resource directory.\n\nThe code example below demonstrates how to use this property. This code adds a new image element to the webpage. The system stores the image inside the Resources folder and references it at runtime.\n\n```javascript\nvar newElement = document.createElement(\"img\");\nnewElement.src = safari.extension.baseURI + \"myDog.jpeg\";\n```\n\n### Execute your code after the webpage loads\n\nThe injected scripts execute before the webpage fully loads, so you can take action as the system adds resources to the webpage. During that time, `document.body` is `null`. To take action after the document loads, listen for the `DOMContentLoaded` event. The code example below registers a document event handler to call after the content loads:\n\n```javascript\ndocument.addEventListener(\"DOMContentLoaded\", function(event) {\n    safari.extension.dispatchMessage(\"Hello World!\");\n});\n```\n\n### Add an element to the webpage\n\nThe example code below injects a new element into the webpage after the webpage loads. This example uses a resource stored in the bundle and shows how to register the document event handler:\n\n```swift\n\/\/ Create an image and insert it at the top of the body.\ndocument.addEventListener(\"DOMContentLoaded\", function(event) {\n    var newElement = document.createElement(\"img\");\n    newElement.src = safari.extension.baseURI + \"myCat.jpg\";\n    document.body.insertBefore(newElement,\n    document.body.firstChild);\n});\n```\n\n## Injected style sheets and scripts\n\n- **Using injected style sheets and scripts**: Learn how you can affect the appearance or behavior of a webpage by using injected style sheets and scripts.\n- **Injecting CSS style sheets into a webpage**: Add to or override styles by injecting CSS style sheets into webpages.\n- **Passing messages between Safari app extensions and injected scripts**: Communicate between your Safari app extension and injected scripts.\n- **SFSafariExtensionHandler**: A base class that you subclass to handle events in your Safari app extension.\n- **SFSafariExtensionManager**: A class that your app uses to find out the current state of a Safari app extension.\n- **SFSafariExtensionState**: The state of a Safari app extension.\n- **SFSafariPageProperties**: An object that captures information about a webpage.\n- **SFSafariExtensionHandling**: A protocol for implementing event handling in a Safari app extension.\n- **SFExtensionProfileKey**: A string the system uses as a key in a user info dictionary to identify a profile identifier.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how you can affect the appearance or behavior of a webpage by using injected style sheets and scripts.",
+          "name" : "Using injected style sheets and scripts",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/using-injected-style-sheets-and-scripts"
+        },
+        {
+          "description" : "Add to or override styles by injecting CSS style sheets into webpages.",
+          "name" : "Injecting CSS style sheets into a webpage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/injecting-css-style-sheets-into-a-webpage"
+        },
+        {
+          "description" : "Communicate between your Safari app extension and injected scripts.",
+          "name" : "Passing messages between Safari app extensions and injected scripts",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/passing-messages-between-safari-app-extensions-and-injected-scripts"
+        },
+        {
+          "description" : "A base class that you subclass to handle events in your Safari app extension.",
+          "name" : "SFSafariExtensionHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/SFSafariExtensionHandler"
+        },
+        {
+          "description" : "A class that your app uses to find out the current state of a Safari app extension.",
+          "name" : "SFSafariExtensionManager",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/SFSafariExtensionManager"
+        },
+        {
+          "description" : "The state of a Safari app extension.",
+          "name" : "SFSafariExtensionState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/SFSafariExtensionState"
+        },
+        {
+          "description" : "An object that captures information about a webpage.",
+          "name" : "SFSafariPageProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/SFSafariPageProperties"
+        },
+        {
+          "description" : "A protocol for implementing event handling in a Safari app extension.",
+          "name" : "SFSafariExtensionHandling",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/SFSafariExtensionHandling"
+        },
+        {
+          "description" : "A string the system uses as a key in a user info dictionary to identify a profile identifier.",
+          "name" : "SFExtensionProfileKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/SFExtensionProfileKey"
+        }
+      ],
+      "title" : "Injected style sheets and scripts"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Injecting a script into a webpage",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SafariServices\/injecting-a-script-into-a-webpage"
+}

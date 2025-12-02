@@ -1,0 +1,41 @@
+{
+  "abstract" : "Enhance the readability of a map by replacing overlapping annotations with a clustering annotation view.",
+  "codeExamples" : [
+    {
+      "code" : "override init(annotation: MKAnnotation?, reuseIdentifier: String?) {\n    super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)\n    clusteringIdentifier = \"unicycle\"\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "override func prepareForDisplay() {\n    super.prepareForDisplay()\n    displayPriority = .defaultHigh\n    markerTintColor = UIColor.bicycleColor\n    glyphImage = #imageLiteral(resourceName: \"bicycle\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "override func prepareForDisplay() {\n    super.prepareForDisplay()\n    \n    if let cluster = annotation as? MKClusterAnnotation {\n        let totalBikes = cluster.memberAnnotations.count\n        \n        if count(cycleType: .unicycle) > 0 {\n            image = drawUnicycleCount(count: totalBikes)\n        } else {\n            let tricycleCount = count(cycleType: .tricycle)\n            image = drawRatioBicycleToTricycle(tricycleCount, to: totalBikes)\n        }\n        \n        if count(cycleType: .unicycle) > 0 {\n            displayPriority = .defaultLow\n        } else {\n            displayPriority = .defaultHigh\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "4f386817798ed06970296a319f88f85db5b5ac3021846f452baf81cb6a437e9d",
+  "crawledAt" : "2025-12-02T15:48:57Z",
+  "id" : "37BC8AD4-B20A-407A-8A99-24AD3C131AC1",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "MapKit",
+  "overview" : "## Overview\n\nTANDm is a fictional bike sharing app that uses annotation clustering to provide an uncluttered map. The app shows how MapKit automatically groups two or more annotations into a single annotation when spacing on the map doesn’t permit each annotation to be visible without overlapping. This enhances the readability of the map by replacing overlapping annotations with a clustering annotation view.\n\n### Annotation Clustering\n\nTo group annotations into a cluster, set the [doc:\/\/com.apple.documentation\/documentation\/MapKit\/MKAnnotationView\/clusteringIdentifier] property to the same value on each annotation view in the group. For example, to show overlapping unicycle annotations in a clustering annotation view, TANDm sets `clusteringIdentifier` on each instance of [`UnicycleAnnotationView`][2] to `\"unicycle\"`.\n\n### Display Priority\n\nTo determine how an annotation view behaves when it overlaps another annotation view, set its [doc:\/\/com.apple.documentation\/documentation\/MapKit\/MKAnnotationView\/displayPriority] property. In the sample app, the map view is likely to hide the unicycle annotation if it overlaps with another annotation because the unicycle annotation view has a display priority of [doc:\/\/com.apple.documentation\/documentation\/MapKit\/MKFeatureDisplayPriority\/defaultLow], while the display priorities for bicycle and tricycle are set to [doc:\/\/com.apple.documentation\/documentation\/MapKit\/MKFeatureDisplayPriority\/defaultHigh]. Here’s an example of setting the display priority while preparing an instance of [`BicycleAnnotationView`][8] for reuse:\n\n### Custom Clustering Annotation Views\n\nCustomize the behavior and appearance of a clustering annotation view by subclassing [doc:\/\/com.apple.documentation\/documentation\/MapKit\/MKAnnotationView]; for instance, to display hints about the annotations within the cluster. TANDm, for example, uses the custom clustering annotation view [`ClusterAnnotationView`][7] to show the ratio between bicycles and tricycles at a location.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MapKit\/decluttering-a-map-with-mapkit-annotation-clustering\ncrawled: 2025-12-02T15:48:57Z\n---\n\n# Decluttering a Map with MapKit Annotation Clustering\n\n**Sample Code**\n\nEnhance the readability of a map by replacing overlapping annotations with a clustering annotation view.\n\n## Overview\n\nTANDm is a fictional bike sharing app that uses annotation clustering to provide an uncluttered map. The app shows how MapKit automatically groups two or more annotations into a single annotation when spacing on the map doesn’t permit each annotation to be visible without overlapping. This enhances the readability of the map by replacing overlapping annotations with a clustering annotation view.\n\n### Annotation Clustering\n\nTo group annotations into a cluster, set the [doc:\/\/com.apple.documentation\/documentation\/MapKit\/MKAnnotationView\/clusteringIdentifier] property to the same value on each annotation view in the group. For example, to show overlapping unicycle annotations in a clustering annotation view, TANDm sets `clusteringIdentifier` on each instance of [`UnicycleAnnotationView`][2] to `\"unicycle\"`.\n\n```swift\noverride init(annotation: MKAnnotation?, reuseIdentifier: String?) {\n    super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)\n    clusteringIdentifier = \"unicycle\"\n}\n```\n\n### Display Priority\n\nTo determine how an annotation view behaves when it overlaps another annotation view, set its [doc:\/\/com.apple.documentation\/documentation\/MapKit\/MKAnnotationView\/displayPriority] property. In the sample app, the map view is likely to hide the unicycle annotation if it overlaps with another annotation because the unicycle annotation view has a display priority of [doc:\/\/com.apple.documentation\/documentation\/MapKit\/MKFeatureDisplayPriority\/defaultLow], while the display priorities for bicycle and tricycle are set to [doc:\/\/com.apple.documentation\/documentation\/MapKit\/MKFeatureDisplayPriority\/defaultHigh]. Here’s an example of setting the display priority while preparing an instance of [`BicycleAnnotationView`][8] for reuse:\n\n```swift\noverride func prepareForDisplay() {\n    super.prepareForDisplay()\n    displayPriority = .defaultHigh\n    markerTintColor = UIColor.bicycleColor\n    glyphImage = #imageLiteral(resourceName: \"bicycle\")\n}\n```\n\n### Custom Clustering Annotation Views\n\nCustomize the behavior and appearance of a clustering annotation view by subclassing [doc:\/\/com.apple.documentation\/documentation\/MapKit\/MKAnnotationView]; for instance, to display hints about the annotations within the cluster. TANDm, for example, uses the custom clustering annotation view [`ClusterAnnotationView`][7] to show the ratio between bicycles and tricycles at a location.\n\n```swift\noverride func prepareForDisplay() {\n    super.prepareForDisplay()\n    \n    if let cluster = annotation as? MKClusterAnnotation {\n        let totalBikes = cluster.memberAnnotations.count\n        \n        if count(cycleType: .unicycle) > 0 {\n            image = drawUnicycleCount(count: totalBikes)\n        } else {\n            let tricycleCount = count(cycleType: .tricycle)\n            image = drawRatioBicycleToTricycle(tricycleCount, to: totalBikes)\n        }\n        \n        if count(cycleType: .unicycle) > 0 {\n            displayPriority = .defaultLow\n        } else {\n            displayPriority = .defaultHigh\n        }\n    }\n}\n```\n\n## Grouped annotations\n\n- **MKClusterAnnotation**: An annotation that groups two or more distinct annotations into a single entity.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An annotation that groups two or more distinct annotations into a single entity.",
+          "name" : "MKClusterAnnotation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MapKit\/MKClusterAnnotation"
+        }
+      ],
+      "title" : "Grouped annotations"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Decluttering a Map with MapKit Annotation Clustering",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MapKit\/decluttering-a-map-with-mapkit-annotation-clustering"
+}

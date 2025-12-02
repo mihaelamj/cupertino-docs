@@ -1,0 +1,104 @@
+{
+  "abstract" : "A subscription that generates push notifications when CloudKit modifies records in a database.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Only proceed if the subscription doesn't already exist.\nif([[NSUserDefaults standardUserDefaults]\n    boolForKey:@\"didCreateFeedSubscription\"] == NO) {\n        \n    \/\/ Create a subscription with an ID that's unique within the scope of\n    \/\/ the user's private database.\n    CKDatabaseSubscription *subscription = \n        [[CKDatabaseSubscription alloc]\n         initWithSubscriptionID:@\"feed-changes\"];\n        \n    \/\/ Scope the subscription to just the 'FeedItem' record type.\n    subscription.recordType = @\"FeedItem\";\n        \n    \/\/ Configure the notification so that the system delivers it silently\n    \/\/ and, therefore, doesn't require permission from the user.\n    CKNotificationInfo *notificationInfo = [CKNotificationInfo new];\n    notificationInfo.shouldSendContentAvailable = YES;\n    subscription.notificationInfo = notificationInfo;\n        \n    \/\/ Create an operation that saves the subscription to the server.\n    CKModifySubscriptionsOperation *operation = \n        [[CKModifySubscriptionsOperation alloc]\n         initWithSubscriptionsToSave:@[subscription]\n         subscriptionIDsToDelete:NULL];\n    \n    operation.modifySubscriptionsCompletionBlock = \n        ^(NSArray *subscriptions, NSArray *deleted, NSError *error) {\n        if (error) {\n            \/\/ Handle the error.\n        } else {\n            \/\/ Record that the system successfully creates the subscription\n            \/\/ to prevent unnecessary trips to the server in later launches.\n            [[NSUserDefaults standardUserDefaults] \n             setBool:YES forKey:@\"didCreateFeedSubscription\"];\n        }\n    };\n        \n    \/\/ Set an appropriate QoS and add the operation to the private\n    \/\/ database's operation queue to execute it.\n    operation.qualityOfService = NSQualityOfServiceUtility;\n    [CKContainer.defaultContainer.privateCloudDatabase addOperation:operation];\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCoding",
+    "NSCopying",
+    "NSObjectProtocol",
+    "NSSecureCoding",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "bbebca25a56b38a12026e612164febc432a7276341700326024e0f002e29e569",
+  "crawledAt" : "2025-12-02T13:35:49Z",
+  "declaration" : {
+    "code" : "class CKDatabaseSubscription",
+    "language" : "swift"
+  },
+  "id" : "1FEEA34F-3C9F-409A-B9C3-267A9E6B36A6",
+  "kind" : "class",
+  "module" : "CloudKit",
+  "overview" : "## Overview\n\nSubscriptions track the creation, modification, and deletion of records in a database, and are fundamental in keeping data on the user’s device up to date. A subscription applies only to the user that creates it. When a subscription registers a change, such as CloudKit saving a new record, it sends push notifications to the user’s devices to inform your app about the change. You can then fetch the changes and cache them on-device. When appropriate, the server excludes the device where the change originates.\n\nA database subscription executes whenever a change occurs in a custom record zone that resides in the database where you save the subscription. This is important for the shared database because you don’t know what record zones exist in advance. The only exception to this is the default record zone in the user’s private database, which doesn’t participate in database subscriptions.\n\nYou can further specialize a database subscription by setting its [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKDatabaseSubscription\/recordType-46v7a] property to a specific record type. This limits the scope of the subscription to only track changes to records of that type and reduces the number of notifications it generates.\n\nCreate any subscriptions on your app’s first launch. After you initialize a subscription, save it to the server using [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKModifySubscriptionsOperation]. After the operation completes, record that state on-device (in [doc:\/\/com.apple.documentation\/documentation\/Foundation\/UserDefaults], for example). You can then check that state on subsequent launches to prevent unnecessary trips to the server.\n\nTo configure the notification that the subscription generates, set the subscription’s [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKSubscription\/notificationInfo-swift.property] property. Because the system coalesces notifications, don’t rely on them for specific changes. CloudKit can omit data to keep the payload size under the APNs size limit. Consider notifications an indication of remote changes, and use [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation] to fetch the record zones that contain those changes. After you have the record zones, use [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchRecordZoneChangesOperation] to fetch the changed records in each zone. Server change tokens allow you to limit the fetch results to just the changes since your previous fetch.\n\nThe example below shows how to create a database subscription in the user’s private database, configure the notifications it generates — in this case, silent push notifications — and then save that subscription to the server:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CloudKit\/CKDatabaseSubscription\ncrawled: 2025-12-02T13:35:49Z\n---\n\n# CKDatabaseSubscription\n\n**Class**\n\nA subscription that generates push notifications when CloudKit modifies records in a database.\n\n## Declaration\n\n```swift\nclass CKDatabaseSubscription\n```\n\n## Overview\n\nSubscriptions track the creation, modification, and deletion of records in a database, and are fundamental in keeping data on the user’s device up to date. A subscription applies only to the user that creates it. When a subscription registers a change, such as CloudKit saving a new record, it sends push notifications to the user’s devices to inform your app about the change. You can then fetch the changes and cache them on-device. When appropriate, the server excludes the device where the change originates.\n\n\n\nA database subscription executes whenever a change occurs in a custom record zone that resides in the database where you save the subscription. This is important for the shared database because you don’t know what record zones exist in advance. The only exception to this is the default record zone in the user’s private database, which doesn’t participate in database subscriptions.\n\nYou can further specialize a database subscription by setting its [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKDatabaseSubscription\/recordType-46v7a] property to a specific record type. This limits the scope of the subscription to only track changes to records of that type and reduces the number of notifications it generates.\n\n\n\nCreate any subscriptions on your app’s first launch. After you initialize a subscription, save it to the server using [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKModifySubscriptionsOperation]. After the operation completes, record that state on-device (in [doc:\/\/com.apple.documentation\/documentation\/Foundation\/UserDefaults], for example). You can then check that state on subsequent launches to prevent unnecessary trips to the server.\n\nTo configure the notification that the subscription generates, set the subscription’s [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKSubscription\/notificationInfo-swift.property] property. Because the system coalesces notifications, don’t rely on them for specific changes. CloudKit can omit data to keep the payload size under the APNs size limit. Consider notifications an indication of remote changes, and use [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation] to fetch the record zones that contain those changes. After you have the record zones, use [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchRecordZoneChangesOperation] to fetch the changed records in each zone. Server change tokens allow you to limit the fetch results to just the changes since your previous fetch.\n\nThe example below shows how to create a database subscription in the user’s private database, configure the notifications it generates — in this case, silent push notifications — and then save that subscription to the server:\n\n```swift\n\/\/ Only proceed if the subscription doesn't already exist.\nif([[NSUserDefaults standardUserDefaults]\n    boolForKey:@\"didCreateFeedSubscription\"] == NO) {\n        \n    \/\/ Create a subscription with an ID that's unique within the scope of\n    \/\/ the user's private database.\n    CKDatabaseSubscription *subscription = \n        [[CKDatabaseSubscription alloc]\n         initWithSubscriptionID:@\"feed-changes\"];\n        \n    \/\/ Scope the subscription to just the 'FeedItem' record type.\n    subscription.recordType = @\"FeedItem\";\n        \n    \/\/ Configure the notification so that the system delivers it silently\n    \/\/ and, therefore, doesn't require permission from the user.\n    CKNotificationInfo *notificationInfo = [CKNotificationInfo new];\n    notificationInfo.shouldSendContentAvailable = YES;\n    subscription.notificationInfo = notificationInfo;\n        \n    \/\/ Create an operation that saves the subscription to the server.\n    CKModifySubscriptionsOperation *operation = \n        [[CKModifySubscriptionsOperation alloc]\n         initWithSubscriptionsToSave:@[subscription]\n         subscriptionIDsToDelete:NULL];\n    \n    operation.modifySubscriptionsCompletionBlock = \n        ^(NSArray *subscriptions, NSArray *deleted, NSError *error) {\n        if (error) {\n            \/\/ Handle the error.\n        } else {\n            \/\/ Record that the system successfully creates the subscription\n            \/\/ to prevent unnecessary trips to the server in later launches.\n            [[NSUserDefaults standardUserDefaults] \n             setBool:YES forKey:@\"didCreateFeedSubscription\"];\n        }\n    };\n        \n    \/\/ Set an appropriate QoS and add the operation to the private\n    \/\/ database's operation queue to execute it.\n    operation.qualityOfService = NSQualityOfServiceUtility;\n    [CKContainer.defaultContainer.privateCloudDatabase addOperation:operation];\n}\n```\n\n## Creating a Database Subscription\n\n- **init()**: Creates an empty database subscription.\n- **init(subscriptionID:)**: Creates a named subscription for all records in a database.\n- **init(coder:)**: Creates a database subscription from a serialized instance.\n\n## Accessing the Subscription Metadata\n\n- **recordType**: The type of record that the subscription queries.\n\n## Database Changes\n\n- **CKDatabaseNotification**: A notification that triggers when the contents of a database change.\n- **CKFetchDatabaseChangesOperation**: An operation that fetches database changes.\n\n## Inherits From\n\n- CKSubscription\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCoding\n- NSCopying\n- NSObjectProtocol\n- NSSecureCoding\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an empty database subscription.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKDatabaseSubscription\/init()"
+        },
+        {
+          "description" : "Creates a named subscription for all records in a database.",
+          "name" : "init(subscriptionID:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKDatabaseSubscription\/init(subscriptionID:)"
+        },
+        {
+          "description" : "Creates a database subscription from a serialized instance.",
+          "name" : "init(coder:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKDatabaseSubscription\/init(coder:)"
+        }
+      ],
+      "title" : "Creating a Database Subscription"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The type of record that the subscription queries.",
+          "name" : "recordType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKDatabaseSubscription\/recordType-46v7a"
+        }
+      ],
+      "title" : "Accessing the Subscription Metadata"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A notification that triggers when the contents of a database change.",
+          "name" : "CKDatabaseNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKDatabaseNotification"
+        },
+        {
+          "description" : "An operation that fetches database changes.",
+          "name" : "CKFetchDatabaseChangesOperation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchDatabaseChangesOperation"
+        }
+      ],
+      "title" : "Database Changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "CKSubscription"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "CKDatabaseSubscription",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKDatabaseSubscription"
+}

@@ -1,0 +1,283 @@
+{
+  "abstract" : "An object that represents a session that interacts with a language model.",
+  "codeExamples" : [
+    {
+      "code" : "let instructions = \"\"\"\n    You are a motivational workout coach that provides quotes to inspire \\\n    and motivate athletes.\n    \"\"\"\nlet session = LanguageModelSession(instructions: instructions)\nlet prompt = \"Generate a motivational quote for my next workout.\"\nlet response = try await session.respond(to: prompt)",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "Observable",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "ea207f665b73b85878619fb70a6aca8a8f34e9b5a0de0b5ec6df6dc1a53a50cc",
+  "crawledAt" : "2025-12-02T17:12:34Z",
+  "declaration" : {
+    "code" : "final class LanguageModelSession",
+    "language" : "swift"
+  },
+  "id" : "51BC28FB-640E-47A9-8E57-1C5B9A3F8EA1",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Foundation Models",
+  "overview" : "## Overview\n\nA session is a single context that you use to generate content with, and maintains state between requests. You can reuse the existing instance or create a new one each time you call the model. When creating a session, provide instructions that tells the model what its role is and provide guidance on how to respond.\n\nThe framework records each call to the model in a [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/Transcript] that includes all prompts and responses. If your session exceeds the available context size, it throws [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/LanguageModelSession\/GenerationError\/exceededContextWindowSize(_:)].\n\nWhen you perform a task that needs a larger context size, split the task into smaller steps and run each of them in a new [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/LanguageModelSession]. For example, to generate a summary for a long article on device:\n\nUse Instruments to analyze token consumption while your app is running and to look for opportunities to improve performance, like with [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/LanguageModelSession\/prewarm(promptPrefix:)]. To profile your app with Instruments:\n\nBecause some generation tasks can be resource intensive, consider profiling your app with other instruments — like Activity Monitor and Power Profiler — to identify where your app might be using more system resources than expected.\n\nFor more information on managing the context window size, see [doc:\/\/com.apple.documentation\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\ncrawled: 2025-12-02T17:12:34Z\n---\n\n# LanguageModelSession\n\n**Class**\n\nAn object that represents a session that interacts with a language model.\n\n## Declaration\n\n```swift\nfinal class LanguageModelSession\n```\n\n## Overview\n\nA session is a single context that you use to generate content with, and maintains state between requests. You can reuse the existing instance or create a new one each time you call the model. When creating a session, provide instructions that tells the model what its role is and provide guidance on how to respond.\n\n```swift\nlet instructions = \"\"\"\n    You are a motivational workout coach that provides quotes to inspire \\\n    and motivate athletes.\n    \"\"\"\nlet session = LanguageModelSession(instructions: instructions)\nlet prompt = \"Generate a motivational quote for my next workout.\"\nlet response = try await session.respond(to: prompt)\n```\n\nThe framework records each call to the model in a [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/Transcript] that includes all prompts and responses. If your session exceeds the available context size, it throws [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/LanguageModelSession\/GenerationError\/exceededContextWindowSize(_:)].\n\nWhen you perform a task that needs a larger context size, split the task into smaller steps and run each of them in a new [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/LanguageModelSession]. For example, to generate a summary for a long article on device:\n\n1. Separate the article into smaller sections.\n2. Summarize each section with a new session instance.\n3. Combine the sections.\n4. Repeat the steps until you get a summary with the size you want, and consider adding the summary to the prompt so it conveys the contextual information.\n\nUse Instruments to analyze token consumption while your app is running and to look for opportunities to improve performance, like with [doc:\/\/com.apple.foundationmodels\/documentation\/FoundationModels\/LanguageModelSession\/prewarm(promptPrefix:)]. To profile your app with Instruments:\n\n1. Open your Xcode project and choose Product > Profile to launch Instruments.\n2. Select the Blank template, then click Choose.\n3. In Instruments, click “+ Instrument” to open the instruments library.\n4. Choose the Foundation Models instrument from the list.\n5. Choose File > Record Trace. This launches your app and starts a recording session to observe token usage from your app’s model interactions.\n\nBecause some generation tasks can be resource intensive, consider profiling your app with other instruments — like Activity Monitor and Power Profiler — to identify where your app might be using more system resources than expected.\n\nFor more information on managing the context window size, see [doc:\/\/com.apple.documentation\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window].\n\n## Creating a session\n\n- **init(model:tools:instructions:)**: Start a new session in blank slate state with instructions builder.\n- **SystemLanguageModel**: An on-device large language model capable of text generation tasks.\n- **Tool**: A tool that a model can call to gather information at runtime or perform side effects.\n- **Instructions**: Details you provide that define the model’s intended behavior on prompts.\n\n## Creating a session from a transcript\n\n- **init(model:tools:transcript:)**: Start a session by rehydrating from a transcript.\n- **Transcript**: A linear history of entries that reflect an interaction with a session.\n\n## Preloading the model\n\n- **prewarm(promptPrefix:)**: Loads the resources required for this session into memory, and optionally caches a prefix of your prompt to reduce request latency.\n\n## Inspecting session properties\n\n- **isResponding**: A Boolean value that indicates a response is being generated.\n- **transcript**: A full history of interactions, including user inputs and model responses.\n\n## Generating a request\n\n- **respond(options:prompt:)**: Produces a response to a prompt.\n- **respond(generating:includeSchemaInPrompt:options:prompt:)**: Produces a generable object as a response to a prompt.\n- **respond(schema:includeSchemaInPrompt:options:prompt:)**: Produces a generated content type as a response to a prompt and schema.\n- **respond(to:options:)**: Produces a response to a prompt.\n- **respond(to:generating:includeSchemaInPrompt:options:)**: Produces a generable object as a response to a prompt.\n- **respond(to:schema:includeSchemaInPrompt:options:)**: Produces a generated content type as a response to a prompt and schema.\n- **Prompt**: A prompt from a person to the model.\n- **LanguageModelSession.Response**: A structure that stores the output of a response call.\n- **GenerationOptions**: Options that control how the model generates its response to a prompt.\n\n## Streaming a response\n\n- **streamResponse(to:options:)**: Produces a response stream to a prompt.\n- **streamResponse(to:generating:includeSchemaInPrompt:options:)**: Produces a response stream to a prompt and schema.\n- **streamResponse(to:schema:includeSchemaInPrompt:options:)**: Produces a response stream to a prompt and schema.\n- **streamResponse(options:prompt:)**: Produces a response stream to a prompt.\n- **streamResponse(generating:includeSchemaInPrompt:options:prompt:)**: Produces a response stream for a type.\n- **streamResponse(schema:includeSchemaInPrompt:options:prompt:)**: Produces a response stream to a prompt and schema.\n- **LanguageModelSession.ResponseStream**: An async sequence of snapshots of partially generated content.\n- **GeneratedContent**: A type that represents structured, generated content.\n- **ConvertibleFromGeneratedContent**: A type that can be initialized from generated content.\n- **ConvertibleToGeneratedContent**: A type that can be converted to generated content.\n\n## Generating feedback\n\n- **logFeedbackAttachment(sentiment:issues:desiredOutput:)**: Logs and serializes data that includes session information that you attach when reporting feedback to Apple.\n- **logFeedbackAttachment(sentiment:issues:desiredResponseContent:)**\n- **logFeedbackAttachment(sentiment:issues:desiredResponseText:)**\n\n## Getting the error types\n\n- **LanguageModelSession.GenerationError**: An error that may occur while generating a response.\n- **LanguageModelSession.ToolCallError**: An error that occurs while a system language model is calling a tool.\n\n## Prompting\n\n- **Prompting an on-device foundation model**: Tailor your prompts to get effective results from an on-device model.\n- **Instructions**: Details you provide that define the model’s intended behavior on prompts.\n- **Prompt**: A prompt from a person to the model.\n- **Transcript**: A linear history of entries that reflect an interaction with a session.\n- **GenerationOptions**: Options that control how the model generates its response to a prompt.\n\n## Conforms To\n\n- Copyable\n- Observable\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Start a new session in blank slate state with instructions builder.",
+          "name" : "init(model:tools:instructions:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/init(model:tools:instructions:)"
+        },
+        {
+          "description" : "An on-device large language model capable of text generation tasks.",
+          "name" : "SystemLanguageModel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/SystemLanguageModel"
+        },
+        {
+          "description" : "A tool that a model can call to gather information at runtime or perform side effects.",
+          "name" : "Tool",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Tool"
+        },
+        {
+          "description" : "Details you provide that define the model’s intended behavior on prompts.",
+          "name" : "Instructions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Instructions"
+        }
+      ],
+      "title" : "Creating a session"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Start a session by rehydrating from a transcript.",
+          "name" : "init(model:tools:transcript:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/init(model:tools:transcript:)"
+        },
+        {
+          "description" : "A linear history of entries that reflect an interaction with a session.",
+          "name" : "Transcript",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Transcript"
+        }
+      ],
+      "title" : "Creating a session from a transcript"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Loads the resources required for this session into memory, and optionally caches a prefix of your prompt to reduce request latency.",
+          "name" : "prewarm(promptPrefix:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/prewarm(promptPrefix:)"
+        }
+      ],
+      "title" : "Preloading the model"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates a response is being generated.",
+          "name" : "isResponding",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/isResponding"
+        },
+        {
+          "description" : "A full history of interactions, including user inputs and model responses.",
+          "name" : "transcript",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/transcript"
+        }
+      ],
+      "title" : "Inspecting session properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Produces a response to a prompt.",
+          "name" : "respond(options:prompt:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/respond(options:prompt:)"
+        },
+        {
+          "description" : "Produces a generable object as a response to a prompt.",
+          "name" : "respond(generating:includeSchemaInPrompt:options:prompt:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/respond(generating:includeSchemaInPrompt:options:prompt:)"
+        },
+        {
+          "description" : "Produces a generated content type as a response to a prompt and schema.",
+          "name" : "respond(schema:includeSchemaInPrompt:options:prompt:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/respond(schema:includeSchemaInPrompt:options:prompt:)"
+        },
+        {
+          "description" : "Produces a response to a prompt.",
+          "name" : "respond(to:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/respond(to:options:)"
+        },
+        {
+          "description" : "Produces a generable object as a response to a prompt.",
+          "name" : "respond(to:generating:includeSchemaInPrompt:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/respond(to:generating:includeSchemaInPrompt:options:)"
+        },
+        {
+          "description" : "Produces a generated content type as a response to a prompt and schema.",
+          "name" : "respond(to:schema:includeSchemaInPrompt:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/respond(to:schema:includeSchemaInPrompt:options:)"
+        },
+        {
+          "description" : "A prompt from a person to the model.",
+          "name" : "Prompt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Prompt"
+        },
+        {
+          "description" : "A structure that stores the output of a response call.",
+          "name" : "LanguageModelSession.Response",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/Response"
+        },
+        {
+          "description" : "Options that control how the model generates its response to a prompt.",
+          "name" : "GenerationOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/GenerationOptions"
+        }
+      ],
+      "title" : "Generating a request"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Produces a response stream to a prompt.",
+          "name" : "streamResponse(to:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/streamResponse(to:options:)"
+        },
+        {
+          "description" : "Produces a response stream to a prompt and schema.",
+          "name" : "streamResponse(to:generating:includeSchemaInPrompt:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/streamResponse(to:generating:includeSchemaInPrompt:options:)"
+        },
+        {
+          "description" : "Produces a response stream to a prompt and schema.",
+          "name" : "streamResponse(to:schema:includeSchemaInPrompt:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/streamResponse(to:schema:includeSchemaInPrompt:options:)"
+        },
+        {
+          "description" : "Produces a response stream to a prompt.",
+          "name" : "streamResponse(options:prompt:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/streamResponse(options:prompt:)"
+        },
+        {
+          "description" : "Produces a response stream for a type.",
+          "name" : "streamResponse(generating:includeSchemaInPrompt:options:prompt:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/streamResponse(generating:includeSchemaInPrompt:options:prompt:)"
+        },
+        {
+          "description" : "Produces a response stream to a prompt and schema.",
+          "name" : "streamResponse(schema:includeSchemaInPrompt:options:prompt:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/streamResponse(schema:includeSchemaInPrompt:options:prompt:)"
+        },
+        {
+          "description" : "An async sequence of snapshots of partially generated content.",
+          "name" : "LanguageModelSession.ResponseStream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/ResponseStream"
+        },
+        {
+          "description" : "A type that represents structured, generated content.",
+          "name" : "GeneratedContent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/GeneratedContent"
+        },
+        {
+          "description" : "A type that can be initialized from generated content.",
+          "name" : "ConvertibleFromGeneratedContent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/ConvertibleFromGeneratedContent"
+        },
+        {
+          "description" : "A type that can be converted to generated content.",
+          "name" : "ConvertibleToGeneratedContent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/ConvertibleToGeneratedContent"
+        }
+      ],
+      "title" : "Streaming a response"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Logs and serializes data that includes session information that you attach when reporting feedback to Apple.",
+          "name" : "logFeedbackAttachment(sentiment:issues:desiredOutput:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/logFeedbackAttachment(sentiment:issues:desiredOutput:)"
+        },
+        {
+          "description" : "",
+          "name" : "logFeedbackAttachment(sentiment:issues:desiredResponseContent:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/logFeedbackAttachment(sentiment:issues:desiredResponseContent:)"
+        },
+        {
+          "description" : "",
+          "name" : "logFeedbackAttachment(sentiment:issues:desiredResponseText:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/logFeedbackAttachment(sentiment:issues:desiredResponseText:)"
+        }
+      ],
+      "title" : "Generating feedback"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An error that may occur while generating a response.",
+          "name" : "LanguageModelSession.GenerationError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/GenerationError"
+        },
+        {
+          "description" : "An error that occurs while a system language model is calling a tool.",
+          "name" : "LanguageModelSession.ToolCallError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession\/ToolCallError"
+        }
+      ],
+      "title" : "Getting the error types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tailor your prompts to get effective results from an on-device model.",
+          "name" : "Prompting an on-device foundation model",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/prompting-an-on-device-foundation-model"
+        },
+        {
+          "description" : "Details you provide that define the model’s intended behavior on prompts.",
+          "name" : "Instructions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Instructions"
+        },
+        {
+          "description" : "A prompt from a person to the model.",
+          "name" : "Prompt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Prompt"
+        },
+        {
+          "description" : "A linear history of entries that reflect an interaction with a session.",
+          "name" : "Transcript",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/Transcript"
+        },
+        {
+          "description" : "Options that control how the model generates its response to a prompt.",
+          "name" : "GenerationOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/GenerationOptions"
+        }
+      ],
+      "title" : "Prompting"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "LanguageModelSession",
+  "url" : "https:\/\/developer.apple.com\/documentation\/FoundationModels\/LanguageModelSession"
+}

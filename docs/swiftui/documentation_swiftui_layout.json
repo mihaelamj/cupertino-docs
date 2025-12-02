@@ -1,0 +1,193 @@
+{
+  "abstract" : "A type that defines the geometry of a collection of views.",
+  "codeExamples" : [
+    {
+      "code" : "struct BasicVStack: Layout {\n    func sizeThatFits(\n        proposal: ProposedViewSize,\n        subviews: Subviews,\n        cache: inout ()\n    ) -> CGSize {\n        \/\/ Calculate and return the size of the layout container.\n    }\n\n    func placeSubviews(\n        in bounds: CGRect,\n        proposal: ProposedViewSize,\n        subviews: Subviews,\n        cache: inout ()\n    ) {\n        \/\/ Tell each subview where to appear.\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "BasicVStack {\n    Text(\"A Subview\")\n    Text(\"Another Subview\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct BasicVStack: Layout {\n    var alignment: HorizontalAlignment\n\n    \/\/ ...\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "BasicVStack(alignment: .leading) {\n    \/\/ ...\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct BasicVStack: Layout {\n    var alignment: HorizontalAlignment = .center\n\n    \/\/ ...\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "BasicVStack() {\n    \/\/ ...\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "init() {\n    self.alignment = .center\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformingTypes" : [
+    "AnyLayout",
+    "GridLayout",
+    "HStackLayout",
+    "SpatialContainer",
+    "VStackLayout",
+    "ZStackLayout"
+  ],
+  "contentHash" : "c5185375d01f1e52c11d9c56f9555f5db81c3baf15a254d0e913342fcd378220",
+  "crawledAt" : "2025-12-02T16:03:48Z",
+  "declaration" : {
+    "code" : "@preconcurrency protocol Layout : Sendable, Animatable",
+    "language" : "swift"
+  },
+  "id" : "1DEBEBE7-4C2B-4D23-80B9-ED01CC205228",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nYou traditionally arrange views in your app’s user interface using built-in layout containers like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/HStack] and [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Grid]. If you need more complex layout behavior, you can define a custom layout container by creating a type that conforms to the `Layout` protocol and implementing its required methods:\n\nYou can define a basic layout type with only these two methods:\n\nUse your layout the same way you use a built-in layout container, by providing a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ViewBuilder] with the list of subviews to arrange:\n\n### Support additional behaviors\n\nYou can optionally implement other protocol methods and properties to provide more layout container features:\n\nThe protocol provides default implementations for these symbols if you don’t implement them. See each method or property for details.\n\n### Add input parameters\n\nYou can define parameters as inputs to the layout, like you might for a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View]:\n\nSet the parameters at the point where you instantiate the layout:\n\nIf the layout provides default values for its parameters, you can omit the parameters at the call site, but you might need to keep the parentheses after the name of the layout, depending on how you specify the defaults. For example, suppose you set a default alignment for the basic stack in the parameter declaration:\n\nTo instantiate this layout using the default center alignment, you don’t have to specify the alignment value, but you do need to add empty parentheses:\n\nThe Swift compiler requires the parentheses in this case because of how the layout protocol implements this call site syntax. Specifically, the layout’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/callAsFunction(_:)] method looks for an initializer with exactly zero input arguments when you omit the parentheses from the call site. You can enable the simpler call site for a layout that doesn’t have an implicit initializer of this type by explicitly defining one:\n\nFor information about Swift initializers, see [https:\/\/docs.swift.org\/swift-book\/LanguageGuide\/Initialization.html] in *The Swift Programming Language*.\n\n### Interact with subviews through their proxies\n\nTo perform layout, you need information about all of its subviews, which are the views that your container arranges. While your layout can’t interact directly with its subviews, it can access a set of subview proxies through the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/Subviews] collection that each protocol method receives as an input parameter. That type is an alias for the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutSubviews] collection type, which in turn contains [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutSubview] instances that are the subview proxies.\n\nYou can get information about each subview from its proxy, like its dimensions and spacing preferences. This enables you to measure subviews before you commit to placing them. You also assign a position to each subview by calling its proxy’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutSubview\/place(at:anchor:proposal:)] method. Call the method on each subview from within your implementation of the layout’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/placeSubviews(in:proposal:subviews:cache:)] method.\n\n### Access layout values\n\nViews have layout values that you set with view modifiers. Layout containers can choose to condition their behavior accordingly. For example, a built-in [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/HStack] allocates space to its subviews based in part on the priorities that you set with the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/layoutPriority(_:)] view modifier. Your layout container accesses this value for a subview by reading the proxy’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutSubview\/priority] property.\n\nYou can also create custom layout values by creating a layout key. Set a value on a view with the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/layoutValue(key:value:)] view modifier. Read the corresponding value from the subview’s proxy using the key as an index on the subview. For more information about creating, setting, and accessing custom layout values, see [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutValueKey].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\ncrawled: 2025-12-02T16:03:48Z\n---\n\n# Layout\n\n**Protocol**\n\nA type that defines the geometry of a collection of views.\n\n## Declaration\n\n```swift\n@preconcurrency protocol Layout : Sendable, Animatable\n```\n\n## Overview\n\nYou traditionally arrange views in your app’s user interface using built-in layout containers like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/HStack] and [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Grid]. If you need more complex layout behavior, you can define a custom layout container by creating a type that conforms to the `Layout` protocol and implementing its required methods:\n\n- [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/sizeThatFits(proposal:subviews:cache:)] reports the size of the composite layout view.\n- [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/placeSubviews(in:proposal:subviews:cache:)] assigns positions to the container’s subviews.\n\nYou can define a basic layout type with only these two methods:\n\n```swift\nstruct BasicVStack: Layout {\n    func sizeThatFits(\n        proposal: ProposedViewSize,\n        subviews: Subviews,\n        cache: inout ()\n    ) -> CGSize {\n        \/\/ Calculate and return the size of the layout container.\n    }\n\n    func placeSubviews(\n        in bounds: CGRect,\n        proposal: ProposedViewSize,\n        subviews: Subviews,\n        cache: inout ()\n    ) {\n        \/\/ Tell each subview where to appear.\n    }\n}\n```\n\nUse your layout the same way you use a built-in layout container, by providing a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ViewBuilder] with the list of subviews to arrange:\n\n```swift\nBasicVStack {\n    Text(\"A Subview\")\n    Text(\"Another Subview\")\n}\n```\n\n### Support additional behaviors\n\nYou can optionally implement other protocol methods and properties to provide more layout container features:\n\n- Define explicit horizontal and vertical layout guides for the container by implementing [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/explicitAlignment(of:in:proposal:subviews:cache:)] for each dimension.\n- Establish the preferred spacing around the container by implementing [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/spacing(subviews:cache:)].\n- Indicate the axis of orientation for a container that has characteristics of a stack by implementing the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/layoutProperties] static property.\n- Create and manage a cache to store computed values across different layout protocol calls by implementing [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/makeCache(subviews:)].\n\nThe protocol provides default implementations for these symbols if you don’t implement them. See each method or property for details.\n\n### Add input parameters\n\nYou can define parameters as inputs to the layout, like you might for a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View]:\n\n```swift\nstruct BasicVStack: Layout {\n    var alignment: HorizontalAlignment\n\n    \/\/ ...\n}\n```\n\nSet the parameters at the point where you instantiate the layout:\n\n```swift\nBasicVStack(alignment: .leading) {\n    \/\/ ...\n}\n```\n\nIf the layout provides default values for its parameters, you can omit the parameters at the call site, but you might need to keep the parentheses after the name of the layout, depending on how you specify the defaults. For example, suppose you set a default alignment for the basic stack in the parameter declaration:\n\n```swift\nstruct BasicVStack: Layout {\n    var alignment: HorizontalAlignment = .center\n\n    \/\/ ...\n}\n```\n\nTo instantiate this layout using the default center alignment, you don’t have to specify the alignment value, but you do need to add empty parentheses:\n\n```swift\nBasicVStack() {\n    \/\/ ...\n}\n```\n\nThe Swift compiler requires the parentheses in this case because of how the layout protocol implements this call site syntax. Specifically, the layout’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/callAsFunction(_:)] method looks for an initializer with exactly zero input arguments when you omit the parentheses from the call site. You can enable the simpler call site for a layout that doesn’t have an implicit initializer of this type by explicitly defining one:\n\n```swift\ninit() {\n    self.alignment = .center\n}\n```\n\nFor information about Swift initializers, see [https:\/\/docs.swift.org\/swift-book\/LanguageGuide\/Initialization.html] in *The Swift Programming Language*.\n\n### Interact with subviews through their proxies\n\nTo perform layout, you need information about all of its subviews, which are the views that your container arranges. While your layout can’t interact directly with its subviews, it can access a set of subview proxies through the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/Subviews] collection that each protocol method receives as an input parameter. That type is an alias for the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutSubviews] collection type, which in turn contains [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutSubview] instances that are the subview proxies.\n\nYou can get information about each subview from its proxy, like its dimensions and spacing preferences. This enables you to measure subviews before you commit to placing them. You also assign a position to each subview by calling its proxy’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutSubview\/place(at:anchor:proposal:)] method. Call the method on each subview from within your implementation of the layout’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Layout\/placeSubviews(in:proposal:subviews:cache:)] method.\n\n### Access layout values\n\nViews have layout values that you set with view modifiers. Layout containers can choose to condition their behavior accordingly. For example, a built-in [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/HStack] allocates space to its subviews based in part on the priorities that you set with the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/layoutPriority(_:)] view modifier. Your layout container accesses this value for a subview by reading the proxy’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutSubview\/priority] property.\n\nYou can also create custom layout values by creating a layout key. Set a value on a view with the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/layoutValue(key:value:)] view modifier. Read the corresponding value from the subview’s proxy using the key as an index on the subview. For more information about creating, setting, and accessing custom layout values, see [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LayoutValueKey].\n\n## Sizing the container and placing subviews\n\n- **sizeThatFits(proposal:subviews:cache:)**: Returns the size of the composite view, given a proposed size and the view’s subviews.\n- **placeSubviews(in:proposal:subviews:cache:)**: Assigns positions to each of the layout’s subviews.\n- **Layout.Subviews**: A collection of proxies for the subviews of a layout view.\n\n## Reporting layout container characteristics\n\n- **explicitAlignment(of:in:proposal:subviews:cache:)**: Returns the position of the specified horizontal alignment guide along the x axis.\n- **spacing(subviews:cache:)**: Returns the preferred spacing values of the composite view.\n- **layoutProperties**: Properties of a layout container.\n\n## Managing a cache\n\n- **makeCache(subviews:)**: Creates and initializes a cache for a layout instance.\n- **updateCache(_:subviews:)**: Updates the layout’s cache when something changes.\n- **Cache**: Cached values associated with the layout instance.\n\n## Supporting types\n\n- **callAsFunction(_:)**: Combines the specified views into a single composite view using the layout algorithms of the custom layout container.\n\n## Instance Methods\n\n- **depthAlignment(_:)**: Sets the depth alignment for this layout.\n- **depthAlignment(_:content:)**: Creates a layout view with the specified depth alignment.\n\n## Creating a custom layout container\n\n- **Composing custom layouts with SwiftUI**: Arrange views in your app’s interface using layout tools that SwiftUI provides.\n- **LayoutSubview**: A proxy that represents one subview of a layout.\n- **LayoutSubviews**: A collection of proxy values that represent the subviews of a layout view.\n\n## Inherits From\n\n- Animatable\n- Sendable\n- SendableMetatype\n\n## Conforming Types\n\n- AnyLayout\n- GridLayout\n- HStackLayout\n- SpatialContainer\n- VStackLayout\n- ZStackLayout\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the size of the composite view, given a proposed size and the view’s subviews.",
+          "name" : "sizeThatFits(proposal:subviews:cache:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/sizeThatFits(proposal:subviews:cache:)"
+        },
+        {
+          "description" : "Assigns positions to each of the layout’s subviews.",
+          "name" : "placeSubviews(in:proposal:subviews:cache:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/placeSubviews(in:proposal:subviews:cache:)"
+        },
+        {
+          "description" : "A collection of proxies for the subviews of a layout view.",
+          "name" : "Layout.Subviews",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/Subviews"
+        }
+      ],
+      "title" : "Sizing the container and placing subviews"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the position of the specified horizontal alignment guide along the x axis.",
+          "name" : "explicitAlignment(of:in:proposal:subviews:cache:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/explicitAlignment(of:in:proposal:subviews:cache:)"
+        },
+        {
+          "description" : "Returns the preferred spacing values of the composite view.",
+          "name" : "spacing(subviews:cache:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/spacing(subviews:cache:)"
+        },
+        {
+          "description" : "Properties of a layout container.",
+          "name" : "layoutProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/layoutProperties"
+        }
+      ],
+      "title" : "Reporting layout container characteristics"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates and initializes a cache for a layout instance.",
+          "name" : "makeCache(subviews:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/makeCache(subviews:)"
+        },
+        {
+          "description" : "Updates the layout’s cache when something changes.",
+          "name" : "updateCache(_:subviews:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/updateCache(_:subviews:)"
+        },
+        {
+          "description" : "Cached values associated with the layout instance.",
+          "name" : "Cache",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/Cache"
+        }
+      ],
+      "title" : "Managing a cache"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Combines the specified views into a single composite view using the layout algorithms of the custom layout container.",
+          "name" : "callAsFunction(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/callAsFunction(_:)"
+        }
+      ],
+      "title" : "Supporting types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the depth alignment for this layout.",
+          "name" : "depthAlignment(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/depthAlignment(_:)"
+        },
+        {
+          "description" : "Creates a layout view with the specified depth alignment.",
+          "name" : "depthAlignment(_:content:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout\/depthAlignment(_:content:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Arrange views in your app’s interface using layout tools that SwiftUI provides.",
+          "name" : "Composing custom layouts with SwiftUI",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/composing-custom-layouts-with-swiftui"
+        },
+        {
+          "description" : "A proxy that represents one subview of a layout.",
+          "name" : "LayoutSubview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/LayoutSubview"
+        },
+        {
+          "description" : "A collection of proxy values that represent the subviews of a layout view.",
+          "name" : "LayoutSubviews",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/LayoutSubviews"
+        }
+      ],
+      "title" : "Creating a custom layout container"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "Animatable"
+        },
+        {
+          "name" : "Sendable"
+        },
+        {
+          "name" : "SendableMetatype"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Layout",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Layout"
+}

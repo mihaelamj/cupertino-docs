@@ -1,0 +1,395 @@
+{
+  "abstract" : "A view that displays one or more lines of read-only text.",
+  "codeExamples" : [
+    {
+      "code" : "Text(\"Hamlet\")\n    .font(.title)",
+      "language" : "swift"
+    },
+    {
+      "code" : "Text(\"by William Shakespeare\")\n    .font(.system(size: 12, weight: .light, design: .serif))\n    .italic()",
+      "language" : "swift"
+    },
+    {
+      "code" : "let attributedString = try! AttributedString(\n    markdown: \"_Hamlet_ by William Shakespeare\")\n\nvar body: some View {\n    Text(attributedString)\n        .font(.system(size: 12, weight: .light, design: .serif))\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "Text(\"To be, or not to be, that is the question:\")\n    .frame(width: 100)",
+      "language" : "swift"
+    },
+    {
+      "code" : "Text(\"Brevity is the soul of wit.\")\n    .frame(width: 100)\n    .lineLimit(1)",
+      "language" : "swift"
+    },
+    {
+      "code" : "Text(\"pencil\") \/\/ Searches the default table in the main bundle.",
+      "language" : "swift"
+    },
+    {
+      "code" : "Text(verbatim: \"pencil\") \/\/ Displays the string \"pencil\" in any locale.",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Don't localize a string variable...\nText(writingImplement)\n\n\/\/ ...unless you explicitly convert it to a localized string key.\nText(LocalizedStringKey(writingImplement))",
+      "language" : "swift"
+    },
+    {
+      "code" : "let name: String = \/\/…\nText(\"Hello, \\(name)\")",
+      "language" : "swift"
+    },
+    {
+      "code" : "let name = Text(person.name).bold()\nText(\"Hello, \\(name)\")",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "Equatable",
+    "Sendable",
+    "SendableMetatype",
+    "View"
+  ],
+  "contentHash" : "c76f6df1555aa16db95d0b40817aae56b9ebbf109cbd36431cf7f4c7ffc7d7d4",
+  "crawledAt" : "2025-12-02T16:23:18Z",
+  "declaration" : {
+    "code" : "@frozen struct Text",
+    "language" : "swift"
+  },
+  "id" : "63AAEEDA-86C9-43D9-BF4D-3510D3F573C5",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nA text view draws a string in your app’s user interface using a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Font\/body] font that’s appropriate for the current platform. You can choose a different standard font, like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Font\/title] or [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Font\/caption], using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/font(_:)] view modifier.\n\n\n\nIf you need finer control over the styling of the text, you can use the same modifier to configure a system font or choose a custom font. You can also apply view modifiers like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/bold()] or [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/italic()] to further adjust the formatting.\n\n\n\nTo apply styling within specific portions of the text, you can create the text view from an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/AttributedString], which in turn allows you to use Markdown to style runs of text. You can mix string attributes and SwiftUI modifiers, with the string attributes taking priority.\n\n\n\nA text view always uses exactly the amount of space it needs to display its rendered contents, but you can affect the view’s layout. For example, you can use the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/frame(width:height:alignment:)] modifier to propose specific dimensions to the view. If the view accepts the proposal but the text doesn’t fit into the available space, the view uses a combination of wrapping, tightening, scaling, and truncation to make it fit. With a width of `100` points but no constraint on the height, a text view might wrap a long string:\n\n\n\nUse modifiers like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/lineLimit(_:)], [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/allowsTightening(_:)], [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/minimumScaleFactor(_:)], and [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/truncationMode(_:)] to configure how the view handles space constraints. For example, combining a fixed width and a line limit of `1` results in truncation for text that doesn’t fit in that space:\n\n\n\n### Localizing strings\n\nIf you initialize a text view with a string literal, the view uses the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/init(_:tableName:bundle:comment:)] initializer, which interprets the string as a localization key and searches for the key in the table you specify, or in the default table if you don’t specify one.\n\nFor an app localized in both English and Spanish, the above view displays “pencil” and “lápiz” for English and Spanish users, respectively. If the view can’t perform localization, it displays the key instead. For example, if the same app lacks Danish localization, the view displays “pencil” for users in that locale. Similarly, an app that lacks any localization information displays “pencil” in any locale.\n\nTo explicitly bypass localization for a string literal, use the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/init(verbatim:)] initializer.\n\nIf you initialize a text view with a variable value, the view uses the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/init(_:)-9d1g4] initializer, which doesn’t localize the string. However, you can request localization by creating a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LocalizedStringKey] instance first, which triggers the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/init(_:tableName:bundle:comment:)] initializer instead:\n\nWhen localizing a string variable, you can use the default table by omitting the optional initialization parameters — as in the above example — just like you might for a string literal.\n\nWhen composing a complex string, where there is a need to assemble multiple pieces of text, use string interpolation:\n\nThis would look up the `\"Hello, %@\"` localization key in the localized string file and replace the format specifier `%@` with the value of `name` before rendering the text on screen.\n\nUsing string interpolation ensures that the text in your app can be localized correctly in all locales, especially in right-to-left languages.\n\nIf you desire to style only parts of interpolated text while ensuring that the content can still be localized correctly, interpolate `Text` or [doc:\/\/com.apple.documentation\/documentation\/Foundation\/AttributedString]:\n\nThe example above uses [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LocalizedStringKey\/StringInterpolation\/appendInterpolation(_:)-4qyfo] and will look up the `\"Hello, %@\"` in the localized string file and interpolate a bold text rendering the value of  `name`.\n\nUsing [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LocalizedStringKey\/StringInterpolation\/appendInterpolation(_:)-5m52e] you can interpolate [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Image] in text.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\ncrawled: 2025-12-02T16:23:18Z\n---\n\n# Text\n\n**Structure**\n\nA view that displays one or more lines of read-only text.\n\n## Declaration\n\n```swift\n@frozen struct Text\n```\n\n## Overview\n\nA text view draws a string in your app’s user interface using a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Font\/body] font that’s appropriate for the current platform. You can choose a different standard font, like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Font\/title] or [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Font\/caption], using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/font(_:)] view modifier.\n\n```swift\nText(\"Hamlet\")\n    .font(.title)\n```\n\n\n\nIf you need finer control over the styling of the text, you can use the same modifier to configure a system font or choose a custom font. You can also apply view modifiers like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/bold()] or [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/italic()] to further adjust the formatting.\n\n```swift\nText(\"by William Shakespeare\")\n    .font(.system(size: 12, weight: .light, design: .serif))\n    .italic()\n```\n\n\n\nTo apply styling within specific portions of the text, you can create the text view from an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/AttributedString], which in turn allows you to use Markdown to style runs of text. You can mix string attributes and SwiftUI modifiers, with the string attributes taking priority.\n\n```swift\nlet attributedString = try! AttributedString(\n    markdown: \"_Hamlet_ by William Shakespeare\")\n\nvar body: some View {\n    Text(attributedString)\n        .font(.system(size: 12, weight: .light, design: .serif))\n}\n```\n\n\n\nA text view always uses exactly the amount of space it needs to display its rendered contents, but you can affect the view’s layout. For example, you can use the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/frame(width:height:alignment:)] modifier to propose specific dimensions to the view. If the view accepts the proposal but the text doesn’t fit into the available space, the view uses a combination of wrapping, tightening, scaling, and truncation to make it fit. With a width of `100` points but no constraint on the height, a text view might wrap a long string:\n\n```swift\nText(\"To be, or not to be, that is the question:\")\n    .frame(width: 100)\n```\n\n\n\nUse modifiers like [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/lineLimit(_:)], [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/allowsTightening(_:)], [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/minimumScaleFactor(_:)], and [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/truncationMode(_:)] to configure how the view handles space constraints. For example, combining a fixed width and a line limit of `1` results in truncation for text that doesn’t fit in that space:\n\n```swift\nText(\"Brevity is the soul of wit.\")\n    .frame(width: 100)\n    .lineLimit(1)\n```\n\n\n\n### Localizing strings\n\nIf you initialize a text view with a string literal, the view uses the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/init(_:tableName:bundle:comment:)] initializer, which interprets the string as a localization key and searches for the key in the table you specify, or in the default table if you don’t specify one.\n\n```swift\nText(\"pencil\") \/\/ Searches the default table in the main bundle.\n```\n\nFor an app localized in both English and Spanish, the above view displays “pencil” and “lápiz” for English and Spanish users, respectively. If the view can’t perform localization, it displays the key instead. For example, if the same app lacks Danish localization, the view displays “pencil” for users in that locale. Similarly, an app that lacks any localization information displays “pencil” in any locale.\n\nTo explicitly bypass localization for a string literal, use the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/init(verbatim:)] initializer.\n\n```swift\nText(verbatim: \"pencil\") \/\/ Displays the string \"pencil\" in any locale.\n```\n\nIf you initialize a text view with a variable value, the view uses the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/init(_:)-9d1g4] initializer, which doesn’t localize the string. However, you can request localization by creating a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LocalizedStringKey] instance first, which triggers the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Text\/init(_:tableName:bundle:comment:)] initializer instead:\n\n```swift\n\/\/ Don't localize a string variable...\nText(writingImplement)\n\n\/\/ ...unless you explicitly convert it to a localized string key.\nText(LocalizedStringKey(writingImplement))\n```\n\nWhen localizing a string variable, you can use the default table by omitting the optional initialization parameters — as in the above example — just like you might for a string literal.\n\nWhen composing a complex string, where there is a need to assemble multiple pieces of text, use string interpolation:\n\n```swift\nlet name: String = \/\/…\nText(\"Hello, \\(name)\")\n```\n\nThis would look up the `\"Hello, %@\"` localization key in the localized string file and replace the format specifier `%@` with the value of `name` before rendering the text on screen.\n\nUsing string interpolation ensures that the text in your app can be localized correctly in all locales, especially in right-to-left languages.\n\nIf you desire to style only parts of interpolated text while ensuring that the content can still be localized correctly, interpolate `Text` or [doc:\/\/com.apple.documentation\/documentation\/Foundation\/AttributedString]:\n\n```swift\nlet name = Text(person.name).bold()\nText(\"Hello, \\(name)\")\n```\n\nThe example above uses [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LocalizedStringKey\/StringInterpolation\/appendInterpolation(_:)-4qyfo] and will look up the `\"Hello, %@\"` in the localized string file and interpolate a bold text rendering the value of  `name`.\n\nUsing [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/LocalizedStringKey\/StringInterpolation\/appendInterpolation(_:)-5m52e] you can interpolate [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Image] in text.\n\n## Creating a text view\n\n- **init(_:tableName:bundle:comment:)**: Creates a text view that displays localized content identified by a key.\n- **init(_:)**: Creates a text view that displays styled attributed content.\n- **init(verbatim:)**: Creates a text view that displays a string literal without localization.\n- **init(_:style:)**: Creates an instance that displays localized dates and times using a specific style.\n- **init(_:format:)**: Creates a text view that displays the formatted representation of a nonstring type supported by a corresponding format style.\n- **init(_:formatter:)**: Creates a text view that displays the formatted representation of a Foundation object.\n- **init(timerInterval:pauseTime:countsDown:showsHours:)**: Creates an instance that displays a timer counting within the provided interval.\n\n## Choosing a font\n\n- **font(_:)**: Sets the default font for text in the view.\n- **fontWeight(_:)**: Sets the font weight of the text.\n- **fontDesign(_:)**: Sets the font design of the text.\n- **fontWidth(_:)**: Sets the font width of the text.\n\n## Styling the view’s text\n\n- **foregroundStyle(_:)**: Sets the style of the text displayed by this view.\n- **bold()**: Applies a bold or emphasized treatment to the fonts of the text.\n- **bold(_:)**: Applies a bold font weight to the text.\n- **italic()**: Applies italics to the text.\n- **italic(_:)**: Applies italics to the text.\n- **strikethrough(_:color:)**: Applies a strikethrough to the text.\n- **strikethrough(_:pattern:color:)**: Applies a strikethrough to the text.\n- **underline(_:color:)**: Applies an underline to the text.\n- **underline(_:pattern:color:)**: Applies an underline to the text.\n- **monospaced(_:)**: Modifies the font of the text to use the fixed-width variant of the current font, if possible.\n- **monospacedDigit()**: Modifies the text view’s font to use fixed-width digits, while leaving other characters proportionally spaced.\n- **kerning(_:)**: Sets the spacing, or kerning, between characters.\n- **tracking(_:)**: Sets the tracking for the text.\n- **baselineOffset(_:)**: Sets the vertical offset for the text relative to its baseline.\n- **Text.Case**: A scheme for transforming the capitalization of characters within text.\n- **Text.DateStyle**: A predefined style used to display a `Date`.\n- **Text.LineStyle**: Description of the style used to draw the line for `StrikethroughStyleAttribute` and `UnderlineStyleAttribute`.\n\n## Fitting text into available space\n\n- **textScale(_:isEnabled:)**: Applies a text scale to the text.\n- **Text.Scale**: Defines text scales\n- **Text.TruncationMode**: The type of truncation to apply to a line of text when it’s too long to fit in the available space.\n\n## Localizing text\n\n- **typesettingLanguage(_:isEnabled:)**: Specifies the language for typesetting.\n\n## Configuring voiceover\n\n- **speechAdjustedPitch(_:)**: Raises or lowers the pitch of spoken text.\n- **speechAlwaysIncludesPunctuation(_:)**: Sets whether VoiceOver should always speak all punctuation in the text view.\n- **speechAnnouncementsQueued(_:)**: Controls whether to queue pending announcements behind existing speech rather than interrupting speech in progress.\n- **speechSpellsOutCharacters(_:)**: Sets whether VoiceOver should speak the contents of the text view character by character.\n\n## Providing accessibility information\n\n- **accessibilityHeading(_:)**: Sets the accessibility level of this heading.\n- **accessibilityLabel(_:)**: Adds a label to the view that describes its contents.\n- **accessibilityTextContentType(_:)**: Sets an accessibility text content type.\n\n## Combining text views\n\n- **+(_:_:)**: Concatenates the text in two text views in a new text view.\n\n## Deprecated symbols\n\n- **foregroundColor(_:)**: Sets the color of the text displayed by this view.\n\n## Structures\n\n- **Text.AlignmentStrategy**: The way SwiftUI infers the appropriate text alignment if no value is explicitly provided.\n- **Text.Layout**: A value describing the layout and custom attributes of a tree of `Text` views.\n- **Text.LayoutKey**: A preference key that provides the `Text.Layout` values for all text views in the queried subtree.\n- **Text.WritingDirectionStrategy**: The way SwiftUI infers the appropriate writing direction if no value is explicitly provided.\n\n## Instance Methods\n\n- **customAttribute(_:)**: Adds a custom attribute to the text view.\n- **textVariant(_:)**: Controls the way text size variants are chosen.\n\n## Displaying text\n\n- **Label**: A standard label for user interface items, consisting of an icon with a title.\n- **labelStyle(_:)**: Sets the style for labels within this view.\n\n## Conforms To\n\n- Copyable\n- Equatable\n- Sendable\n- SendableMetatype\n- View\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a text view that displays localized content identified by a key.",
+          "name" : "init(_:tableName:bundle:comment:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/init(_:tableName:bundle:comment:)"
+        },
+        {
+          "description" : "Creates a text view that displays styled attributed content.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/init(_:)"
+        },
+        {
+          "description" : "Creates a text view that displays a string literal without localization.",
+          "name" : "init(verbatim:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/init(verbatim:)"
+        },
+        {
+          "description" : "Creates an instance that displays localized dates and times using a specific style.",
+          "name" : "init(_:style:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/init(_:style:)"
+        },
+        {
+          "description" : "Creates a text view that displays the formatted representation of a nonstring type supported by a corresponding format style.",
+          "name" : "init(_:format:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/init(_:format:)"
+        },
+        {
+          "description" : "Creates a text view that displays the formatted representation of a Foundation object.",
+          "name" : "init(_:formatter:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/init(_:formatter:)"
+        },
+        {
+          "description" : "Creates an instance that displays a timer counting within the provided interval.",
+          "name" : "init(timerInterval:pauseTime:countsDown:showsHours:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/init(timerInterval:pauseTime:countsDown:showsHours:)"
+        }
+      ],
+      "title" : "Creating a text view"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the default font for text in the view.",
+          "name" : "font(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/font(_:)"
+        },
+        {
+          "description" : "Sets the font weight of the text.",
+          "name" : "fontWeight(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/fontWeight(_:)"
+        },
+        {
+          "description" : "Sets the font design of the text.",
+          "name" : "fontDesign(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/fontDesign(_:)"
+        },
+        {
+          "description" : "Sets the font width of the text.",
+          "name" : "fontWidth(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/fontWidth(_:)"
+        }
+      ],
+      "title" : "Choosing a font"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the style of the text displayed by this view.",
+          "name" : "foregroundStyle(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/foregroundStyle(_:)"
+        },
+        {
+          "description" : "Applies a bold or emphasized treatment to the fonts of the text.",
+          "name" : "bold()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/bold()"
+        },
+        {
+          "description" : "Applies a bold font weight to the text.",
+          "name" : "bold(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/bold(_:)"
+        },
+        {
+          "description" : "Applies italics to the text.",
+          "name" : "italic()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/italic()"
+        },
+        {
+          "description" : "Applies italics to the text.",
+          "name" : "italic(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/italic(_:)"
+        },
+        {
+          "description" : "Applies a strikethrough to the text.",
+          "name" : "strikethrough(_:color:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/strikethrough(_:color:)"
+        },
+        {
+          "description" : "Applies a strikethrough to the text.",
+          "name" : "strikethrough(_:pattern:color:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/strikethrough(_:pattern:color:)"
+        },
+        {
+          "description" : "Applies an underline to the text.",
+          "name" : "underline(_:color:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/underline(_:color:)"
+        },
+        {
+          "description" : "Applies an underline to the text.",
+          "name" : "underline(_:pattern:color:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/underline(_:pattern:color:)"
+        },
+        {
+          "description" : "Modifies the font of the text to use the fixed-width variant of the current font, if possible.",
+          "name" : "monospaced(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/monospaced(_:)"
+        },
+        {
+          "description" : "Modifies the text view’s font to use fixed-width digits, while leaving other characters proportionally spaced.",
+          "name" : "monospacedDigit()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/monospacedDigit()"
+        },
+        {
+          "description" : "Sets the spacing, or kerning, between characters.",
+          "name" : "kerning(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/kerning(_:)"
+        },
+        {
+          "description" : "Sets the tracking for the text.",
+          "name" : "tracking(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/tracking(_:)"
+        },
+        {
+          "description" : "Sets the vertical offset for the text relative to its baseline.",
+          "name" : "baselineOffset(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/baselineOffset(_:)"
+        },
+        {
+          "description" : "A scheme for transforming the capitalization of characters within text.",
+          "name" : "Text.Case",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/Case"
+        },
+        {
+          "description" : "A predefined style used to display a `Date`.",
+          "name" : "Text.DateStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/DateStyle"
+        },
+        {
+          "description" : "Description of the style used to draw the line for `StrikethroughStyleAttribute` and `UnderlineStyleAttribute`.",
+          "name" : "Text.LineStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/LineStyle"
+        }
+      ],
+      "title" : "Styling the view’s text"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Applies a text scale to the text.",
+          "name" : "textScale(_:isEnabled:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/textScale(_:isEnabled:)"
+        },
+        {
+          "description" : "Defines text scales",
+          "name" : "Text.Scale",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/Scale"
+        },
+        {
+          "description" : "The type of truncation to apply to a line of text when it’s too long to fit in the available space.",
+          "name" : "Text.TruncationMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/TruncationMode"
+        }
+      ],
+      "title" : "Fitting text into available space"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Specifies the language for typesetting.",
+          "name" : "typesettingLanguage(_:isEnabled:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/typesettingLanguage(_:isEnabled:)"
+        }
+      ],
+      "title" : "Localizing text"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Raises or lowers the pitch of spoken text.",
+          "name" : "speechAdjustedPitch(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/speechAdjustedPitch(_:)"
+        },
+        {
+          "description" : "Sets whether VoiceOver should always speak all punctuation in the text view.",
+          "name" : "speechAlwaysIncludesPunctuation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/speechAlwaysIncludesPunctuation(_:)"
+        },
+        {
+          "description" : "Controls whether to queue pending announcements behind existing speech rather than interrupting speech in progress.",
+          "name" : "speechAnnouncementsQueued(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/speechAnnouncementsQueued(_:)"
+        },
+        {
+          "description" : "Sets whether VoiceOver should speak the contents of the text view character by character.",
+          "name" : "speechSpellsOutCharacters(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/speechSpellsOutCharacters(_:)"
+        }
+      ],
+      "title" : "Configuring voiceover"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the accessibility level of this heading.",
+          "name" : "accessibilityHeading(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/accessibilityHeading(_:)"
+        },
+        {
+          "description" : "Adds a label to the view that describes its contents.",
+          "name" : "accessibilityLabel(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/accessibilityLabel(_:)"
+        },
+        {
+          "description" : "Sets an accessibility text content type.",
+          "name" : "accessibilityTextContentType(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/accessibilityTextContentType(_:)"
+        }
+      ],
+      "title" : "Providing accessibility information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Concatenates the text in two text views in a new text view.",
+          "name" : "+(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/+(_:_:)"
+        }
+      ],
+      "title" : "Combining text views"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the color of the text displayed by this view.",
+          "name" : "foregroundColor(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/foregroundColor(_:)"
+        }
+      ],
+      "title" : "Deprecated symbols"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The way SwiftUI infers the appropriate text alignment if no value is explicitly provided.",
+          "name" : "Text.AlignmentStrategy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/AlignmentStrategy"
+        },
+        {
+          "description" : "A value describing the layout and custom attributes of a tree of `Text` views.",
+          "name" : "Text.Layout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/Layout"
+        },
+        {
+          "description" : "A preference key that provides the `Text.Layout` values for all text views in the queried subtree.",
+          "name" : "Text.LayoutKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/LayoutKey"
+        },
+        {
+          "description" : "The way SwiftUI infers the appropriate writing direction if no value is explicitly provided.",
+          "name" : "Text.WritingDirectionStrategy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/WritingDirectionStrategy"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds a custom attribute to the text view.",
+          "name" : "customAttribute(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/customAttribute(_:)"
+        },
+        {
+          "description" : "Controls the way text size variants are chosen.",
+          "name" : "textVariant(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text\/textVariant(_:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A standard label for user interface items, consisting of an icon with a title.",
+          "name" : "Label",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Label"
+        },
+        {
+          "description" : "Sets the style for labels within this view.",
+          "name" : "labelStyle(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/labelStyle(_:)"
+        }
+      ],
+      "title" : "Displaying text"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Text",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Text"
+}

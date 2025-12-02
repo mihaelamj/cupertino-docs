@@ -1,0 +1,130 @@
+{
+  "abstract" : "A property wrapper type that can read and write a value managed by SwiftUI.",
+  "codeExamples" : [
+    {
+      "code" : "struct PlayButton: View {\n    @State private var isPlaying: Bool = false \/\/ Create the state.\n\n    var body: some View {\n        Button(isPlaying ? \"Pause\" : \"Play\") { \/\/ Read the state.\n            isPlaying.toggle() \/\/ Write the state.\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct PlayButton: View {\n    @Binding var isPlaying: Bool \/\/ Play button now receives a binding.\n\n    var body: some View {\n        Button(isPlaying ? \"Pause\" : \"Play\") {\n            isPlaying.toggle()\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct PlayerView: View {\n    @State private var isPlaying: Bool = false \/\/ Create the state here now.\n\n    var body: some View {\n        VStack {\n            PlayButton(isPlaying: $isPlaying) \/\/ Pass a binding.\n\n            \/\/ ...\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@Observable\nclass Library {\n    var name = \"My library of books\"\n    \/\/ ...\n}\n\nstruct ContentView: View {\n    @State private var library = Library()\n\n    var body: some View {\n        LibraryView(library: library)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct ContentView: View {\n    @State private var library: Library?\n\n    var body: some View {\n        LibraryView(library: library)\n            .task {\n                library = Library()\n            }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@Observable\nclass Book {\n    var title = \"A sample book\"\n    var isAvailable = true\n}\n\nstruct ContentView: View {\n    @State private var book = Book()\n\n    var body: some View {\n        BookView(book: book)\n    }\n}\n\nstruct BookView: View {\n    var book: Book\n\n    var body: some View {\n        Text(book.title)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct ContentView: View {\n    @State private var book: Book?\n\n    var body: some View {\n        DeleteBookView(book: $book)\n            .task {\n                book = Book()\n            }\n    }\n}\n\nstruct DeleteBookView: View {\n    @Binding var book: Book?\n\n    var body: some View {\n        Button(\"Delete book\") {\n            book = nil\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct ContentView: View {\n    @State private var book = Book()\n\n    var body: some View {\n        BookCheckoutView(book: book)\n    }\n}\n\nstruct BookCheckoutView: View {\n    var book: Book\n\n    var body: some View {\n        Button(book.isAvailable ? \"Check out book\" : \"Return book\") {\n            book.isAvailable.toggle()\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct ContentView: View {\n    @State private var book = Book()\n\n    var body: some View {\n        BookView(book: book)\n    }\n}\n\nstruct BookView: View {\n    let book: Book\n\n    var body: some View {\n        BookEditorView(book: book)\n    }\n}\n\nstruct BookEditorView: View {\n    @Bindable var book: Book\n\n    var body: some View {\n        TextField(\"Title\", text: $book.title)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "DynamicProperty",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "4b2903b038c2a4037a40edf7ab2dc294ab0100362be7243dce2396dd213375d5",
+  "crawledAt" : "2025-12-02T17:32:10Z",
+  "declaration" : {
+    "code" : "@frozen @propertyWrapper struct State<Value>",
+    "language" : "swift"
+  },
+  "id" : "EEAB2F41-D22A-45D6-8014-58F74EAE0904",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nUse state as the single source of truth for a given value type that you store in a view hierarchy. Create a state value in an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/App], [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Scene], or [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View] by applying the `@State` attribute to a property declaration and providing an initial value. Declare state as private to prevent setting it in a memberwise initializer, which can conflict with the storage management that SwiftUI provides:\n\nSwiftUI manages the property’s storage. When the value changes, SwiftUI updates the parts of the view hierarchy that depend on the value. To access a state’s underlying value, you use its [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/State\/wrappedValue] property. However, as a shortcut Swift enables you to access the wrapped value by referring directly to the state instance. The above example reads and writes the `isPlaying` state property’s wrapped value by referring to the property directly.\n\nDeclare state as private in the highest view in the view hierarchy that needs access to the value. Then share the state with any subviews that also need access, either directly for read-only access, or as a binding for read-write access. You can safely mutate state properties from any thread.\n\n### Share state with subviews\n\nIf you pass a state property to a subview, SwiftUI updates the subview any time the value changes in the container view, but the subview can’t modify the value. To enable the subview to modify the state’s stored value, pass a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Binding] instead.\n\nFor example, you can remove the `isPlaying` state from the play button in the above example, and instead make the button take a binding:\n\nThen you can define a player view that declares the state and creates a binding to the state. Get the binding to the state value by accessing the state’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/State\/projectedValue], which you get by prefixing the property name with a dollar sign (`$`):\n\nLike you do for a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/StateObject], declare `State` as private to prevent setting it in a memberwise initializer, which can conflict with the storage management that SwiftUI provides. Unlike a state object, always initialize state by providing a default value in the state’s declaration, as in the above examples. Use state only for storage that’s local to a view and its subviews.\n\n### Store observable objects\n\nYou can also store observable objects that you create with the [doc:\/\/com.apple.documentation\/documentation\/Observation\/Observable()] macro in `State`; for example:\n\nA `State` property always instantiates its default value when SwiftUI instantiates the view. For this reason, avoid side effects and performance-intensive work when initializing the default value. For example, if a view updates frequently, allocating a new default object each time the view initializes can become expensive. Instead, you can defer the creation of the object using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/task(priority:_:)] modifier, which is called only once when the view first appears:\n\nDelaying the creation of the observable state object ensures that unnecessary allocations of the object doesn’t happen each time SwiftUI initializes the view. Using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/task(priority:_:)] modifier is also an effective way to defer any other kind of work required to create the initial state of the view, such as network calls or file access.\n\n### Share observable state objects with subviews\n\nTo share an [doc:\/\/com.apple.documentation\/documentation\/Observation\/Observable] object stored in `State` with a subview, pass the object reference to the subview. SwiftUI updates the subview anytime an observable property of the object changes, but only when the subview’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/body-8kl5o] reads the property. For example, in the following code `BookView` updates each time `title` changes but not when `isAvailable` changes:\n\n`State` properties provide bindings to their value. When storing an object, you can get a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Binding] to that object, specifically the reference to the object. This is useful when you need to change the reference stored in state in some other subview, such as setting the reference to `nil`:\n\nHowever, passing a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Binding] to an object stored in `State` isn’t necessary when you need to change properties of that object. For example, you can set the properties of the object to new values in a subview by passing the object reference instead of a binding to the reference:\n\nIf you need a binding to a specific property of the object, pass either the binding to the object and extract bindings to specific properties where needed, or pass the object reference and use the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Bindable] property wrapper to create bindings to specific properties. For example, in the following code `BookEditorView` wraps `book` with `@Bindable`. Then the view uses the `$` syntax to pass to a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/TextField] a binding to `title`:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/State\ncrawled: 2025-12-02T17:32:10Z\n---\n\n# State\n\n**Structure**\n\nA property wrapper type that can read and write a value managed by SwiftUI.\n\n## Declaration\n\n```swift\n@frozen @propertyWrapper struct State<Value>\n```\n\n## Overview\n\nUse state as the single source of truth for a given value type that you store in a view hierarchy. Create a state value in an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/App], [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Scene], or [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View] by applying the `@State` attribute to a property declaration and providing an initial value. Declare state as private to prevent setting it in a memberwise initializer, which can conflict with the storage management that SwiftUI provides:\n\n```swift\nstruct PlayButton: View {\n    @State private var isPlaying: Bool = false \/\/ Create the state.\n\n    var body: some View {\n        Button(isPlaying ? \"Pause\" : \"Play\") { \/\/ Read the state.\n            isPlaying.toggle() \/\/ Write the state.\n        }\n    }\n}\n```\n\nSwiftUI manages the property’s storage. When the value changes, SwiftUI updates the parts of the view hierarchy that depend on the value. To access a state’s underlying value, you use its [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/State\/wrappedValue] property. However, as a shortcut Swift enables you to access the wrapped value by referring directly to the state instance. The above example reads and writes the `isPlaying` state property’s wrapped value by referring to the property directly.\n\nDeclare state as private in the highest view in the view hierarchy that needs access to the value. Then share the state with any subviews that also need access, either directly for read-only access, or as a binding for read-write access. You can safely mutate state properties from any thread.\n\n### Share state with subviews\n\nIf you pass a state property to a subview, SwiftUI updates the subview any time the value changes in the container view, but the subview can’t modify the value. To enable the subview to modify the state’s stored value, pass a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Binding] instead.\n\nFor example, you can remove the `isPlaying` state from the play button in the above example, and instead make the button take a binding:\n\n```swift\nstruct PlayButton: View {\n    @Binding var isPlaying: Bool \/\/ Play button now receives a binding.\n\n    var body: some View {\n        Button(isPlaying ? \"Pause\" : \"Play\") {\n            isPlaying.toggle()\n        }\n    }\n}\n```\n\nThen you can define a player view that declares the state and creates a binding to the state. Get the binding to the state value by accessing the state’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/State\/projectedValue], which you get by prefixing the property name with a dollar sign (`$`):\n\n```swift\nstruct PlayerView: View {\n    @State private var isPlaying: Bool = false \/\/ Create the state here now.\n\n    var body: some View {\n        VStack {\n            PlayButton(isPlaying: $isPlaying) \/\/ Pass a binding.\n\n            \/\/ ...\n        }\n    }\n}\n```\n\nLike you do for a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/StateObject], declare `State` as private to prevent setting it in a memberwise initializer, which can conflict with the storage management that SwiftUI provides. Unlike a state object, always initialize state by providing a default value in the state’s declaration, as in the above examples. Use state only for storage that’s local to a view and its subviews.\n\n### Store observable objects\n\nYou can also store observable objects that you create with the [doc:\/\/com.apple.documentation\/documentation\/Observation\/Observable()] macro in `State`; for example:\n\n```swift\n@Observable\nclass Library {\n    var name = \"My library of books\"\n    \/\/ ...\n}\n\nstruct ContentView: View {\n    @State private var library = Library()\n\n    var body: some View {\n        LibraryView(library: library)\n    }\n}\n```\n\nA `State` property always instantiates its default value when SwiftUI instantiates the view. For this reason, avoid side effects and performance-intensive work when initializing the default value. For example, if a view updates frequently, allocating a new default object each time the view initializes can become expensive. Instead, you can defer the creation of the object using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/task(priority:_:)] modifier, which is called only once when the view first appears:\n\n```swift\nstruct ContentView: View {\n    @State private var library: Library?\n\n    var body: some View {\n        LibraryView(library: library)\n            .task {\n                library = Library()\n            }\n    }\n}\n```\n\nDelaying the creation of the observable state object ensures that unnecessary allocations of the object doesn’t happen each time SwiftUI initializes the view. Using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/task(priority:_:)] modifier is also an effective way to defer any other kind of work required to create the initial state of the view, such as network calls or file access.\n\n\n\n### Share observable state objects with subviews\n\nTo share an [doc:\/\/com.apple.documentation\/documentation\/Observation\/Observable] object stored in `State` with a subview, pass the object reference to the subview. SwiftUI updates the subview anytime an observable property of the object changes, but only when the subview’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/body-8kl5o] reads the property. For example, in the following code `BookView` updates each time `title` changes but not when `isAvailable` changes:\n\n```swift\n@Observable\nclass Book {\n    var title = \"A sample book\"\n    var isAvailable = true\n}\n\nstruct ContentView: View {\n    @State private var book = Book()\n\n    var body: some View {\n        BookView(book: book)\n    }\n}\n\nstruct BookView: View {\n    var book: Book\n\n    var body: some View {\n        Text(book.title)\n    }\n}\n```\n\n`State` properties provide bindings to their value. When storing an object, you can get a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Binding] to that object, specifically the reference to the object. This is useful when you need to change the reference stored in state in some other subview, such as setting the reference to `nil`:\n\n```swift\nstruct ContentView: View {\n    @State private var book: Book?\n\n    var body: some View {\n        DeleteBookView(book: $book)\n            .task {\n                book = Book()\n            }\n    }\n}\n\nstruct DeleteBookView: View {\n    @Binding var book: Book?\n\n    var body: some View {\n        Button(\"Delete book\") {\n            book = nil\n        }\n    }\n}\n```\n\nHowever, passing a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Binding] to an object stored in `State` isn’t necessary when you need to change properties of that object. For example, you can set the properties of the object to new values in a subview by passing the object reference instead of a binding to the reference:\n\n```swift\nstruct ContentView: View {\n    @State private var book = Book()\n\n    var body: some View {\n        BookCheckoutView(book: book)\n    }\n}\n\nstruct BookCheckoutView: View {\n    var book: Book\n\n    var body: some View {\n        Button(book.isAvailable ? \"Check out book\" : \"Return book\") {\n            book.isAvailable.toggle()\n        }\n    }\n}\n```\n\nIf you need a binding to a specific property of the object, pass either the binding to the object and extract bindings to specific properties where needed, or pass the object reference and use the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Bindable] property wrapper to create bindings to specific properties. For example, in the following code `BookEditorView` wraps `book` with `@Bindable`. Then the view uses the `$` syntax to pass to a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/TextField] a binding to `title`:\n\n```swift\nstruct ContentView: View {\n    @State private var book = Book()\n\n    var body: some View {\n        BookView(book: book)\n    }\n}\n\nstruct BookView: View {\n    let book: Book\n\n    var body: some View {\n        BookEditorView(book: book)\n    }\n}\n\nstruct BookEditorView: View {\n    @Bindable var book: Book\n\n    var body: some View {\n        TextField(\"Title\", text: $book.title)\n    }\n}\n```\n\n## Creating a state\n\n- **init(wrappedValue:)**: Creates a state property that stores an initial wrapped value.\n- **init(initialValue:)**: Creates a state property that stores an initial value.\n- **init()**: Creates a state property without an initial value.\n\n## Getting the value\n\n- **wrappedValue**: The underlying value referenced by the state variable.\n- **projectedValue**: A binding to the state value.\n\n## Creating and sharing view state\n\n- **Managing user interface state**: Encapsulate view-specific data within your app’s view hierarchy to make your views reusable.\n- **Bindable**: A property wrapper type that supports creating bindings to the mutable properties of observable objects.\n- **Binding**: A property wrapper type that can read and write a value owned by a source of truth.\n\n## Conforms To\n\n- DynamicProperty\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a state property that stores an initial wrapped value.",
+          "name" : "init(wrappedValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/State\/init(wrappedValue:)"
+        },
+        {
+          "description" : "Creates a state property that stores an initial value.",
+          "name" : "init(initialValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/State\/init(initialValue:)"
+        },
+        {
+          "description" : "Creates a state property without an initial value.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/State\/init()"
+        }
+      ],
+      "title" : "Creating a state"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The underlying value referenced by the state variable.",
+          "name" : "wrappedValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/State\/wrappedValue"
+        },
+        {
+          "description" : "A binding to the state value.",
+          "name" : "projectedValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/State\/projectedValue"
+        }
+      ],
+      "title" : "Getting the value"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Encapsulate view-specific data within your app’s view hierarchy to make your views reusable.",
+          "name" : "Managing user interface state",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Managing-User-Interface-State"
+        },
+        {
+          "description" : "A property wrapper type that supports creating bindings to the mutable properties of observable objects.",
+          "name" : "Bindable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Bindable"
+        },
+        {
+          "description" : "A property wrapper type that can read and write a value owned by a source of truth.",
+          "name" : "Binding",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding"
+        }
+      ],
+      "title" : "Creating and sharing view state"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "State",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/State"
+}

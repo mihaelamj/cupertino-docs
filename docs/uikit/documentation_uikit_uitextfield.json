@@ -1,0 +1,401 @@
+{
+  "abstract" : "An object that displays an editable text area in your interface.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CALayerDelegate",
+    "CVarArg",
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCoding",
+    "NSObjectProtocol",
+    "NSTouchBarProvider",
+    "Sendable",
+    "SendableMetatype",
+    "UIAccessibilityIdentification",
+    "UIActivityItemsConfigurationProviding",
+    "UIAppearance",
+    "UIAppearanceContainer",
+    "UIContentSizeCategoryAdjusting",
+    "UIContextMenuInteractionDelegate",
+    "UICoordinateSpace",
+    "UIDynamicItem",
+    "UIFocusEnvironment",
+    "UIFocusItem",
+    "UIFocusItemContainer",
+    "UIKeyInput",
+    "UILargeContentViewerItem",
+    "UILetterformAwareAdjusting",
+    "UIPasteConfigurationSupporting",
+    "UIPopoverPresentationControllerSourceItem",
+    "UIResponderStandardEditActions",
+    "UITextDraggable",
+    "UITextDroppable",
+    "UITextInput",
+    "UITextInputTraits",
+    "UITextPasteConfigurationSupporting",
+    "UITraitChangeObservable",
+    "UITraitEnvironment",
+    "UIUserActivityRestoring"
+  ],
+  "contentHash" : "30fad9913d6fef1c39ecdf0d8355b6958eeae4cadea998a2695adc3d33e04d2f",
+  "crawledAt" : "2025-12-01T01:16:15Z",
+  "declaration" : {
+    "code" : "@MainActor class UITextField",
+    "language" : "swift"
+  },
+  "id" : "D4B951AE-7DBA-4C7C-9848-CEFED979DA07",
+  "inheritedBy" : [
+    "UISearchTextField"
+  ],
+  "kind" : "class",
+  "module" : "UIKit",
+  "overview" : "## Overview\n\nYou use text fields to gather text-based input from the user using the onscreen keyboard. The keyboard is configurable for many different types of input such as plain text, emails, numbers, and so on. Text fields use the target-action mechanism and a delegate object to report changes made during the course of editing.\n\nIn addition to its basic text-editing behavior, you can add overlay views to a text field to display additional information and provide additional tappable controls. You might add custom overlay views for elements such as a bookmarks button or search icon. Text fields provide a built-in overlay view to clear the current text. The use of custom overlay views is optional.\n\n\n\nAfter adding a text field to your interface, you configure it for use in your app. Configuration involves performing some or all of the following tasks:\n\nFor information about the methods of the text field’s delegate object, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextFieldDelegate].\n\n### Show and hide the keyboard\n\nWhen a text field becomes first responder, the system automatically shows the keyboard and binds its input to the text field. A text field becomes the first responder automatically when the user taps it. You can also force a text field to become the first responder by calling its [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/becomeFirstResponder()] method. You might force a text field to become first responder when you require the user to enter some information.\n\nYou can ask the system to dismiss the keyboard by calling the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/resignFirstResponder()] method of your text field. Usually, you dismiss the keyboard in response to specific interactions. For example, you might dismiss the keyboard when the user taps the keyboard’s return key. The system can also dismiss the keyboard in response to user actions. Specifically, the system dismisses the keyboard when the user taps a new control that doesn’t support keyboard input.\n\nThe appearance and dismissal of the keyboard affect the editing state of the text field. When the keyboard appears, the text field enters the editing state and sends the appropriate notifications to its delegate. Similarly, when the text field resigns the first responder status, it leaves the editing state and notifies its delegate. For more information about the sequence of events that occur during editing, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField#Validate-text-and-manage-the-editing-process].\n\n#### Configure the keyboard’s appearance\n\nYou customize your text field’s keyboard using the properties of the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextInputTraits] protocol, which the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField] class adopts. UIKit supports standard keyboards for the user’s current language and also supports specialized keyboards for entering numbers, URLs, email addresses, and other specific types of information. You use the properties of this protocol to adjust keyboard traits such as the following:\n\n#### Respond to keyboard-related notifications\n\nBecause the system manages the showing and hiding of the keyboard in response to responder changes, it posts the following notifications for tracking the keyboard-related changes:\n\nEach notification contains a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSNotification\/userInfo] dictionary that includes the size of the keyboard. Because the keyboard can hide portions of your interface, you should use the size information to reposition your content on the screen. For content embedded in a scroll view, you can scroll the text field into view, as illustrated in the following image. In other cases, you can resize your main content view so that it isn’t covered by the keyboard.\n\n\n\n### Format the text in a text field\n\nThere are two types of formatting you can do to a text field’s text:\n\nThe [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/font], [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/textColor], and [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/textAlignment] properties, among others, affect the appearance of the text field’s string. Modifying these properties applies the specified characteristic to the entire string. To specify more granular formatting, specify the text field’s text using an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSAttributedString] object.\n\nThe [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField] class doesn’t provide built-in support for formatting its string using an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Formatter] object, but you can use the text field’s delegate to format the content yourself. To do so, use the text field’s delegate methods to validate text and to format it appropriately. For example, use the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextFieldDelegate\/textField(_:shouldChangeCharactersIn:replacementString:)] method to validate and format text while the user is typing. For information about how to use formatter objects, see [doc:\/\/com.apple.documentation\/documentation\/Foundation\/data-formatting].\n\n### Use overlay views to edit content\n\nOverlay views are small views displayed on the left and right sides of the text view’s editable area. Typically, overlay views are image-based buttons that you set up as additional editing controls. For example, you might use an overlay view to implement a bookmarks button. To configure a button as an overlay view, specify an image for the button’s content and configure the target and action of the button to respond to taps.\n\nThe following code shows how to add a button as the left overlay of a text field. In this case, the code creates a button and configure its size and contents. The [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/leftViewMode] property specifies when your button is displayed. When the user taps the button, the button calls the configured action method, which in this case is a custom `displayBookmarks:` method.\n\nWhen configuring overlay views, consider whether you want your text field to display the built-in clear button. The clear button provides the user with a convenient way to delete all of the text field’s text. This button is displayed in the right overlay position, but if you provide a custom right overlay view, use the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/rightViewMode] and [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/clearButtonMode] properties to define when your custom overlay should be displayed and when the clear button should be displayed.\n\n### Validate text and manage the editing process\n\nA text field manages the editing of its text with the help of its delegate object. As the user interacts with a text field, the text field notifies its delegate and gives it a chance to control what is happening. You can use the delegate methods to prevent the user from starting or stopping the editing process or to validate text as it’s typed. You can also use the delegate methods to perform related tasks, such as updating other parts of your interface based on the information typed by the user.\n\nFor more information about using the text field’s delegate to manage editing interactions, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextFieldDelegate].\n\n### Interface Builder attributes\n\nThe following table lists the attributes that you configure for text fields in Interface Builder.\n\nThe following table lists the keyboard-related attributes that you configure for text fields. This attributes correspond to properties of the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextInputTraits] protocol that the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField] class adopts.\n\nFor information about additional attributes you can configure for a text view, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIControl].\n\n### Internationalization\n\nThe default language of the device affects the keyboard that pops up with the text field (including the return key). You don’t need to do anything to enable this functionality; it’s enabled by default. However, your text field should be able to handle input that comes from any language.\n\nWhen using storyboards to build your interface, use Xcode’s base internationalization feature to configure the localizations your project supports. When you add a localization, Xcode creates a strings file for that localization. When configuring your interface programmatically, use the system’s built-in support for loading localized strings and resources. For more information about internationalizing your interface, see [doc:\/\/com.apple.documentation\/documentation\/Xcode\/localization].\n\n### Accessibility\n\nText fields are accessible by default. The default accessibility trait for a text field is User Interaction Enabled.\n\nFor more information about making iOS controls accessible, see the accessibility information in [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIControl]. For general information about making your interface accessible, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/accessibility-for-uikit].\n\n### State preservation\n\nWhen you assign a value to a text field’s [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView\/restorationIdentifier] property, it preserves the selected range of text, if any. During the next launch cycle, the text field attempts to restore that selection. If the selection range can’t be applied to the current text, no selection is made.\n\nFor design guidance, see [https:\/\/developer.apple.com\/design\/human-interface-guidelines\/components\/selection-and-input\/text-fields\/].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\ncrawled: 2025-12-01T01:16:15Z\n---\n\n# UITextField\n\n**Class**\n\nAn object that displays an editable text area in your interface.\n\n## Declaration\n\n```swift\n@MainActor class UITextField\n```\n\n## Overview\n\nYou use text fields to gather text-based input from the user using the onscreen keyboard. The keyboard is configurable for many different types of input such as plain text, emails, numbers, and so on. Text fields use the target-action mechanism and a delegate object to report changes made during the course of editing.\n\nIn addition to its basic text-editing behavior, you can add overlay views to a text field to display additional information and provide additional tappable controls. You might add custom overlay views for elements such as a bookmarks button or search icon. Text fields provide a built-in overlay view to clear the current text. The use of custom overlay views is optional.\n\n\n\nAfter adding a text field to your interface, you configure it for use in your app. Configuration involves performing some or all of the following tasks:\n\n- Configure one or more targets and actions for the text field.\n- Configure the keyboard-related attributes of the text field.\n- Assign a delegate object to handle important tasks, such as:\n\n- Determining whether the user should be allowed to edit the text field’s contents.\n- Validating the text entered by the user.\n- Responding to taps in the keyboard’s return button.\n- Forwarding the user-entered text to other parts of your app.\n- Store a reference to the text field in one of your controller objects.\n\nFor information about the methods of the text field’s delegate object, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextFieldDelegate].\n\n### Show and hide the keyboard\n\nWhen a text field becomes first responder, the system automatically shows the keyboard and binds its input to the text field. A text field becomes the first responder automatically when the user taps it. You can also force a text field to become the first responder by calling its [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/becomeFirstResponder()] method. You might force a text field to become first responder when you require the user to enter some information.\n\n\n\nYou can ask the system to dismiss the keyboard by calling the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/resignFirstResponder()] method of your text field. Usually, you dismiss the keyboard in response to specific interactions. For example, you might dismiss the keyboard when the user taps the keyboard’s return key. The system can also dismiss the keyboard in response to user actions. Specifically, the system dismisses the keyboard when the user taps a new control that doesn’t support keyboard input.\n\nThe appearance and dismissal of the keyboard affect the editing state of the text field. When the keyboard appears, the text field enters the editing state and sends the appropriate notifications to its delegate. Similarly, when the text field resigns the first responder status, it leaves the editing state and notifies its delegate. For more information about the sequence of events that occur during editing, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField#Validate-text-and-manage-the-editing-process].\n\n#### Configure the keyboard’s appearance\n\nYou customize your text field’s keyboard using the properties of the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextInputTraits] protocol, which the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField] class adopts. UIKit supports standard keyboards for the user’s current language and also supports specialized keyboards for entering numbers, URLs, email addresses, and other specific types of information. You use the properties of this protocol to adjust keyboard traits such as the following:\n\n- The type of keyboard to display\n- The autocapitalization behavior of the keyboard\n- The autocorrection behavior of the keyboard\n- The type of return key to display\n\n#### Respond to keyboard-related notifications\n\nBecause the system manages the showing and hiding of the keyboard in response to responder changes, it posts the following notifications for tracking the keyboard-related changes:\n\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/keyboardWillShowNotification]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/keyboardDidShowNotification]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/keyboardWillHideNotification]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/keyboardDidHideNotification]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/keyboardWillChangeFrameNotification]\n- [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIResponder\/keyboardDidChangeFrameNotification]\n\nEach notification contains a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSNotification\/userInfo] dictionary that includes the size of the keyboard. Because the keyboard can hide portions of your interface, you should use the size information to reposition your content on the screen. For content embedded in a scroll view, you can scroll the text field into view, as illustrated in the following image. In other cases, you can resize your main content view so that it isn’t covered by the keyboard.\n\n\n\n### Format the text in a text field\n\nThere are two types of formatting you can do to a text field’s text:\n\n- You can change the font, color, and style of the text using properties of this class. Alternatively, you can specify an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSAttributedString] for the text field’s content.\n- You can format the content of a text field using an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Formatter] object.\n\nThe [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/font], [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/textColor], and [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/textAlignment] properties, among others, affect the appearance of the text field’s string. Modifying these properties applies the specified characteristic to the entire string. To specify more granular formatting, specify the text field’s text using an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSAttributedString] object.\n\nThe [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField] class doesn’t provide built-in support for formatting its string using an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Formatter] object, but you can use the text field’s delegate to format the content yourself. To do so, use the text field’s delegate methods to validate text and to format it appropriately. For example, use the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextFieldDelegate\/textField(_:shouldChangeCharactersIn:replacementString:)] method to validate and format text while the user is typing. For information about how to use formatter objects, see [doc:\/\/com.apple.documentation\/documentation\/Foundation\/data-formatting].\n\n### Use overlay views to edit content\n\nOverlay views are small views displayed on the left and right sides of the text view’s editable area. Typically, overlay views are image-based buttons that you set up as additional editing controls. For example, you might use an overlay view to implement a bookmarks button. To configure a button as an overlay view, specify an image for the button’s content and configure the target and action of the button to respond to taps.\n\nThe following code shows how to add a button as the left overlay of a text field. In this case, the code creates a button and configure its size and contents. The [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/leftViewMode] property specifies when your button is displayed. When the user taps the button, the button calls the configured action method, which in this case is a custom `displayBookmarks:` method.\n\n\n\nWhen configuring overlay views, consider whether you want your text field to display the built-in clear button. The clear button provides the user with a convenient way to delete all of the text field’s text. This button is displayed in the right overlay position, but if you provide a custom right overlay view, use the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/rightViewMode] and [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField\/clearButtonMode] properties to define when your custom overlay should be displayed and when the clear button should be displayed.\n\n### Validate text and manage the editing process\n\nA text field manages the editing of its text with the help of its delegate object. As the user interacts with a text field, the text field notifies its delegate and gives it a chance to control what is happening. You can use the delegate methods to prevent the user from starting or stopping the editing process or to validate text as it’s typed. You can also use the delegate methods to perform related tasks, such as updating other parts of your interface based on the information typed by the user.\n\nFor more information about using the text field’s delegate to manage editing interactions, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextFieldDelegate].\n\n### Interface Builder attributes\n\nThe following table lists the attributes that you configure for text fields in Interface Builder.\n\n\n\nThe following table lists the keyboard-related attributes that you configure for text fields. This attributes correspond to properties of the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextInputTraits] protocol that the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITextField] class adopts.\n\n\n\nFor information about additional attributes you can configure for a text view, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIControl].\n\n### Internationalization\n\nThe default language of the device affects the keyboard that pops up with the text field (including the return key). You don’t need to do anything to enable this functionality; it’s enabled by default. However, your text field should be able to handle input that comes from any language.\n\nWhen using storyboards to build your interface, use Xcode’s base internationalization feature to configure the localizations your project supports. When you add a localization, Xcode creates a strings file for that localization. When configuring your interface programmatically, use the system’s built-in support for loading localized strings and resources. For more information about internationalizing your interface, see [doc:\/\/com.apple.documentation\/documentation\/Xcode\/localization].\n\n### Accessibility\n\nText fields are accessible by default. The default accessibility trait for a text field is User Interaction Enabled.\n\nFor more information about making iOS controls accessible, see the accessibility information in [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIControl]. For general information about making your interface accessible, see [doc:\/\/com.apple.uikit\/documentation\/UIKit\/accessibility-for-uikit].\n\n### State preservation\n\nWhen you assign a value to a text field’s [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIView\/restorationIdentifier] property, it preserves the selected range of text, if any. During the next launch cycle, the text field attempts to restore that selection. If the selection range can’t be applied to the current text, no selection is made.\n\nFor design guidance, see [https:\/\/developer.apple.com\/design\/human-interface-guidelines\/components\/selection-and-input\/text-fields\/].\n\n## Validating and handling edits\n\n- **delegate**: The text field’s delegate.\n- **UITextFieldDelegate**: A set of optional methods to manage editing and validating text in a text field object.\n\n## Configuring the text attributes\n\n- **text**: The text that the text field displays.\n- **attributedText**: The styled text that the text field displays.\n- **placeholder**: The string that displays when there is no other text in the text field.\n- **attributedPlaceholder**: The styled string that displays when there is no other text in the text field.\n- **defaultTextAttributes**: The default attributes to apply to the text.\n- **font**: The font of the text.\n- **textColor**: The color of the text.\n- **textAlignment**: The technique for aligning the text.\n- **typingAttributes**: The attributes to apply to new text that the user enters.\n- **UITextField.BorderStyle**: The type of border around the text field.\n\n## Sizing the text field’s text\n\n- **adjustsFontSizeToFitWidth**: A Boolean value that indicates whether to reduce the font size to fit the text string into the text field’s bounding rectangle.\n- **minimumFontSize**: The size of the smallest permissible font when drawing the text field’s text.\n- **sizingRule**: The typographic bounds-sizing behavior that handles text with fonts that contain oversize characters.\n\n## Managing the editing behavior\n\n- **isEditing**: A Boolean value that indicates whether the text field is currently in edit mode.\n- **clearsOnBeginEditing**: A Boolean value that determines whether the text field removes old text when editing begins.\n- **clearsOnInsertion**: A Boolean value that determines whether inserting text replaces the previous contents.\n- **allowsEditingTextAttributes**: A Boolean value that determines whether the user can edit the attributes of the text in the text field.\n- **UITextField.DidEndEditingReason**: Constants that indicate the reason for ending editing in a text field.\n- **didEndEditingReasonUserInfoKey**: A key that indicates the reason for ending editing in a text field.\n- **textDidBeginEditingNotification**: A notification that alerts observers when an editing session begins in a text field.\n- **textDidChangeNotification**: A notification that alerts observers when the text in a text field changes.\n- **textDidEndEditingNotification**: A notification that alerts observers when the editing session ends for a text field.\n\n## Setting the view’s background appearance\n\n- **borderStyle**: The border style for the text field.\n- **background**: The image that represents the background appearance of the text field when it is in an enabled state.\n- **disabledBackground**: The image that represents the background appearance of the text field when it is in a disabled state.\n\n## Managing overlay views\n\n- **clearButtonMode**: A mode that controls when the standard Clear button appears in the text field.\n- **leftView**: The overlay view that displays on the left (or leading) side of the text field.\n- **leftViewMode**: A mode that controls when the left overlay view appears in the text field.\n- **rightView**: The overlay view that displays on the right (or trailing) side of the text field.\n- **rightViewMode**: A mode that controls when the right overlay view appears in the text field.\n- **UITextField.ViewMode**: Constants that define when overlay views appear in a text field.\n\n## Drawing and positioning overrides\n\n- **textRect(forBounds:)**: Returns the drawing rectangle for the text field’s text.\n- **drawText(in:)**: Draws the text field’s text in the specified rectangle.\n- **placeholderRect(forBounds:)**: Returns the drawing rectangle for the text field’s placeholder text.\n- **drawPlaceholder(in:)**: Draws the text field’s placeholder text in the specified rectangle.\n- **borderRect(forBounds:)**: Returns the text field’s border rectangle.\n- **editingRect(forBounds:)**: Returns the rectangle for displaying editable text.\n- **clearButtonRect(forBounds:)**: Returns the drawing rectangle for the built-in Clear button.\n- **leftViewRect(forBounds:)**: Returns the drawing rectangle of the text field’s left overlay view.\n- **rightViewRect(forBounds:)**: Returns the drawing location of the text field’s right overlay view.\n\n## Replacing the system input views\n\n- **inputView**: The custom input view to display when the text field becomes the first responder.\n- **inputAccessoryView**: The custom accessory view to display when the text field becomes the first responder.\n\n## Supporting state restoration\n\n- **interactionState**\n\n## Structures\n\n- **UITextField.TextDidBeginEditingMessage**\n- **UITextField.TextDidChangeMessage**\n- **UITextField.TextDidEndEditingMessage**\n\n## Text views\n\n- **UILabel**: A view that displays one or more lines of informational text.\n- **UITextView**: A scrollable, multiline text region.\n- **Drag and drop customization**: Extend the standard drag and drop support for text views to include custom types of content.\n\n## Inherits From\n\n- UIControl\n\n## Inherited By\n\n- UISearchTextField\n\n## Conforms To\n\n- CALayerDelegate\n- CVarArg\n- Copyable\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCoding\n- NSObjectProtocol\n- NSTouchBarProvider\n- Sendable\n- SendableMetatype\n- UIAccessibilityIdentification\n- UIActivityItemsConfigurationProviding\n- UIAppearance\n- UIAppearanceContainer\n- UIContentSizeCategoryAdjusting\n- UIContextMenuInteractionDelegate\n- UICoordinateSpace\n- UIDynamicItem\n- UIFocusEnvironment\n- UIFocusItem\n- UIFocusItemContainer\n- UIKeyInput\n- UILargeContentViewerItem\n- UILetterformAwareAdjusting\n- UIPasteConfigurationSupporting\n- UIPopoverPresentationControllerSourceItem\n- UIResponderStandardEditActions\n- UITextDraggable\n- UITextDroppable\n- UITextInput\n- UITextInputTraits\n- UITextPasteConfigurationSupporting\n- UITraitChangeObservable\n- UITraitEnvironment\n- UIUserActivityRestoring\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The text field’s delegate.",
+          "name" : "delegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/delegate"
+        },
+        {
+          "description" : "A set of optional methods to manage editing and validating text in a text field object.",
+          "name" : "UITextFieldDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextFieldDelegate"
+        }
+      ],
+      "title" : "Validating and handling edits"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The text that the text field displays.",
+          "name" : "text",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/text"
+        },
+        {
+          "description" : "The styled text that the text field displays.",
+          "name" : "attributedText",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/attributedText"
+        },
+        {
+          "description" : "The string that displays when there is no other text in the text field.",
+          "name" : "placeholder",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/placeholder"
+        },
+        {
+          "description" : "The styled string that displays when there is no other text in the text field.",
+          "name" : "attributedPlaceholder",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/attributedPlaceholder"
+        },
+        {
+          "description" : "The default attributes to apply to the text.",
+          "name" : "defaultTextAttributes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/defaultTextAttributes"
+        },
+        {
+          "description" : "The font of the text.",
+          "name" : "font",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/font"
+        },
+        {
+          "description" : "The color of the text.",
+          "name" : "textColor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/textColor"
+        },
+        {
+          "description" : "The technique for aligning the text.",
+          "name" : "textAlignment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/textAlignment"
+        },
+        {
+          "description" : "The attributes to apply to new text that the user enters.",
+          "name" : "typingAttributes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/typingAttributes"
+        },
+        {
+          "description" : "The type of border around the text field.",
+          "name" : "UITextField.BorderStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/BorderStyle-swift.enum"
+        }
+      ],
+      "title" : "Configuring the text attributes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether to reduce the font size to fit the text string into the text field’s bounding rectangle.",
+          "name" : "adjustsFontSizeToFitWidth",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/adjustsFontSizeToFitWidth"
+        },
+        {
+          "description" : "The size of the smallest permissible font when drawing the text field’s text.",
+          "name" : "minimumFontSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/minimumFontSize"
+        },
+        {
+          "description" : "The typographic bounds-sizing behavior that handles text with fonts that contain oversize characters.",
+          "name" : "sizingRule",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UILetterformAwareAdjusting\/sizingRule"
+        }
+      ],
+      "title" : "Sizing the text field’s text"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the text field is currently in edit mode.",
+          "name" : "isEditing",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/isEditing"
+        },
+        {
+          "description" : "A Boolean value that determines whether the text field removes old text when editing begins.",
+          "name" : "clearsOnBeginEditing",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/clearsOnBeginEditing"
+        },
+        {
+          "description" : "A Boolean value that determines whether inserting text replaces the previous contents.",
+          "name" : "clearsOnInsertion",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/clearsOnInsertion"
+        },
+        {
+          "description" : "A Boolean value that determines whether the user can edit the attributes of the text in the text field.",
+          "name" : "allowsEditingTextAttributes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/allowsEditingTextAttributes"
+        },
+        {
+          "description" : "Constants that indicate the reason for ending editing in a text field.",
+          "name" : "UITextField.DidEndEditingReason",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/DidEndEditingReason"
+        },
+        {
+          "description" : "A key that indicates the reason for ending editing in a text field.",
+          "name" : "didEndEditingReasonUserInfoKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/didEndEditingReasonUserInfoKey"
+        },
+        {
+          "description" : "A notification that alerts observers when an editing session begins in a text field.",
+          "name" : "textDidBeginEditingNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/textDidBeginEditingNotification"
+        },
+        {
+          "description" : "A notification that alerts observers when the text in a text field changes.",
+          "name" : "textDidChangeNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/textDidChangeNotification"
+        },
+        {
+          "description" : "A notification that alerts observers when the editing session ends for a text field.",
+          "name" : "textDidEndEditingNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/textDidEndEditingNotification"
+        }
+      ],
+      "title" : "Managing the editing behavior"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The border style for the text field.",
+          "name" : "borderStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/borderStyle-swift.property"
+        },
+        {
+          "description" : "The image that represents the background appearance of the text field when it is in an enabled state.",
+          "name" : "background",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/background"
+        },
+        {
+          "description" : "The image that represents the background appearance of the text field when it is in a disabled state.",
+          "name" : "disabledBackground",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/disabledBackground"
+        }
+      ],
+      "title" : "Setting the view’s background appearance"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A mode that controls when the standard Clear button appears in the text field.",
+          "name" : "clearButtonMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/clearButtonMode"
+        },
+        {
+          "description" : "The overlay view that displays on the left (or leading) side of the text field.",
+          "name" : "leftView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/leftView"
+        },
+        {
+          "description" : "A mode that controls when the left overlay view appears in the text field.",
+          "name" : "leftViewMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/leftViewMode"
+        },
+        {
+          "description" : "The overlay view that displays on the right (or trailing) side of the text field.",
+          "name" : "rightView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/rightView"
+        },
+        {
+          "description" : "A mode that controls when the right overlay view appears in the text field.",
+          "name" : "rightViewMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/rightViewMode"
+        },
+        {
+          "description" : "Constants that define when overlay views appear in a text field.",
+          "name" : "UITextField.ViewMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/ViewMode"
+        }
+      ],
+      "title" : "Managing overlay views"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the drawing rectangle for the text field’s text.",
+          "name" : "textRect(forBounds:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/textRect(forBounds:)"
+        },
+        {
+          "description" : "Draws the text field’s text in the specified rectangle.",
+          "name" : "drawText(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/drawText(in:)"
+        },
+        {
+          "description" : "Returns the drawing rectangle for the text field’s placeholder text.",
+          "name" : "placeholderRect(forBounds:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/placeholderRect(forBounds:)"
+        },
+        {
+          "description" : "Draws the text field’s placeholder text in the specified rectangle.",
+          "name" : "drawPlaceholder(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/drawPlaceholder(in:)"
+        },
+        {
+          "description" : "Returns the text field’s border rectangle.",
+          "name" : "borderRect(forBounds:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/borderRect(forBounds:)"
+        },
+        {
+          "description" : "Returns the rectangle for displaying editable text.",
+          "name" : "editingRect(forBounds:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/editingRect(forBounds:)"
+        },
+        {
+          "description" : "Returns the drawing rectangle for the built-in Clear button.",
+          "name" : "clearButtonRect(forBounds:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/clearButtonRect(forBounds:)"
+        },
+        {
+          "description" : "Returns the drawing rectangle of the text field’s left overlay view.",
+          "name" : "leftViewRect(forBounds:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/leftViewRect(forBounds:)"
+        },
+        {
+          "description" : "Returns the drawing location of the text field’s right overlay view.",
+          "name" : "rightViewRect(forBounds:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/rightViewRect(forBounds:)"
+        }
+      ],
+      "title" : "Drawing and positioning overrides"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The custom input view to display when the text field becomes the first responder.",
+          "name" : "inputView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/inputView"
+        },
+        {
+          "description" : "The custom accessory view to display when the text field becomes the first responder.",
+          "name" : "inputAccessoryView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/inputAccessoryView"
+        }
+      ],
+      "title" : "Replacing the system input views"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "interactionState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/interactionState"
+        }
+      ],
+      "title" : "Supporting state restoration"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "UITextField.TextDidBeginEditingMessage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/TextDidBeginEditingMessage"
+        },
+        {
+          "description" : "",
+          "name" : "UITextField.TextDidChangeMessage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/TextDidChangeMessage"
+        },
+        {
+          "description" : "",
+          "name" : "UITextField.TextDidEndEditingMessage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField\/TextDidEndEditingMessage"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A view that displays one or more lines of informational text.",
+          "name" : "UILabel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UILabel"
+        },
+        {
+          "description" : "A scrollable, multiline text region.",
+          "name" : "UITextView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextView"
+        },
+        {
+          "description" : "Extend the standard drag and drop support for text views to include custom types of content.",
+          "name" : "Drag and drop customization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/drag-and-drop-customization"
+        }
+      ],
+      "title" : "Text views"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "UIControl"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "UITextField",
+  "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITextField"
+}

@@ -1,0 +1,30 @@
+{
+  "abstract" : "Configures a drag session.",
+  "codeExamples" : [
+    {
+      "code" : "        @State private var photos: [Photo] = []\n        @State private var selectedPhotos: [Photo.ID] = []\n\n        var body: some View {\n            ScrollView {\n                LazyVGrid(columns: gridColumns) {\n                    ForEach(photos) { photo in\n                        PhotoView(photo: photo)\n                            .draggable(containerItemID: photo.id)\n                    }\n                }\n            }\n            .dragContainer(for: Photo.self) { draggedIDs in\n                photos(ids: draggedIDs)\n            }\n            .dragContainerSelection(selectedPhotos)\n            .dragConfiguration(DragConfiguration(allowMove: false, allowDelete: true))\n            .onDragSessionUpdated { session in\n                if session.phase == .ended(.delete) {\n                    let ids = session.draggedItemIDs(for: Photo.ID.self)\n                    removeAndTrash(ids)\n                }\n            }\n            .dragPreviewsFormation(.stack)\n        }\n\n        func removeAndTrash(_ ids: [Photo.ID]) {\n            ids.forEach { id\n                if let idx = photos.firstIndex(where: { $0.id == id }) {\n                    let photo = photos[idx]\n                    photos.remove(at: idx)\n                    try? FileManager.default.trashItem(\n                        at: photo.fileURL, resultingItemURL: nil\n                    )\n                }\n            }\n        }\n    }",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "140ab89020a04a43beac8592ad391600d7165725fdf54bab324054a68ffba221",
+  "crawledAt" : "2025-12-02T17:23:34Z",
+  "declaration" : {
+    "code" : "nonisolated func dragConfiguration(_ configuration: DragConfiguration) -> some View\n",
+    "language" : "swift"
+  },
+  "id" : "21079147-04B8-418B-83CC-86905F004205",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Return Value\n\nA view that configures a drag session in a way, described by the `configuration` parameter.\n\n## Discussion\n\nBelow is a simplified example of a view that supports copy, move and delete operations for drag.\n\n### Drag to delete into trash bin\n\nIf a view wants to support drag-to-delete into the trash bin or another location that has similar semantics, it should specify the support for this operation in a drag configuration:\n\nNote, that any drag supports copy operation by default. In the snippet above, the view supports both copy and delete operations.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/dragConfiguration(_:)\ncrawled: 2025-12-02T17:23:34Z\n---\n\n# dragConfiguration(_:)\n\n**Instance Method**\n\nConfigures a drag session.\n\n## Declaration\n\n```swift\nnonisolated func dragConfiguration(_ configuration: DragConfiguration) -> some View\n\n```\n\n## Parameters\n\n- **configuration**: A value that describes the configuration of a drag session.\n\n## Return Value\n\nA view that configures a drag session in a way, described by the `configuration` parameter.\n\n## Discussion\n\nBelow is a simplified example of a view that supports copy, move and delete operations for drag.\n\n### Drag to delete into trash bin\n\nIf a view wants to support drag-to-delete into the trash bin or another location that has similar semantics, it should specify the support for this operation in a drag configuration:\n\n```swift\n        @State private var photos: [Photo] = []\n        @State private var selectedPhotos: [Photo.ID] = []\n\n        var body: some View {\n            ScrollView {\n                LazyVGrid(columns: gridColumns) {\n                    ForEach(photos) { photo in\n                        PhotoView(photo: photo)\n                            .draggable(containerItemID: photo.id)\n                    }\n                }\n            }\n            .dragContainer(for: Photo.self) { draggedIDs in\n                photos(ids: draggedIDs)\n            }\n            .dragContainerSelection(selectedPhotos)\n            .dragConfiguration(DragConfiguration(allowMove: false, allowDelete: true))\n            .onDragSessionUpdated { session in\n                if session.phase == .ended(.delete) {\n                    let ids = session.draggedItemIDs(for: Photo.ID.self)\n                    removeAndTrash(ids)\n                }\n            }\n            .dragPreviewsFormation(.stack)\n        }\n\n        func removeAndTrash(_ ids: [Photo.ID]) {\n            ids.forEach { id\n                if let idx = photos.firstIndex(where: { $0.id == id }) {\n                    let photo = photos[idx]\n                    photos.remove(at: idx)\n                    try? FileManager.default.trashItem(\n                        at: photo.fileURL, resultingItemURL: nil\n                    )\n                }\n            }\n        }\n    }\n```\n\nNote, that any drag supports copy operation by default. In the snippet above, the view supports both copy and delete operations.\n\n",
+  "sections" : [
+
+  ],
+  "source" : "appleJSON",
+  "title" : "dragConfiguration(_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/dragConfiguration(_:)"
+}

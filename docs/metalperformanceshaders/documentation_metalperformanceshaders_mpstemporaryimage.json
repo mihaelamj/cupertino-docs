@@ -1,0 +1,148 @@
+{
+  "abstract" : "A texture for use in convolutional neural networks that stores transient data to be used and discarded promptly.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "e2720c953283b14e439b9cb73faab2bbbdac691504a933a888ddfb76a77b8308",
+  "crawledAt" : "2025-12-02T16:13:20Z",
+  "declaration" : {
+    "code" : "class MPSTemporaryImage",
+    "language" : "swift"
+  },
+  "id" : "11F90BD4-1CA3-4FC0-AA99-E449D827403E",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Metal Performance Shaders",
+  "overview" : "## Overview\n\n[doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects can provide a profound reduction in the aggregate texture memory and associated CPU-side allocation cost in your app. Metal Performance Shaders achieves this by automatically identifying [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects that do not overlap in time over the course of a [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] object’s lifetime and can therefore reuse the same memory. [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects leverage an internal cache of preallocated reusable memory to hold pixel data to avoid typical memory allocation performance penalties common to ordinary [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] and [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLTexture] objects.\n\nTo avoid data corruption due to aliasing, [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects impose some important restrictions:\n\nSince temporary images can only be used with a single command buffer, and can not be used off the GPU, they generally should not be kept around past the completion of their associated command buffer. The lifetime of a temporary image is typically expected to be extremely short, perhaps spanning only a few lines of code.\n\nTo keep the lifetime of the underlying texture allocation as short as possible, the texture is not allocated until the first time the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] object is used by an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNKernel] object or until the first time the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage\/texture] property is read. The [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/readCount] property serves to limit the lifetime of the texture on deallocation.\n\nYou may use the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage\/texture] property with the `encode` methods of an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSUnaryImageKernel] subclass, if `featureChannels<=4` and the texture conforms to the requirements of the given kernel. In such cases, the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/readCount] property is not modified, since the enclosing object is not available. There is no locking mechanism provided to prevent a [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLTexture] object returned from the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage\/texture] property from becoming invalid when the value of the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/readCount] property reaches 0.\n\n[doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects can otherwise be used wherever [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] objects are used.\n\n### The MPSTemporaryImage Class\n\nThe [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] class extends the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] class to provide advanced caching of unused memory, in order to increase performance and reduce memory footprint. [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects are intended as fast GPU-only storage for intermediate image data needed only transiently within a single [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] object. They accelerate the common case of image data which is created only to be consumed and destroyed immediately by the next operation(s) encoded in a command buffer. [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects provide a convenient and simple way to save memory by automatically aliasing other [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects in the same command buffer. Because they alias (i.e., share texel storage with) other textures in the same command buffer, the valid lifetime of the data in an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] object is extremely short, limited to a portion of a the command buffer itself.\n\nYou can not read or write data to an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] using the CPU, or use the data in other [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] objects. Use regular [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] objects for more persistent storage.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\ncrawled: 2025-12-02T16:13:20Z\n---\n\n# MPSTemporaryImage\n\n**Class**\n\nA texture for use in convolutional neural networks that stores transient data to be used and discarded promptly.\n\n## Declaration\n\n```swift\nclass MPSTemporaryImage\n```\n\n## Overview\n\n[doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects can provide a profound reduction in the aggregate texture memory and associated CPU-side allocation cost in your app. Metal Performance Shaders achieves this by automatically identifying [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects that do not overlap in time over the course of a [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] object’s lifetime and can therefore reuse the same memory. [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects leverage an internal cache of preallocated reusable memory to hold pixel data to avoid typical memory allocation performance penalties common to ordinary [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] and [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLTexture] objects.\n\nTo avoid data corruption due to aliasing, [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects impose some important restrictions:\n\n- The underlying texture storage mode is [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLStorageMode\/private]. You cannot, for example, use the [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLTexture\/getBytes(_:bytesPerRow:from:mipmapLevel:)] or [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLTexture\/replace(region:mipmapLevel:withBytes:bytesPerRow:)] methods with them. Temporary images are strictly read and written by the GPU.\n- The temporary image may be used only on a single [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] object. This limits the chronology to a single linear time stream.\n- The [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/readCount] property must be managed correctly.\n- Temporary images must also adhere to the general pixel format restrictions for [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] objects.\n\nSince temporary images can only be used with a single command buffer, and can not be used off the GPU, they generally should not be kept around past the completion of their associated command buffer. The lifetime of a temporary image is typically expected to be extremely short, perhaps spanning only a few lines of code.\n\nTo keep the lifetime of the underlying texture allocation as short as possible, the texture is not allocated until the first time the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] object is used by an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNKernel] object or until the first time the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage\/texture] property is read. The [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/readCount] property serves to limit the lifetime of the texture on deallocation.\n\nYou may use the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage\/texture] property with the `encode` methods of an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSUnaryImageKernel] subclass, if `featureChannels<=4` and the texture conforms to the requirements of the given kernel. In such cases, the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/readCount] property is not modified, since the enclosing object is not available. There is no locking mechanism provided to prevent a [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLTexture] object returned from the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage\/texture] property from becoming invalid when the value of the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/readCount] property reaches 0.\n\n[doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects can otherwise be used wherever [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] objects are used.\n\n### The MPSTemporaryImage Class\n\nThe [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] class extends the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] class to provide advanced caching of unused memory, in order to increase performance and reduce memory footprint. [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects are intended as fast GPU-only storage for intermediate image data needed only transiently within a single [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] object. They accelerate the common case of image data which is created only to be consumed and destroyed immediately by the next operation(s) encoded in a command buffer. [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects provide a convenient and simple way to save memory by automatically aliasing other [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] objects in the same command buffer. Because they alias (i.e., share texel storage with) other textures in the same command buffer, the valid lifetime of the data in an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] object is extremely short, limited to a portion of a the command buffer itself.\n\nYou can not read or write data to an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage] using the CPU, or use the data in other [doc:\/\/com.apple.documentation\/documentation\/Metal\/MTLCommandBuffer] objects. Use regular [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage] objects for more persistent storage.\n\n## Initializers\n\n- **init(commandBuffer:imageDescriptor:)**: Initializes a temporary image for use on a command buffer.\n- **MPSImageDescriptor**: A description of the attributes used to create an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage].\n- **init(commandBuffer:textureDescriptor:)**: Low-level interface for creating a temporary image using a texture descriptor.\n- **MTLTextureDescriptor**: An instance that you use to configure new Metal texture instances.\n- **init(commandBuffer:textureDescriptor:featureChannels:)**\n\n## Methods\n\n- **prefetchStorage(with:imageDescriptorList:)**: A method that helps the framework decide which allocations to make ahead of time.\n\n## Methods to Get an Image Allocator\n\n- **defaultAllocator()**\n- **MPSImageAllocator**\n\n## Properties\n\n- **readCount**: The number of times a temporary image may be read by a CNN kernel before its contents become undefined.\n\n## Neural Networks\n\n- **Training a Neural Network with Metal Performance Shaders**: Use an MPS neural network graph to train a simple neural network digit classifier.\n- **MPSImage**: A texture that may have more than four channels for use in convolutional neural networks.\n- **Objects that Simplify the Creation of Neural Networks**: Simplify the creation of neural networks using networks of filter, image, and state nodes.\n- **Convolutional Neural Network Kernels**: Build neural networks with layers.\n- **Recurrent Neural Networks**: Create recurrent neural networks.\n\n## Inherits From\n\n- MPSImage\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a temporary image for use on a command buffer.",
+          "name" : "init(commandBuffer:imageDescriptor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/init(commandBuffer:imageDescriptor:)"
+        },
+        {
+          "description" : "A description of the attributes used to create an [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSImage].",
+          "name" : "MPSImageDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSImageDescriptor"
+        },
+        {
+          "description" : "Low-level interface for creating a temporary image using a texture descriptor.",
+          "name" : "init(commandBuffer:textureDescriptor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/init(commandBuffer:textureDescriptor:)"
+        },
+        {
+          "description" : "An instance that you use to configure new Metal texture instances.",
+          "name" : "MTLTextureDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLTextureDescriptor"
+        },
+        {
+          "description" : "",
+          "name" : "init(commandBuffer:textureDescriptor:featureChannels:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/init(commandBuffer:textureDescriptor:featureChannels:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A method that helps the framework decide which allocations to make ahead of time.",
+          "name" : "prefetchStorage(with:imageDescriptorList:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/prefetchStorage(with:imageDescriptorList:)"
+        }
+      ],
+      "title" : "Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "defaultAllocator()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/defaultAllocator()"
+        },
+        {
+          "description" : "",
+          "name" : "MPSImageAllocator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSImageAllocator"
+        }
+      ],
+      "title" : "Methods to Get an Image Allocator"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The number of times a temporary image may be read by a CNN kernel before its contents become undefined.",
+          "name" : "readCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage\/readCount"
+        }
+      ],
+      "title" : "Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Use an MPS neural network graph to train a simple neural network digit classifier.",
+          "name" : "Training a Neural Network with Metal Performance Shaders",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/training-a-neural-network-with-metal-performance-shaders"
+        },
+        {
+          "description" : "A texture that may have more than four channels for use in convolutional neural networks.",
+          "name" : "MPSImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSImage"
+        },
+        {
+          "description" : "Simplify the creation of neural networks using networks of filter, image, and state nodes.",
+          "name" : "Objects that Simplify the Creation of Neural Networks",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/objects-that-simplify-the-creation-of-neural-networks"
+        },
+        {
+          "description" : "Build neural networks with layers.",
+          "name" : "Convolutional Neural Network Kernels",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/convolutional-neural-network-kernels"
+        },
+        {
+          "description" : "Create recurrent neural networks.",
+          "name" : "Recurrent Neural Networks",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/recurrent-neural-networks"
+        }
+      ],
+      "title" : "Neural Networks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "MPSImage"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MPSTemporaryImage",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSTemporaryImage"
+}

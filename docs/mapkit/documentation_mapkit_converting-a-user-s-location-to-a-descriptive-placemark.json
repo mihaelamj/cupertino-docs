@@ -1,0 +1,68 @@
+{
+  "abstract" : "Transform the user’s location that displays on a map into an informative textual description by reverse geocoding.",
+  "codeExamples" : [
+    {
+      "code" : "func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {\n        guard let newLocation = userLocation.location else { return }\n        \n        let currentTime = Date()\n        let lastLocation = self.currentLocation\n        self.currentLocation = newLocation\n        \n        \/\/ Only get new placemark information if you don't have a previous location,\n        \/\/ if the user has moved a meaningful distance from the previous location, such as 1000 meters,\n        \/\/ and if it's been 60 seconds since the last geocode request.\n        if let lastLocation = lastLocation,\n            newLocation.distance(from: lastLocation) <= 1000,\n            let lastTime = lastGeocodeTime,\n            currentTime.timeIntervalSince(lastTime) < 60 {\n            return\n        }\n        \n        \/\/ Convert the user's location to a user-friendly place name by reverse geocoding the location.\n        lastGeocodeTime = currentTime\n        geocoder.reverseGeocodeLocation(newLocation) { (placemarks, error) in\n            guard error == nil else {\n                self.handleError(error)\n                return\n            }\n            \n            \/\/ Most geocoding requests contain only one result.\n            if let firstPlacemark = placemarks?.first {\n                self.mostRecentPlacemark = firstPlacemark\n                self.currentCity = firstPlacemark.locality\n            }\n        }\n    }",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "573d1106000ba858418730eae26c9776f9bc35182a2e51af2747ffd6483f661c",
+  "crawledAt" : "2025-12-01T17:52:34Z",
+  "id" : "CB505600-6DDC-4A4B-A033-C2AB7920AA1E",
+  "kind" : "article",
+  "module" : "MapKit",
+  "overview" : "## Overview\n\nYou can show a user’s location on a map in order to orient them to elements of your app that use map content. For instance, a user’s current location can be a point of reference for retrieving search results or calculating directions. Additionally, you can display location information outside of the map, such as a search field pre-filled with the user’s current city or street address. To provide this information in your app, configure your map view to display the user’s location, and then translate the location to informative, user-friendly data.\n\n### Display the user location annotation\n\nTo provide user-friendly place information, configure your map view to display the user’s current location by enabling [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKMapView\/showsUserLocation]. After enabling this property, the map delegate begins receiving updates to the user’s location, represented with a [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKUserLocation] object, through [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKMapViewDelegate\/mapView(_:didUpdate:)].\n\n### Geocode the user location annotation\n\n[doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLPlacemark] objects represent user place names, and include properties for street name, city name, country or region name, and many other location identifiers. When [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKMapViewDelegate\/mapView(_:didUpdate:)] receives updates on the user’s location, convert the [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKUserLocation] object to a [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLPlacemark] by reverse geocoding the [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKUserLocation\/location] property with a [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLGeocoder]. Readable descriptions of the user’s location are available as properties on the placemark, such as the city information stored in the [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLPlacemark\/locality] property.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MapKit\/converting-a-user-s-location-to-a-descriptive-placemark\ncrawled: 2025-12-01T17:52:34Z\n---\n\n# Converting a user’s location to a descriptive placemark\n\n**Article**\n\nTransform the user’s location that displays on a map into an informative textual description by reverse geocoding.\n\n## Overview\n\nYou can show a user’s location on a map in order to orient them to elements of your app that use map content. For instance, a user’s current location can be a point of reference for retrieving search results or calculating directions. Additionally, you can display location information outside of the map, such as a search field pre-filled with the user’s current city or street address. To provide this information in your app, configure your map view to display the user’s location, and then translate the location to informative, user-friendly data.\n\n### Display the user location annotation\n\nTo provide user-friendly place information, configure your map view to display the user’s current location by enabling [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKMapView\/showsUserLocation]. After enabling this property, the map delegate begins receiving updates to the user’s location, represented with a [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKUserLocation] object, through [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKMapViewDelegate\/mapView(_:didUpdate:)].\n\n### Geocode the user location annotation\n\n[doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLPlacemark] objects represent user place names, and include properties for street name, city name, country or region name, and many other location identifiers. When [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKMapViewDelegate\/mapView(_:didUpdate:)] receives updates on the user’s location, convert the [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKUserLocation] object to a [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLPlacemark] by reverse geocoding the [doc:\/\/com.apple.mapkit\/documentation\/MapKit\/MKUserLocation\/location] property with a [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLGeocoder]. Readable descriptions of the user’s location are available as properties on the placemark, such as the city information stored in the [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLPlacemark\/locality] property.\n\n\n\n```swift\nfunc mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {\n        guard let newLocation = userLocation.location else { return }\n        \n        let currentTime = Date()\n        let lastLocation = self.currentLocation\n        self.currentLocation = newLocation\n        \n        \/\/ Only get new placemark information if you don't have a previous location,\n        \/\/ if the user has moved a meaningful distance from the previous location, such as 1000 meters,\n        \/\/ and if it's been 60 seconds since the last geocode request.\n        if let lastLocation = lastLocation,\n            newLocation.distance(from: lastLocation) <= 1000,\n            let lastTime = lastGeocodeTime,\n            currentTime.timeIntervalSince(lastTime) < 60 {\n            return\n        }\n        \n        \/\/ Convert the user's location to a user-friendly place name by reverse geocoding the location.\n        lastGeocodeTime = currentTime\n        geocoder.reverseGeocodeLocation(newLocation) { (placemarks, error) in\n            guard error == nil else {\n                self.handleError(error)\n                return\n            }\n            \n            \/\/ Most geocoding requests contain only one result.\n            if let firstPlacemark = placemarks?.first {\n                self.mostRecentPlacemark = firstPlacemark\n                self.currentCity = firstPlacemark.locality\n            }\n        }\n    }\n```\n\n## Related Documentation\n\n- **Converting between coordinates and user-friendly place names**: Convert between a latitude and longitude pair and a more user-friendly description of that location.\n\n## Displaying the user’s location\n\n- **showsUserLocation**: A Boolean value that indicates whether the map tries to display the user’s location.\n- **isUserLocationVisible**: A Boolean value that indicates whether the user’s location is visible in the map view.\n- **userLocation**: The annotation object that represents the user’s location.\n- **userTrackingMode**: The mode to use for tracking the user’s location.\n- **setUserTrackingMode(_:animated:)**: Sets the mode to use for tracking the user’s location, with optional animation.\n- **MKUserTrackingMode**: The mode to use for tracking the user’s location on the map.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Convert between a latitude and longitude pair and a more user-friendly description of that location.",
+          "name" : "Converting between coordinates and user-friendly place names",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreLocation\/converting-between-coordinates-and-user-friendly-place-names"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the map tries to display the user’s location.",
+          "name" : "showsUserLocation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MapKit\/MKMapView\/showsUserLocation"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the user’s location is visible in the map view.",
+          "name" : "isUserLocationVisible",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MapKit\/MKMapView\/isUserLocationVisible"
+        },
+        {
+          "description" : "The annotation object that represents the user’s location.",
+          "name" : "userLocation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MapKit\/MKMapView\/userLocation"
+        },
+        {
+          "description" : "The mode to use for tracking the user’s location.",
+          "name" : "userTrackingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MapKit\/MKMapView\/userTrackingMode"
+        },
+        {
+          "description" : "Sets the mode to use for tracking the user’s location, with optional animation.",
+          "name" : "setUserTrackingMode(_:animated:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MapKit\/MKMapView\/setUserTrackingMode(_:animated:)"
+        },
+        {
+          "description" : "The mode to use for tracking the user’s location on the map.",
+          "name" : "MKUserTrackingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MapKit\/MKUserTrackingMode"
+        }
+      ],
+      "title" : "Displaying the user’s location"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Converting a user’s location to a descriptive placemark",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MapKit\/converting-a-user-s-location-to-a-descriptive-placemark"
+}

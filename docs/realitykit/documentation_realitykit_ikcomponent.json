@@ -1,0 +1,160 @@
+{
+  "abstract" : "A component that allows you to procedurally animate a skeletal model using a full body inverse kinematics solver.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Load a model containing a skeletal mesh.\nlet armEntity = try await Entity(named: \"Arm\")\n\n\/\/ Fetch the skeleton from the model's MeshResource.\nguard let meshResource = entity.components[ModelComponent.self]?.mesh else {\n    fatalError(\"No mesh found\")\n}\n\nlet modelSkeleton = meshResource.contents.skeletons[0]\n\n\/\/ Start with the default rig instance for the skeleton without any constraints.\nvar rig = try IKRig(for: modelSkeleton)\n\n\/\/ This is a good place to change default rig level settings. For example, reducing\n\/\/ the maximum solver iterations reduces the performance cost of the solve but can\n\/\/ increase error in reaching the demands.\nrig.maxIterations = 30\n\n\/\/ Refine joint settings.\nrig.joints[\"root\/arm_joint\/forearm_joint\"]?.fkWeightPerAxis = .zero\n\n\/\/ Define the joint constraints for the rig.\nrig.constraints = [\n    \/\/ A point constraint is a standard term for a position demand. \n    \/\/ See ``IKRig\/Constraint\/point(named:on:positionWeight:)``\n    .point(named: \"base_constraint\", on: \"root\/arm_joint\", positionWeight: [5.0, 5.0, 5.0]),\n    \/\/ A parent constraint is a standard term for both position and orientation demands as\n    \/\/ a single transformation. See ``IKRig\/Constraint\/parent(named:on:positionWeight:orientationWeight:)``\n    .parent(named: \"end_constraint\", on: \"root\/arm_joint\/forearm_joint\/hand_joint\",\n            positionWeight: [4.0, 4.0, 4.0]),\n]\n\n\/\/ Make a resource containing the rig.\nlet resource = try IKResource(rig: rig)\n\n\/\/ Add the component to the entity using the new resource.\narmEntity.components.set(IKComponent(resource: resource))",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Get the IK component value with the current constraint targets.\nvar component = armEntity.components[IKComponent.self]!\n\n\/\/ Compute new demands. In this case a position animated along a circle.\nlet x = 0.1 * sin(elapsedTime)\nlet y = 0.1 * cos(elapsedTime)\n\n\/\/ Set the new demands and update other relevant settings.\ncomponent.solvers[0].constraints[\"end_constraint\"]!.target.translation = [x, y, 0]\ncomponent.solvers[0].constraints[\"end_constraint\"]!.animationOverrideWeight.position = 1.0\n\n\/\/ Set the updated component value for the updates to be applied to the solver instance.\narmEntity.components.set(component)",
+      "language" : "swift"
+    },
+    {
+      "code" : "armEntity.components[IKComponent.self]!.solvers[0].constraints[\"end_constraint\"]!\n    .animationOverrideWeight.position = 1.0",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Component"
+  ],
+  "contentHash" : "01818c303aa640328eff48563822df81df2340d626a0d80e9d4aef0e77208671",
+  "crawledAt" : "2025-12-02T20:10:17Z",
+  "declaration" : {
+    "code" : "struct IKComponent",
+    "language" : "swift"
+  },
+  "id" : "4AC9084A-228A-43CE-A478-DC58E609353F",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "RealityKit",
+  "overview" : "## Overview\n\nVideo games and live productions use inverse kinematics (IK) solvers to procedurally adapt the animation of virtual characters to the environment and the person using the experience. Full body IK solvers produce more life like motion due to each demand affecting the whole body.\n\nUse `IKComponent` to create and control a full body iterative IK solver for your character. The solver procedurally adjusts the pose of your character to the demands you set. This component also maintains the state of the entity’s IK solvers within the overall skeletal animation system.\n\n### Create a solver\n\nDefine an inverse kinematics rig for the skeleton of the model you want to animate and generate an immutable resource containing it. Create a new component value with the resource.\n\n### Update settings and demands\n\nThe initialized component provides update objects matching the structure of the rig. The update objects expose limited set of parameters and the ability to set the constraint demands that can be adjusted each frame.\n\nThe forward kinematics (FK) demand is not set in this component. The solver uses the animation pose stored in the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/SkeletalPosesComponent].\n\nUse a chained call in cases where only a single setting or demand is updated.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\ncrawled: 2025-12-02T20:10:17Z\n---\n\n# IKComponent\n\n**Structure**\n\nA component that allows you to procedurally animate a skeletal model using a full body inverse kinematics solver.\n\n## Declaration\n\n```swift\nstruct IKComponent\n```\n\n## Overview\n\nVideo games and live productions use inverse kinematics (IK) solvers to procedurally adapt the animation of virtual characters to the environment and the person using the experience. Full body IK solvers produce more life like motion due to each demand affecting the whole body.\n\nUse `IKComponent` to create and control a full body iterative IK solver for your character. The solver procedurally adjusts the pose of your character to the demands you set. This component also maintains the state of the entity’s IK solvers within the overall skeletal animation system.\n\n### Create a solver\n\nDefine an inverse kinematics rig for the skeleton of the model you want to animate and generate an immutable resource containing it. Create a new component value with the resource.\n\n```swift\n\/\/ Load a model containing a skeletal mesh.\nlet armEntity = try await Entity(named: \"Arm\")\n\n\/\/ Fetch the skeleton from the model's MeshResource.\nguard let meshResource = entity.components[ModelComponent.self]?.mesh else {\n    fatalError(\"No mesh found\")\n}\n\nlet modelSkeleton = meshResource.contents.skeletons[0]\n\n\/\/ Start with the default rig instance for the skeleton without any constraints.\nvar rig = try IKRig(for: modelSkeleton)\n\n\/\/ This is a good place to change default rig level settings. For example, reducing\n\/\/ the maximum solver iterations reduces the performance cost of the solve but can\n\/\/ increase error in reaching the demands.\nrig.maxIterations = 30\n\n\/\/ Refine joint settings.\nrig.joints[\"root\/arm_joint\/forearm_joint\"]?.fkWeightPerAxis = .zero\n\n\/\/ Define the joint constraints for the rig.\nrig.constraints = [\n    \/\/ A point constraint is a standard term for a position demand. \n    \/\/ See ``IKRig\/Constraint\/point(named:on:positionWeight:)``\n    .point(named: \"base_constraint\", on: \"root\/arm_joint\", positionWeight: [5.0, 5.0, 5.0]),\n    \/\/ A parent constraint is a standard term for both position and orientation demands as\n    \/\/ a single transformation. See ``IKRig\/Constraint\/parent(named:on:positionWeight:orientationWeight:)``\n    .parent(named: \"end_constraint\", on: \"root\/arm_joint\/forearm_joint\/hand_joint\",\n            positionWeight: [4.0, 4.0, 4.0]),\n]\n\n\/\/ Make a resource containing the rig.\nlet resource = try IKResource(rig: rig)\n\n\/\/ Add the component to the entity using the new resource.\narmEntity.components.set(IKComponent(resource: resource))\n```\n\n### Update settings and demands\n\nThe initialized component provides update objects matching the structure of the rig. The update objects expose limited set of parameters and the ability to set the constraint demands that can be adjusted each frame.\n\nThe forward kinematics (FK) demand is not set in this component. The solver uses the animation pose stored in the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/SkeletalPosesComponent].\n\n```swift\n\/\/ Get the IK component value with the current constraint targets.\nvar component = armEntity.components[IKComponent.self]!\n\n\/\/ Compute new demands. In this case a position animated along a circle.\nlet x = 0.1 * sin(elapsedTime)\nlet y = 0.1 * cos(elapsedTime)\n\n\/\/ Set the new demands and update other relevant settings.\ncomponent.solvers[0].constraints[\"end_constraint\"]!.target.translation = [x, y, 0]\ncomponent.solvers[0].constraints[\"end_constraint\"]!.animationOverrideWeight.position = 1.0\n\n\/\/ Set the updated component value for the updates to be applied to the solver instance.\narmEntity.components.set(component)\n```\n\nUse a chained call in cases where only a single setting or demand is updated.\n\n```swift\narmEntity.components[IKComponent.self]!.solvers[0].constraints[\"end_constraint\"]!\n    .animationOverrideWeight.position = 1.0\n```\n\n\n\n## Classes\n\n- **IKComponent.Constraint**: The update stage object that lets you read and update the current settings of a single constraint in an IK solver.\n- **IKComponent.Joint**: The update stage object that lets you read and update the current settings of a single joint in an IK solver.\n- **IKComponent.Solver**: The update stage object that lets you read and update the current settings of a single solver instance.\n\n## Structures\n\n- **IKComponent.ConstraintCollection**: Ordered dictionary like container with fixed size.\n- **IKComponent.JointCollection**: Ordered dictionary like container with fixed size.\n- **IKComponent.SolverCollection**: Ordered dictionary like container with fixed size.\n\n## Initializers\n\n- **init(resource:)**: Creates a new component value referencing the specified resource.\n\n## Instance Properties\n\n- **resource**: Reference to the resource describing the desired inverse kinematics setup.\n- **solvers**: The currently active solvers.\n\n## Inverse kinematics components\n\n- **IKComponent.Joint**: The update stage object that lets you read and update the current settings of a single joint in an IK solver.\n- **IKComponent.JointCollection**: Ordered dictionary like container with fixed size.\n- **IKComponent.Solver**: The update stage object that lets you read and update the current settings of a single solver instance.\n- **IKComponent.SolverCollection**: Ordered dictionary like container with fixed size.\n- **IKComponent.Constraint**: The update stage object that lets you read and update the current settings of a single constraint in an IK solver.\n- **IKComponent.ConstraintCollection**: Ordered dictionary like container with fixed size.\n- **IKResource**: A reference counted immutable resource which contains one or more inverse kinematics solver rigs.\n- **IKSolverDefinition**: A container describing a solver instance.\n\n## Conforms To\n\n- Component\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The update stage object that lets you read and update the current settings of a single constraint in an IK solver.",
+          "name" : "IKComponent.Constraint",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/Constraint"
+        },
+        {
+          "description" : "The update stage object that lets you read and update the current settings of a single joint in an IK solver.",
+          "name" : "IKComponent.Joint",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/Joint"
+        },
+        {
+          "description" : "The update stage object that lets you read and update the current settings of a single solver instance.",
+          "name" : "IKComponent.Solver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/Solver"
+        }
+      ],
+      "title" : "Classes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Ordered dictionary like container with fixed size.",
+          "name" : "IKComponent.ConstraintCollection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/ConstraintCollection"
+        },
+        {
+          "description" : "Ordered dictionary like container with fixed size.",
+          "name" : "IKComponent.JointCollection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/JointCollection"
+        },
+        {
+          "description" : "Ordered dictionary like container with fixed size.",
+          "name" : "IKComponent.SolverCollection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/SolverCollection"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new component value referencing the specified resource.",
+          "name" : "init(resource:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/init(resource:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Reference to the resource describing the desired inverse kinematics setup.",
+          "name" : "resource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/resource"
+        },
+        {
+          "description" : "The currently active solvers.",
+          "name" : "solvers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/solvers"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The update stage object that lets you read and update the current settings of a single joint in an IK solver.",
+          "name" : "IKComponent.Joint",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/Joint"
+        },
+        {
+          "description" : "Ordered dictionary like container with fixed size.",
+          "name" : "IKComponent.JointCollection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/JointCollection"
+        },
+        {
+          "description" : "The update stage object that lets you read and update the current settings of a single solver instance.",
+          "name" : "IKComponent.Solver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/Solver"
+        },
+        {
+          "description" : "Ordered dictionary like container with fixed size.",
+          "name" : "IKComponent.SolverCollection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/SolverCollection"
+        },
+        {
+          "description" : "The update stage object that lets you read and update the current settings of a single constraint in an IK solver.",
+          "name" : "IKComponent.Constraint",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/Constraint"
+        },
+        {
+          "description" : "Ordered dictionary like container with fixed size.",
+          "name" : "IKComponent.ConstraintCollection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent\/ConstraintCollection"
+        },
+        {
+          "description" : "A reference counted immutable resource which contains one or more inverse kinematics solver rigs.",
+          "name" : "IKResource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKResource"
+        },
+        {
+          "description" : "A container describing a solver instance.",
+          "name" : "IKSolverDefinition",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKSolverDefinition"
+        }
+      ],
+      "title" : "Inverse kinematics components"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "IKComponent",
+  "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/IKComponent"
+}

@@ -1,0 +1,109 @@
+{
+  "abstract" : "Represents the contents of a string literal with interpolations while it’s being built up.",
+  "codeExamples" : [
+    {
+      "code" : "var interpolation = MyString.StringInterpolation(literalCapacity: 13, \n                                                 interpolationCount: 1)\n\ninterpolation.appendLiteral(\"The time is \")\ninterpolation.appendInterpolation(time)\ninterpolation.appendLiteral(\".\")\n\nMyString(stringInterpolation: interpolation)",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension MyString.StringInterpolation {\n    mutating func appendInterpolation(validating input: String) {\n        \/\/ Perform validation of `input` and store for later use\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let userInput = readLine() ?? \"\"\nlet myString = \"The user typed '\\(validating: userInput)'.\" as MyString",
+      "language" : "swift"
+    }
+  ],
+  "conformingTypes" : [
+    "DefaultStringInterpolation"
+  ],
+  "contentHash" : "4da615ec87e77a7c240e8894e5fbde3986c9610ec6c18e1a791ac66676dfd540",
+  "crawledAt" : "2025-12-01T21:36:30Z",
+  "declaration" : {
+    "code" : "protocol StringInterpolationProtocol",
+    "language" : "swift"
+  },
+  "id" : "32F7B6C4-2F2D-4D83-859C-CF4F8647A79A",
+  "kind" : "protocol",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nEach `ExpressibleByStringInterpolation` type has an associated `StringInterpolation` type which conforms to `StringInterpolationProtocol`. Swift converts an expression like `\"The time is \\(time).\" as MyString` into a series of statements similar to:\n\nThe `StringInterpolation` type is responsible for collecting the segments passed to its `appendLiteral(_:)` and `appendInterpolation` methods and assembling them into a whole, converting as necessary. Once all of the segments are appended, the interpolation is passed to an `init(stringInterpolation:)` initializer on the type being created, which must extract the accumulated data from the `StringInterpolation`.\n\nIn simple cases, you can use `DefaultStringInterpolation` as the interpolation type for types that conform to the `ExpressibleByStringLiteral` protocol. To use the default interpolation, conform a type to `ExpressibleByStringInterpolation` and implement `init(stringLiteral: String)`. Values in interpolations are converted to strings, and then passed to that initializer just like any other string literal.\n\n# Handling String Interpolations\n\nWith a custom interpolation type, each interpolated segment is translated into a call to a special `appendInterpolation` method. The contents of the interpolation’s parentheses are treated as the call’s argument list. That argument list can include multiple arguments and argument labels.\n\nThe following examples show how string interpolations are translated into calls to `appendInterpolation`:\n\nThe `appendInterpolation` methods in your custom type must be mutating instance methods that return `Void`. This code shows a custom interpolation type’s declaration of an `appendInterpolation` method that provides special validation for user input:\n\nTo use this interpolation method, create a string literal with an interpolation using the `validating` parameter label.\n\n`appendInterpolation` methods support virtually all features of methods: they can have any number of parameters, can specify labels for any or all of their parameters, can provide default values, can have variadic parameters, and can have parameters with generic types. Most importantly, they can be overloaded, so a type that conforms to `StringInterpolationProtocol` can provide several different `appendInterpolation` methods with different behaviors. An `appendInterpolation` method can also throw; when a user writes a literal with one of these interpolations, they must mark the string literal with `try` or one of its variants.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/StringInterpolationProtocol\ncrawled: 2025-12-01T21:36:30Z\n---\n\n# StringInterpolationProtocol\n\n**Protocol**\n\nRepresents the contents of a string literal with interpolations while it’s being built up.\n\n## Declaration\n\n```swift\nprotocol StringInterpolationProtocol\n```\n\n## Overview\n\nEach `ExpressibleByStringInterpolation` type has an associated `StringInterpolation` type which conforms to `StringInterpolationProtocol`. Swift converts an expression like `\"The time is \\(time).\" as MyString` into a series of statements similar to:\n\n```swift\nvar interpolation = MyString.StringInterpolation(literalCapacity: 13, \n                                                 interpolationCount: 1)\n\ninterpolation.appendLiteral(\"The time is \")\ninterpolation.appendInterpolation(time)\ninterpolation.appendLiteral(\".\")\n\nMyString(stringInterpolation: interpolation)\n```\n\nThe `StringInterpolation` type is responsible for collecting the segments passed to its `appendLiteral(_:)` and `appendInterpolation` methods and assembling them into a whole, converting as necessary. Once all of the segments are appended, the interpolation is passed to an `init(stringInterpolation:)` initializer on the type being created, which must extract the accumulated data from the `StringInterpolation`.\n\nIn simple cases, you can use `DefaultStringInterpolation` as the interpolation type for types that conform to the `ExpressibleByStringLiteral` protocol. To use the default interpolation, conform a type to `ExpressibleByStringInterpolation` and implement `init(stringLiteral: String)`. Values in interpolations are converted to strings, and then passed to that initializer just like any other string literal.\n\n# Handling String Interpolations\n\nWith a custom interpolation type, each interpolated segment is translated into a call to a special `appendInterpolation` method. The contents of the interpolation’s parentheses are treated as the call’s argument list. That argument list can include multiple arguments and argument labels.\n\nThe following examples show how string interpolations are translated into calls to `appendInterpolation`:\n\n- `\\(x)` translates to `appendInterpolation(x)`\n- `\\(x, y)` translates to `appendInterpolation(x, y)`\n- `\\(foo: x)` translates to `appendInterpolation(foo: x)`\n- `\\(x, foo: y)` translates to `appendInterpolation(x, foo: y)`\n\nThe `appendInterpolation` methods in your custom type must be mutating instance methods that return `Void`. This code shows a custom interpolation type’s declaration of an `appendInterpolation` method that provides special validation for user input:\n\n```swift\nextension MyString.StringInterpolation {\n    mutating func appendInterpolation(validating input: String) {\n        \/\/ Perform validation of `input` and store for later use\n    }\n}\n```\n\nTo use this interpolation method, create a string literal with an interpolation using the `validating` parameter label.\n\n```swift\nlet userInput = readLine() ?? \"\"\nlet myString = \"The user typed '\\(validating: userInput)'.\" as MyString\n```\n\n`appendInterpolation` methods support virtually all features of methods: they can have any number of parameters, can specify labels for any or all of their parameters, can provide default values, can have variadic parameters, and can have parameters with generic types. Most importantly, they can be overloaded, so a type that conforms to `StringInterpolationProtocol` can provide several different `appendInterpolation` methods with different behaviors. An `appendInterpolation` method can also throw; when a user writes a literal with one of these interpolations, they must mark the string literal with `try` or one of its variants.\n\n## Associated Types\n\n- **StringLiteralType**: The type that should be used for literal segments.\n\n## Initializers\n\n- **init(literalCapacity:interpolationCount:)**: Creates an empty instance ready to be filled with string literal content.\n\n## Instance Methods\n\n- **appendLiteral(_:)**: Appends a literal segment to the interpolation.\n\n## String Literals\n\n- **ExpressibleByStringLiteral**: A type that can be initialized with a string literal.\n- **ExpressibleByExtendedGraphemeClusterLiteral**: A type that can be initialized with a string literal containing a single extended grapheme cluster.\n- **ExpressibleByUnicodeScalarLiteral**: A type that can be initialized with a string literal containing a single Unicode scalar value.\n- **ExpressibleByStringInterpolation**: A type that can be initialized by string interpolation with a string literal that includes expressions.\n- **DefaultStringInterpolation**: Represents a string literal with interpolations while it’s being built up.\n\n## Conforming Types\n\n- DefaultStringInterpolation\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The type that should be used for literal segments.",
+          "name" : "StringLiteralType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/StringInterpolationProtocol\/StringLiteralType"
+        }
+      ],
+      "title" : "Associated Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an empty instance ready to be filled with string literal content.",
+          "name" : "init(literalCapacity:interpolationCount:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/StringInterpolationProtocol\/init(literalCapacity:interpolationCount:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Appends a literal segment to the interpolation.",
+          "name" : "appendLiteral(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/StringInterpolationProtocol\/appendLiteral(_:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A type that can be initialized with a string literal.",
+          "name" : "ExpressibleByStringLiteral",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/ExpressibleByStringLiteral"
+        },
+        {
+          "description" : "A type that can be initialized with a string literal containing a single extended grapheme cluster.",
+          "name" : "ExpressibleByExtendedGraphemeClusterLiteral",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/ExpressibleByExtendedGraphemeClusterLiteral"
+        },
+        {
+          "description" : "A type that can be initialized with a string literal containing a single Unicode scalar value.",
+          "name" : "ExpressibleByUnicodeScalarLiteral",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/ExpressibleByUnicodeScalarLiteral"
+        },
+        {
+          "description" : "A type that can be initialized by string interpolation with a string literal that includes expressions.",
+          "name" : "ExpressibleByStringInterpolation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/ExpressibleByStringInterpolation"
+        },
+        {
+          "description" : "Represents a string literal with interpolations while it’s being built up.",
+          "name" : "DefaultStringInterpolation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/DefaultStringInterpolation"
+        }
+      ],
+      "title" : "String Literals"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "StringInterpolationProtocol",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/StringInterpolationProtocol"
+}

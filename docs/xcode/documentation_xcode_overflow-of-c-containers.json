@@ -1,0 +1,60 @@
+{
+  "abstract" : "Detects when you access a C++ container outside its bounds.",
+  "codeExamples" : [
+    {
+      "code" : "std::vector<int> vector;\nvector.push_back(0);\nvector.push_back(1);\nvector.push_back(2);\nauto *pointer = &vector[0];\nreturn pointer[3]; \/\/ Error: out of bounds access for vector",
+      "language" : "occ"
+    },
+    {
+      "code" : "#ifdef __cplusplus\nextern \"C\" {\n#endif\n#include <sanitizer\/asan_interface.h>\n\nconst char *__asan_default_options() {\n    return \"detect_container_overflow=0\";\n}\n#ifdef __cplusplus\n}\n#endif",
+      "language" : "occ"
+    }
+  ],
+  "contentHash" : "8823378a9bff55538ec510b212b31b9bd0479979ef315286b5a497efe7439a67",
+  "crawledAt" : "2025-12-02T06:10:58Z",
+  "id" : "317EC45B-DD9D-44F7-85F2-9E5D2563190F",
+  "kind" : "article",
+  "overview" : "## Overview\n\nUse this check to detect when you access a libc++ container beyond the region `[container.begin(), container.end()]`, even when the accessed memory is in a heap-allocated buffer the container uses internally. Available in Xcode 7 and later.\n\n### Vector overflow in C++\n\nIn the following example, the `vector` variable has valid indexes in the range `[0,2]`, but the accessed index is `3`, which causes an overflow:\n\n#### Solution\n\nAdd a bounds check before attempting to access a container at a specific index.\n\n### Disabling Container Overflow Checks\n\nYou may encounter a false-positive ‘Container overflow’ error when code that isn’t compiled with Address Sanitizer modifies a container. For container overflow checks to work correctly, you need to compile all code with Address Sanitizer. If you can’t do this, turn off container overflow checks using one of the following methods:\n\nIf you set the `detect_container_overflow` option in both the `__asan_default_options` function, and the `ASAN_OPTIONS` environment variable, the system uses the value in the environment variable.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Xcode\/overflow-of-c-containers\ncrawled: 2025-12-02T06:10:58Z\n---\n\n# Overflow of C++ containers\n\n**Article**\n\nDetects when you access a C++ container outside its bounds.\n\n## Overview\n\nUse this check to detect when you access a libc++ container beyond the region `[container.begin(), container.end()]`, even when the accessed memory is in a heap-allocated buffer the container uses internally. Available in Xcode 7 and later.\n\n\n\n### Vector overflow in C++\n\nIn the following example, the `vector` variable has valid indexes in the range `[0,2]`, but the accessed index is `3`, which causes an overflow:\n\n```occ\nstd::vector<int> vector;\nvector.push_back(0);\nvector.push_back(1);\nvector.push_back(2);\nauto *pointer = &vector[0];\nreturn pointer[3]; \/\/ Error: out of bounds access for vector\n```\n\n#### Solution\n\nAdd a bounds check before attempting to access a container at a specific index.\n\n### Disabling Container Overflow Checks\n\n\n\nYou may encounter a false-positive ‘Container overflow’ error when code that isn’t compiled with Address Sanitizer modifies a container. For container overflow checks to work correctly, you need to compile all code with Address Sanitizer. If you can’t do this, turn off container overflow checks using one of the following methods:\n\n\n\n```occ\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n#include <sanitizer\/asan_interface.h>\n\nconst char *__asan_default_options() {\n    return \"detect_container_overflow=0\";\n}\n#ifdef __cplusplus\n}\n#endif\n```\n\nIf you set the `detect_container_overflow` option in both the `__asan_default_options` function, and the `ASAN_OPTIONS` environment variable, the system uses the value in the environment variable.\n\n## Address Sanitizer\n\n- **Use of deallocated memory**: Detects the use of deallocated memory.\n- **Deallocation of deallocated memory**: Detects attempts to free deallocated memory.\n- **Deallocation of nonallocated memory**: Detects attempts to free nonallocated memory.\n- **Use of stack memory after function return**: Detects when you access stack variable memory after its declaring function returns.\n- **Use of out-of-scope stack memory**: Detects access to variables outside of their declared scope.\n- **Overflow and underflow of buffers**: Detects when you access memory outside of a buffer’s boundaries.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Detects the use of deallocated memory.",
+          "name" : "Use of deallocated memory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/use-of-deallocated-memory"
+        },
+        {
+          "description" : "Detects attempts to free deallocated memory.",
+          "name" : "Deallocation of deallocated memory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/deallocation-of-deallocated-memory"
+        },
+        {
+          "description" : "Detects attempts to free nonallocated memory.",
+          "name" : "Deallocation of nonallocated memory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/deallocation-of-nonallocated-memory"
+        },
+        {
+          "description" : "Detects when you access stack variable memory after its declaring function returns.",
+          "name" : "Use of stack memory after function return",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/use-of-stack-memory-after-function-return"
+        },
+        {
+          "description" : "Detects access to variables outside of their declared scope.",
+          "name" : "Use of out-of-scope stack memory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/use-of-out-of-scope-stack-memory"
+        },
+        {
+          "description" : "Detects when you access memory outside of a buffer’s boundaries.",
+          "name" : "Overflow and underflow of buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/overflow-and-underflow-of-buffers"
+        }
+      ],
+      "title" : "Address Sanitizer"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Overflow of C++ containers",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/overflow-of-c-containers"
+}

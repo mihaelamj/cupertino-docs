@@ -1,0 +1,145 @@
+{
+  "abstract" : "A class that you use to enable or disable the hotspot evaluation and authentication provider extensions.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "8b8534bc42b6e27390cf5e6150bb14040f91f87fe56b2b9ae93f13049f22e877",
+  "crawledAt" : "2025-12-02T21:01:25Z",
+  "declaration" : {
+    "code" : "final class NEHotspotManager",
+    "language" : "swift"
+  },
+  "id" : "46A273D7-74C1-4602-A4FB-F1085B3FFDD8",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Network Extension",
+  "overview" : "## Overview\n\nUse an `NEHotspotManager` to perform custom authentication of Wi-Fi hotspots in app extensions rather than in an app. Using sandboxed extensions is more performant and secure than performing hotspot authentication in an app.\n\nThe manager is responsible for two extensions:\n\n### Implementing an evaluation provider\n\nThe [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotEvaluationProvider] managed by this class can receive a [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommandType\/filterScanList] command at any time. Respond to this by indicating which of the listed networks your provider can confidently handle.\n\nWhen the device initially joins a network, the hotspot helper enters the *evaluating* state. In this state, each [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotEvaluationProvider] instance receives a command of type [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommandType\/evaluate]. If one or more evaluation providers indicates it can handle the network, the hotspot helper chooses the one with the highest confidence level before entering the *authenticating* state. If no evaluation provider instance claims the network, the state machine enters the *authenticated* state.\n\n### Using the state machine during authentication\n\nIn the authenticating state, your [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotAuthenticationProvider] receives the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommandType\/authenticate] command. At this point, the provider performs any network processing needed to make the network available for general network traffic. If authentication is successful, your provider calls [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommand\/createResponse(_:)] on the command to create a [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperResult\/success] response and returns it.\n\nWhile in the authenticating state, if your authentication provider determines that it needs interaction from the person using the device, create an alert with [doc:\/\/com.apple.documentation\/documentation\/UserNotifications\/UNUserNotificationCenter], and respond to the command with an [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperResult\/uiRequired] response. This transitions the state machine to a *Presenting UI* state, and the provider receives a command of type [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommandType\/presentUI]. The extension runs in the background in this state until the app collects the needed information from the person. After the app uses the information to complete the authentication, return a success response to enter the authenticated state.\n\nAfter a successful authentication, the network enters a *maintaining* state when the network is joined again. In this state, the provider periodically receives the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommandType\/maintain] command. To process this command, determine if the network remains able to carry general network traffic, and return success if this is the case. If not, and the network again requires authentication, return an [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperResult\/authenticationRequired] result.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\ncrawled: 2025-12-02T21:01:25Z\n---\n\n# NEHotspotManager\n\n**Class**\n\nA class that you use to enable or disable the hotspot evaluation and authentication provider extensions.\n\n## Declaration\n\n```swift\nfinal class NEHotspotManager\n```\n\n## Overview\n\nUse an `NEHotspotManager` to perform custom authentication of Wi-Fi hotspots in app extensions rather than in an app. Using sandboxed extensions is more performant and secure than performing hotspot authentication in an app.\n\nThe manager is responsible for two extensions:\n\n- An [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotEvaluationProvider] to evaluate detected Wi-Fi hotspots.\n- An [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotAuthenticationProvider] to authenticate with evaluated hotspots.\n\n### Implementing an evaluation provider\n\nThe [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotEvaluationProvider] managed by this class can receive a [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommandType\/filterScanList] command at any time. Respond to this by indicating which of the listed networks your provider can confidently handle.\n\nWhen the device initially joins a network, the hotspot helper enters the *evaluating* state. In this state, each [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotEvaluationProvider] instance receives a command of type [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommandType\/evaluate]. If one or more evaluation providers indicates it can handle the network, the hotspot helper chooses the one with the highest confidence level before entering the *authenticating* state. If no evaluation provider instance claims the network, the state machine enters the *authenticated* state.\n\n### Using the state machine during authentication\n\nIn the authenticating state, your [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotAuthenticationProvider] receives the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommandType\/authenticate] command. At this point, the provider performs any network processing needed to make the network available for general network traffic. If authentication is successful, your provider calls [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommand\/createResponse(_:)] on the command to create a [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperResult\/success] response and returns it.\n\nWhile in the authenticating state, if your authentication provider determines that it needs interaction from the person using the device, create an alert with [doc:\/\/com.apple.documentation\/documentation\/UserNotifications\/UNUserNotificationCenter], and respond to the command with an [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperResult\/uiRequired] response. This transitions the state machine to a *Presenting UI* state, and the provider receives a command of type [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommandType\/presentUI]. The extension runs in the background in this state until the app collects the needed information from the person. After the app uses the information to complete the authentication, return a success response to enter the authenticated state.\n\nAfter a successful authentication, the network enters a *maintaining* state when the network is joined again. In this state, the provider periodically receives the [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperCommandType\/maintain] command. To process this command, determine if the network remains able to carry general network traffic, and return success if this is the case. If not, and the network again requires authentication, return an [doc:\/\/com.apple.networkextension\/documentation\/NetworkExtension\/NEHotspotHelperResult\/authenticationRequired] result.\n\n## Accessing the shared instance\n\n- **shared**: The shared instance of the hotspot manager class.\n\n## Accessing provider properties\n\n- **isEnabled**: A Boolean value that indicates whether the configuration is enabled.\n- **evaluationProviderBundleIdentifier**: The bundle identifier of the hotspot evaluation provider.\n- **authenticationProviderBundleIdentifier**: The bundle identifier of the hotspot authentication provider.\n\n## Authenticating with Safari domains\n\n- **safariDomains**: An array of domain strings for use with Safari-based hotspot authentication.\n\n## Identifying pre-evaluated Wi-Fi networks\n\n- **evaluatedSSIDs**: An array of pre-evaluated Wi-Fi SSID strings.\n\n## Managing the saved configuration\n\n- **loadFromPreferences()**: Loads the hotspot manager configuration from the Network Extension preferences.\n- **saveToPreferences()**: Saves the HotspotManager configuration in the Network Extension preferences.\n- **removeFromPreferences()**: Removes the hotspot manager configuration from the Network Extension preferences.\n\n## Identifying manager errors\n\n- **NEHotspotManager.Error**: An enumeration of errors thrown by hotspot manager methods.\n\n## Hotspot helper extension\n\n- **NEHotspotEvaluationProvider**: A protocol that defines methods and properties your extension implements to handle evaluate and filter scan list commands.\n- **NEHotspotAuthenticationProvider**: A protocol that defines methods that your extension adopts to start and stop the extension, and to handle commands to authenticate with the hotspot network.\n- **NEHotspotEvaluationProviderConfiguration**: A class that defines configuration options for use in NetworkExtension evaluation providers.\n- **NEHotspotAuthenticationProviderConfiguration**: A class that defines configuration options for use in NetworkExtension authentication providers.\n\n## Conforms To\n\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The shared instance of the hotspot manager class.",
+          "name" : "shared",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\/shared"
+        }
+      ],
+      "title" : "Accessing the shared instance"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the configuration is enabled.",
+          "name" : "isEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\/isEnabled"
+        },
+        {
+          "description" : "The bundle identifier of the hotspot evaluation provider.",
+          "name" : "evaluationProviderBundleIdentifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\/evaluationProviderBundleIdentifier"
+        },
+        {
+          "description" : "The bundle identifier of the hotspot authentication provider.",
+          "name" : "authenticationProviderBundleIdentifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\/authenticationProviderBundleIdentifier"
+        }
+      ],
+      "title" : "Accessing provider properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An array of domain strings for use with Safari-based hotspot authentication.",
+          "name" : "safariDomains",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\/safariDomains"
+        }
+      ],
+      "title" : "Authenticating with Safari domains"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An array of pre-evaluated Wi-Fi SSID strings.",
+          "name" : "evaluatedSSIDs",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\/evaluatedSSIDs"
+        }
+      ],
+      "title" : "Identifying pre-evaluated Wi-Fi networks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Loads the hotspot manager configuration from the Network Extension preferences.",
+          "name" : "loadFromPreferences()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\/loadFromPreferences()"
+        },
+        {
+          "description" : "Saves the HotspotManager configuration in the Network Extension preferences.",
+          "name" : "saveToPreferences()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\/saveToPreferences()"
+        },
+        {
+          "description" : "Removes the hotspot manager configuration from the Network Extension preferences.",
+          "name" : "removeFromPreferences()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\/removeFromPreferences()"
+        }
+      ],
+      "title" : "Managing the saved configuration"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An enumeration of errors thrown by hotspot manager methods.",
+          "name" : "NEHotspotManager.Error",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager\/Error"
+        }
+      ],
+      "title" : "Identifying manager errors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A protocol that defines methods and properties your extension implements to handle evaluate and filter scan list commands.",
+          "name" : "NEHotspotEvaluationProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotEvaluationProvider"
+        },
+        {
+          "description" : "A protocol that defines methods that your extension adopts to start and stop the extension, and to handle commands to authenticate with the hotspot network.",
+          "name" : "NEHotspotAuthenticationProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotAuthenticationProvider"
+        },
+        {
+          "description" : "A class that defines configuration options for use in NetworkExtension evaluation providers.",
+          "name" : "NEHotspotEvaluationProviderConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotEvaluationProviderConfiguration"
+        },
+        {
+          "description" : "A class that defines configuration options for use in NetworkExtension authentication providers.",
+          "name" : "NEHotspotAuthenticationProviderConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotAuthenticationProviderConfiguration"
+        }
+      ],
+      "title" : "Hotspot helper extension"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NEHotspotManager",
+  "url" : "https:\/\/developer.apple.com\/documentation\/NetworkExtension\/NEHotspotManager"
+}

@@ -1,0 +1,193 @@
+{
+  "abstract" : "A multidimensional lookup table.",
+  "codeExamples" : [
+    {
+      "code" : "let entriesPerChannel = UInt8(32)\nlet srcChannelCount = 3\nlet destChannelCount = 1\n\nlet lookupTableElementCount = Int(pow(Float(entriesPerChannel),\n                                      Float(srcChannelCount))) *\nInt(destChannelCount)\n\nlet tableData = [UInt16](unsafeUninitializedCapacity: lookupTableElementCount) {\n    buffer, count in\n    \n    let multiplier = Float(UInt16.max)\n    var bufferIndex = 0\n    \n    for red in ( 0 ..< entriesPerChannel) {\n        for green in ( 0 ..< entriesPerChannel) {\n            for blue in ( 0 ..< entriesPerChannel) {\n                \n                let normalizedRed = Float(red) \/ Float(entriesPerChannel - 1)\n                let normalizedGreen = Float(green) \/ Float(entriesPerChannel - 1)\n                let normalizedBlue = Float(blue) \/ Float(entriesPerChannel - 1)\n                \n                let gray = (normalizedRed * 0.2126) +\n                           (normalizedGreen * 0.7152) +\n                           (normalizedBlue * 0.0722)\n                \n                buffer[ bufferIndex ] = UInt16(gray * multiplier)\n                bufferIndex += 1\n            }\n        }\n    }\n    \n    count = lookupTableElementCount\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let entryCountPerSourceChannel = [UInt8](repeating: entriesPerChannel,\n                                         count: srcChannelCount)\n\nlet lookupTable = vImage.MultidimensionalLookupTable(\n    entryCountPerSourceChannel: entryCountPerSourceChannel,\n    destinationChannelCount: destChannelCount,\n    data: tableData)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let src = vImage.PixelBuffer<vImage.InterleavedFx3>( ... )\n\nlet planarSources = src.planarBuffers()\n\nlet dest = vImage.PixelBuffer<vImage.PlanarF>(size: src.size)\n\nlookupTable.apply(sources: planarSources,\n                  destinations: [dest],\n                  interpolation: .none)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "16a6d645fe37269a051be216993b1a515787ead623bc9c57222788b7f85af82a",
+  "crawledAt" : "2025-12-01T03:08:35Z",
+  "declaration" : {
+    "code" : "struct MultidimensionalLookupTable",
+    "language" : "swift"
+  },
+  "id" : "51834DDA-B3B0-4E00-A31B-5CAA954E955D",
+  "kind" : "struct",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nUse a multidimensional lookup table to transform the colors in an image. The lookup table defines an output color based on the input color values. The vImage multidimensional lookup table provides interpolation to compute output color values that don’t have an explicit entry in the table for a given input color.\n\nA [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable] applies transforms to 32-bit planar pixel buffers. There are pixel buffer functions available to convert between bit depths and interleaved to planar buffers.\n\nThe following is an example of a simple lookup table that implements the Rec. 709 luma coefficients to convert from a 3-channel RGB image to a single-channel grayscale image. The lookup table is a 3D cube with 32 entries per channel.\n\nUse the lookup table data to create a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable] structure.\n\nCall the `[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable\/apply(sources:destinations:interpolation:)]` function to transform a 3-channel RGB image to a grayscale image. In this example, the source is interleaved. The code demonstrates calling [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/planarBuffers()-462ja] to deinterleave the source.\n\nOn return, `dest` contains a grayscale representation of the source RGB image.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable\ncrawled: 2025-12-01T03:08:35Z\n---\n\n# vImage.MultidimensionalLookupTable\n\n**Structure**\n\nA multidimensional lookup table.\n\n## Declaration\n\n```swift\nstruct MultidimensionalLookupTable\n```\n\n## Overview\n\nUse a multidimensional lookup table to transform the colors in an image. The lookup table defines an output color based on the input color values. The vImage multidimensional lookup table provides interpolation to compute output color values that don’t have an explicit entry in the table for a given input color.\n\nA [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable] applies transforms to 32-bit planar pixel buffers. There are pixel buffer functions available to convert between bit depths and interleaved to planar buffers.\n\nThe following is an example of a simple lookup table that implements the Rec. 709 luma coefficients to convert from a 3-channel RGB image to a single-channel grayscale image. The lookup table is a 3D cube with 32 entries per channel.\n\n```swift\nlet entriesPerChannel = UInt8(32)\nlet srcChannelCount = 3\nlet destChannelCount = 1\n\nlet lookupTableElementCount = Int(pow(Float(entriesPerChannel),\n                                      Float(srcChannelCount))) *\nInt(destChannelCount)\n\nlet tableData = [UInt16](unsafeUninitializedCapacity: lookupTableElementCount) {\n    buffer, count in\n    \n    let multiplier = Float(UInt16.max)\n    var bufferIndex = 0\n    \n    for red in ( 0 ..< entriesPerChannel) {\n        for green in ( 0 ..< entriesPerChannel) {\n            for blue in ( 0 ..< entriesPerChannel) {\n                \n                let normalizedRed = Float(red) \/ Float(entriesPerChannel - 1)\n                let normalizedGreen = Float(green) \/ Float(entriesPerChannel - 1)\n                let normalizedBlue = Float(blue) \/ Float(entriesPerChannel - 1)\n                \n                let gray = (normalizedRed * 0.2126) +\n                           (normalizedGreen * 0.7152) +\n                           (normalizedBlue * 0.0722)\n                \n                buffer[ bufferIndex ] = UInt16(gray * multiplier)\n                bufferIndex += 1\n            }\n        }\n    }\n    \n    count = lookupTableElementCount\n}\n```\n\nUse the lookup table data to create a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable] structure.\n\n```swift\nlet entryCountPerSourceChannel = [UInt8](repeating: entriesPerChannel,\n                                         count: srcChannelCount)\n\nlet lookupTable = vImage.MultidimensionalLookupTable(\n    entryCountPerSourceChannel: entryCountPerSourceChannel,\n    destinationChannelCount: destChannelCount,\n    data: tableData)\n```\n\nCall the `[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable\/apply(sources:destinations:interpolation:)]` function to transform a 3-channel RGB image to a grayscale image. In this example, the source is interleaved. The code demonstrates calling [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/planarBuffers()-462ja] to deinterleave the source.\n\n```swift\nlet src = vImage.PixelBuffer<vImage.InterleavedFx3>( ... )\n\nlet planarSources = src.planarBuffers()\n\nlet dest = vImage.PixelBuffer<vImage.PlanarF>(size: src.size)\n\nlookupTable.apply(sources: planarSources,\n                  destinations: [dest],\n                  interpolation: .none)\n```\n\nOn return, `dest` contains a grayscale representation of the source RGB image.\n\n## Initializers\n\n- **init(entryCountPerSourceChannel:destinationChannelCount:data:)**: Returns a new multidimensional lookup table.\n\n## Instance Properties\n\n- **destinationChannelCount**: The number of destination channels.\n- **entryCountPerSourceChannel**: An array that contains the number of table entries for each dimension of the lookup table.\n- **sourceChannelCount**: The number of source channels.\n\n## Instance Methods\n\n- **apply(source:destination:interpolation:)**: Transforms a multiple plane pixel buffer using the multidimensional lookup table.\n- **apply(sources:destinations:interpolation:)**: Transforms an array of planar pixel buffers using the multidimensional lookup table.\n\n## Enumerations\n\n- **vImage.MultidimensionalLookupTable.InterpolationMethod**: Describes the method a multidimensional lookup table uses the generate interpolated values between lookup table values.\n\n## Related Documentation\n\n- **Applying color transforms to images with a multidimensional lookup table**: Precompute translation values to optimize color space conversion and other pointwise operations.\n\n## Type Aliases\n\n- **vImage.StructuringElement**: A 2D matrix that represents a morphology kernel.\n- **vImage.ConvolutionKernel**: Constants that describe 1D convolution kernels.\n- **vImage.ConvolutionKernel2D**: A 2D matrix that represents a convolution kernel.\n- **vImage.DynamicPixelFormat**: A buffer that contains pixels with a data type that’s unknown at compile time.\n- **vImage.Interleaved16Fx2**: A two-channel, 16-bit-per-channel, floating-point interleaved buffer.\n- **vImage.Interleaved16Fx4**: A four-channel, 16-bit-per-channel, floating-point interleaved buffer.\n- **vImage.Interleaved16Ux2**: A two-channel, 16-bit-per-channel, unsigned-integer interleaved buffer.\n- **vImage.Interleaved16Ux4**: A four-channel, 16-bit-per-channel, unsigned-integer interleaved buffer.\n- **vImage.Interleaved8x2**: A two-channel, 8-bit-per-channel interleaved buffer.\n- **vImage.Interleaved8x3**: A three-channel, 8-bit-per-channel interleaved buffer.\n- **vImage.Interleaved8x4**: A four-channel, 8-bit-per-channel interleaved buffer.\n- **vImage.InterleavedFx2**: A two-channel, 32-bit-per-channel, floating-point interleaved buffer.\n- **vImage.InterleavedFx3**: A three-channel, 32-bit-per-channel, floating-point interleaved buffer.\n- **vImage.InterleavedFx4**: A four-channel, 32-bit-per-channel, floating-point interleaved buffer.\n- **vImage.Options**: Set flags on vImage operations to specify processing options.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a new multidimensional lookup table.",
+          "name" : "init(entryCountPerSourceChannel:destinationChannelCount:data:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable\/init(entryCountPerSourceChannel:destinationChannelCount:data:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The number of destination channels.",
+          "name" : "destinationChannelCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable\/destinationChannelCount"
+        },
+        {
+          "description" : "An array that contains the number of table entries for each dimension of the lookup table.",
+          "name" : "entryCountPerSourceChannel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable\/entryCountPerSourceChannel"
+        },
+        {
+          "description" : "The number of source channels.",
+          "name" : "sourceChannelCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable\/sourceChannelCount"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Transforms a multiple plane pixel buffer using the multidimensional lookup table.",
+          "name" : "apply(source:destination:interpolation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable\/apply(source:destination:interpolation:)"
+        },
+        {
+          "description" : "Transforms an array of planar pixel buffers using the multidimensional lookup table.",
+          "name" : "apply(sources:destinations:interpolation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable\/apply(sources:destinations:interpolation:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Describes the method a multidimensional lookup table uses the generate interpolated values between lookup table values.",
+          "name" : "vImage.MultidimensionalLookupTable.InterpolationMethod",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable\/InterpolationMethod"
+        }
+      ],
+      "title" : "Enumerations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Precompute translation values to optimize color space conversion and other pointwise operations.",
+          "name" : "Applying color transforms to images with a multidimensional lookup table",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-color-transforms-to-images-with-a-multidimensional-lookup-table"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A 2D matrix that represents a morphology kernel.",
+          "name" : "vImage.StructuringElement",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/StructuringElement"
+        },
+        {
+          "description" : "Constants that describe 1D convolution kernels.",
+          "name" : "vImage.ConvolutionKernel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/ConvolutionKernel"
+        },
+        {
+          "description" : "A 2D matrix that represents a convolution kernel.",
+          "name" : "vImage.ConvolutionKernel2D",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/ConvolutionKernel2D"
+        },
+        {
+          "description" : "A buffer that contains pixels with a data type that’s unknown at compile time.",
+          "name" : "vImage.DynamicPixelFormat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/DynamicPixelFormat"
+        },
+        {
+          "description" : "A two-channel, 16-bit-per-channel, floating-point interleaved buffer.",
+          "name" : "vImage.Interleaved16Fx2",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/Interleaved16Fx2"
+        },
+        {
+          "description" : "A four-channel, 16-bit-per-channel, floating-point interleaved buffer.",
+          "name" : "vImage.Interleaved16Fx4",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/Interleaved16Fx4"
+        },
+        {
+          "description" : "A two-channel, 16-bit-per-channel, unsigned-integer interleaved buffer.",
+          "name" : "vImage.Interleaved16Ux2",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/Interleaved16Ux2"
+        },
+        {
+          "description" : "A four-channel, 16-bit-per-channel, unsigned-integer interleaved buffer.",
+          "name" : "vImage.Interleaved16Ux4",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/Interleaved16Ux4"
+        },
+        {
+          "description" : "A two-channel, 8-bit-per-channel interleaved buffer.",
+          "name" : "vImage.Interleaved8x2",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/Interleaved8x2"
+        },
+        {
+          "description" : "A three-channel, 8-bit-per-channel interleaved buffer.",
+          "name" : "vImage.Interleaved8x3",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/Interleaved8x3"
+        },
+        {
+          "description" : "A four-channel, 8-bit-per-channel interleaved buffer.",
+          "name" : "vImage.Interleaved8x4",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/Interleaved8x4"
+        },
+        {
+          "description" : "A two-channel, 32-bit-per-channel, floating-point interleaved buffer.",
+          "name" : "vImage.InterleavedFx2",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/InterleavedFx2"
+        },
+        {
+          "description" : "A three-channel, 32-bit-per-channel, floating-point interleaved buffer.",
+          "name" : "vImage.InterleavedFx3",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/InterleavedFx3"
+        },
+        {
+          "description" : "A four-channel, 32-bit-per-channel, floating-point interleaved buffer.",
+          "name" : "vImage.InterleavedFx4",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/InterleavedFx4"
+        },
+        {
+          "description" : "Set flags on vImage operations to specify processing options.",
+          "name" : "vImage.Options",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/Options"
+        }
+      ],
+      "title" : "Type Aliases"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vImage.MultidimensionalLookupTable",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/MultidimensionalLookupTable"
+}

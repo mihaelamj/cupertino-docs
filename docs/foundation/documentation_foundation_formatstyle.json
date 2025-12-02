@@ -1,0 +1,657 @@
+{
+  "abstract" : "A type that converts a given data type into a representation in another type, such as a string.",
+  "codeExamples" : [
+    {
+      "code" : "let style = IntegerFormatStyle<Int>()\n    .rounded(rule: .down, increment: 1000)\n    .locale(Locale(identifier: \"fr_FR\"))\nlet rounded = 123456789.formatted(style) \/\/ \"123 456 000\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let formatted = 123456789.formatted(IntegerFormatStyle()) \/\/ \"123,456,789\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let formatted = 123456789.formatted( .number) \/\/ \"123,456,789\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let rounded = 123456789.formatted( .number\n    .rounded(rule: .down, increment: 1000)\n    .locale(Locale(identifier: \"fr_FR\"))) \/\/ \"123 456 000\"",
+      "language" : "swift"
+    }
+  ],
+  "conformingTypes" : [
+    "ByteCountFormatStyle",
+    "ByteCountFormatStyle.Attributed",
+    "Date.AnchoredRelativeFormatStyle",
+    "Date.AttributedStyle",
+    "Date.ComponentsFormatStyle",
+    "Date.FormatStyle",
+    "Date.FormatStyle.Attributed",
+    "Date.HTTPFormatStyle",
+    "Date.ISO8601FormatStyle",
+    "Date.IntervalFormatStyle",
+    "Date.RelativeFormatStyle",
+    "Date.VerbatimFormatStyle",
+    "Date.VerbatimFormatStyle.Attributed",
+    "DateComponents.HTTPFormatStyle",
+    "DateComponents.ISO8601FormatStyle",
+    "Decimal.FormatStyle",
+    "Decimal.FormatStyle.Attributed",
+    "Decimal.FormatStyle.Currency",
+    "Decimal.FormatStyle.Percent",
+    "FloatingPointFormatStyle",
+    "FloatingPointFormatStyle.Attributed",
+    "FloatingPointFormatStyle.Currency",
+    "FloatingPointFormatStyle.Percent",
+    "IntegerFormatStyle",
+    "IntegerFormatStyle.Attributed",
+    "IntegerFormatStyle.Currency",
+    "IntegerFormatStyle.Percent",
+    "ListFormatStyle",
+    "Measurement.AttributedStyle",
+    "Measurement.AttributedStyle.ByteCount",
+    "Measurement.FormatStyle",
+    "Measurement.FormatStyle.ByteCount",
+    "PersonNameComponents.AttributedStyle",
+    "PersonNameComponents.FormatStyle",
+    "StringStyle",
+    "URL.FormatStyle"
+  ],
+  "contentHash" : "6dcbbd549663aa8d758ad9b9e6a10cac4c7a7d18b951b7273bdcffd3b220323c",
+  "crawledAt" : "2025-12-02T18:07:18Z",
+  "declaration" : {
+    "code" : "protocol FormatStyle<FormatInput, FormatOutput> : Decodable, Encodable, Hashable",
+    "language" : "swift"
+  },
+  "id" : "593572DB-D7E9-4606-BEFB-F4CE986F55BF",
+  "inheritedBy" : [
+    "DiscreteFormatStyle",
+    "ParseableFormatStyle"
+  ],
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nTypes conforming to the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] protocol take their input type and produce formatted instances of their output type. The formatting process accounts for locale-specific conventions, like grouping and separators for numbers, and presentation of units for measurements. The format styles Foundation provides produce their output as [doc:\/\/com.apple.documentation\/documentation\/Swift\/String] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString] instances. You can also create custom styles that format their output as any type, like XML or JSON [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Data] or an image.\n\nThere are two basic approaches to using a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle]:\n\nFoundation provides format styles for integers ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle]), floating-point numbers ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/FloatingPointFormatStyle]), decimals ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/Decimal\/FormatStyle]), measurements ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/Measurement\/FormatStyle]), arrays ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/ListFormatStyle]), and more. The “Conforming types” section below shows all the format styles available from Foundation and any system frameworks that implement the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] protocol. The numeric format styles also provide supporting format styles to format currency and percent values, like [doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle\/Currency] and [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Decimal\/FormatStyle\/Percent].\n\n### Modifying a format style\n\nFormat styles include modifier methods that return a new format style with an adjusted behavior. The following example creates an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle], then applies modifiers to round values down to the nearest 1,000 and applies formatting appropriate to the `fr_FR` locale:\n\nFoundation caches identical instances of a customized format style, so you don’t need to pass format style instances around unrelated parts of your app’s source code.\n\n### Accessing static instances\n\nTypes that conform to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] typically extend the base protocol with type properties or type methods to provide convenience instances. These are available for use in a data type’s `formatted(_:)` method when the format style’s input type matches the data type. For example, the various numeric format styles define `number` properties with generic constraints to match the different numeric types ([doc:\/\/com.apple.documentation\/documentation\/Swift\/Double], [doc:\/\/com.apple.documentation\/documentation\/Swift\/Int], [doc:\/\/com.apple.documentation\/documentation\/Swift\/Float16], and so on).\n\nTo see how this works, consider this example of a default formatter for an [doc:\/\/com.apple.documentation\/documentation\/Swift\/Int] value. Because `123456789` is a [doc:\/\/com.apple.documentation\/documentation\/Swift\/BinaryInteger], its [doc:\/\/com.apple.documentation\/documentation\/Swift\/BinaryInteger\/formatted(_:)-4qd73] method accepts an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle] parameter. The following example shows the style’s default behavior in the `en_US` locale.\n\n[doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle] extends [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] with multiple type properties called `number`, each of which is an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle] instance; these properties differ by which [doc:\/\/com.apple.documentation\/documentation\/Swift\/BinaryInteger]-conforming type they take as input. Since one of these statically-defined properties ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle\/number-7fxvo]) takes [doc:\/\/com.apple.documentation\/documentation\/Swift\/Int] as its input, you can use this type property instead of instantiating a new format style instance. Using dot notation to access this property on the inferred [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] makes the call point much easier to read, as seen here:\n\nFurthermore, since you can customize these statically-accessed format style instances, you can rewrite the example from the previous section without instantiating a new [doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle], like this:\n\n### Parsing with a format style\n\nTo perform the opposite conversion — from formatted output type to input data type — some format styles provide a corresponding [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ParseStrategy] type. These format styles typically expose an instance of this type as a variable, called `parseStrategy`.\n\nYou can use a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ParseStrategy] one of two ways:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/foundation\/formatstyle\ncrawled: 2025-12-02T18:07:18Z\n---\n\n# FormatStyle\n\n**Protocol**\n\nA type that converts a given data type into a representation in another type, such as a string.\n\n## Declaration\n\n```swift\nprotocol FormatStyle<FormatInput, FormatOutput> : Decodable, Encodable, Hashable\n```\n\n## Overview\n\nTypes conforming to the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] protocol take their input type and produce formatted instances of their output type. The formatting process accounts for locale-specific conventions, like grouping and separators for numbers, and presentation of units for measurements. The format styles Foundation provides produce their output as [doc:\/\/com.apple.documentation\/documentation\/Swift\/String] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString] instances. You can also create custom styles that format their output as any type, like XML or JSON [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Data] or an image.\n\nThere are two basic approaches to using a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle]:\n\n- Create an instance of a type that conforms to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] and apply it to one or more instances of the input type, by calling the style’s [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle\/format(_:)] method. Use this when you want to customize a style once and apply it repeatedly to many instances.\n- Pass an instance of a type that conforms to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] to the data type’s `formatted(_:)` method, which takes the style as a parameter. Use this for one-off formatting scenarios, or when you want to apply different format styles to the same data value. For the simplest cases, most types that support formatting also have a no-argument `formatted()` method that applies a locale-appropriate default format style.\n\nFoundation provides format styles for integers ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle]), floating-point numbers ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/FloatingPointFormatStyle]), decimals ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/Decimal\/FormatStyle]), measurements ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/Measurement\/FormatStyle]), arrays ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/ListFormatStyle]), and more. The “Conforming types” section below shows all the format styles available from Foundation and any system frameworks that implement the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] protocol. The numeric format styles also provide supporting format styles to format currency and percent values, like [doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle\/Currency] and [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Decimal\/FormatStyle\/Percent].\n\n### Modifying a format style\n\nFormat styles include modifier methods that return a new format style with an adjusted behavior. The following example creates an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle], then applies modifiers to round values down to the nearest 1,000 and applies formatting appropriate to the `fr_FR` locale:\n\n```swift\nlet style = IntegerFormatStyle<Int>()\n    .rounded(rule: .down, increment: 1000)\n    .locale(Locale(identifier: \"fr_FR\"))\nlet rounded = 123456789.formatted(style) \/\/ \"123 456 000\"\n```\n\nFoundation caches identical instances of a customized format style, so you don’t need to pass format style instances around unrelated parts of your app’s source code.\n\n### Accessing static instances\n\nTypes that conform to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] typically extend the base protocol with type properties or type methods to provide convenience instances. These are available for use in a data type’s `formatted(_:)` method when the format style’s input type matches the data type. For example, the various numeric format styles define `number` properties with generic constraints to match the different numeric types ([doc:\/\/com.apple.documentation\/documentation\/Swift\/Double], [doc:\/\/com.apple.documentation\/documentation\/Swift\/Int], [doc:\/\/com.apple.documentation\/documentation\/Swift\/Float16], and so on).\n\nTo see how this works, consider this example of a default formatter for an [doc:\/\/com.apple.documentation\/documentation\/Swift\/Int] value. Because `123456789` is a [doc:\/\/com.apple.documentation\/documentation\/Swift\/BinaryInteger], its [doc:\/\/com.apple.documentation\/documentation\/Swift\/BinaryInteger\/formatted(_:)-4qd73] method accepts an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle] parameter. The following example shows the style’s default behavior in the `en_US` locale.\n\n```swift\nlet formatted = 123456789.formatted(IntegerFormatStyle()) \/\/ \"123,456,789\"\n```\n\n[doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle] extends [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] with multiple type properties called `number`, each of which is an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle] instance; these properties differ by which [doc:\/\/com.apple.documentation\/documentation\/Swift\/BinaryInteger]-conforming type they take as input. Since one of these statically-defined properties ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle\/number-7fxvo]) takes [doc:\/\/com.apple.documentation\/documentation\/Swift\/Int] as its input, you can use this type property instead of instantiating a new format style instance. Using dot notation to access this property on the inferred [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle] makes the call point much easier to read, as seen here:\n\n```swift\nlet formatted = 123456789.formatted( .number) \/\/ \"123,456,789\"\n```\n\nFurthermore, since you can customize these statically-accessed format style instances, you can rewrite the example from the previous section without instantiating a new [doc:\/\/com.apple.foundation\/documentation\/Foundation\/IntegerFormatStyle], like this:\n\n```swift\nlet rounded = 123456789.formatted( .number\n    .rounded(rule: .down, increment: 1000)\n    .locale(Locale(identifier: \"fr_FR\"))) \/\/ \"123 456 000\"\n```\n\n### Parsing with a format style\n\nTo perform the opposite conversion — from formatted output type to input data type — some format styles provide a corresponding [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ParseStrategy] type. These format styles typically expose an instance of this type as a variable, called `parseStrategy`.\n\nYou can use a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ParseStrategy] one of two ways:\n\n- Initialize the data type by calling an initializer of that type that takes a formatted instance and a parse strategy as parameters. For example, you can create a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Decimal] from a formatted string with the initializer [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Decimal\/init(_:format:lenient:)-6fk71].\n- Create a parse strategy and call its [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ParseStrategy\/parse(_:)] method on one or more formatted instances.\n\n## Performing formatting\n\n- **format(_:)**: Formats a value, using this style.\n\n## Setting style Locale\n\n- **locale(_:)**: Modifies the format style to use the specified locale.\n\n## Applying numeric styles for integers\n\n- **number**: A style for formatting the Swift default integer type.\n- **number**: A style for formatting the Swift unsigned integer type.\n- **number**: A style for formatting 8-bit signed integers.\n- **number**: A style for formatting 16-bit signed integers.\n- **number**: A style for formatting 32-bit signed integers.\n- **number**: A style for formatting 64-bit signed integers.\n- **number**: A style for formatting 8-bit unsigned integers.\n- **number**: A style for formatting 16-bit unsigned integers.\n- **number**: A style for formatting 32-bit unsigned integers.\n- **number**: A style for formatting 64-bit unsigned integers.\n- **IntegerFormatStyle**: A structure that converts between integer values and their textual representations.\n\n## Applying numeric styles for floating-point values\n\n- **number**: A style for formatting the Swift standard single-precision floating-point type.\n- **number**: A style for formatting the Swift standard double-precision floating-point type.\n- **number**: A style for formatting 16-bit floating-point values.\n- **FloatingPointFormatStyle**: A structure that converts between floating-point values and their textual representations.\n\n## Applying numeric styles for decimals\n\n- **number**: A style for formatting decimal values.\n- **Decimal.FormatStyle**: A structure that converts between decimal values and their textual representations.\n\n## Applying percentage styles for integers\n\n- **percent**: A style for formatting signed integer types in Swift as a percent representation.\n- **percent**: A style for formatting signed integer types in Swift as a percent representation.\n- **percent**: A style for formatting 8-bit signed integers as a percent representation.\n- **percent**: A style for formatting 16-bit signed integers as a percent representation.\n- **percent**: A style for formatting 32-bit signed integers as a percent representation.\n- **percent**: A style for formatting 64-bit signed integers as a percent representation.\n- **percent**: A style for formatting 8-bit unsigned integers as a percent representation.\n- **percent**: A style for formatting 16-bit unsigned integers as a percent representation.\n- **percent**: A style for formatting 32-bit unsigned integers as a percent representation.\n- **percent**: A style for formatting 64-bit unsigned integers as a percent representation.\n- **IntegerFormatStyle.Percent**: A format style that converts between integer percentage values and their textual representations.\n\n## Applying percentage styles for floating-point values\n\n- **percent**: A style for formatting the Swift standard single-precision floating-point type as a percent representation.\n- **percent**: A style for formatting the Swift standard single-precision floating-point type as a percent representation.\n- **percent**: A style for formatting 16-bit floating-point values as a percent representation.\n- **FloatingPointFormatStyle.Percent**: A format style that converts between floating-point percentage values and their textual representations.\n\n## Applying percentage styles for decimals\n\n- **percent**: A style for formatting decimal values as a percent represntation.\n- **Decimal.FormatStyle.Percent**: A format style that converts between decimal percentage values and their textual representations.\n\n## Applying date and time styles\n\n- **dateTime**: A style for formatting a date and time.\n- **Date.FormatStyle**: A structure that creates a locale-appropriate string representation of a date instance and converts strings of dates and times into date instances.\n- **Date.ISO8601FormatStyle**: A type that converts between dates and their ISO-8601 string representations.\n- **verbatim(_:locale:timeZone:calendar:)**: Returns a style for formatting a date with an explicitly-specified style.\n- **Date.VerbatimFormatStyle**: A style that formats a date with an explicitly-specified style.\n- **interval**: A style for formatting a date interval.\n- **Date.IntervalFormatStyle**: A format style that creates string representations of date intervals.\n- **relative(presentation:unitsStyle:)**: Returns a style for formatting a date as relative to the current date.\n- **Date.RelativeFormatStyle**: A format style that forms locale-aware string representations of a relative date or time.\n- **components(style:fields:)**: Returns a style for formatting a date interval in terms of specific date components.\n- **Date.ComponentsFormatStyle**: A style for formatting a date interval in terms of specific date components.\n\n## Applying duration styles\n\n- **timeDuration**: A style for formatting a duration expressed as a range of dates.\n- **Date.ComponentsFormatStyle**: A style for formatting a date interval in terms of specific date components.\n- **time(pattern:)**: Returns a style for formatting a duration using a provided pattern.\n- **units(allowed:width:maximumUnitCount:zeroValueUnits:valueLength:fractionalPart:)**: Returns a style for formatting a duration that uses the specified units.\n- **units(allowed:width:maximumUnitCount:zeroValueUnits:valueLengthLimits:fractionalPart:)**: Returns a style for formatting a duration range that uses the specified units, with padding\/truncating behavior defined as a range.\n\n## Applying currency styles\n\n- **currency(code:)**: Returns a format style to use integer currency notation.\n- **currency(code:)**: Returns a format style to use floating-point currency notation.\n- **currency(code:)**: Returns a format style to use decimal currency notation.\n\n## Applying measurement styles\n\n- **measurement(width:usage:numberFormatStyle:)**: Returns a format style to format measurement units.\n- **measurement(width:usage:hidesScaleName:numberFormatStyle:)**: Returns a format style to format temperature units.\n\n## Applying person name styles\n\n- **name(style:)**: Returns a format style to use the given name style for formatting a name from its components.\n\n## Applying list styles\n\n- **list(memberStyle:type:width:)**: Returns a format style to format a list of items.\n- **list(type:width:)**: Returns a format style to format a list of strings.\n\n## Applying byte-count styles\n\n- **byteCount(style:allowedUnits:spellsOutZero:includesActualByteCount:)**: Returns a format style to format a data storage value.\n- **ByteCountFormatStyle**: A format style that provides string representations of byte counts.\n- **byteCount(style:allowedUnits:spellsOutZero:includesActualByteCount:)**: Returns a format style to format a data storage value represented with Foundation’s measurement type.\n- **Measurement.FormatStyle.ByteCount**: A format style that provides string representations of byte counts, expressed as measurements of information storage.\n\n## Applying URL styles\n\n- **url**: A style for formatting a URL.\n- **URL.FormatStyle**: A structure that converts between URL instances and their textual representations.\n\n## Declaring input and output types\n\n- **FormatInput**: The type this format style accepts as input.\n- **FormatOutput**: The type this format style produces as output.\n\n## Type Properties\n\n- **http**\n- **http**\n- **iso8601**\n- **iso8601**\n\n## Type Methods\n\n- **offset(to:allowedFields:maxFieldCount:sign:)**\n- **reference(to:allowedFields:maxFieldCount:thresholdField:)**\n- **stopwatch(startingAt:showsHours:maxFieldCount:maxPrecision:)**\n- **timer(countingDownIn:showsHours:maxFieldCount:maxPrecision:)**\n- **timer(countingUpIn:showsHours:maxFieldCount:maxPrecision:)**\n\n## Data formatting in Swift\n\n- **Language Introspector**: Converts data into human-readable text using formatters and locales.\n- **IntegerFormatStyle**: A structure that converts between integer values and their textual representations.\n- **FloatingPointFormatStyle**: A structure that converts between floating-point values and their textual representations.\n- **Decimal.FormatStyle**: A structure that converts between decimal values and their textual representations.\n- **ListFormatStyle**: A type that formats lists of items with a separator and conjunction appropriate for a given locale.\n- **StringStyle**\n- **URL.FormatStyle**: A structure that converts between URL instances and their textual representations.\n- **FormatStyleCapitalizationContext**: The capitalization formatting context used when formatting dates and times.\n- **Format Style Configurations**: Behaviors for traits like numeric precision, rounding, and scale, used for formatting and parsing numeric values.\n\n## Inherits From\n\n- Decodable\n- Encodable\n- Equatable\n- Hashable\n\n## Inherited By\n\n- DiscreteFormatStyle\n- ParseableFormatStyle\n\n## Conforming Types\n\n- ByteCountFormatStyle\n- ByteCountFormatStyle.Attributed\n- Date.AnchoredRelativeFormatStyle\n- Date.AttributedStyle\n- Date.ComponentsFormatStyle\n- Date.FormatStyle\n- Date.FormatStyle.Attributed\n- Date.HTTPFormatStyle\n- Date.ISO8601FormatStyle\n- Date.IntervalFormatStyle\n- Date.RelativeFormatStyle\n- Date.VerbatimFormatStyle\n- Date.VerbatimFormatStyle.Attributed\n- DateComponents.HTTPFormatStyle\n- DateComponents.ISO8601FormatStyle\n- Decimal.FormatStyle\n- Decimal.FormatStyle.Attributed\n- Decimal.FormatStyle.Currency\n- Decimal.FormatStyle.Percent\n- FloatingPointFormatStyle\n- FloatingPointFormatStyle.Attributed\n- FloatingPointFormatStyle.Currency\n- FloatingPointFormatStyle.Percent\n- IntegerFormatStyle\n- IntegerFormatStyle.Attributed\n- IntegerFormatStyle.Currency\n- IntegerFormatStyle.Percent\n- ListFormatStyle\n- Measurement.AttributedStyle\n- Measurement.AttributedStyle.ByteCount\n- Measurement.FormatStyle\n- Measurement.FormatStyle.ByteCount\n- PersonNameComponents.AttributedStyle\n- PersonNameComponents.FormatStyle\n- StringStyle\n- URL.FormatStyle\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Formats a value, using this style.",
+          "name" : "format(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/format(_:)"
+        }
+      ],
+      "title" : "Performing formatting"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Modifies the format style to use the specified locale.",
+          "name" : "locale(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/locale(_:)"
+        }
+      ],
+      "title" : "Setting style Locale"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A style for formatting the Swift default integer type.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-7fxvo"
+        },
+        {
+          "description" : "A style for formatting the Swift unsigned integer type.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-4ttgp"
+        },
+        {
+          "description" : "A style for formatting 8-bit signed integers.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-5hzgj"
+        },
+        {
+          "description" : "A style for formatting 16-bit signed integers.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-1o8fx"
+        },
+        {
+          "description" : "A style for formatting 32-bit signed integers.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-4cj49"
+        },
+        {
+          "description" : "A style for formatting 64-bit signed integers.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-3925i"
+        },
+        {
+          "description" : "A style for formatting 8-bit unsigned integers.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-8fms6"
+        },
+        {
+          "description" : "A style for formatting 16-bit unsigned integers.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-fak0"
+        },
+        {
+          "description" : "A style for formatting 32-bit unsigned integers.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-13mra"
+        },
+        {
+          "description" : "A style for formatting 64-bit unsigned integers.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-iyry"
+        },
+        {
+          "description" : "A structure that converts between integer values and their textual representations.",
+          "name" : "IntegerFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/IntegerFormatStyle"
+        }
+      ],
+      "title" : "Applying numeric styles for integers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A style for formatting the Swift standard single-precision floating-point type.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-432x3"
+        },
+        {
+          "description" : "A style for formatting the Swift standard double-precision floating-point type.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-8c8rj"
+        },
+        {
+          "description" : "A style for formatting 16-bit floating-point values.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-3qe2o"
+        },
+        {
+          "description" : "A structure that converts between floating-point values and their textual representations.",
+          "name" : "FloatingPointFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FloatingPointFormatStyle"
+        }
+      ],
+      "title" : "Applying numeric styles for floating-point values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A style for formatting decimal values.",
+          "name" : "number",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/number-3luf2"
+        },
+        {
+          "description" : "A structure that converts between decimal values and their textual representations.",
+          "name" : "Decimal.FormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Decimal\/FormatStyle"
+        }
+      ],
+      "title" : "Applying numeric styles for decimals"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A style for formatting signed integer types in Swift as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-cl9k"
+        },
+        {
+          "description" : "A style for formatting signed integer types in Swift as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-9pj79"
+        },
+        {
+          "description" : "A style for formatting 8-bit signed integers as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-7r4rl"
+        },
+        {
+          "description" : "A style for formatting 16-bit signed integers as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-3qjzh"
+        },
+        {
+          "description" : "A style for formatting 32-bit signed integers as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-1f0q"
+        },
+        {
+          "description" : "A style for formatting 64-bit signed integers as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-934se"
+        },
+        {
+          "description" : "A style for formatting 8-bit unsigned integers as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-8izzv"
+        },
+        {
+          "description" : "A style for formatting 16-bit unsigned integers as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-4kdme"
+        },
+        {
+          "description" : "A style for formatting 32-bit unsigned integers as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-2f11j"
+        },
+        {
+          "description" : "A style for formatting 64-bit unsigned integers as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-8bxla"
+        },
+        {
+          "description" : "A format style that converts between integer percentage values and their textual representations.",
+          "name" : "IntegerFormatStyle.Percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/IntegerFormatStyle\/Percent"
+        }
+      ],
+      "title" : "Applying percentage styles for integers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A style for formatting the Swift standard single-precision floating-point type as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-2gva1"
+        },
+        {
+          "description" : "A style for formatting the Swift standard single-precision floating-point type as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-6cwuv"
+        },
+        {
+          "description" : "A style for formatting 16-bit floating-point values as a percent representation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-grss"
+        },
+        {
+          "description" : "A format style that converts between floating-point percentage values and their textual representations.",
+          "name" : "FloatingPointFormatStyle.Percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FloatingPointFormatStyle\/Percent"
+        }
+      ],
+      "title" : "Applying percentage styles for floating-point values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A style for formatting decimal values as a percent represntation.",
+          "name" : "percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/percent-4knsm"
+        },
+        {
+          "description" : "A format style that converts between decimal percentage values and their textual representations.",
+          "name" : "Decimal.FormatStyle.Percent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Decimal\/FormatStyle\/Percent"
+        }
+      ],
+      "title" : "Applying percentage styles for decimals"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A style for formatting a date and time.",
+          "name" : "dateTime",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/dateTime"
+        },
+        {
+          "description" : "A structure that creates a locale-appropriate string representation of a date instance and converts strings of dates and times into date instances.",
+          "name" : "Date.FormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/FormatStyle"
+        },
+        {
+          "description" : "A type that converts between dates and their ISO-8601 string representations.",
+          "name" : "Date.ISO8601FormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/ISO8601FormatStyle"
+        },
+        {
+          "description" : "Returns a style for formatting a date with an explicitly-specified style.",
+          "name" : "verbatim(_:locale:timeZone:calendar:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/verbatim(_:locale:timeZone:calendar:)"
+        },
+        {
+          "description" : "A style that formats a date with an explicitly-specified style.",
+          "name" : "Date.VerbatimFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/VerbatimFormatStyle"
+        },
+        {
+          "description" : "A style for formatting a date interval.",
+          "name" : "interval",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/interval"
+        },
+        {
+          "description" : "A format style that creates string representations of date intervals.",
+          "name" : "Date.IntervalFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle"
+        },
+        {
+          "description" : "Returns a style for formatting a date as relative to the current date.",
+          "name" : "relative(presentation:unitsStyle:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/relative(presentation:unitsStyle:)"
+        },
+        {
+          "description" : "A format style that forms locale-aware string representations of a relative date or time.",
+          "name" : "Date.RelativeFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/RelativeFormatStyle"
+        },
+        {
+          "description" : "Returns a style for formatting a date interval in terms of specific date components.",
+          "name" : "components(style:fields:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/components(style:fields:)"
+        },
+        {
+          "description" : "A style for formatting a date interval in terms of specific date components.",
+          "name" : "Date.ComponentsFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/ComponentsFormatStyle"
+        }
+      ],
+      "title" : "Applying date and time styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A style for formatting a duration expressed as a range of dates.",
+          "name" : "timeDuration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/timeDuration"
+        },
+        {
+          "description" : "A style for formatting a date interval in terms of specific date components.",
+          "name" : "Date.ComponentsFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/ComponentsFormatStyle"
+        },
+        {
+          "description" : "Returns a style for formatting a duration using a provided pattern.",
+          "name" : "time(pattern:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/time(pattern:)"
+        },
+        {
+          "description" : "Returns a style for formatting a duration that uses the specified units.",
+          "name" : "units(allowed:width:maximumUnitCount:zeroValueUnits:valueLength:fractionalPart:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/units(allowed:width:maximumUnitCount:zeroValueUnits:valueLength:fractionalPart:)"
+        },
+        {
+          "description" : "Returns a style for formatting a duration range that uses the specified units, with padding\/truncating behavior defined as a range.",
+          "name" : "units(allowed:width:maximumUnitCount:zeroValueUnits:valueLengthLimits:fractionalPart:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/units(allowed:width:maximumUnitCount:zeroValueUnits:valueLengthLimits:fractionalPart:)"
+        }
+      ],
+      "title" : "Applying duration styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a format style to use integer currency notation.",
+          "name" : "currency(code:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/currency(code:)-is0v"
+        },
+        {
+          "description" : "Returns a format style to use floating-point currency notation.",
+          "name" : "currency(code:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/currency(code:)-1yg68"
+        },
+        {
+          "description" : "Returns a format style to use decimal currency notation.",
+          "name" : "currency(code:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/currency(code:)-6fhr2"
+        }
+      ],
+      "title" : "Applying currency styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a format style to format measurement units.",
+          "name" : "measurement(width:usage:numberFormatStyle:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/measurement(width:usage:numberFormatStyle:)"
+        },
+        {
+          "description" : "Returns a format style to format temperature units.",
+          "name" : "measurement(width:usage:hidesScaleName:numberFormatStyle:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/measurement(width:usage:hidesScaleName:numberFormatStyle:)"
+        }
+      ],
+      "title" : "Applying measurement styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a format style to use the given name style for formatting a name from its components.",
+          "name" : "name(style:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/name(style:)"
+        }
+      ],
+      "title" : "Applying person name styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a format style to format a list of items.",
+          "name" : "list(memberStyle:type:width:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/list(memberStyle:type:width:)"
+        },
+        {
+          "description" : "Returns a format style to format a list of strings.",
+          "name" : "list(type:width:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/list(type:width:)"
+        }
+      ],
+      "title" : "Applying list styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a format style to format a data storage value.",
+          "name" : "byteCount(style:allowedUnits:spellsOutZero:includesActualByteCount:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/byteCount(style:allowedUnits:spellsOutZero:includesActualByteCount:)-59ep0"
+        },
+        {
+          "description" : "A format style that provides string representations of byte counts.",
+          "name" : "ByteCountFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/ByteCountFormatStyle"
+        },
+        {
+          "description" : "Returns a format style to format a data storage value represented with Foundation’s measurement type.",
+          "name" : "byteCount(style:allowedUnits:spellsOutZero:includesActualByteCount:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/byteCount(style:allowedUnits:spellsOutZero:includesActualByteCount:)-ev0u"
+        },
+        {
+          "description" : "A format style that provides string representations of byte counts, expressed as measurements of information storage.",
+          "name" : "Measurement.FormatStyle.ByteCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Measurement\/FormatStyle\/ByteCount"
+        }
+      ],
+      "title" : "Applying byte-count styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A style for formatting a URL.",
+          "name" : "url",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/url"
+        },
+        {
+          "description" : "A structure that converts between URL instances and their textual representations.",
+          "name" : "URL.FormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle"
+        }
+      ],
+      "title" : "Applying URL styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The type this format style accepts as input.",
+          "name" : "FormatInput",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/FormatInput"
+        },
+        {
+          "description" : "The type this format style produces as output.",
+          "name" : "FormatOutput",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/FormatOutput"
+        }
+      ],
+      "title" : "Declaring input and output types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "http",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/http-5jh9g"
+        },
+        {
+          "description" : "",
+          "name" : "http",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/http-9pwm2"
+        },
+        {
+          "description" : "",
+          "name" : "iso8601",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/iso8601-4smgu"
+        },
+        {
+          "description" : "",
+          "name" : "iso8601",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/iso8601-773rn"
+        }
+      ],
+      "title" : "Type Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "offset(to:allowedFields:maxFieldCount:sign:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/offset(to:allowedFields:maxFieldCount:sign:)"
+        },
+        {
+          "description" : "",
+          "name" : "reference(to:allowedFields:maxFieldCount:thresholdField:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/reference(to:allowedFields:maxFieldCount:thresholdField:)"
+        },
+        {
+          "description" : "",
+          "name" : "stopwatch(startingAt:showsHours:maxFieldCount:maxPrecision:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/stopwatch(startingAt:showsHours:maxFieldCount:maxPrecision:)"
+        },
+        {
+          "description" : "",
+          "name" : "timer(countingDownIn:showsHours:maxFieldCount:maxPrecision:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/timer(countingDownIn:showsHours:maxFieldCount:maxPrecision:)"
+        },
+        {
+          "description" : "",
+          "name" : "timer(countingUpIn:showsHours:maxFieldCount:maxPrecision:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/timer(countingUpIn:showsHours:maxFieldCount:maxPrecision:)"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Converts data into human-readable text using formatters and locales.",
+          "name" : "Language Introspector",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/language-introspector"
+        },
+        {
+          "description" : "A structure that converts between integer values and their textual representations.",
+          "name" : "IntegerFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/IntegerFormatStyle"
+        },
+        {
+          "description" : "A structure that converts between floating-point values and their textual representations.",
+          "name" : "FloatingPointFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FloatingPointFormatStyle"
+        },
+        {
+          "description" : "A structure that converts between decimal values and their textual representations.",
+          "name" : "Decimal.FormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Decimal\/FormatStyle"
+        },
+        {
+          "description" : "A type that formats lists of items with a separator and conjunction appropriate for a given locale.",
+          "name" : "ListFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/ListFormatStyle"
+        },
+        {
+          "description" : "",
+          "name" : "StringStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/StringStyle"
+        },
+        {
+          "description" : "A structure that converts between URL instances and their textual representations.",
+          "name" : "URL.FormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle"
+        },
+        {
+          "description" : "The capitalization formatting context used when formatting dates and times.",
+          "name" : "FormatStyleCapitalizationContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyleCapitalizationContext"
+        },
+        {
+          "description" : "Behaviors for traits like numeric precision, rounding, and scale, used for formatting and parsing numeric values.",
+          "name" : "Format Style Configurations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/format-style-configurations"
+        }
+      ],
+      "title" : "Data formatting in Swift"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "Decodable"
+        },
+        {
+          "name" : "Encodable"
+        },
+        {
+          "name" : "Equatable"
+        },
+        {
+          "name" : "Hashable"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "FormatStyle",
+  "url" : "https:\/\/developer.apple.com\/documentation\/foundation\/formatstyle"
+}

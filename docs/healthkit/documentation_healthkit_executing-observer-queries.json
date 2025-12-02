@@ -1,0 +1,50 @@
+{
+  "abstract" : "Create and run observer queries.",
+  "codeExamples" : [
+    {
+      "code" : "guard let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount) else {\n    \/\/ This should never fail when using a defined constant.\n    fatalError(\"*** Unable to get the step count type ***\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let query = HKObserverQuery(sampleType: stepCountType, predicate: nil) { (query, completionHandler, errorOrNil) in\n    \n    if let error = errorOrNil {\n        \/\/ Properly handle the error.\n        return\n    }\n        \n    \/\/ Take whatever steps are necessary to update your app.\n    \/\/ This often involves executing other queries to access the new data.\n    \n    \/\/ If you have subscribed for background updates you must call the completion handler here.\n    \/\/ completionHandler()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "store.execute(query)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "b9ea78995d6a133e3efeba4644b75c8ebd10495f676fcc8f3d4c0e29e3c53f83",
+  "crawledAt" : "2025-12-01T13:01:54Z",
+  "id" : "F7A353FA-94FC-42FE-A648-E29685FC3EB8",
+  "kind" : "article",
+  "module" : "HealthKit",
+  "overview" : "## Overview\n\nObserver queries are long-running queries that monitor the HealthKit store on a background thread, and update your app when the HealthKit store saves or deletes a matching sample. By default, observer queries only return results while your app is in the foreground; however, you can configure your app to also receive update notifications in the background.\n\n### Create Observer Queries\n\nTo create an observer query, call the [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKObserverQuery\/init(sampleType:predicate:updateHandler:)] initializer. Start by creating a type object for the samples you want to observe. The following example creates a type object for step counts.\n\nNext, create the observer query.\n\nAfter the query is instantiated, call the HealthKit store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/execute(_:)] method.\n\nThis runs the query on an anonymous background queue. Whenever a matching sample is added to or deleted from the HealthKit store, the system calls the query’s update handler on the same background queue (but not necessarily the same thread).\n\nTo stop the query, call the HealthKit store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/stop(_:)] method.\n\n### Receive Background Deliveries\n\nApps can also register to receive updates while in the background by calling the HealthKit store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/enableBackgroundDelivery(for:frequency:withCompletion:)] method. This method registers your app for background notifications. HealthKit wakes your app when the store receives new samples of the specified type. HealthKit notifies your app at most once per time period defined by the frequency you specified when registering.\n\nAs soon as your app launches, HealthKit calls the update handler for any observer queries that match the newly saved data. If you plan on supporting background delivery, set up all your observer queries in your app delegate’s [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/application(_:didFinishLaunchingWithOptions:)] method. By setting up the queries in [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/application(_:didFinishLaunchingWithOptions:)], you ensure that the queries are instantiated and ready to use before HealthKit delivers the updates.\n\nAfter your observer queries have finished processing the new data, you must call the update’s completion handler to notify HealthKit that you have successfully received the background delivery.\n\nFor more information on managing background deliveries, see Managing Background Deliveries in [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore]. For more information on the background delivery completion handler, see [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKObserverQueryCompletionHandler].",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/HealthKit\/executing-observer-queries\ncrawled: 2025-12-01T13:01:54Z\n---\n\n# Executing Observer Queries\n\n**Article**\n\nCreate and run observer queries.\n\n## Overview\n\nObserver queries are long-running queries that monitor the HealthKit store on a background thread, and update your app when the HealthKit store saves or deletes a matching sample. By default, observer queries only return results while your app is in the foreground; however, you can configure your app to also receive update notifications in the background.\n\n### Create Observer Queries\n\nTo create an observer query, call the [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKObserverQuery\/init(sampleType:predicate:updateHandler:)] initializer. Start by creating a type object for the samples you want to observe. The following example creates a type object for step counts.\n\n```swift\nguard let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount) else {\n    \/\/ This should never fail when using a defined constant.\n    fatalError(\"*** Unable to get the step count type ***\")\n}\n```\n\nNext, create the observer query.\n\n```swift\nlet query = HKObserverQuery(sampleType: stepCountType, predicate: nil) { (query, completionHandler, errorOrNil) in\n    \n    if let error = errorOrNil {\n        \/\/ Properly handle the error.\n        return\n    }\n        \n    \/\/ Take whatever steps are necessary to update your app.\n    \/\/ This often involves executing other queries to access the new data.\n    \n    \/\/ If you have subscribed for background updates you must call the completion handler here.\n    \/\/ completionHandler()\n}\n```\n\nAfter the query is instantiated, call the HealthKit store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/execute(_:)] method.\n\n```swift\nstore.execute(query)\n```\n\nThis runs the query on an anonymous background queue. Whenever a matching sample is added to or deleted from the HealthKit store, the system calls the query’s update handler on the same background queue (but not necessarily the same thread).\n\n\n\nTo stop the query, call the HealthKit store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/stop(_:)] method.\n\n### Receive Background Deliveries\n\nApps can also register to receive updates while in the background by calling the HealthKit store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/enableBackgroundDelivery(for:frequency:withCompletion:)] method. This method registers your app for background notifications. HealthKit wakes your app when the store receives new samples of the specified type. HealthKit notifies your app at most once per time period defined by the frequency you specified when registering.\n\nAs soon as your app launches, HealthKit calls the update handler for any observer queries that match the newly saved data. If you plan on supporting background delivery, set up all your observer queries in your app delegate’s [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/application(_:didFinishLaunchingWithOptions:)] method. By setting up the queries in [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/application(_:didFinishLaunchingWithOptions:)], you ensure that the queries are instantiated and ready to use before HealthKit delivers the updates.\n\nAfter your observer queries have finished processing the new data, you must call the update’s completion handler to notify HealthKit that you have successfully received the background delivery.\n\n\n\nFor more information on managing background deliveries, see Managing Background Deliveries in [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore]. For more information on the background delivery completion handler, see [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKObserverQueryCompletionHandler].\n\n## Creating Observer Queries\n\n- **init(sampleType:predicate:updateHandler:)**: Instantiates and returns a query that monitors the HealthKit store and responds to changes.\n- **init(queryDescriptors:updateHandler:)**: Creates a query that monitors the HealthKit store and responds to any changes matching any of the query descriptors you provided.\n- **HKObserverQueryCompletionHandler**: The completion handler for background deliveries.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Instantiates and returns a query that monitors the HealthKit store and responds to changes.",
+          "name" : "init(sampleType:predicate:updateHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKObserverQuery\/init(sampleType:predicate:updateHandler:)"
+        },
+        {
+          "description" : "Creates a query that monitors the HealthKit store and responds to any changes matching any of the query descriptors you provided.",
+          "name" : "init(queryDescriptors:updateHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKObserverQuery\/init(queryDescriptors:updateHandler:)"
+        },
+        {
+          "description" : "The completion handler for background deliveries.",
+          "name" : "HKObserverQueryCompletionHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKObserverQueryCompletionHandler"
+        }
+      ],
+      "title" : "Creating Observer Queries"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Executing Observer Queries",
+  "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/executing-observer-queries"
+}

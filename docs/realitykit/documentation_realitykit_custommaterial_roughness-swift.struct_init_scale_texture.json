@@ -1,0 +1,52 @@
+{
+  "abstract" : "Creates a roughness object from a color or texture.",
+  "codeExamples" : [
+    {
+      "code" : "if let roughnessResource = try? TextureResource.load(named:\n\"entity_roughness\") {\n    let roughness = MaterialParameters.Texture(roughnessResource)\n    customMaterial.roughness = .init(scale: 0.5, texture: roughness)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "    \/\/ Retrieve the roughness scale from the CustomMaterial.\n    float roughnessScale = params.material_constants().roughness_scale();\n\n    \/\/ Retrieve the entity's UV texture coordinates.\n    float2 uv = params.geometry().uv0();\n\n    \/\/ Models loaded from USDZ or Reality Composer use UVs that are flipped\n    \/\/ on the y-axis. This compensates for that.\n    uv.y = 1.0 - uv.y;\n\n    \/\/ Sample the texture based on the resulting UVs.\n    auto tex = params.textures();\n    half roughness = tex.roughness().sample(textureSampler, uv).r;\n\n    \/\/ Multiply the scale and the sampled value from the texture, and assign\n    \/\/ the result to the shader's base color property.\n    roughness *= roughnessScale;\n\n    \/\/ Set the roughness value to be used by the custom material shader.\n    params.surface().set_roughness(roughness);",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "725b331bfd04d62139a6b7887243fb03d31a6090bb051af05de9c74068b44d22",
+  "crawledAt" : "2025-12-01T20:17:15Z",
+  "declaration" : {
+    "code" : "init(scale: Float = 1.0, texture: CustomMaterial.Texture? = nil)",
+    "language" : "swift"
+  },
+  "id" : "56863693-F146-420F-B123-AF2DA1CA515E",
+  "kind" : "unknown",
+  "module" : "RealityKit",
+  "overview" : "## Discussion\n\nUse this initializer to create an object to specify the amount of roughness using a single value or an image texture, or both.\n\nThe `roughness` property represents how much the surface of the entity scatters light that it reflects. A material with a high roughness has a matte appearance, and one with a low roughness has a shiny appearance.\n\n\n\nThe following code demonstrates creating a roughness object using this initalizer:\n\nWith custom materials, the `texture` and `scale` properties you set on the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/roughness-swift.property] property are available in your surface shader function, but RealityKit doesn’t automatically use them to render your entity. To render an entity with roughness, set [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/lightingModel-swift.property] to [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/LightingModel-swift.enum\/lit] or [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/LightingModel-swift.enum\/clearcoat], and call `params.surface().set_roughness()` from its surface shader.\n\nTo achieve the same metallic behavior as [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PhysicallyBasedMaterial], the surface shader function multiplies the roughness scale by the sampled value from the roughness texture, as the following Metal code demonstrates:\n\nFor more information on creating custom materials and writing shader functions, see [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/modifying-realitykit-rendering-using-custom-materials].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/Roughness-swift.struct\/init(scale:texture:)\ncrawled: 2025-12-01T20:17:15Z\n---\n\n# init(scale:texture:)\n\n**Initializer**\n\nCreates a roughness object from a color or texture.\n\n## Declaration\n\n```swift\ninit(scale: Float = 1.0, texture: CustomMaterial.Texture? = nil)\n```\n\n## Parameters\n\n- **scale**: The roughness value.\n- **texture**: An optional image texture.\n\n## Discussion\n\nUse this initializer to create an object to specify the amount of roughness using a single value or an image texture, or both.\n\nThe `roughness` property represents how much the surface of the entity scatters light that it reflects. A material with a high roughness has a matte appearance, and one with a low roughness has a shiny appearance.\n\n\n\nThe following code demonstrates creating a roughness object using this initalizer:\n\n```swift\nif let roughnessResource = try? TextureResource.load(named:\n\"entity_roughness\") {\n    let roughness = MaterialParameters.Texture(roughnessResource)\n    customMaterial.roughness = .init(scale: 0.5, texture: roughness)\n}\n```\n\nWith custom materials, the `texture` and `scale` properties you set on the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/roughness-swift.property] property are available in your surface shader function, but RealityKit doesn’t automatically use them to render your entity. To render an entity with roughness, set [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/lightingModel-swift.property] to [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/LightingModel-swift.enum\/lit] or [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/CustomMaterial\/LightingModel-swift.enum\/clearcoat], and call `params.surface().set_roughness()` from its surface shader.\n\nTo achieve the same metallic behavior as [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PhysicallyBasedMaterial], the surface shader function multiplies the roughness scale by the sampled value from the roughness texture, as the following Metal code demonstrates:\n\n```swift\n    \/\/ Retrieve the roughness scale from the CustomMaterial.\n    float roughnessScale = params.material_constants().roughness_scale();\n\n    \/\/ Retrieve the entity's UV texture coordinates.\n    float2 uv = params.geometry().uv0();\n\n    \/\/ Models loaded from USDZ or Reality Composer use UVs that are flipped\n    \/\/ on the y-axis. This compensates for that.\n    uv.y = 1.0 - uv.y;\n\n    \/\/ Sample the texture based on the resulting UVs.\n    auto tex = params.textures();\n    half roughness = tex.roughness().sample(textureSampler, uv).r;\n\n    \/\/ Multiply the scale and the sampled value from the texture, and assign\n    \/\/ the result to the shader's base color property.\n    roughness *= roughnessScale;\n\n    \/\/ Set the roughness value to be used by the custom material shader.\n    params.surface().set_roughness(roughness);\n```\n\nFor more information on creating custom materials and writing shader functions, see [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/modifying-realitykit-rendering-using-custom-materials].\n\n## Creating a roughness object\n\n- **init(floatLiteral:)**: Creates an object to specify the amount of roughness, using a single value that applies to the entire material.\n- **init(_:)**: Creates a roughness object from a physically based material’s roughness property.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an object to specify the amount of roughness, using a single value that applies to the entire material.",
+          "name" : "init(floatLiteral:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/Roughness-swift.struct\/init(floatLiteral:)"
+        },
+        {
+          "description" : "Creates a roughness object from a physically based material’s roughness property.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/Roughness-swift.struct\/init(_:)"
+        }
+      ],
+      "title" : "Creating a roughness object"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "init(scale:texture:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/CustomMaterial\/Roughness-swift.struct\/init(scale:texture:)"
+}

@@ -1,0 +1,332 @@
+{
+  "abstract" : "An object that enables you to fetch, insert, and delete models, and save any changes to disk.",
+  "codeExamples" : [
+    {
+      "code" : "struct LastModifiedView: View {\n    @Environment(\\.modelContext) private var modelContext\n\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct LastModifiedView: View {\n    @Environment(\\.modelContext) private var context\n    @State private var lastModified = Date.now\n    \n    private var didSavePublisher: NotificationCenter.Publisher {\n        NotificationCenter.default\n            .publisher(for: ModelContext.willSave, object: context)\n    }\n    \n    var body: some View {\n        Text(lastModified.formatted(date: .abbreviated, time: .shortened))\n            .onReceive(didSavePublisher) { _ in\n                lastModified = Date.now\n            }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Equatable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "26b77c4a87093d1f7518831db0f2d7e6dfb8e17edcc6e86ade38389905eea204",
+  "crawledAt" : "2025-12-02T16:15:25Z",
+  "declaration" : {
+    "code" : "class ModelContext",
+    "language" : "swift"
+  },
+  "id" : "3A7F6F19-16B5-4567-9D71-F813FAC5EB81",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "SwiftData",
+  "overview" : "## Overview\n\nA model context is central to SwiftData as it’s responsible for managing the entire lifecycle of your persistent models. You use a context to insert new models, track and persist changes to those models, and to delete those models when you no longer need them. A context understands your app’s schema but doesn’t know about any individual models until you tell it to fetch some from the persistent storage or populate it with new models. Afterwards, any changes made to those models exist only in memory until the context implicitly writes them to the persistent storage, or you manually invoke [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/save()]. For more information about implicit writes, see [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/autosaveEnabled].\n\nIf your app’s schema describes relationships between models, you don’t need to manually insert each model into the context when you first create them. Instead, create the graph of related models and insert only the graph’s root model into the context. The context recognizes the hierarchy and automatically handles the insertion of the related models. The same behavior applies even if the graph contains both new and existing models.\n\nA model context depends on a model container for knowledge about your app’s schema and persistent storage. After you attach a container to your app’s window group or view hierarchy, an associated context becomes available in the SwiftUI environment. This context is bound to the main actor and the framework configures the context to implicitly save future model changes. The [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/Query()] macros use the same context to perform their fetches.\n\nAfter you establish access to a model context, use that context’s [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/insert(_:)] and [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/delete(_:)] methods to add and remove models. You can also delete several models at once using [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/delete(model:where:includeSubclasses:)]. There isn’t a corresponding method to update a model because the context automatically tracks all changes to its known models. Use the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/hasChanges] property to determine if the context has unsaved changes, and call [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/rollback()] to discard any pending inserts and deletes and any restore changed models to their most recent saved state.\n\nAlthough you fetch models primarily with the `Query()` macro (and its variants), you can use a model context to perform almost identical fetches. For example, use the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetch(_:)] and [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetch(_:batchSize:)] methods to retrieve all models of a certain type that match a set of criteria. And use [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetchCount(_:)] to determine the number of models that match some criteria without the overhead of fetching the models themselves. If you need to be able to identify models that match some criteria but don’t require all of the associated data, use [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetchIdentifiers(_:)] and [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetchIdentifiers(_:batchSize:)] to retrieve only those models’ persistent identifiers.\n\nA model context posts a [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/willSave] notification before it attempts a save operation, and a [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/didSave] notification immediately after that operation succeeds. Subscribe to one, or both, of these notifications if your app needs to be aware of these events. The `didSave` notification provides additional information about any inserted, updated, and deleted models.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\ncrawled: 2025-12-02T16:15:25Z\n---\n\n# ModelContext\n\n**Class**\n\nAn object that enables you to fetch, insert, and delete models, and save any changes to disk.\n\n## Declaration\n\n```swift\nclass ModelContext\n```\n\n## Overview\n\nA model context is central to SwiftData as it’s responsible for managing the entire lifecycle of your persistent models. You use a context to insert new models, track and persist changes to those models, and to delete those models when you no longer need them. A context understands your app’s schema but doesn’t know about any individual models until you tell it to fetch some from the persistent storage or populate it with new models. Afterwards, any changes made to those models exist only in memory until the context implicitly writes them to the persistent storage, or you manually invoke [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/save()]. For more information about implicit writes, see [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/autosaveEnabled].\n\nIf your app’s schema describes relationships between models, you don’t need to manually insert each model into the context when you first create them. Instead, create the graph of related models and insert only the graph’s root model into the context. The context recognizes the hierarchy and automatically handles the insertion of the related models. The same behavior applies even if the graph contains both new and existing models.\n\nA model context depends on a model container for knowledge about your app’s schema and persistent storage. After you attach a container to your app’s window group or view hierarchy, an associated context becomes available in the SwiftUI environment. This context is bound to the main actor and the framework configures the context to implicitly save future model changes. The [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/Query()] macros use the same context to perform their fetches.\n\n```swift\nstruct LastModifiedView: View {\n    @Environment(\\.modelContext) private var modelContext\n\n}\n```\n\n\n\nAfter you establish access to a model context, use that context’s [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/insert(_:)] and [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/delete(_:)] methods to add and remove models. You can also delete several models at once using [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/delete(model:where:includeSubclasses:)]. There isn’t a corresponding method to update a model because the context automatically tracks all changes to its known models. Use the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/hasChanges] property to determine if the context has unsaved changes, and call [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/rollback()] to discard any pending inserts and deletes and any restore changed models to their most recent saved state.\n\nAlthough you fetch models primarily with the `Query()` macro (and its variants), you can use a model context to perform almost identical fetches. For example, use the [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetch(_:)] and [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetch(_:batchSize:)] methods to retrieve all models of a certain type that match a set of criteria. And use [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetchCount(_:)] to determine the number of models that match some criteria without the overhead of fetching the models themselves. If you need to be able to identify models that match some criteria but don’t require all of the associated data, use [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetchIdentifiers(_:)] and [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/fetchIdentifiers(_:batchSize:)] to retrieve only those models’ persistent identifiers.\n\nA model context posts a [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/willSave] notification before it attempts a save operation, and a [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/didSave] notification immediately after that operation succeeds. Subscribe to one, or both, of these notifications if your app needs to be aware of these events. The `didSave` notification provides additional information about any inserted, updated, and deleted models.\n\n```swift\nstruct LastModifiedView: View {\n    @Environment(\\.modelContext) private var context\n    @State private var lastModified = Date.now\n    \n    private var didSavePublisher: NotificationCenter.Publisher {\n        NotificationCenter.default\n            .publisher(for: ModelContext.willSave, object: context)\n    }\n    \n    var body: some View {\n        Text(lastModified.formatted(date: .abbreviated, time: .shortened))\n            .onReceive(didSavePublisher) { _ in\n                lastModified = Date.now\n            }\n    }\n}\n```\n\n\n\n## Creating a model context\n\n- **init(_:)**: Creates a context that belongs to the specified model container.\n- **ModelContainer**: An object that manages an app’s schema and model storage configuration.\n\n## Fetching models\n\n- **fetch(_:)**: Returns an array of typed models that match the criteria of the specified fetch descriptor.\n- **fetch(_:batchSize:)**: Returns a collection of typed models, in batches, which match the criteria of the specified fetch descriptor.\n- **fetchCount(_:)**: Returns the number of models that match the criteria of the specified fetch descriptor.\n- **FetchDescriptor**: A type that describes the criteria, sort order, and any additional configuration to use when performing a fetch.\n- **FetchResultsCollection**: A collection that efficiently provides the results of a completed fetch.\n- **enumerate(_:batchSize:allowEscapingMutations:block:)**: Runs a closure for each model that matches the criteria of the specified fetch descriptor.\n- **model(for:)**: Returns the persistent model for the specified identifier.\n- **registeredModel(for:)**: Returns the typed model for the specified identifier.\n\n## Inserting models\n\n- **insertedModelsArray**: The array of inserted models that the context is yet to persist.\n- **insert(_:)**: Registers the specified model with the context so it can include the model in the next save operation.\n\n## Modifying models\n\n- **hasChanges**: A Boolean value that indicates whether the context has unsaved changes.\n- **changedModelsArray**: The array of registered models that have unsaved changes.\n\n## Deleting models\n\n- **deletedModelsArray**: The array of registered models that the context will remove from the persistent storage during the next save operation.\n- **delete(_:)**: Removes the specified model from the persistent storage during the next save operation.\n- **delete(model:where:includeSubclasses:)**: Removes each model satisfying the given predicate from the persistent storage during the next save operation.\n\n## Persisting unsaved changes\n\n- **autosaveEnabled**: A Boolean value that indicates whether the context should automatically save any pending changes when certain events occur.\n- **save()**: Writes any pending inserts, changes, and deletes to the persistent storage.\n- **transaction(block:)**: Runs the provided closure, and once it finishes, writes any pending inserts, changes, and deletes to the persistent storage.\n- **rollback()**: Discards pending inserts and deletes, restores changed models to their most recent committed state, and empties the undo stack.\n\n## Fetching only persistent identifiers\n\n- **fetchIdentifiers(_:)**: Returns an array of persistent identifiers, where each identifier represents a single model that satisfies the criteria of the specified fetch descriptor.\n- **fetchIdentifiers(_:batchSize:)**: Returns a collection of persistent identifiers, in batches, where each identifier represents a single model that satisfies the criteria of the specified fetch descriptor.\n\n## Accessing the container\n\n- **container**: The context’s model container.\n\n## Performing undo and redo\n\n- **processPendingChanges()**: Tells the undo manager to record any changes made to the context’s registered models.\n- **undoManager**: The object that provides undo support for the context.\n\n## Registering for notifications\n\n- **willSave**: A notification that posts when the context is about to process pending inserts, changes, and deletes.\n- **didSave**: A notification that posts when the context finishes processing pending inserts, changes, and deletes.\n- **ModelContext.NotificationKey**: Describes the data in the user info dictionary of a notification sent by a model context.\n\n## Debugging contexts\n\n- **debugDescription**: A textual representation of the context, suitable for debugging.\n\n## Instance Properties\n\n- **author**\n- **editingState**\n\n## Instance Methods\n\n- **deleteHistory(_:)**\n- **fetchHistory(_:)**\n\n## Model life cycle\n\n- **ModelContainer**: An object that manages an app’s schema and model storage configuration.\n- **Fetching and filtering time-based model changes**: Track all inserts, updates, and deletes that occur in a data store and process them as a series of chronological transactions.\n- **HistoryDescriptor**: A type that describes the criteria, and, optionally, sort order, to use when fetching history data\n- **Deleting persistent data from your app**: Explore different ways to use SwiftData to delete persistent data.\n- **Reverting data changes using the undo manager**: Automatically record data change operations that people perform in your SwiftUI app, and let them undo and redo those changes.\n- **Syncing model data across a person’s devices**: Add the required capabilities and define a compatible schema to enable SwiftData to automatically sync your app’s model data using iCloud.\n- **Concurrency support**: Types you use to access model attributes and perform storage-related tasks in a safe and isolated way.\n\n## Conforms To\n\n- Equatable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a context that belongs to the specified model container.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/init(_:)"
+        },
+        {
+          "description" : "An object that manages an app’s schema and model storage configuration.",
+          "name" : "ModelContainer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer"
+        }
+      ],
+      "title" : "Creating a model context"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns an array of typed models that match the criteria of the specified fetch descriptor.",
+          "name" : "fetch(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/fetch(_:)"
+        },
+        {
+          "description" : "Returns a collection of typed models, in batches, which match the criteria of the specified fetch descriptor.",
+          "name" : "fetch(_:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/fetch(_:batchSize:)"
+        },
+        {
+          "description" : "Returns the number of models that match the criteria of the specified fetch descriptor.",
+          "name" : "fetchCount(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/fetchCount(_:)"
+        },
+        {
+          "description" : "A type that describes the criteria, sort order, and any additional configuration to use when performing a fetch.",
+          "name" : "FetchDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchDescriptor"
+        },
+        {
+          "description" : "A collection that efficiently provides the results of a completed fetch.",
+          "name" : "FetchResultsCollection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/FetchResultsCollection"
+        },
+        {
+          "description" : "Runs a closure for each model that matches the criteria of the specified fetch descriptor.",
+          "name" : "enumerate(_:batchSize:allowEscapingMutations:block:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/enumerate(_:batchSize:allowEscapingMutations:block:)"
+        },
+        {
+          "description" : "Returns the persistent model for the specified identifier.",
+          "name" : "model(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/model(for:)"
+        },
+        {
+          "description" : "Returns the typed model for the specified identifier.",
+          "name" : "registeredModel(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/registeredModel(for:)"
+        }
+      ],
+      "title" : "Fetching models"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The array of inserted models that the context is yet to persist.",
+          "name" : "insertedModelsArray",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/insertedModelsArray"
+        },
+        {
+          "description" : "Registers the specified model with the context so it can include the model in the next save operation.",
+          "name" : "insert(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/insert(_:)"
+        }
+      ],
+      "title" : "Inserting models"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the context has unsaved changes.",
+          "name" : "hasChanges",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/hasChanges"
+        },
+        {
+          "description" : "The array of registered models that have unsaved changes.",
+          "name" : "changedModelsArray",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/changedModelsArray"
+        }
+      ],
+      "title" : "Modifying models"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The array of registered models that the context will remove from the persistent storage during the next save operation.",
+          "name" : "deletedModelsArray",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/deletedModelsArray"
+        },
+        {
+          "description" : "Removes the specified model from the persistent storage during the next save operation.",
+          "name" : "delete(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/delete(_:)"
+        },
+        {
+          "description" : "Removes each model satisfying the given predicate from the persistent storage during the next save operation.",
+          "name" : "delete(model:where:includeSubclasses:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/delete(model:where:includeSubclasses:)"
+        }
+      ],
+      "title" : "Deleting models"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the context should automatically save any pending changes when certain events occur.",
+          "name" : "autosaveEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/autosaveEnabled"
+        },
+        {
+          "description" : "Writes any pending inserts, changes, and deletes to the persistent storage.",
+          "name" : "save()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/save()"
+        },
+        {
+          "description" : "Runs the provided closure, and once it finishes, writes any pending inserts, changes, and deletes to the persistent storage.",
+          "name" : "transaction(block:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/transaction(block:)"
+        },
+        {
+          "description" : "Discards pending inserts and deletes, restores changed models to their most recent committed state, and empties the undo stack.",
+          "name" : "rollback()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/rollback()"
+        }
+      ],
+      "title" : "Persisting unsaved changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns an array of persistent identifiers, where each identifier represents a single model that satisfies the criteria of the specified fetch descriptor.",
+          "name" : "fetchIdentifiers(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/fetchIdentifiers(_:)"
+        },
+        {
+          "description" : "Returns a collection of persistent identifiers, in batches, where each identifier represents a single model that satisfies the criteria of the specified fetch descriptor.",
+          "name" : "fetchIdentifiers(_:batchSize:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/fetchIdentifiers(_:batchSize:)"
+        }
+      ],
+      "title" : "Fetching only persistent identifiers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The context’s model container.",
+          "name" : "container",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/container"
+        }
+      ],
+      "title" : "Accessing the container"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells the undo manager to record any changes made to the context’s registered models.",
+          "name" : "processPendingChanges()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/processPendingChanges()"
+        },
+        {
+          "description" : "The object that provides undo support for the context.",
+          "name" : "undoManager",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/undoManager"
+        }
+      ],
+      "title" : "Performing undo and redo"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A notification that posts when the context is about to process pending inserts, changes, and deletes.",
+          "name" : "willSave",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/willSave"
+        },
+        {
+          "description" : "A notification that posts when the context finishes processing pending inserts, changes, and deletes.",
+          "name" : "didSave",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/didSave"
+        },
+        {
+          "description" : "Describes the data in the user info dictionary of a notification sent by a model context.",
+          "name" : "ModelContext.NotificationKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/NotificationKey"
+        }
+      ],
+      "title" : "Registering for notifications"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A textual representation of the context, suitable for debugging.",
+          "name" : "debugDescription",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/debugDescription"
+        }
+      ],
+      "title" : "Debugging contexts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "author",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/author"
+        },
+        {
+          "description" : "",
+          "name" : "editingState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/editingState"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "deleteHistory(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/deleteHistory(_:)"
+        },
+        {
+          "description" : "",
+          "name" : "fetchHistory(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext\/fetchHistory(_:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that manages an app’s schema and model storage configuration.",
+          "name" : "ModelContainer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer"
+        },
+        {
+          "description" : "Track all inserts, updates, and deletes that occur in a data store and process them as a series of chronological transactions.",
+          "name" : "Fetching and filtering time-based model changes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Fetching-and-filtering-time-based-model-changes"
+        },
+        {
+          "description" : "A type that describes the criteria, and, optionally, sort order, to use when fetching history data",
+          "name" : "HistoryDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/HistoryDescriptor"
+        },
+        {
+          "description" : "Explore different ways to use SwiftData to delete persistent data.",
+          "name" : "Deleting persistent data from your app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Deleting-persistent-data-from-your-app"
+        },
+        {
+          "description" : "Automatically record data change operations that people perform in your SwiftUI app, and let them undo and redo those changes.",
+          "name" : "Reverting data changes using the undo manager",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Reverting-data-changes-using-the-undo-manager"
+        },
+        {
+          "description" : "Add the required capabilities and define a compatible schema to enable SwiftData to automatically sync your app’s model data using iCloud.",
+          "name" : "Syncing model data across a person’s devices",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Syncing-model-data-across-a-persons-devices"
+        },
+        {
+          "description" : "Types you use to access model attributes and perform storage-related tasks in a safe and isolated way.",
+          "name" : "Concurrency support",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ConcurrencySupport"
+        }
+      ],
+      "title" : "Model life cycle"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "ModelContext",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext"
+}

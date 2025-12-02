@@ -1,0 +1,50 @@
+{
+  "abstract" : "Converts an 8-bit-per-channel, 4-channel interleaved buffer to an RGBA1010102 32-bit, 4-channel buffer with permutation.",
+  "codeExamples" : [
+    {
+      "code" : " uint8_t *srcPixel = src.data;\n A8 = srcPixel[permuteMap[0]];\n R8 = srcPixel[permuteMap[1]];\n G8 = srcPixel[permuteMap[2]];\n B8 = srcPixel[permuteMap[3]];\n srcPixel += 4;\n \n int32_t R10, G10, B10;\n int32_t range10 = RGB101010RangeMax - RGB101010RangeMin;\n int32_t rounding = UCHAR_MAX >> 1;\n R10 = ((R8 * range10 + rounding) \/ UCHAR_MAX) + RGB101010RangeMin;\n G10 = ((G8 * range10 + rounding) \/ UCHAR_MAX) + RGB101010RangeMin;\n B10 = ((B8 * range10 + rounding) \/ UCHAR_MAX) + RGB101010RangeMin;\n A10 = ((A10 * 3 + rounding) \/ UCHAR_MAX);\n \n uint32_t *destPixel = dest.data;\n destPixel[0] = htonl((R10 << 22) | (G10 << 12) | (B10 << 2) | A10);\n destPixel += 1;\n",
+      "language" : "c"
+    }
+  ],
+  "contentHash" : "f18506bdd8355007fa43793e9bf1a275272abc6e0eab2e8b5548a414aa6284ee",
+  "crawledAt" : "2025-12-01T03:49:04Z",
+  "declaration" : {
+    "code" : "func vImageConvert_ARGB8888ToRGBA1010102(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ RGB101010RangeMin: Int32, _ RGB101010RangeMax: Int32, _ permuteMap: UnsafePointer<UInt8>!, _ flags: vImage_Flags) -> vImage_Error",
+    "language" : "swift"
+  },
+  "id" : "2ECD40C5-C976-4F4A-A308-5A07A1F284F9",
+  "kind" : "function",
+  "module" : "Accelerate",
+  "overview" : "## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nThe function uses the following calculation to perform the conversion:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_ARGB8888ToRGBA1010102(_:_:_:_:_:_:)\ncrawled: 2025-12-01T03:49:04Z\n---\n\n# vImageConvert_ARGB8888ToRGBA1010102(_:_:_:_:_:_:)\n\n**Function**\n\nConverts an 8-bit-per-channel, 4-channel interleaved buffer to an RGBA1010102 32-bit, 4-channel buffer with permutation.\n\n## Declaration\n\n```swift\nfunc vImageConvert_ARGB8888ToRGBA1010102(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ RGB101010RangeMin: Int32, _ RGB101010RangeMax: Int32, _ permuteMap: UnsafePointer<UInt8>!, _ flags: vImage_Flags) -> vImage_Error\n```\n\n## Parameters\n\n- **src**: The source vImage buffer.\n- **dest**: A pointer to the destination vImage buffer structure. You’re responsible for filling out the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer\/height], [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer\/width], and [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer\/rowBytes] fields of this structure, and for allocating a data buffer of the appropriate size. On return, the data buffer this structure points to contains the destination image data. When you no longer need the data buffer, deallocate the memory to prevent memory leaks.\n- **RGB101010RangeMin**: The minimum pixel value for the destination image.\n- **RGB101010RangeMax**: The maximum pixel value for the destination image.\n- **permuteMap**: An array of four 8-bit integers with the values `0`, `1`, `2`, and 3, in some order. Each value specifies the channel from the source image that the function copies to the destination channel at the corresponding index.\n- **flags**: The options to use when performing the operation. If your code implements its own tiling or its own multithreading, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageDoNotTile]; otherwise, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoFlags].\n\n## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nThe function uses the following calculation to perform the conversion:\n\n```c\n uint8_t *srcPixel = src.data;\n A8 = srcPixel[permuteMap[0]];\n R8 = srcPixel[permuteMap[1]];\n G8 = srcPixel[permuteMap[2]];\n B8 = srcPixel[permuteMap[3]];\n srcPixel += 4;\n \n int32_t R10, G10, B10;\n int32_t range10 = RGB101010RangeMax - RGB101010RangeMin;\n int32_t rounding = UCHAR_MAX >> 1;\n R10 = ((R8 * range10 + rounding) \/ UCHAR_MAX) + RGB101010RangeMin;\n G10 = ((G8 * range10 + rounding) \/ UCHAR_MAX) + RGB101010RangeMin;\n B10 = ((B8 * range10 + rounding) \/ UCHAR_MAX) + RGB101010RangeMin;\n A10 = ((A10 * 3 + rounding) \/ UCHAR_MAX);\n \n uint32_t *destPixel = dest.data;\n destPixel[0] = htonl((R10 << 22) | (G10 << 12) | (B10 << 2) | A10);\n destPixel += 1;\n\n```\n\n## Converting from 8-bit buffers\n\n- **vImageConvert_ARGB8888ToARGB2101010(_:_:_:_:_:_:)**: Converts an 8-bit-per-channel, 4-channel interleaved buffer to an ARGB2101010 32-bit, 4-channel buffer with permutation.\n- **vImageConvert_ARGB8888ToXRGB2101010(_:_:_:_:_:_:)**: Converts an 8-bit-per-channel, 4-channel interleaved buffer to an ARGB2101010 32-bit, 4-channel buffer with permutation.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Converts an 8-bit-per-channel, 4-channel interleaved buffer to an ARGB2101010 32-bit, 4-channel buffer with permutation.",
+          "name" : "vImageConvert_ARGB8888ToARGB2101010(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_ARGB8888ToARGB2101010(_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Converts an 8-bit-per-channel, 4-channel interleaved buffer to an ARGB2101010 32-bit, 4-channel buffer with permutation.",
+          "name" : "vImageConvert_ARGB8888ToXRGB2101010(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_ARGB8888ToXRGB2101010(_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Converting from 8-bit buffers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vImageConvert_ARGB8888ToRGBA1010102(_:_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_ARGB8888ToRGBA1010102(_:_:_:_:_:_:)"
+}

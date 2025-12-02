@@ -1,0 +1,91 @@
+{
+  "abstract" : "A representation of the state of the columns in a table.",
+  "codeExamples" : [
+    {
+      "code" : "struct BugReportTable: View {\n    @ObservedObject var dataModel: DataModel\n    @Binding var selectedBugReports: Set<BugReport.ID>\n\n    @SceneStorage(\"BugReportTableConfig\")\n    private var columnCustomization: TableColumnCustomization<BugReport>\n\n    var body: some View {\n        Table(dataModel.bugReports, selection: $selectedBugReports,\n            sortOrder: $dataModel.sortOrder,\n            columnCustomization: $columnCustomization\n        ) {\n            TableColumn(\"Title\", value: \\.title)\n                .customizationID(\"title\")\n            TableColumn(\"ID\", value: \\.id) {\n                Link(\"\\($0.id)\", destination: $0.url)\n            }\n            .customizationID(\"id\")\n            TableColumn(\"Number of Reports\", value: \\.duplicateCount) {\n                Text($0.duplicateCount, format: .number)\n            }\n            .customizationID(\"duplicates\")\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "columnCustomization[visibility: \"duplicates\"] = .hidden",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct BugReportTable: View {\n    @SceneStorage(\"BugReportTableConfig\")\n    private var columnCustomization: TableColumnCustomization<BugReport>\n\n    var body: some View {\n        ...\n        MyVisibilityView($columnCustomization[visibility: \"duplicates\"])\n    }\n}\n\nstruct MyVisibilityView: View {\n    @Binding var visibility: Visibility\n    ...\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Decodable",
+    "Encodable",
+    "Equatable",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "00065da0980f22817925d1c8ebf0780683d7621f62e9f51d2da78f3d6c40efb4",
+  "crawledAt" : "2025-12-02T17:02:56Z",
+  "declaration" : {
+    "code" : "struct TableColumnCustomization<RowValue> where RowValue : Identifiable",
+    "language" : "swift"
+  },
+  "id" : "72B20298-A07F-4ED5-8CF7-54C6BDDAFB70",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\n`TableColumnCustomization` can be created and provided to a table to enable column reordering and column visibility. The state can be queried and updated programmatically, as well as bound to persistent app or scene storage.\n\nThe above example creates a table with three columns. On macOS, these columns can be reordered or hidden and shown by the user of the app. Their configuration will be saved and restored with the window on relaunches of the app, using the “BugReportTableConfig” scene storage identifier.\n\nThe state of a specific column is stored relative to its customization identifier, using using the value from the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/TableColumnContent\/customizationID(_:)] modifier. When column customization is encoded and decoded, it relies on stable identifiers to restore the associate the saved state with a specific column. If a table column does not have a customization identifier, it will not be customizable.\n\nThese identifiers can also be used to programmatically change column customizations, such as programmatically hiding a column:\n\nWith a binding to the overall customization, a binding to the visibility of a column can be accessed using the same subscript syntax:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/TableColumnCustomization\ncrawled: 2025-12-02T17:02:56Z\n---\n\n# TableColumnCustomization\n\n**Structure**\n\nA representation of the state of the columns in a table.\n\n## Declaration\n\n```swift\nstruct TableColumnCustomization<RowValue> where RowValue : Identifiable\n```\n\n## Overview\n\n`TableColumnCustomization` can be created and provided to a table to enable column reordering and column visibility. The state can be queried and updated programmatically, as well as bound to persistent app or scene storage.\n\n```swift\nstruct BugReportTable: View {\n    @ObservedObject var dataModel: DataModel\n    @Binding var selectedBugReports: Set<BugReport.ID>\n\n    @SceneStorage(\"BugReportTableConfig\")\n    private var columnCustomization: TableColumnCustomization<BugReport>\n\n    var body: some View {\n        Table(dataModel.bugReports, selection: $selectedBugReports,\n            sortOrder: $dataModel.sortOrder,\n            columnCustomization: $columnCustomization\n        ) {\n            TableColumn(\"Title\", value: \\.title)\n                .customizationID(\"title\")\n            TableColumn(\"ID\", value: \\.id) {\n                Link(\"\\($0.id)\", destination: $0.url)\n            }\n            .customizationID(\"id\")\n            TableColumn(\"Number of Reports\", value: \\.duplicateCount) {\n                Text($0.duplicateCount, format: .number)\n            }\n            .customizationID(\"duplicates\")\n        }\n    }\n}\n```\n\nThe above example creates a table with three columns. On macOS, these columns can be reordered or hidden and shown by the user of the app. Their configuration will be saved and restored with the window on relaunches of the app, using the “BugReportTableConfig” scene storage identifier.\n\nThe state of a specific column is stored relative to its customization identifier, using using the value from the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/TableColumnContent\/customizationID(_:)] modifier. When column customization is encoded and decoded, it relies on stable identifiers to restore the associate the saved state with a specific column. If a table column does not have a customization identifier, it will not be customizable.\n\nThese identifiers can also be used to programmatically change column customizations, such as programmatically hiding a column:\n\n```swift\ncolumnCustomization[visibility: \"duplicates\"] = .hidden\n```\n\nWith a binding to the overall customization, a binding to the visibility of a column can be accessed using the same subscript syntax:\n\n```swift\nstruct BugReportTable: View {\n    @SceneStorage(\"BugReportTableConfig\")\n    private var columnCustomization: TableColumnCustomization<BugReport>\n\n    var body: some View {\n        ...\n        MyVisibilityView($columnCustomization[visibility: \"duplicates\"])\n    }\n}\n\nstruct MyVisibilityView: View {\n    @Binding var visibility: Visibility\n    ...\n}\n```\n\n## Creating a table column customization\n\n- **init()**: Creates an empty table column customization.\n\n## Managing the customization\n\n- **resetOrder()**: Resets the column order back to the default, preserving the customized visibility and size.\n- **subscript(visibility:)**: The visibility of the column identified by its identifier.\n\n## Customizing columns\n\n- **tableColumnHeaders(_:)**: Controls the visibility of a `Table`’s column header views.\n- **TableColumnCustomizationBehavior**: A set of customization behaviors of a column that a table can offer to a user.\n\n## Conforms To\n\n- Decodable\n- Encodable\n- Equatable\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an empty table column customization.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/TableColumnCustomization\/init()"
+        }
+      ],
+      "title" : "Creating a table column customization"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Resets the column order back to the default, preserving the customized visibility and size.",
+          "name" : "resetOrder()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/TableColumnCustomization\/resetOrder()"
+        },
+        {
+          "description" : "The visibility of the column identified by its identifier.",
+          "name" : "subscript(visibility:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/TableColumnCustomization\/subscript(visibility:)"
+        }
+      ],
+      "title" : "Managing the customization"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Controls the visibility of a `Table`’s column header views.",
+          "name" : "tableColumnHeaders(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/tableColumnHeaders(_:)"
+        },
+        {
+          "description" : "A set of customization behaviors of a column that a table can offer to a user.",
+          "name" : "TableColumnCustomizationBehavior",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/TableColumnCustomizationBehavior"
+        }
+      ],
+      "title" : "Customizing columns"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TableColumnCustomization",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/TableColumnCustomization"
+}

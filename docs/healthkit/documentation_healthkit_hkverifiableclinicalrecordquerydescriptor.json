@@ -1,0 +1,117 @@
+{
+  "abstract" : "A query interface that provides one-time access to a SMART Health Card or EU Digital COVID Certificate using Swift concurrency.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Calculate the start and end dates.\nvar sixMonthsAgo = DateComponents()\nsixMonthsAgo.month = -6\n\nlet end = Date()\nguard let start = Calendar.current.date(byAdding: sixMonthsAgo, to: end) else {\n    fatalError(\"*** Unable to calculate a date using \\(end) and \\(sixMonthsAgo) ***\")\n}\n\n\/\/ Create the predicate.\nlet lastSixMonthsPredicate =\nHKQuery.predicateForVerifiableClinicalRecords(withRelevantDateWithin: DateInterval(start: start, end: end))\n\n\/\/ Create the descriptor.\nlet healthRecordDescriptor = HKVerifiableClinicalRecordQueryDescriptor(\n    recordTypes: [.covid19, .immunization],\n    sourceTypes: [.smartHealthCard, .euDigitalCOVIDCertificate],\n    predicate: lastSixMonthsPredicate)\n\n\/\/ Asynchronously read the records.\nlet records = try await healthRecordDescriptor.result(for: store)\n\n\/\/ Use the records here.\nfor record in records {\n    print(record.recordTypes)\n    print(record.itemNames)\n    print(record.issuedDate)\n    print(record.expirationDate ?? \"No expiration date.\")\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "HKAsyncQuery"
+  ],
+  "contentHash" : "fad018db1ed5096e80691b642756d32df563e13ea014a4ba31812fd161dde52b",
+  "crawledAt" : "2025-12-02T18:11:43Z",
+  "declaration" : {
+    "code" : "struct HKVerifiableClinicalRecordQueryDescriptor",
+    "language" : "swift"
+  },
+  "id" : "E65D9ADB-AF7E-4A83-B2CE-D676FA39CE3F",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "HealthKit",
+  "overview" : "## Overview\n\nUse [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor] to read verifiable clinical records.\n\nWhen you call the descriptor’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor\/result(for:)] method, it creates and executes an [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKVerifiableClinicalRecordQuery] in the background, passing the results as an array of [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKVerifiableClinicalRecord] instances.\n\nUnlike other HealthKit queries, you don’t need to request permission to read verifiable health records before using this descriptor. HealthKit prompts the user for permission to read the records each time your app runs the underlying query.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor\ncrawled: 2025-12-02T18:11:43Z\n---\n\n# HKVerifiableClinicalRecordQueryDescriptor\n\n**Structure**\n\nA query interface that provides one-time access to a SMART Health Card or EU Digital COVID Certificate using Swift concurrency.\n\n## Declaration\n\n```swift\nstruct HKVerifiableClinicalRecordQueryDescriptor\n```\n\n## Overview\n\nUse [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor] to read verifiable clinical records.\n\n```swift\n\/\/ Calculate the start and end dates.\nvar sixMonthsAgo = DateComponents()\nsixMonthsAgo.month = -6\n\nlet end = Date()\nguard let start = Calendar.current.date(byAdding: sixMonthsAgo, to: end) else {\n    fatalError(\"*** Unable to calculate a date using \\(end) and \\(sixMonthsAgo) ***\")\n}\n\n\/\/ Create the predicate.\nlet lastSixMonthsPredicate =\nHKQuery.predicateForVerifiableClinicalRecords(withRelevantDateWithin: DateInterval(start: start, end: end))\n\n\/\/ Create the descriptor.\nlet healthRecordDescriptor = HKVerifiableClinicalRecordQueryDescriptor(\n    recordTypes: [.covid19, .immunization],\n    sourceTypes: [.smartHealthCard, .euDigitalCOVIDCertificate],\n    predicate: lastSixMonthsPredicate)\n\n\/\/ Asynchronously read the records.\nlet records = try await healthRecordDescriptor.result(for: store)\n\n\/\/ Use the records here.\nfor record in records {\n    print(record.recordTypes)\n    print(record.itemNames)\n    print(record.issuedDate)\n    print(record.expirationDate ?? \"No expiration date.\")\n}\n```\n\nWhen you call the descriptor’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor\/result(for:)] method, it creates and executes an [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKVerifiableClinicalRecordQuery] in the background, passing the results as an array of [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKVerifiableClinicalRecord] instances.\n\nUnlike other HealthKit queries, you don’t need to request permission to read verifiable health records before using this descriptor. HealthKit prompts the user for permission to read the records each time your app runs the underlying query.\n\n\n\n## Creating Query Descriptors\n\n- **init(recordTypes:sourceTypes:predicate:)**: Creates a query descriptor for reading verifiable clinical records.\n\n## Running Queries\n\n- **result(for:)**: Runs a one-shot query that asynchronously reads matching clinical records.\n\n## Accessing Query Properties\n\n- **recordTypes**: The types of records returned by this query.\n- **sourceTypes**: The source for the verifiable clinical records, for example from a SMART Health Card or an EU Digital COVID Certificate.\n- **predicate**: A predicate that limits the results returned by the query.\n\n## Default Implementations\n\n- **HKAsyncQuery Implementations**\n\n## Clinical record queries\n\n- **HKVerifiableClinicalRecordQuery**: A query for one-time access to a SMART Health Card or EU Digital COVID Certificate.\n- **HKVerifiableClinicalRecordSourceType**: The source type for the verifiable clinical record.\n- **HKVerifiableClinicalRecordCredentialType**: The type of record returned by a verifiable clinical record query.\n- **HKDocumentQuery**: A query that returns a snapshot of all matching documents currently saved in the HealthKit store.\n\n## Conforms To\n\n- Copyable\n- HKAsyncQuery\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a query descriptor for reading verifiable clinical records.",
+          "name" : "init(recordTypes:sourceTypes:predicate:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor\/init(recordTypes:sourceTypes:predicate:)"
+        }
+      ],
+      "title" : "Creating Query Descriptors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Runs a one-shot query that asynchronously reads matching clinical records.",
+          "name" : "result(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor\/result(for:)"
+        }
+      ],
+      "title" : "Running Queries"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The types of records returned by this query.",
+          "name" : "recordTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor\/recordTypes"
+        },
+        {
+          "description" : "The source for the verifiable clinical records, for example from a SMART Health Card or an EU Digital COVID Certificate.",
+          "name" : "sourceTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor\/sourceTypes"
+        },
+        {
+          "description" : "A predicate that limits the results returned by the query.",
+          "name" : "predicate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor\/predicate"
+        }
+      ],
+      "title" : "Accessing Query Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "HKAsyncQuery Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor\/HKAsyncQuery-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A query for one-time access to a SMART Health Card or EU Digital COVID Certificate.",
+          "name" : "HKVerifiableClinicalRecordQuery",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordQuery"
+        },
+        {
+          "description" : "The source type for the verifiable clinical record.",
+          "name" : "HKVerifiableClinicalRecordSourceType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordSourceType"
+        },
+        {
+          "description" : "The type of record returned by a verifiable clinical record query.",
+          "name" : "HKVerifiableClinicalRecordCredentialType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordCredentialType"
+        },
+        {
+          "description" : "A query that returns a snapshot of all matching documents currently saved in the HealthKit store.",
+          "name" : "HKDocumentQuery",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKDocumentQuery"
+        }
+      ],
+      "title" : "Clinical record queries"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "HKVerifiableClinicalRecordQueryDescriptor",
+  "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKVerifiableClinicalRecordQueryDescriptor"
+}

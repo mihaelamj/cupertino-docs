@@ -1,0 +1,86 @@
+{
+  "abstract" : "Send data between players in a real-time multiplayer game.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Handle an unknown, connected, or disconnected player state.\nfunc match(_ match: GKMatch,\n             player: GKPlayer,\n             didChange state: GKPlayerConnectionState) {\n    \n    print(\"Available player slots: \\(String(match.expectedPlayerCount))\")\n    \n    switch state {\n        case .connected:\n            \/\/ Handle connected state.\n        case .disconnected:\n            \/\/ Handle disconnected state.\n        default:\n            \/\/ Handle unknown state.\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Send a text message from one player to another.\nfunc sendMessage(content: String){\n    do {\n        \/\/ Send the game data to the other player.\n        let data: Data? = content.data(using: .utf8)\n        try singlesMatch?.sendData(toAllPlayers: data!, with: GKMatch.SendDataMode.unreliable)\n    } catch {\n        return\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Receive a message sent from one player to another.\nfunc match(_ match: GKMatch, didReceive data: Data, fromRemotePlayer player: GKPlayer){\n    let content = String(decoding: data, as: UTF8.self)\n    \/\/ Update the interface from the game data.\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "d2b691e57e8eb2465e8ce0e7540259e030a973bfd2f3573f5ef59e6a096c1d3f",
+  "crawledAt" : "2025-12-02T16:10:52Z",
+  "id" : "CF4E5CAC-A58D-474F-BE09-20E366250B31",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "GameKit",
+  "overview" : "## Overview\n\nIn a multiplayer game, you can exchange game data between players to synchronize the state of the game or to facilitate communication between players. You can begin exchanging data when two or more players join or after all the player slots fill when you start the game. For example, if your game provides text messaging, players can send messages to each other while they wait for other players to join the game. GameKit handles the low-level communication of generic data; you design the structure of your game data, and implement the interface for presenting or entering that data.\n\n### Start exchanging data\n\nWhen enough players join a multiplayer game, you can begin exchanging data. For example, present an interface for players to send text messages.\n\nIf you use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchmakerViewController] class to find players, you can start the game and begin exchanging data when GameKit calls the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchmakerViewControllerDelegate\/matchmakerViewController(_:didFind:)] delegate method.\n\nTo begin exchanging data before the game starts, implement the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchDelegate\/match(_:player:didChange:)-8ohgr] delegate method. Use the match [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/expectedPlayerCount] property in the method to determine when you can begin exchanging data. If two or more players join the game, you can begin exchanging data, or if the expected player count is `0`, you can start the game and then exchange data. GameKit also invokes this method when players disconnect or leave the game.\n\nTo reinvite players whose match state becomes disconnected in a two-player match, implement the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchDelegate\/match(_:shouldReinviteDisconnectedPlayer:)] delegate method to return [doc:\/\/com.apple.documentation\/documentation\/Swift\/true].\n\n### Send data to players\n\nGameKit exchanges generic data between players to give you flexibility in designing your game data. You just need to convert your model objects to a `Data` object before you send it. Then, you choose the type of transmission and size of the data depending on the characteristics of your game. You can send data to a subset of players or all players in the game.\n\nUse the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/send(_:to:dataMode:)] or [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/sendData(toAllPlayers:with:)] method to send data to one or more players. To guarantee that players receive the data in the order you send it, pass [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/SendDataMode\/reliable] as the data mode. If the data is small and a delay in transmission invalidates its contents (such as position and velocity in a real-time game), pass [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/SendDataMode\/unreliable] as the data mode.\n\nThe following example shows how to convert a string to a `Data` object and send it as a message from one player to another player.\n\nFor large data or many players, you can layer a network topology that performs better over the peer-to-peer topology that GameKit provides. For example, reduce the network traffic by implementing a client-server or ring topology. If you send data only to and from one player, you can reduce the network connections by half.\n\nIf you choose a client-server topology, use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/chooseBestHostingPlayer(completionHandler:)] delegate method to find the player with the best network connection to act as the server. Invoke this method simultaneously in each game instance running on each player’s device.\n\n### Receive data from players\n\nFinally, you process the data that players receive from other players. For the recipients of the data, implement the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchDelegate\/match(_:didReceive:fromRemotePlayer:)] delegate method to unpack the data sent by other players. For example, if the data contains a text message from another player, convert the `Data` object to a string. To display which player sent the data, use the player parameter.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/GameKit\/exchanging-data-between-players-in-real-time-games\ncrawled: 2025-12-02T16:10:52Z\n---\n\n# Exchanging data between players in real-time games\n\n**Article**\n\nSend data between players in a real-time multiplayer game.\n\n## Overview\n\nIn a multiplayer game, you can exchange game data between players to synchronize the state of the game or to facilitate communication between players. You can begin exchanging data when two or more players join or after all the player slots fill when you start the game. For example, if your game provides text messaging, players can send messages to each other while they wait for other players to join the game. GameKit handles the low-level communication of generic data; you design the structure of your game data, and implement the interface for presenting or entering that data.\n\n### Start exchanging data\n\nWhen enough players join a multiplayer game, you can begin exchanging data. For example, present an interface for players to send text messages.\n\nIf you use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchmakerViewController] class to find players, you can start the game and begin exchanging data when GameKit calls the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchmakerViewControllerDelegate\/matchmakerViewController(_:didFind:)] delegate method.\n\nTo begin exchanging data before the game starts, implement the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchDelegate\/match(_:player:didChange:)-8ohgr] delegate method. Use the match [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/expectedPlayerCount] property in the method to determine when you can begin exchanging data. If two or more players join the game, you can begin exchanging data, or if the expected player count is `0`, you can start the game and then exchange data. GameKit also invokes this method when players disconnect or leave the game.\n\n```swift\n\/\/ Handle an unknown, connected, or disconnected player state.\nfunc match(_ match: GKMatch,\n             player: GKPlayer,\n             didChange state: GKPlayerConnectionState) {\n    \n    print(\"Available player slots: \\(String(match.expectedPlayerCount))\")\n    \n    switch state {\n        case .connected:\n            \/\/ Handle connected state.\n        case .disconnected:\n            \/\/ Handle disconnected state.\n        default:\n            \/\/ Handle unknown state.\n    }\n}\n```\n\nTo reinvite players whose match state becomes disconnected in a two-player match, implement the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchDelegate\/match(_:shouldReinviteDisconnectedPlayer:)] delegate method to return [doc:\/\/com.apple.documentation\/documentation\/Swift\/true].\n\n### Send data to players\n\nGameKit exchanges generic data between players to give you flexibility in designing your game data. You just need to convert your model objects to a `Data` object before you send it. Then, you choose the type of transmission and size of the data depending on the characteristics of your game. You can send data to a subset of players or all players in the game.\n\nUse the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/send(_:to:dataMode:)] or [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/sendData(toAllPlayers:with:)] method to send data to one or more players. To guarantee that players receive the data in the order you send it, pass [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/SendDataMode\/reliable] as the data mode. If the data is small and a delay in transmission invalidates its contents (such as position and velocity in a real-time game), pass [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/SendDataMode\/unreliable] as the data mode.\n\nThe following example shows how to convert a string to a `Data` object and send it as a message from one player to another player.\n\n```swift\n\/\/ Send a text message from one player to another.\nfunc sendMessage(content: String){\n    do {\n        \/\/ Send the game data to the other player.\n        let data: Data? = content.data(using: .utf8)\n        try singlesMatch?.sendData(toAllPlayers: data!, with: GKMatch.SendDataMode.unreliable)\n    } catch {\n        return\n    }\n}\n```\n\nFor large data or many players, you can layer a network topology that performs better over the peer-to-peer topology that GameKit provides. For example, reduce the network traffic by implementing a client-server or ring topology. If you send data only to and from one player, you can reduce the network connections by half.\n\nIf you choose a client-server topology, use the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatch\/chooseBestHostingPlayer(completionHandler:)] delegate method to find the player with the best network connection to act as the server. Invoke this method simultaneously in each game instance running on each player’s device.\n\n### Receive data from players\n\nFinally, you process the data that players receive from other players. For the recipients of the data, implement the [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/GKMatchDelegate\/match(_:didReceive:fromRemotePlayer:)] delegate method to unpack the data sent by other players. For example, if the data contains a text message from another player, convert the `Data` object to a string. To display which player sent the data, use the player parameter.\n\n```swift\n\/\/ Receive a message sent from one player to another.\nfunc match(_ match: GKMatch, didReceive data: Data, fromRemotePlayer player: GKPlayer){\n    let content = String(decoding: data, as: UTF8.self)\n    \/\/ Update the interface from the game data.\n}\n```\n\n## Real-time games\n\n- **Creating real-time games**: Develop games where multiple players interact in real time.\n- **Finding multiple players for a game**: Discover and invite other players to participate in a real-time game.\n- **Adding voice chat to multiplayer games**: Enable players to voice chat with all, or groups of, players in a multiplayer game.\n- **Matchmaking rules**: Game Center applies different type of rules you create in a particular order to find the best matches.\n- **GKMatchRequest**: An object that encapsulates the parameters to create a real-time or turn-based match.\n- **GKMatchmaker**: An object that creates matches with other players without presenting an interface to the players.\n- **GKMatchmakerViewController**: An interface that allows a player to invite other players to a real-time game and automatch to fill any empty slots.\n- **GKInviteEventListener**: A protocol that handles invite events from Game Center.\n- **GKInvite**: An invitation to join a match sent to the local player from another player.\n- **GKMatch**: A peer-to-peer network between a group of players that sign into Game Center.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Develop games where multiple players interact in real time.",
+          "name" : "Creating real-time games",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/creating-real-time-games"
+        },
+        {
+          "description" : "Discover and invite other players to participate in a real-time game.",
+          "name" : "Finding multiple players for a game",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/finding-multiple-players-for-a-game"
+        },
+        {
+          "description" : "Enable players to voice chat with all, or groups of, players in a multiplayer game.",
+          "name" : "Adding voice chat to multiplayer games",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/adding-voice-chat-to-multiplayer-games"
+        },
+        {
+          "description" : "Game Center applies different type of rules you create in a particular order to find the best matches.",
+          "name" : "Matchmaking rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/matchmaking-rules"
+        },
+        {
+          "description" : "An object that encapsulates the parameters to create a real-time or turn-based match.",
+          "name" : "GKMatchRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatchRequest"
+        },
+        {
+          "description" : "An object that creates matches with other players without presenting an interface to the players.",
+          "name" : "GKMatchmaker",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatchmaker"
+        },
+        {
+          "description" : "An interface that allows a player to invite other players to a real-time game and automatch to fill any empty slots.",
+          "name" : "GKMatchmakerViewController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatchmakerViewController"
+        },
+        {
+          "description" : "A protocol that handles invite events from Game Center.",
+          "name" : "GKInviteEventListener",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKInviteEventListener"
+        },
+        {
+          "description" : "An invitation to join a match sent to the local player from another player.",
+          "name" : "GKInvite",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKInvite"
+        },
+        {
+          "description" : "A peer-to-peer network between a group of players that sign into Game Center.",
+          "name" : "GKMatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatch"
+        }
+      ],
+      "title" : "Real-time games"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Exchanging data between players in real-time games",
+  "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/exchanging-data-between-players-in-real-time-games"
+}

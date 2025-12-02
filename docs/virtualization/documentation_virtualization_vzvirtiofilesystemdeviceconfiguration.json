@@ -1,0 +1,125 @@
+{
+  "abstract" : "An object that represents the configuration of a Virtio file system device.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Define a URL to a specific file path, in this case the \n\/\/ \"Projects\" directory in the user's home directory.\nlet projectsURL = URL(fileURLWithPath: NSHomeDirectory() + \"Projects\")\n\nstatic func createAutomountSingleDirectoryShareDeviceConfiguration() -> VZVirtioFileSystemDeviceConfiguration {\n    let sharedDirectory = VZSharedDirectory(url: projectsURL, readOnly: false)\n    let singleDirectoryShare = VZSingleDirectoryShare(directory: sharedDirectory)\n\n    \/\/ Assign the automount tag to this share. macOS shares automounted directories automatically under \/Volumes in the guest.  \n    let sharingConfiguration = VZVirtioFileSystemDeviceConfiguration(tag: VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag)\n    sharingConfiguration.share = singleDirectoryShare\n\n    return sharingConfiguration\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Define URLs at specific file paths, in this case the \n\/\/ \"Projects\" and \"Invoices\" directories in the user's home directory.\nlet projectsURL = URL(fileURLWithPath: NSHomeDirectory() + \"Projects\")\nlet invoicesURL = URL(fileURLWithPath: NSHomeDirectory() + \"Invoices\")\n\nstatic func createAutomountMultipleDirectoryShareDeviceConfiguration() -> VZVirtioFileSystemDeviceConfiguration {\n    \/\/ Share the contents of ~\/Projects, which is writeable.\n    let sharedProjectsDirectory = VZSharedDirectory(url: projectsURL, readOnly: false)\n\n    \/\/ Share the contents of ~\/Invoices, but make it read only.\n    let sharedInvoicesDirectory = VZSharedDirectory(url: invoicesURL, readOnly: true) \n\n    \/\/ Associate each shared directory with a name, which is how the framework lists them under the mount point in the guest.\n    let directoriesToShare = [\"My Projects\": sharedProjectsDirectory, \"Invoices\": sharedInvoicesDirectory]\n    let multipleDirectoryShare = VZMultipleDirectoryShare(directories: directoriesToShare)\n\n    \/\/ Assign the automount tag to this share. macOS will automatically mount each shared directory at \/Volumes\/My Shared Files.\n    let sharingConfiguration = VZVirtioFileSystemDeviceConfiguration(tag: VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag)\n    sharingConfiguration.share = multipleDirectoryShare\n\n    return sharingConfiguration\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCopying",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "22f0f0526668605fe590f581731d18d0694972d18cd5c5e9e9659ab47aac7c51",
+  "crawledAt" : "2025-12-02T06:54:29Z",
+  "declaration" : {
+    "code" : "class VZVirtioFileSystemDeviceConfiguration",
+    "language" : "swift"
+  },
+  "id" : "9B8A588F-D56B-466D-9014-BC33BB1AD7CD",
+  "kind" : "class",
+  "module" : "Virtualization",
+  "overview" : "## Overview\n\nUse `VZVirtioFileSystemDeviceConfiguration` to create a Virtio file system device which allows the host to expose directories to a guest using a [doc:\/\/com.apple.virtualization\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration\/tag] label.\n\nThe example below shows the creation of a `VZVirtioFileSystemDeviceConfiguration` that shares a single directory that the user can manually mount after creating a mount point in the guest VM:\n\nA `VZVirtioFileSystemDeviceConfiguration` can also share multiple directories. The example below demonstrates sharing the `~\/Invoices` and `~\/Projects` directories from the user’s home directory to the guest VM:\n\n### Mounting shared directories\n\nMounting a shared directory requires the user to execute a command in a terminal window, the specific mount command depends on the guest VM’s operating system:\n\nThe `tag` argument is the file system device configuration label — `Projects` in the single directory case and `myfiles` in the multiple directory case in these examples — and `directory` is the mount point in the guest file system to which the framework attaches the shared directories.\n\n### Automounting shared directories in macOS VMs\n\nIn macOS 13 and later, it’s possible to specify a file system device that macOS 13 or later guest VMs automount using the [doc:\/\/com.apple.virtualization\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration\/macOSGuestAutomountTag] property. The example below demonstrates sharing a single macOS directory, to a macOS guest:\n\nThe macOS guest automounts the user’s `~\/Projects` directory from the host and shares it under `\/Volumes\/My Shared Files\/` in the macOS guest.\n\nIt’s also possible to automount multiple directories in macOS guests. The example below demonstrates sharing the `~\/Invoices` and `~\/Projects` directories from the user’s home directory to the macOS guest VM:\n\nIn the guest, the framework lists each shared directory by its specified name under `\/Volumes\/My Shared Files`. Here, the shared directories in the macOS guest are `\/Volumes\/My Shared Files\/My Projects` and `\/Volumes\/My Shared Files\/Invoices`.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration\ncrawled: 2025-12-02T06:54:29Z\n---\n\n# VZVirtioFileSystemDeviceConfiguration\n\n**Class**\n\nAn object that represents the configuration of a Virtio file system device.\n\n## Declaration\n\n```swift\nclass VZVirtioFileSystemDeviceConfiguration\n```\n\n## Overview\n\nUse `VZVirtioFileSystemDeviceConfiguration` to create a Virtio file system device which allows the host to expose directories to a guest using a [doc:\/\/com.apple.virtualization\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration\/tag] label.\n\nThe example below shows the creation of a `VZVirtioFileSystemDeviceConfiguration` that shares a single directory that the user can manually mount after creating a mount point in the guest VM:\n\n\n\nA `VZVirtioFileSystemDeviceConfiguration` can also share multiple directories. The example below demonstrates sharing the `~\/Invoices` and `~\/Projects` directories from the user’s home directory to the guest VM:\n\n\n\n### Mounting shared directories\n\n\n\nMounting a shared directory requires the user to execute a command in a terminal window, the specific mount command depends on the guest VM’s operating system:\n\n- In macOS guests, use `mount_virtiofs tag directory`.\n- In Linux guests, use `mount -t virtiofs tag directory`.\n\nThe `tag` argument is the file system device configuration label — `Projects` in the single directory case and `myfiles` in the multiple directory case in these examples — and `directory` is the mount point in the guest file system to which the framework attaches the shared directories.\n\n### Automounting shared directories in macOS VMs\n\nIn macOS 13 and later, it’s possible to specify a file system device that macOS 13 or later guest VMs automount using the [doc:\/\/com.apple.virtualization\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration\/macOSGuestAutomountTag] property. The example below demonstrates sharing a single macOS directory, to a macOS guest:\n\n```swift\n\/\/ Define a URL to a specific file path, in this case the \n\/\/ \"Projects\" directory in the user's home directory.\nlet projectsURL = URL(fileURLWithPath: NSHomeDirectory() + \"Projects\")\n\nstatic func createAutomountSingleDirectoryShareDeviceConfiguration() -> VZVirtioFileSystemDeviceConfiguration {\n    let sharedDirectory = VZSharedDirectory(url: projectsURL, readOnly: false)\n    let singleDirectoryShare = VZSingleDirectoryShare(directory: sharedDirectory)\n\n    \/\/ Assign the automount tag to this share. macOS shares automounted directories automatically under \/Volumes in the guest.  \n    let sharingConfiguration = VZVirtioFileSystemDeviceConfiguration(tag: VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag)\n    sharingConfiguration.share = singleDirectoryShare\n\n    return sharingConfiguration\n}\n```\n\nThe macOS guest automounts the user’s `~\/Projects` directory from the host and shares it under `\/Volumes\/My Shared Files\/` in the macOS guest.\n\nIt’s also possible to automount multiple directories in macOS guests. The example below demonstrates sharing the `~\/Invoices` and `~\/Projects` directories from the user’s home directory to the macOS guest VM:\n\n```swift\n\/\/ Define URLs at specific file paths, in this case the \n\/\/ \"Projects\" and \"Invoices\" directories in the user's home directory.\nlet projectsURL = URL(fileURLWithPath: NSHomeDirectory() + \"Projects\")\nlet invoicesURL = URL(fileURLWithPath: NSHomeDirectory() + \"Invoices\")\n\nstatic func createAutomountMultipleDirectoryShareDeviceConfiguration() -> VZVirtioFileSystemDeviceConfiguration {\n    \/\/ Share the contents of ~\/Projects, which is writeable.\n    let sharedProjectsDirectory = VZSharedDirectory(url: projectsURL, readOnly: false)\n\n    \/\/ Share the contents of ~\/Invoices, but make it read only.\n    let sharedInvoicesDirectory = VZSharedDirectory(url: invoicesURL, readOnly: true) \n\n    \/\/ Associate each shared directory with a name, which is how the framework lists them under the mount point in the guest.\n    let directoriesToShare = [\"My Projects\": sharedProjectsDirectory, \"Invoices\": sharedInvoicesDirectory]\n    let multipleDirectoryShare = VZMultipleDirectoryShare(directories: directoriesToShare)\n\n    \/\/ Assign the automount tag to this share. macOS will automatically mount each shared directory at \/Volumes\/My Shared Files.\n    let sharingConfiguration = VZVirtioFileSystemDeviceConfiguration(tag: VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag)\n    sharingConfiguration.share = multipleDirectoryShare\n\n    return sharingConfiguration\n}\n```\n\nIn the guest, the framework lists each shared directory by its specified name under `\/Volumes\/My Shared Files`. Here, the shared directories in the macOS guest are `\/Volumes\/My Shared Files\/My Projects` and `\/Volumes\/My Shared Files\/Invoices`.\n\n## Creating a file system device configuration\n\n- **init(tag:)**: Creates a configuration for a VIRTIO file system device.\n\n## Getting file system information\n\n- **share**: A value that defines how the host exposes resources to the guest virtual machine.\n- **tag**: A label that identifies this device in the guest VM.\n- **macOSGuestAutomountTag**: A value that indicates that the guest needs to automount this file system device in the guest VM.\n\n## Tag validation\n\n- **validateTag(_:)**: Checks to see whether a Virtio tag is valid.\n\n## Related Documentation\n\n- **VZMultipleDirectoryShare**: An object that describes a directory share for multiple directories.\n- **VZSingleDirectoryShare**: An object that defines the directory share for a single directory.\n\n## Configurations\n\n- **VZDirectorySharingDeviceConfiguration**: The base class for a directory sharing device configuration.\n- **VZLinuxRosettaDirectoryShare**: The Linux directory share for Rosetta.\n\n## Inherits From\n\n- VZDirectorySharingDeviceConfiguration\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCopying\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a configuration for a VIRTIO file system device.",
+          "name" : "init(tag:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration\/init(tag:)"
+        }
+      ],
+      "title" : "Creating a file system device configuration"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A value that defines how the host exposes resources to the guest virtual machine.",
+          "name" : "share",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration\/share"
+        },
+        {
+          "description" : "A label that identifies this device in the guest VM.",
+          "name" : "tag",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration\/tag"
+        },
+        {
+          "description" : "A value that indicates that the guest needs to automount this file system device in the guest VM.",
+          "name" : "macOSGuestAutomountTag",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration\/macOSGuestAutomountTag"
+        }
+      ],
+      "title" : "Getting file system information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Checks to see whether a Virtio tag is valid.",
+          "name" : "validateTag(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration\/validateTag(_:)"
+        }
+      ],
+      "title" : "Tag validation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that describes a directory share for multiple directories.",
+          "name" : "VZMultipleDirectoryShare",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZMultipleDirectoryShare"
+        },
+        {
+          "description" : "An object that defines the directory share for a single directory.",
+          "name" : "VZSingleDirectoryShare",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZSingleDirectoryShare"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The base class for a directory sharing device configuration.",
+          "name" : "VZDirectorySharingDeviceConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZDirectorySharingDeviceConfiguration"
+        },
+        {
+          "description" : "The Linux directory share for Rosetta.",
+          "name" : "VZLinuxRosettaDirectoryShare",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZLinuxRosettaDirectoryShare"
+        }
+      ],
+      "title" : "Configurations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "VZDirectorySharingDeviceConfiguration"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "VZVirtioFileSystemDeviceConfiguration",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Virtualization\/VZVirtioFileSystemDeviceConfiguration"
+}

@@ -1,0 +1,166 @@
+{
+  "abstract" : "A property wrapper type that can read and write a value owned by a source of truth.",
+  "codeExamples" : [
+    {
+      "code" : "struct PlayButton: View {\n    @Binding var isPlaying: Bool\n\n    var body: some View {\n        Button(isPlaying ? \"Pause\" : \"Play\") {\n            isPlaying.toggle()\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct PlayerView: View {\n    var episode: Episode\n    @State private var isPlaying: Bool = false\n\n    var body: some View {\n        VStack {\n            Text(episode.title)\n                .foregroundStyle(isPlaying ? .primary : .secondary)\n            PlayButton(isPlaying: $isPlaying) \/\/ Pass a binding.\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "BidirectionalCollection",
+    "Collection",
+    "Copyable",
+    "DynamicProperty",
+    "Identifiable",
+    "RandomAccessCollection",
+    "Sendable",
+    "SendableMetatype",
+    "Sequence"
+  ],
+  "contentHash" : "f744d516c3645d490dcbe9ce32b7cd7d0a079ee9132ab130e3f974a4bb52cc4f",
+  "crawledAt" : "2025-12-02T17:32:12Z",
+  "declaration" : {
+    "code" : "@frozen @propertyWrapper @dynamicMemberLookup struct Binding<Value>",
+    "language" : "swift"
+  },
+  "id" : "C8993F37-58B8-47CF-95D7-84B32AED0A81",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nUse a binding to create a two-way connection between a property that stores data, and a view that displays and changes the data. A binding connects a property to a source of truth stored elsewhere, instead of storing data directly. For example, a button that toggles between play and pause can create a binding to a property of its parent view using the `Binding` property wrapper.\n\nThe parent view declares a property to hold the playing state, using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/State] property wrapper to indicate that this property is the value’s source of truth.\n\nWhen `PlayerView` initializes `PlayButton`, it passes a binding of its state property into the button’s binding property. Applying the `$` prefix to a property wrapped value returns its [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/State\/projectedValue], which for a state property wrapper returns a binding to the value.\n\nWhenever the user taps the `PlayButton`, the `PlayerView` updates its `isPlaying` state.\n\nA binding conforms to `Sendable` only if its wrapped value type also conforms to `Sendable`. It is always safe to pass a sendable binding between different concurrency domains. However, reading from or writing to a binding’s wrapped value from a different concurrency domain may or may not be safe, depending on how the binding was created. SwiftUI will issue a warning at runtime if it detects a binding being used in a way that may compromise data safety.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\ncrawled: 2025-12-02T17:32:12Z\n---\n\n# Binding\n\n**Structure**\n\nA property wrapper type that can read and write a value owned by a source of truth.\n\n## Declaration\n\n```swift\n@frozen @propertyWrapper @dynamicMemberLookup struct Binding<Value>\n```\n\n## Overview\n\nUse a binding to create a two-way connection between a property that stores data, and a view that displays and changes the data. A binding connects a property to a source of truth stored elsewhere, instead of storing data directly. For example, a button that toggles between play and pause can create a binding to a property of its parent view using the `Binding` property wrapper.\n\n```swift\nstruct PlayButton: View {\n    @Binding var isPlaying: Bool\n\n    var body: some View {\n        Button(isPlaying ? \"Pause\" : \"Play\") {\n            isPlaying.toggle()\n        }\n    }\n}\n```\n\nThe parent view declares a property to hold the playing state, using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/State] property wrapper to indicate that this property is the value’s source of truth.\n\n```swift\nstruct PlayerView: View {\n    var episode: Episode\n    @State private var isPlaying: Bool = false\n\n    var body: some View {\n        VStack {\n            Text(episode.title)\n                .foregroundStyle(isPlaying ? .primary : .secondary)\n            PlayButton(isPlaying: $isPlaying) \/\/ Pass a binding.\n        }\n    }\n}\n```\n\nWhen `PlayerView` initializes `PlayButton`, it passes a binding of its state property into the button’s binding property. Applying the `$` prefix to a property wrapped value returns its [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/State\/projectedValue], which for a state property wrapper returns a binding to the value.\n\nWhenever the user taps the `PlayButton`, the `PlayerView` updates its `isPlaying` state.\n\nA binding conforms to `Sendable` only if its wrapped value type also conforms to `Sendable`. It is always safe to pass a sendable binding between different concurrency domains. However, reading from or writing to a binding’s wrapped value from a different concurrency domain may or may not be safe, depending on how the binding was created. SwiftUI will issue a warning at runtime if it detects a binding being used in a way that may compromise data safety.\n\n\n\n## Creating a binding\n\n- **init(_:)**: Creates a binding by projecting the base value to a hashable value.\n- **init(projectedValue:)**: Creates a binding from the value of another binding.\n- **init(get:set:)**: Creates a binding with closures that read and write the binding value.\n- **constant(_:)**: Creates a binding with an immutable value.\n\n## Getting the value\n\n- **wrappedValue**: The underlying value referenced by the binding variable.\n- **projectedValue**: A projection of the binding value that returns a binding.\n- **subscript(dynamicMember:)**: Returns a binding to the resulting value of a given key path.\n\n## Managing changes\n\n- **id**: The stable identity of the entity associated with this instance, corresponding to the `id` of the binding’s wrapped value.\n- **animation(_:)**: Specifies an animation to perform when the binding value changes.\n- **transaction(_:)**: Specifies a transaction for the binding.\n- **transaction**: The binding’s transaction.\n\n## Subscripts\n\n- **subscript(_:)**\n\n## Default Implementations\n\n- **Identifiable Implementations**\n\n## Creating and sharing view state\n\n- **Managing user interface state**: Encapsulate view-specific data within your app’s view hierarchy to make your views reusable.\n- **State**: A property wrapper type that can read and write a value managed by SwiftUI.\n- **Bindable**: A property wrapper type that supports creating bindings to the mutable properties of observable objects.\n\n## Conforms To\n\n- BidirectionalCollection\n- Collection\n- Copyable\n- DynamicProperty\n- Identifiable\n- RandomAccessCollection\n- Sendable\n- SendableMetatype\n- Sequence\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a binding by projecting the base value to a hashable value.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/init(_:)"
+        },
+        {
+          "description" : "Creates a binding from the value of another binding.",
+          "name" : "init(projectedValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/init(projectedValue:)"
+        },
+        {
+          "description" : "Creates a binding with closures that read and write the binding value.",
+          "name" : "init(get:set:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/init(get:set:)"
+        },
+        {
+          "description" : "Creates a binding with an immutable value.",
+          "name" : "constant(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/constant(_:)"
+        }
+      ],
+      "title" : "Creating a binding"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The underlying value referenced by the binding variable.",
+          "name" : "wrappedValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/wrappedValue"
+        },
+        {
+          "description" : "A projection of the binding value that returns a binding.",
+          "name" : "projectedValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/projectedValue"
+        },
+        {
+          "description" : "Returns a binding to the resulting value of a given key path.",
+          "name" : "subscript(dynamicMember:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/subscript(dynamicMember:)"
+        }
+      ],
+      "title" : "Getting the value"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The stable identity of the entity associated with this instance, corresponding to the `id` of the binding’s wrapped value.",
+          "name" : "id",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/id"
+        },
+        {
+          "description" : "Specifies an animation to perform when the binding value changes.",
+          "name" : "animation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/animation(_:)"
+        },
+        {
+          "description" : "Specifies a transaction for the binding.",
+          "name" : "transaction(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/transaction(_:)"
+        },
+        {
+          "description" : "The binding’s transaction.",
+          "name" : "transaction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/transaction"
+        }
+      ],
+      "title" : "Managing changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "subscript(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/subscript(_:)"
+        }
+      ],
+      "title" : "Subscripts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Identifiable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding\/Identifiable-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Encapsulate view-specific data within your app’s view hierarchy to make your views reusable.",
+          "name" : "Managing user interface state",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Managing-User-Interface-State"
+        },
+        {
+          "description" : "A property wrapper type that can read and write a value managed by SwiftUI.",
+          "name" : "State",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/State"
+        },
+        {
+          "description" : "A property wrapper type that supports creating bindings to the mutable properties of observable objects.",
+          "name" : "Bindable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Bindable"
+        }
+      ],
+      "title" : "Creating and sharing view state"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Binding",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Binding"
+}

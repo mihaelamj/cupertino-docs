@@ -1,0 +1,195 @@
+{
+  "abstract" : "A local-contrast normalization kernel.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCoding",
+    "NSCopying",
+    "NSObjectProtocol",
+    "NSSecureCoding"
+  ],
+  "contentHash" : "977726f37e2963e3a893c554bbdc0a794310208b984ce64035a1af4100bc6533",
+  "crawledAt" : "2025-12-02T20:02:39Z",
+  "declaration" : {
+    "code" : "class MPSCNNLocalContrastNormalization",
+    "language" : "swift"
+  },
+  "id" : "56BB0B39-B752-4517-B29D-7D4CA6F00860",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Metal Performance Shaders",
+  "overview" : "## Overview\n\nThe local contrast normalization kernel is quite similar to the spatial normalization kernel, described in the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNSpatialNormalization] class, in that it applies the kernel over local regions which extend spatially, but are in separate feature channels (i.e., they have the shape `1 x kernel width x kernel height`). However, instead of dividing by the local “energy” of the feature, the denominator uses the local variance of the feature - effectively the mean value of the feature is subtracted from the signal. For each feature channel, the function computes the variance `VAR(i,j)` and mean `M(i,j)` of `X(i,j)` inside each rectangle around the spatial point `(i,j)`. Then the result is computed for each element of `X` as follows:\n\n\n\nWhere `kw` and `kh` are the values of the `kernelWidth` and the `kernelHeight` properties, respectively, and the values of the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/pm], [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/ps], and [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/p0] properties can be used to offset and scale the result in various ways. For example setting `pm=0`, `ps=1`, `p0=1`, `delta=0`, `alpha=1.0` and `beta=0.5` scales input data so that the result has unit variance and zero mean, provided that input variance is positive.\n\nIt is your responsibility to ensure that the combination of the values of the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/delta] and [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/alpha] properties does not result in a situation where the denominator becomes zero - in such situations the resulting pixel-value is undefined. A good way to guard against tiny variances is to regulate the expression with a small delta value, for example `delta=1\/1024`.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\ncrawled: 2025-12-02T20:02:39Z\n---\n\n# MPSCNNLocalContrastNormalization\n\n**Class**\n\nA local-contrast normalization kernel.\n\n## Declaration\n\n```swift\nclass MPSCNNLocalContrastNormalization\n```\n\n## Overview\n\nThe local contrast normalization kernel is quite similar to the spatial normalization kernel, described in the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNSpatialNormalization] class, in that it applies the kernel over local regions which extend spatially, but are in separate feature channels (i.e., they have the shape `1 x kernel width x kernel height`). However, instead of dividing by the local “energy” of the feature, the denominator uses the local variance of the feature - effectively the mean value of the feature is subtracted from the signal. For each feature channel, the function computes the variance `VAR(i,j)` and mean `M(i,j)` of `X(i,j)` inside each rectangle around the spatial point `(i,j)`. Then the result is computed for each element of `X` as follows:\n\n\n\nWhere `kw` and `kh` are the values of the `kernelWidth` and the `kernelHeight` properties, respectively, and the values of the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/pm], [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/ps], and [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/p0] properties can be used to offset and scale the result in various ways. For example setting `pm=0`, `ps=1`, `p0=1`, `delta=0`, `alpha=1.0` and `beta=0.5` scales input data so that the result has unit variance and zero mean, provided that input variance is positive.\n\nIt is your responsibility to ensure that the combination of the values of the [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/delta] and [doc:\/\/com.apple.metalperformanceshaders\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/alpha] properties does not result in a situation where the denominator becomes zero - in such situations the resulting pixel-value is undefined. A good way to guard against tiny variances is to regulate the expression with a small delta value, for example `delta=1\/1024`.\n\n\n\n## Initializers\n\n- **init(coder:device:)**: Initializes a local contrast normalization kernel.\n- **init(device:kernelWidth:kernelHeight:)**: Initializes a local contrast normalization kernel.\n\n## Instance Properties\n\n- **alpha**: The “alpha” variable of the kernel function.\n- **beta**: The “beta” variable of the kernel function.\n- **delta**: The “delta” variable of the kernel function.\n- **p0**: The “p0” variable of the kernel function.\n- **pm**: The “pm” variable of the kernel function.\n- **ps**: The “ps” variable of the kernel function.\n\n## Instance Methods\n\n- **init(device:kernelWidth:kernelHeight:)**: Initializes a local contrast normalization kernel.\n\n## Normalization Layers\n\n- **MPSCNNCrossChannelNormalization**: A normalization kernel applied across feature channels.\n- **MPSCNNCrossChannelNormalizationGradient**: A gradient normalization kernel applied across feature channels.\n- **MPSCNNLocalContrastNormalizationGradient**: A gradient local-contrast normalization kernel.\n- **MPSCNNSpatialNormalization**: A spatial normalization kernel.\n- **MPSCNNSpatialNormalizationGradient**: A gradient spatial normalization kernel.\n- **MPSCNNBatchNormalization**: A batch normalization kernel.\n- **MPSCNNBatchNormalizationGradient**: A gradient batch normalization kernel.\n- **MPSCNNBatchNormalizationState**: An object that stores data required to execute batch normalization.\n- **MPSCNNNormalizationMeanAndVarianceState**: An object that stores mean and variance terms used to execute batch normalization.\n- **MPSCNNBatchNormalizationStatistics**: An object that stores statistics required to execute batch normalization.\n- **MPSCNNBatchNormalizationStatisticsGradient**: An object that stores the gradient of the loss function with respect to the batch statistics and batch normalization weights.\n- **MPSCNNInstanceNormalization**: An instance normalization kernel.\n- **MPSCNNInstanceNormalizationGradient**: A gradient instance normalization kernel.\n- **MPSCNNInstanceNormalizationGradientState**: An object that stores information required to execute a gradient pass for instance normalization.\n- **MPSCNNNormalizationGammaAndBetaState**: An object that stores gamma and beta terms used to apply a scale and bias in instance- or batch-normalization operations.\n\n## Inherits From\n\n- MPSCNNKernel\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCoding\n- NSCopying\n- NSObjectProtocol\n- NSSecureCoding\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a local contrast normalization kernel.",
+          "name" : "init(coder:device:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/init(coder:device:)"
+        },
+        {
+          "description" : "Initializes a local contrast normalization kernel.",
+          "name" : "init(device:kernelWidth:kernelHeight:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/init(device:kernelWidth:kernelHeight:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The “alpha” variable of the kernel function.",
+          "name" : "alpha",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/alpha"
+        },
+        {
+          "description" : "The “beta” variable of the kernel function.",
+          "name" : "beta",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/beta"
+        },
+        {
+          "description" : "The “delta” variable of the kernel function.",
+          "name" : "delta",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/delta"
+        },
+        {
+          "description" : "The “p0” variable of the kernel function.",
+          "name" : "p0",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/p0"
+        },
+        {
+          "description" : "The “pm” variable of the kernel function.",
+          "name" : "pm",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/pm"
+        },
+        {
+          "description" : "The “ps” variable of the kernel function.",
+          "name" : "ps",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/ps"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a local contrast normalization kernel.",
+          "name" : "init(device:kernelWidth:kernelHeight:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization\/init(device:kernelWidth:kernelHeight:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A normalization kernel applied across feature channels.",
+          "name" : "MPSCNNCrossChannelNormalization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNCrossChannelNormalization"
+        },
+        {
+          "description" : "A gradient normalization kernel applied across feature channels.",
+          "name" : "MPSCNNCrossChannelNormalizationGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNCrossChannelNormalizationGradient"
+        },
+        {
+          "description" : "A gradient local-contrast normalization kernel.",
+          "name" : "MPSCNNLocalContrastNormalizationGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalizationGradient"
+        },
+        {
+          "description" : "A spatial normalization kernel.",
+          "name" : "MPSCNNSpatialNormalization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNSpatialNormalization"
+        },
+        {
+          "description" : "A gradient spatial normalization kernel.",
+          "name" : "MPSCNNSpatialNormalizationGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNSpatialNormalizationGradient"
+        },
+        {
+          "description" : "A batch normalization kernel.",
+          "name" : "MPSCNNBatchNormalization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBatchNormalization"
+        },
+        {
+          "description" : "A gradient batch normalization kernel.",
+          "name" : "MPSCNNBatchNormalizationGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBatchNormalizationGradient"
+        },
+        {
+          "description" : "An object that stores data required to execute batch normalization.",
+          "name" : "MPSCNNBatchNormalizationState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBatchNormalizationState"
+        },
+        {
+          "description" : "An object that stores mean and variance terms used to execute batch normalization.",
+          "name" : "MPSCNNNormalizationMeanAndVarianceState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNormalizationMeanAndVarianceState"
+        },
+        {
+          "description" : "An object that stores statistics required to execute batch normalization.",
+          "name" : "MPSCNNBatchNormalizationStatistics",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBatchNormalizationStatistics"
+        },
+        {
+          "description" : "An object that stores the gradient of the loss function with respect to the batch statistics and batch normalization weights.",
+          "name" : "MPSCNNBatchNormalizationStatisticsGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNBatchNormalizationStatisticsGradient"
+        },
+        {
+          "description" : "An instance normalization kernel.",
+          "name" : "MPSCNNInstanceNormalization",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNInstanceNormalization"
+        },
+        {
+          "description" : "A gradient instance normalization kernel.",
+          "name" : "MPSCNNInstanceNormalizationGradient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNInstanceNormalizationGradient"
+        },
+        {
+          "description" : "An object that stores information required to execute a gradient pass for instance normalization.",
+          "name" : "MPSCNNInstanceNormalizationGradientState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNInstanceNormalizationGradientState"
+        },
+        {
+          "description" : "An object that stores gamma and beta terms used to apply a scale and bias in instance- or batch-normalization operations.",
+          "name" : "MPSCNNNormalizationGammaAndBetaState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNNormalizationGammaAndBetaState"
+        }
+      ],
+      "title" : "Normalization Layers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "MPSCNNKernel"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MPSCNNLocalContrastNormalization",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShaders\/MPSCNNLocalContrastNormalization"
+}

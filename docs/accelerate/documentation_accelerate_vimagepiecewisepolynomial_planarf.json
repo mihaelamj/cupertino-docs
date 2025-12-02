@@ -1,0 +1,59 @@
+{
+  "abstract" : "Applies a set of piecewise polynomials to transform a 32-bit planar image.",
+  "codeExamples" : [
+    {
+      "code" : "let source = vImage.PixelBuffer<vImage.PlanarF>(\n    pixelValues: [0, 0.2, 0.4, 0.6, 0.8, 1],\n    size: vImage.Size(width: 6, height: 1))\n\nlet destination = vImage.PixelBuffer<vImage.PlanarF>(\n    size: source.size)\n\nlet coefficients0: [Float] = [0.0, 0.5, 0.0] \/\/ 0.0 * x⁰ + 0.5 * x¹ + 0.0 * x²\nlet coefficients1: [Float] = [0.0, 0.0, 1.0] \/\/ 0.0 * x⁰ + 0.0 * x¹ + 1.0 * x²\n\nlet boundaries: [Float] = [0, 0.5, 1]\n\nlet order = UInt32(2)\n\nlet log2segments = UInt32(1)\n\ncoefficients0.withUnsafeBufferPointer { coefficients0Ptr in\n    coefficients1.withUnsafeBufferPointer { coefficients1Ptr in\n        source.withUnsafePointerToVImageBuffer { src in\n            destination.withUnsafePointerToVImageBuffer { dest in\n                \n                var coeffs = [ coefficients0Ptr.baseAddress,\n                               coefficients1Ptr.baseAddress ]\n                \n                vImagePiecewisePolynomial_PlanarF(\n                    src,\n                    dest,\n                    &coeffs,\n                    boundaries,\n                    order,\n                    log2segments,\n                    vImage_Flags(kvImageNoFlags))\n            }\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let result = source.array.map { x in\n    let coefficients = x < 0.5 ? coefficients0 : coefficients1\n    return coefficients[0] * pow(x, 0) +\n           coefficients[1] * pow(x, 1) +\n           coefficients[2] * pow(x, 2)\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "a1ba04e477cd4da3d5d81472c4706de2f50e20af62ec6e692c69b76fd5760082",
+  "crawledAt" : "2025-12-02T02:00:07Z",
+  "declaration" : {
+    "code" : "func vImagePiecewisePolynomial_PlanarF(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ coefficients: UnsafeMutablePointer<UnsafePointer<Float>?>, _ boundaries: UnsafePointer<Float>, _ order: UInt32, _ log2segments: UInt32, _ flags: vImage_Flags) -> vImage_Error",
+    "language" : "swift"
+  },
+  "id" : "680112B6-41D5-40C9-AD37-60772F60AC20",
+  "kind" : "function",
+  "module" : "Accelerate",
+  "overview" : "## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nYou can approximate many different correction functions by carefully choosing the polynomials and the ranges of input values they operate on. For example, the sample code project [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/applying-tone-curve-adjustments-to-images] demonstrates how to apply tone curve adjustments to images using polynomial transforms.\n\nThe following code defines two sets of polynomial coefficients, `coefficients0` as `[0.0, 0.5, 0.0]` and `coefficients1` as `[0.0, 0.0, 1.0].` The boundaries array, `[0, 0.5, 1]`, specifies that the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePiecewisePolynomial_PlanarF(_:_:_:_:_:_:_:)] function applies `coefficients0` to source pixels less than `0.5`, and applies `coefficients1` to other pixels.\n\nNote that the boundaries array contains three elements that define two ranges: `0..<0.5` and `0.5...1`. The `order` value equals the number of coefficients in each segment minus one.\n\nOn return, the destination buffer contains the values `[0.0, 0.1, 0.2, 0.36, 0.64, 1.0]`. This is equivalent to the following scalar code:\n\nFor best performance, choose a single higher-order polynomial over many lower-order polynomials. However, this function uses single-precision arithmetic, and large high-order coefficients may cause rounding errors.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImagePiecewisePolynomial_PlanarF(_:_:_:_:_:_:_:)\ncrawled: 2025-12-02T02:00:07Z\n---\n\n# vImagePiecewisePolynomial_PlanarF(_:_:_:_:_:_:_:)\n\n**Function**\n\nApplies a set of piecewise polynomials to transform a 32-bit planar image.\n\n## Declaration\n\n```swift\nfunc vImagePiecewisePolynomial_PlanarF(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ coefficients: UnsafeMutablePointer<UnsafePointer<Float>?>, _ boundaries: UnsafePointer<Float>, _ order: UInt32, _ log2segments: UInt32, _ flags: vImage_Flags) -> vImage_Error\n```\n\n## Parameters\n\n- **src**: The source vImage buffer.\n- **dest**: A pointer to the destination vImage buffer structure. You’re responsible for filling out the `height`, `width`, and `rowBytes` fields of this structure, and for allocating a data buffer of the appropriate size. On return, the data buffer this structure points to contains the destination image data. When you no longer need the data buffer, deallocate the memory to prevent memory leaks.\n- **coefficients**: A pointer to an array of polynomial coefficient arrays. Each polynomial coefficient array contains the coefficients for one polynomial. A polynomial of order `R` has `R+1` coefficients, and all of the polynomials in this array must have the same order.\n\nOrder the coefficients from the zeroth-order term to the highest order term. For example, the function evaluates the coefficients `[0.5, 0.6, 0.7]` as `0.5 * x⁰ + 0.6 * x¹ + 0.7 * x²`.\n- **boundaries**: A pointer to an array of boundary values, in increasing order, that separates adjacent ranges of pixel values. The first boundary value is the lowest in the range and the function clips input values lower than this to this value. The last boundary value is the highest in the range and the function clips input values higher than this to this value. The boundary values between the first and last separate the subranges from each other.\n- **order**: The order of the polynomials.\n- **log2segments**: The number of polynomials to represent as a base-2 logarithm. If you pass a noninteger power-of-two number of polynomials, round up to the next integer power of two, and repeat the last polynomial the appropriate number of times.\n- **flags**: The options to use when performing the operation. If your code implements its own tiling or its own multithreading, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageDoNotTile]; otherwise, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoFlags].\n\n## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nYou can approximate many different correction functions by carefully choosing the polynomials and the ranges of input values they operate on. For example, the sample code project [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/applying-tone-curve-adjustments-to-images] demonstrates how to apply tone curve adjustments to images using polynomial transforms.\n\nThe following code defines two sets of polynomial coefficients, `coefficients0` as `[0.0, 0.5, 0.0]` and `coefficients1` as `[0.0, 0.0, 1.0].` The boundaries array, `[0, 0.5, 1]`, specifies that the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImagePiecewisePolynomial_PlanarF(_:_:_:_:_:_:_:)] function applies `coefficients0` to source pixels less than `0.5`, and applies `coefficients1` to other pixels.\n\nNote that the boundaries array contains three elements that define two ranges: `0..<0.5` and `0.5...1`. The `order` value equals the number of coefficients in each segment minus one.\n\n```swift\nlet source = vImage.PixelBuffer<vImage.PlanarF>(\n    pixelValues: [0, 0.2, 0.4, 0.6, 0.8, 1],\n    size: vImage.Size(width: 6, height: 1))\n\nlet destination = vImage.PixelBuffer<vImage.PlanarF>(\n    size: source.size)\n\nlet coefficients0: [Float] = [0.0, 0.5, 0.0] \/\/ 0.0 * x⁰ + 0.5 * x¹ + 0.0 * x²\nlet coefficients1: [Float] = [0.0, 0.0, 1.0] \/\/ 0.0 * x⁰ + 0.0 * x¹ + 1.0 * x²\n\nlet boundaries: [Float] = [0, 0.5, 1]\n\nlet order = UInt32(2)\n\nlet log2segments = UInt32(1)\n\ncoefficients0.withUnsafeBufferPointer { coefficients0Ptr in\n    coefficients1.withUnsafeBufferPointer { coefficients1Ptr in\n        source.withUnsafePointerToVImageBuffer { src in\n            destination.withUnsafePointerToVImageBuffer { dest in\n                \n                var coeffs = [ coefficients0Ptr.baseAddress,\n                               coefficients1Ptr.baseAddress ]\n                \n                vImagePiecewisePolynomial_PlanarF(\n                    src,\n                    dest,\n                    &coeffs,\n                    boundaries,\n                    order,\n                    log2segments,\n                    vImage_Flags(kvImageNoFlags))\n            }\n        }\n    }\n}\n```\n\nOn return, the destination buffer contains the values `[0.0, 0.1, 0.2, 0.36, 0.64, 1.0]`. This is equivalent to the following scalar code:\n\n```swift\nlet result = source.array.map { x in\n    let coefficients = x < 0.5 ? coefficients0 : coefficients1\n    return coefficients[0] * pow(x, 0) +\n           coefficients[1] * pow(x, 1) +\n           coefficients[2] * pow(x, 2)\n}\n```\n\nFor best performance, choose a single higher-order polynomial over many lower-order polynomials. However, this function uses single-precision arithmetic, and large high-order coefficients may cause rounding errors.\n\n## Applying a polynomial\n\n- **Applying tone curve adjustments to images**: Use the vImage library’s polynomial transform to apply tone curve adjustments to images.\n- **vImagePiecewisePolynomial_Planar8toPlanarF(_:_:_:_:_:_:_:)**: Applies a set of piecewise polynomials to transform an 8-bit planar image to a 32-bit planar image.\n- **vImagePiecewisePolynomial_PlanarFtoPlanar8(_:_:_:_:_:_:_:)**: Applies a set of piecewise polynomials to transform a 32-bit planar image to an 8-bit planar image.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Use the vImage library’s polynomial transform to apply tone curve adjustments to images.",
+          "name" : "Applying tone curve adjustments to images",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-tone-curve-adjustments-to-images"
+        },
+        {
+          "description" : "Applies a set of piecewise polynomials to transform an 8-bit planar image to a 32-bit planar image.",
+          "name" : "vImagePiecewisePolynomial_Planar8toPlanarF(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImagePiecewisePolynomial_Planar8toPlanarF(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a set of piecewise polynomials to transform a 32-bit planar image to an 8-bit planar image.",
+          "name" : "vImagePiecewisePolynomial_PlanarFtoPlanar8(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImagePiecewisePolynomial_PlanarFtoPlanar8(_:_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Applying a polynomial"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vImagePiecewisePolynomial_PlanarF(_:_:_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImagePiecewisePolynomial_PlanarF(_:_:_:_:_:_:_:)"
+}

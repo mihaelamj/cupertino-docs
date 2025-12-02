@@ -1,0 +1,161 @@
+{
+  "abstract" : "A collection of resource allocations that can move in and out of resident memory.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "1525db716001d37ec9b216e8910b59103a93899db07037b89feadca1f4ae0dcf",
+  "crawledAt" : "2025-12-02T05:49:40Z",
+  "declaration" : {
+    "code" : "protocol MTLResidencySet : NSObjectProtocol",
+    "language" : "swift"
+  },
+  "id" : "6A2CC937-49FD-4CCF-90AE-F06770863193",
+  "kind" : "protocol",
+  "module" : "Metal",
+  "overview" : "## Overview\n\nResidency sets are a way you can tell Metal which resource allocations, such as buffers, textures, and heaps, to make *resident*, or GPU-accessible. Adding allocations to a residency set requires less overhead than the equivalent methods of a command encoder. Residency sets also give you more control when Metal makes their allocations resident, and for how long they remain resident. However, residency sets don’t track hazards, so you need to account for hazards with fences and events.\n\nYou can change which [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLAllocation] instances are in a residency set at any time by:\n\nMetal doesn’t synchronize the state of the residency set between the CPU and the GPU. This means you can add resource allocations to the set while the GPU is actively running a command buffer that’s accessing them.\n\nMetal makes the union of all residency sets’ allocations resident. This means each resource allocation, such as a buffer, can have an entry in multiple residency sets at the same time. Removing an allocation from one residency set doesn’t affect its residency if it also has an entry in another residency set. So you can remove an entire residency set from a command queue and only remove the allocations from residency that are unique to that set. All other resource allocations remain in residency because at least one other residency set has an entry for each.\n\nAlternatively, render and compute command encoders have the following methods that make resource allocations resident:\n\nThese command encoder methods:\n\nResidency sets, by contrast:\n\nMetal attaches all of a command queue’s residency sets to a command buffer from that queue when you call the command buffer’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLCommandBuffer\/commit()] method.\n\nSee [doc:\/\/com.apple.metal\/documentation\/Metal\/simplifying-gpu-resource-management-with-residency-sets] for information about associating a residency set to command buffers and command queues.\n\n### Create a residency set\n\nMake a residency set by configuring an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySetDescriptor] instance and passing it to the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeResidencySet(descriptor:)] method of an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice].\n\n### Add allocations to a residency set\n\nAdd individual resource allocations to a residency set by calling [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/addAllocation(_:)], or add multiple allocations with [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/addAllocations(_:)].\n\nThe residency set can handle redundant entries for the same allocation because it ignores duplicates that already have an entry in the set.\n\n### Remove allocations from a residency set\n\nRemove individual resource allocations from a residency set by calling [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/removeAllocation(_:)], or remove multiple allocations with [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/removeAllocations(_:)].\n\nLike the methods that add resource allocations to the set, these methods aggregate removals with little CPU overhead. So you can call the methods multiple times without adversely affecting runtime performance.\n\n### Commit the changes to a residency set\n\nApply the updates to a residency set by calling its [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/commit()] method.\n\nA residency set’s addition and removal methods don’t take effect until you call this method.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\ncrawled: 2025-12-02T05:49:40Z\n---\n\n# MTLResidencySet\n\n**Protocol**\n\nA collection of resource allocations that can move in and out of resident memory.\n\n## Declaration\n\n```swift\nprotocol MTLResidencySet : NSObjectProtocol\n```\n\n## Overview\n\nResidency sets are a way you can tell Metal which resource allocations, such as buffers, textures, and heaps, to make *resident*, or GPU-accessible. Adding allocations to a residency set requires less overhead than the equivalent methods of a command encoder. Residency sets also give you more control when Metal makes their allocations resident, and for how long they remain resident. However, residency sets don’t track hazards, so you need to account for hazards with fences and events.\n\nYou can change which [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLAllocation] instances are in a residency set at any time by:\n\n1. Staging additions and removals with the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/addAllocation(_:)] and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/removeAllocation(_:)] methods, respectively, or with their sibling methods\n2. Applying staged changes by calling the residency set’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/commit()] method\n\nMetal doesn’t synchronize the state of the residency set between the CPU and the GPU. This means you can add resource allocations to the set while the GPU is actively running a command buffer that’s accessing them.\n\n\n\nMetal makes the union of all residency sets’ allocations resident. This means each resource allocation, such as a buffer, can have an entry in multiple residency sets at the same time. Removing an allocation from one residency set doesn’t affect its residency if it also has an entry in another residency set. So you can remove an entire residency set from a command queue and only remove the allocations from residency that are unique to that set. All other resource allocations remain in residency because at least one other residency set has an entry for each.\n\nAlternatively, render and compute command encoders have the following methods that make resource allocations resident:\n\n\n\nThese command encoder methods:\n\n- Support hazard tracking to applicable resources (see [doc:\/\/com.apple.metal\/documentation\/Metal\/resource-fundamentals])\n- Require CPU overhead for each resource or heap, which scale up with each one you add\n- Apply to a single command encoder, which means you need to call the methods again for the same resources for each command encoder\n\nResidency sets, by contrast:\n\n- Don’t support hazard tracking, which means you need to account for hazards with [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLFence] and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLEvent] instances\n- Require minimal CPU overhead by aggregating allocations at little to no cost for each resource or heap\n- Can attach to a command buffer with a single call, which makes residency set’s allocations available to all of that command buffer’s encoders\n- Can attach to a command queue with a single call\n\nMetal attaches all of a command queue’s residency sets to a command buffer from that queue when you call the command buffer’s [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLCommandBuffer\/commit()] method.\n\n\n\nSee [doc:\/\/com.apple.metal\/documentation\/Metal\/simplifying-gpu-resource-management-with-residency-sets] for information about associating a residency set to command buffers and command queues.\n\n### Create a residency set\n\nMake a residency set by configuring an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySetDescriptor] instance and passing it to the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice\/makeResidencySet(descriptor:)] method of an [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLDevice].\n\n\n\n### Add allocations to a residency set\n\nAdd individual resource allocations to a residency set by calling [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/addAllocation(_:)], or add multiple allocations with [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/addAllocations(_:)].\n\n\n\nThe residency set can handle redundant entries for the same allocation because it ignores duplicates that already have an entry in the set.\n\n\n\n### Remove allocations from a residency set\n\nRemove individual resource allocations from a residency set by calling [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/removeAllocation(_:)], or remove multiple allocations with [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/removeAllocations(_:)].\n\n\n\nLike the methods that add resource allocations to the set, these methods aggregate removals with little CPU overhead. So you can call the methods multiple times without adversely affecting runtime performance.\n\n### Commit the changes to a residency set\n\nApply the updates to a residency set by calling its [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResidencySet\/commit()] method.\n\n\n\nA residency set’s addition and removal methods don’t take effect until you call this method.\n\n## Adding allocations\n\n- **addAllocation(_:)**: Stages a single resource to join the residency set’s list of allocations.\n- **addAllocations(_:)**: Stages multiple resources to join the residency set’s list of allocations.\n\n## Removing allocations\n\n- **removeAllAllocations()**: Stages all the resources in the residency set to leave its list of allocations.\n- **removeAllocation(_:)**: Stages a single resource to leave the residency set’s list of allocations.\n- **removeAllocations(_:)**: Stages multiple resources to leave the residency set’s list of allocations.\n\n## Finalizing pending allocation changes\n\n- **commit()**: Applies any pending additions to and removals from the residency set.\n\n## Requesting residency for the allocations\n\n- **requestResidency()**: Tells Metal to do as much preparatory work as it can, with the system’s current conditions, to make the set’s resource allocations resident.\n\n## Releasing the allocations from residency\n\n- **endResidency()**: Informs Metal that the residency set’s allocations no longer need to be resident, and that it can reuse the memory for other allocations.\n\n## Inspecting a residency set\n\n- **label**: An optional name that can help you identify the residency set.\n- **device**: The Metal device that owns the residency set.\n- **containsAllocation(_:)**: Returns a Boolean value that indicates whether the residency set contains a specific resource allocation.\n- **allAllocations**: The residency set’s current list of resource allocations.\n- **allocationCount**: The number of resource allocations in the residency set.\n- **allocatedSize**: The amount of resident memory, in bytes, the residency set’s resource allocations consume.\n\n## Residency sets\n\n- **Simplifying GPU resource management with residency sets**: Organize your resources into groups and influence when they become accessible to the GPU.\n- **MTLResidencySetDescriptor**: A configuration that customizes the behavior for a residency set.\n\n## Inherits From\n\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Stages a single resource to join the residency set’s list of allocations.",
+          "name" : "addAllocation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/addAllocation(_:)"
+        },
+        {
+          "description" : "Stages multiple resources to join the residency set’s list of allocations.",
+          "name" : "addAllocations(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/addAllocations(_:)"
+        }
+      ],
+      "title" : "Adding allocations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Stages all the resources in the residency set to leave its list of allocations.",
+          "name" : "removeAllAllocations()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/removeAllAllocations()"
+        },
+        {
+          "description" : "Stages a single resource to leave the residency set’s list of allocations.",
+          "name" : "removeAllocation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/removeAllocation(_:)"
+        },
+        {
+          "description" : "Stages multiple resources to leave the residency set’s list of allocations.",
+          "name" : "removeAllocations(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/removeAllocations(_:)"
+        }
+      ],
+      "title" : "Removing allocations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Applies any pending additions to and removals from the residency set.",
+          "name" : "commit()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/commit()"
+        }
+      ],
+      "title" : "Finalizing pending allocation changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells Metal to do as much preparatory work as it can, with the system’s current conditions, to make the set’s resource allocations resident.",
+          "name" : "requestResidency()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/requestResidency()"
+        }
+      ],
+      "title" : "Requesting residency for the allocations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Informs Metal that the residency set’s allocations no longer need to be resident, and that it can reuse the memory for other allocations.",
+          "name" : "endResidency()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/endResidency()"
+        }
+      ],
+      "title" : "Releasing the allocations from residency"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An optional name that can help you identify the residency set.",
+          "name" : "label",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/label"
+        },
+        {
+          "description" : "The Metal device that owns the residency set.",
+          "name" : "device",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/device"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether the residency set contains a specific resource allocation.",
+          "name" : "containsAllocation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/containsAllocation(_:)"
+        },
+        {
+          "description" : "The residency set’s current list of resource allocations.",
+          "name" : "allAllocations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/allAllocations"
+        },
+        {
+          "description" : "The number of resource allocations in the residency set.",
+          "name" : "allocationCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/allocationCount"
+        },
+        {
+          "description" : "The amount of resident memory, in bytes, the residency set’s resource allocations consume.",
+          "name" : "allocatedSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet\/allocatedSize"
+        }
+      ],
+      "title" : "Inspecting a residency set"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Organize your resources into groups and influence when they become accessible to the GPU.",
+          "name" : "Simplifying GPU resource management with residency sets",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/simplifying-gpu-resource-management-with-residency-sets"
+        },
+        {
+          "description" : "A configuration that customizes the behavior for a residency set.",
+          "name" : "MTLResidencySetDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySetDescriptor"
+        }
+      ],
+      "title" : "Residency sets"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObjectProtocol"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MTLResidencySet",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLResidencySet"
+}

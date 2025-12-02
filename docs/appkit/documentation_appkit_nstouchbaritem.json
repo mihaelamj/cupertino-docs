@@ -1,0 +1,603 @@
+{
+  "abstract" : "A UI control shown in the Touch Bar on supported models of MacBook Pro.",
+  "codeExamples" : [
+    {
+      "code" : "myButton.bezelColor = NSColor.controlColor ",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCoding",
+    "NSObjectProtocol",
+    "Sendable"
+  ],
+  "contentHash" : "f156fd32f663cf9490c1c622570829ac3fbd9c732b6fb1a8094b9fed7f78fadd",
+  "crawledAt" : "2025-12-01T01:06:38Z",
+  "declaration" : {
+    "code" : "@MainActor class NSTouchBarItem",
+    "language" : "swift"
+  },
+  "id" : "263128D0-7B28-4AA4-A00A-5D15086D91B5",
+  "inheritedBy" : [
+    "NSButtonTouchBarItem",
+    "NSCandidateListTouchBarItem",
+    "NSColorPickerTouchBarItem",
+    "NSCustomTouchBarItem",
+    "NSGroupTouchBarItem",
+    "NSPickerTouchBarItem",
+    "NSPopoverTouchBarItem",
+    "NSSharingServicePickerTouchBarItem",
+    "NSSliderTouchBarItem",
+    "NSStepperTouchBarItem"
+  ],
+  "kind" : "class",
+  "module" : "AppKit",
+  "overview" : "## Overview\n\nAn instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem] class is called an *item*. It appears to the user on the Touch Bar, typically along with other items, within the (invisible) bounds of the view for an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBar] object, called a *bar*.\n\nYou use an item by adding it or its identifier to one or another of a bar’s arrays, depending on your app’s architecture and on the user customization you want to support. Because of the close interaction between bars and items, be sure you have read the overview for the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBar] class before continuing here to learn about items.\n\nAppKit provides a rich set of subclasses of [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem], each of which is described in the corresponding class reference document:\n\nThe two most commonly-used item classes are [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCustomTouchBarItem] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem].\n\nRefer to the following sample code projects which demonstrate how to use [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem] and related classes:\n\n### Custom items\n\nYou typically use a *custom item* (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCustomTouchBarItem] class) to hold a view. For example, to place a button in the Touch Bar, proceed as follows:\n\n### Popover items\n\nA *popover item* (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem] class) — the second commonly-used type — lets you provide a new bar (an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBar] object) when a user taps, or presses-and-holds, on the collapsed representation of the popover item.\n\nIn its expanded state, a popover appears as an overlay above other items in the Touch Bar.\n\nTo show a bar when a user taps a popover item, specify a bar in the item’s [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/popoverTouchBar] property. Enable press-and-hold by specifying a bar in the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/pressAndHoldTouchBar] property. The press-and-hold feature is suitable only for a simple popover, such as one that contains a single segmented control (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSegmentedControl] class) or slider (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSliderTouchBarItem] class).\n\nThe system automatically shows a chevron in the popover item under the following conditions: You specify the same [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBar] object for both [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/pressAndHoldTouchBar] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/popoverTouchBar] properties, *and* you use the default view for the popover item’s [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/collapsedRepresentation] property.\n\nIf you provide a popover item that contains a scrubber (an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSScrubber] instance), you’ll likely want to dismiss both the scrubber and the popover after the user makes their selection in the scrubber. A good approach to achieve this user interaction is to subclass [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem], employing your instance of the subclass as the scrubber’s delegate. You can then configure the delegate object, within its [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSScrubberDelegate\/didFinishInteracting(with:)] method, to call the popover’s [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/dismissPopover(_:)] method.\n\nIf you place a segmented control in a bar for a popover item, take care *not* to use [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSegmentedControl\/SwitchTracking\/momentary] option of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSegmentedControl\/SwitchTracking] enumeration because doing so interferes with the user’s operation of the control.\n\n### Other common item types\n\nTo provide a *slider item*, always use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSliderTouchBarItem] class, which employs a standard slider but is optimized for user interaction with the Touch Bar. (That is, don’t instead add an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSlider] object directly to a custom item.)\n\nA *group item* (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSGroupTouchBarItem] class) is a container that provides a bar, in its [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSGroupTouchBarItem\/groupTouchBar] property, with its own array of items. You can enable customization for the items in a group’s contained bar, in the same way you would for items directly within a top-level bar. Using a group item lets you provide different user customization rules for different parts of the Touch Bar. Using a group item also lets you enable centering of the group within the Touch Bar.\n\nA *spacing item* lets you add custom spacing between items in a bar. Specify a spacing item for a bar by assigning the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Identifier-swift.struct\/fixedSpaceSmall], [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Identifier-swift.struct\/fixedSpaceLarge], or [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Identifier-swift.struct\/flexibleSpace] identifier to an item, and adding that item to the bar’s items array. The system automatically instantiates and configures spacing items based on the identifiers you specify.\n\n### Configuration\n\nYou must configure each item with a unique identifier, and can optionally assign a visibility priority or tag it as a principal item.\n\n**NSTouchBarItem identification.** You must provide a unique identifier for each item in the bar, apart from spacing items. Specify an identifier, of type [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Identifier-swift.struct] (called an *item identifier*), for each item when you initialize it. The item identifier serves as a persistable weak reference to the item. The system uses item identifiers to populate bars and to track and record changes for user customization.\n\n**NSTouchBarItem priority for visibility.** If the system is showing a bar in the Touch Bar, but horizontal space is constrained and the bar defines more items than will fit, the system hides some of the items. You influence this hide\/show behavior by setting a value for the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/visibilityPriority] property of each item.\n\nLower-visibility-priority items get hidden by the system, as needed, before higher-visibility-priority items do.\n\nTo set visibility priority, use the constants in the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Priority] enumeration, or assign an integer value. The value `0` indicates [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Priority\/normal] visibility priority. Visibility priority increases with increasing numerical value. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Priority\/low] constant provides a value of `-1000`; the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Priority\/high] constant, a value `+1000`. You can use integers outside of this range if you need to.\n\nThe system hides or shows groups of identical-priority items (defined within a single bar) together. The one exception to this rule is for items whose visibility priority is [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Priority\/normal]; these items get hidden one-by-one, with the normal-priority item farthest to the right getting hidden first. If horizontal space later increases in the Touch Bar, and hidden, normal-priority items become eligible for display, the system first shows the most recently-hidden of those items.\n\n**Principal Items.** Within a bar, you can optionally specify an item as having special significance by employing the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBar\/principalItemIdentifier] property. The system attempts to center a principal item within the Touch Bar. If you want a group of items to appear centered in the Touch Bar, designate the group item (of type [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem]) as the principal item.\n\nIf more than one bar in the responder chain is eligible to be visible in the Touch Bar, and more than one of those has a principal item, the system determines which one to center in the Touch Bar.\n\n#### Fonts, images, and colors\n\nWhen using a button in a custom item, don’t attempt to set the button title’s font. In the Touch Bar, the system specifies fonts for standard controls.\n\nIf you need to specify a font, such as for custom drawing, use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSFont\/systemFont(ofSize:)] class method (or related methods) of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSFont] class. Use a font size of `0` to automatically obtain appropriate sizing for the Touch Bar.\n\nIf you use an image in a button or other control in the Touch Bar, take care to employ a template image. Template images in the Touch Bar respond automatically to system white-point changes, and automatically react to user interactions. The overview in this document lists the built-in Touch Bar template images.\n\nTo use your own image assets, use Retina-resolution images, designated as `@2x` in your asset catalog and with a maximum height of 30 points (corresponding to 60 pixels).\n\nTo set colors on objects within an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem] object, use AppKit named colors and use a bezel color property (available starting in macOS 10.12.1). Named colors appear correctly in the Touch Bar, support appearance vibrancy, and respond to system white-point changes. In a button or a segmented control, employ the bezel color property to ensure appropriate appearance in the Touch Bar.\n\nTo set the background color on a button within a custom item, use code like this:\n\nTo set color on text and glyphs in the Touch Bar, use the following colors from the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSColor] class:\n\nThe system automatically changes the relative brightness and the white-point of these colors, depending on the ambient light, and depending on other factors such as keyboard backlight level. Always use these colors, or colors that dynamically derive from these colors, for control backgrounds, text, icons, and glyphs in the Touch Bar.\n\n#### Handling touch events\n\nThe easiest way to handle touch events in an item is to use AppKit controls, such as by adding a button, a segmented control, or a scrubber to the item. Standard AppKit controls convey touch events to your specified targets automatically, so use standard controls whenever possible in your app.\n\nIf standard controls are insufficient, you can create composite views with a combination of standard controls, custom views, and gesture recognizers that you manually add to those custom views.\n\nIf you require the lowest-level of control for touch event processing, you can use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouch] class directly. You might go this route, for example, to provide good user feedback in the case of a control placed within a scroll view.Direct use of touch methods allows fine-grained control over interaction. You can, for example, highlight a control immediately upon a user touching it, and then remove the highlight if the user then, without lifting the finger, performs a scroll gesture.\n\nIf using the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouch] class directly, be sure to implement the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSGestureRecognizer\/touchesCancelled(with:)] responder method, because users can perform touch interactions that result in canceled touches.",
+  "platforms" : [
+    "Mac Catalyst",
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\ncrawled: 2025-12-01T01:06:38Z\n---\n\n# NSTouchBarItem\n\n**Class**\n\nA UI control shown in the Touch Bar on supported models of MacBook Pro.\n\n## Declaration\n\n```swift\n@MainActor class NSTouchBarItem\n```\n\n## Overview\n\nAn instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem] class is called an *item*. It appears to the user on the Touch Bar, typically along with other items, within the (invisible) bounds of the view for an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBar] object, called a *bar*.\n\nYou use an item by adding it or its identifier to one or another of a bar’s arrays, depending on your app’s architecture and on the user customization you want to support. Because of the close interaction between bars and items, be sure you have read the overview for the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBar] class before continuing here to learn about items.\n\nAppKit provides a rich set of subclasses of [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem], each of which is described in the corresponding class reference document:\n\n- An [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCandidateListTouchBarItem] object (a *candidate-list item*), along with its delegate, provides a list of textual suggestions for the current text view\n- An [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSColorPickerTouchBarItem] object (a *color picker item*) provides a system-defined color picker\n- An [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCustomTouchBarItem] object (a *custom item*) contains a responder of your choice, such as a view, a button, or a scrubber (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSScrubber] class)\n- An [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSGroupTouchBarItem] object (a *group item*) provides a bar to contain other items\n- An [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem] object (a *popover item*) provides a two-state control that, when touched or pressed, expands into its second state, showing the contents of a bar it owns\n- An [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSharingServicePickerTouchBarItem] object (a *sharing service picker item*), along with its delegate, provides a list of objects eligible for sharing\n- An [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSliderTouchBarItem] object (a *slider item*) provides a slider control for choosing a value in a range\n\nThe two most commonly-used item classes are [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCustomTouchBarItem] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem].\n\nRefer to the following sample code projects which demonstrate how to use [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem] and related classes:\n\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/creating-and-customizing-the-touch-bar]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/integrating-a-toolbar-and-touch-bar-into-your-app]\n\n### Custom items\n\nYou typically use a *custom item* (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCustomTouchBarItem] class) to hold a view. For example, to place a button in the Touch Bar, proceed as follows:\n\n1. Use an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSButton] convenience initializer such as [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSButton\/init(title:image:target:action:)] to create and configure the button.\n2. Set the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/view] property for a custom item to point to the new button.\n\n\n\n### Popover items\n\nA *popover item* (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem] class) — the second commonly-used type — lets you provide a new bar (an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBar] object) when a user taps, or presses-and-holds, on the collapsed representation of the popover item.\n\nIn its expanded state, a popover appears as an overlay above other items in the Touch Bar.\n\nTo show a bar when a user taps a popover item, specify a bar in the item’s [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/popoverTouchBar] property. Enable press-and-hold by specifying a bar in the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/pressAndHoldTouchBar] property. The press-and-hold feature is suitable only for a simple popover, such as one that contains a single segmented control (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSegmentedControl] class) or slider (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSliderTouchBarItem] class).\n\n\n\nThe system automatically shows a chevron in the popover item under the following conditions: You specify the same [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBar] object for both [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/pressAndHoldTouchBar] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/popoverTouchBar] properties, *and* you use the default view for the popover item’s [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/collapsedRepresentation] property.\n\nIf you provide a popover item that contains a scrubber (an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSScrubber] instance), you’ll likely want to dismiss both the scrubber and the popover after the user makes their selection in the scrubber. A good approach to achieve this user interaction is to subclass [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem], employing your instance of the subclass as the scrubber’s delegate. You can then configure the delegate object, within its [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSScrubberDelegate\/didFinishInteracting(with:)] method, to call the popover’s [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSPopoverTouchBarItem\/dismissPopover(_:)] method.\n\nIf you place a segmented control in a bar for a popover item, take care *not* to use [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSegmentedControl\/SwitchTracking\/momentary] option of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSegmentedControl\/SwitchTracking] enumeration because doing so interferes with the user’s operation of the control.\n\n### Other common item types\n\nTo provide a *slider item*, always use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSliderTouchBarItem] class, which employs a standard slider but is optimized for user interaction with the Touch Bar. (That is, don’t instead add an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSSlider] object directly to a custom item.)\n\nA *group item* (an instance of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSGroupTouchBarItem] class) is a container that provides a bar, in its [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSGroupTouchBarItem\/groupTouchBar] property, with its own array of items. You can enable customization for the items in a group’s contained bar, in the same way you would for items directly within a top-level bar. Using a group item lets you provide different user customization rules for different parts of the Touch Bar. Using a group item also lets you enable centering of the group within the Touch Bar.\n\nA *spacing item* lets you add custom spacing between items in a bar. Specify a spacing item for a bar by assigning the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Identifier-swift.struct\/fixedSpaceSmall], [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Identifier-swift.struct\/fixedSpaceLarge], or [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Identifier-swift.struct\/flexibleSpace] identifier to an item, and adding that item to the bar’s items array. The system automatically instantiates and configures spacing items based on the identifiers you specify.\n\n### Configuration\n\nYou must configure each item with a unique identifier, and can optionally assign a visibility priority or tag it as a principal item.\n\n**NSTouchBarItem identification.** You must provide a unique identifier for each item in the bar, apart from spacing items. Specify an identifier, of type [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Identifier-swift.struct] (called an *item identifier*), for each item when you initialize it. The item identifier serves as a persistable weak reference to the item. The system uses item identifiers to populate bars and to track and record changes for user customization.\n\n**NSTouchBarItem priority for visibility.** If the system is showing a bar in the Touch Bar, but horizontal space is constrained and the bar defines more items than will fit, the system hides some of the items. You influence this hide\/show behavior by setting a value for the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/visibilityPriority] property of each item.\n\nLower-visibility-priority items get hidden by the system, as needed, before higher-visibility-priority items do.\n\nTo set visibility priority, use the constants in the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Priority] enumeration, or assign an integer value. The value `0` indicates [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Priority\/normal] visibility priority. Visibility priority increases with increasing numerical value. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Priority\/low] constant provides a value of `-1000`; the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Priority\/high] constant, a value `+1000`. You can use integers outside of this range if you need to.\n\nThe system hides or shows groups of identical-priority items (defined within a single bar) together. The one exception to this rule is for items whose visibility priority is [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem\/Priority\/normal]; these items get hidden one-by-one, with the normal-priority item farthest to the right getting hidden first. If horizontal space later increases in the Touch Bar, and hidden, normal-priority items become eligible for display, the system first shows the most recently-hidden of those items.\n\n**Principal Items.** Within a bar, you can optionally specify an item as having special significance by employing the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBar\/principalItemIdentifier] property. The system attempts to center a principal item within the Touch Bar. If you want a group of items to appear centered in the Touch Bar, designate the group item (of type [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem]) as the principal item.\n\nIf more than one bar in the responder chain is eligible to be visible in the Touch Bar, and more than one of those has a principal item, the system determines which one to center in the Touch Bar.\n\n#### Fonts, images, and colors\n\nWhen using a button in a custom item, don’t attempt to set the button title’s font. In the Touch Bar, the system specifies fonts for standard controls.\n\nIf you need to specify a font, such as for custom drawing, use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSFont\/systemFont(ofSize:)] class method (or related methods) of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSFont] class. Use a font size of `0` to automatically obtain appropriate sizing for the Touch Bar.\n\nIf you use an image in a button or other control in the Touch Bar, take care to employ a template image. Template images in the Touch Bar respond automatically to system white-point changes, and automatically react to user interactions. The overview in this document lists the built-in Touch Bar template images.\n\nTo use your own image assets, use Retina-resolution images, designated as `@2x` in your asset catalog and with a maximum height of 30 points (corresponding to 60 pixels).\n\nTo set colors on objects within an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouchBarItem] object, use AppKit named colors and use a bezel color property (available starting in macOS 10.12.1). Named colors appear correctly in the Touch Bar, support appearance vibrancy, and respond to system white-point changes. In a button or a segmented control, employ the bezel color property to ensure appropriate appearance in the Touch Bar.\n\nTo set the background color on a button within a custom item, use code like this:\n\n```swift\nmyButton.bezelColor = NSColor.controlColor \n```\n\nTo set color on text and glyphs in the Touch Bar, use the following colors from the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSColor] class:\n\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSColor\/labelColor]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSColor\/secondaryLabelColor]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSColor\/tertiaryLabelColor]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSColor\/quaternaryLabelColor]\n\nThe system automatically changes the relative brightness and the white-point of these colors, depending on the ambient light, and depending on other factors such as keyboard backlight level. Always use these colors, or colors that dynamically derive from these colors, for control backgrounds, text, icons, and glyphs in the Touch Bar.\n\n#### Handling touch events\n\nThe easiest way to handle touch events in an item is to use AppKit controls, such as by adding a button, a segmented control, or a scrubber to the item. Standard AppKit controls convey touch events to your specified targets automatically, so use standard controls whenever possible in your app.\n\nIf standard controls are insufficient, you can create composite views with a combination of standard controls, custom views, and gesture recognizers that you manually add to those custom views.\n\nIf you require the lowest-level of control for touch event processing, you can use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouch] class directly. You might go this route, for example, to provide good user feedback in the case of a control placed within a scroll view.Direct use of touch methods allows fine-grained control over interaction. You can, for example, highlight a control immediately upon a user touching it, and then remove the highlight if the user then, without lifting the finger, performs a scroll gesture.\n\nIf using the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSTouch] class directly, be sure to implement the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSGestureRecognizer\/touchesCancelled(with:)] responder method, because users can perform touch interactions that result in canceled touches.\n\n## Creating a bar item\n\n- **init(identifier:)**: Creates a new item with the specified identifier.\n- **NSTouchBarItem.Identifier**: An identifier for an item in the Touch Bar.\n- **init(coder:)**: Initializes and returns a new item from a storyboard or nib file.\n\n## Identifying a bar item\n\n- **identifier**: The identifier for this item.\n- **NSTouchBarItem.Identifier**: An identifier for an item in the Touch Bar.\n\n## Managing item visibility\n\n- **visibilityPriority**: Determines which items are shown in a bar when space is limited.\n- **NSTouchBarItem.Priority**: Priorities for the visibility of a Touch Bar item.\n- **isVisible**: A Boolean value that reflects whether or not the item is visible.\n\n## Configuring bar customization\n\n- **customizationLabel**: The user-visible string identifying this item during bar customization.\n\n## Subclassing bar items\n\n- **viewController**: The view controller associated with this item.\n- **view**: The view associated with this item.\n\n## Using template images\n\n- **touchBarAddDetailTemplateName**: A template image for showing additional detail for an item.\n- **touchBarAddTemplateName**: A template image for creating a new item.\n- **touchBarAlarmTemplateName**: A template image for setting or showing an alarm.\n- **touchBarAudioInputMuteTemplateName**: A template image for muting audio input or denoting that audio input is muted.\n- **touchBarAudioInputTemplateName**: A template image for denoting audio input.\n- **touchBarAudioOutputMuteTemplateName**: A template image for muting audio output or for denoting that audio output is muted.\n- **touchBarAudioOutputVolumeHighTemplateName**: A template image for setting the audio output volume to a high level, or for denoting that the audio is at the peak volume.\n- **touchBarAudioOutputVolumeLowTemplateName**: A template image for setting the audio output volume to a low level, or for denoting that it is set to a low level.\n- **touchBarAudioOutputVolumeMediumTemplateName**: A template image for setting the audio output volume to a medium level, or for denoting that it is set to a medium level.\n- **touchBarAudioOutputVolumeOffTemplateName**: A template image for setting the audio output volume to silent, or for denoting that it is set to silent.\n- **touchBarBookmarksTemplateName**: A template image for showing app-specific bookmarks.\n- **touchBarColorPickerFillName**: A template image for showing a color picker so the user can select a fill color.\n- **touchBarColorPickerFontName**: A template image for showing a color picker so the user can select a text color.\n- **touchBarColorPickerStrokeName**: A template image for showing a color picker so the user can select a stroke color.\n- **touchBarCommunicationAudioTemplateName**: A template image for initiating or denoting audio communication.\n- **touchBarCommunicationVideoTemplateName**: A template image for initiating or denoting video communication.\n- **touchBarComposeTemplateName**: A template image for opening a new document or view in edit mode.\n- **touchBarDeleteTemplateName**: A template image for deleting the current or selected item.\n- **touchBarDownloadTemplateName**: A template image for downloading an item.\n- **touchBarEnterFullScreenTemplateName**: A template image for entering full screen mode.\n- **touchBarExitFullScreenTemplateName**: A template image for exiting full screen mode.\n- **touchBarFastForwardTemplateName**: A template image for moving forward through media playback or slides.\n- **touchBarFolderTemplateName**: A template image for opening or representing a folder.\n- **touchBarFolderCopyToTemplateName**: A template image for copying an item to a destination.\n- **touchBarFolderMoveToTemplateName**: A template image for moving an item to a destination.\n- **touchBarGetInfoTemplateName**: A template image for showing information about an item.\n- **touchBarGoBackTemplateName**: A template image for returning to the previous screen or location.\n- **touchBarGoDownTemplateName**: A template image for moving to the next item in a list.\n- **touchBarGoForwardTemplateName**: A template image for moving to the next screen or location.\n- **touchBarGoUpTemplateName**: A template image for moving to the previous item in a list.\n- **touchBarHistoryTemplateName**: A template image for showing history information, such as recent downloads.\n- **touchBarIconViewTemplateName**: A template image for showing items in an icon view.\n- **touchBarListViewTemplateName**: A template image for showing items in a list view.\n- **touchBarMailTemplateName**: A template image for creating an email message.\n- **touchBarNewFolderTemplateName**: A template image for creating a new folder.\n- **touchBarNewMessageTemplateName**: A template image for creating a new message, or for denoting the use of messaging.\n- **touchBarOpenInBrowserTemplateName**: A template image for opening an item in the user’s browser.\n- **touchBarPauseTemplateName**: A template image for pausing media playback or slides.\n- **touchBarPlayTemplateName**: A template image for starting or resuming playback of media or slides.\n- **touchBarPlayPauseTemplateName**: A template image for toggling between playing and pausing media or slides.\n- **touchBarPlayheadTemplateName**: A template image for denoting the current playback position within a timeline track.\n- **touchBarQuickLookTemplateName**: A template image for opening an item in Quick Look.\n- **touchBarRecordStartTemplateName**: A template image for starting recording.\n- **touchBarRecordStopTemplateName**: A template image for stopping recording or stopping playback of media or slides.\n- **touchBarRefreshTemplateName**: A template image for refreshing displayed data.\n- **touchBarRewindTemplateName**: A template image for moving backwards through media or slides.\n- **touchBarRotateLeftTemplateName**: A template image for rotating an item counterclockwise.\n- **touchBarRotateRightTemplateName**: A template image for rotating an item clockwise.\n- **touchBarSearchTemplateName**: A template image for showing a search field or for initiating a search.\n- **touchBarShareTemplateName**: A template image for sharing content with others directly or via social media.\n- **touchBarSidebarTemplateName**: A template image for showing a sidebar in the current view.\n- **touchBarSkipBackTemplateName**: A template image for skipping to the previous chapter or location during media playback.\n- **touchBarSkipToStartTemplateName**: A template image for skipping to the start of media playback.\n- **touchBarSkipBack30SecondsTemplateName**: A template image for skipping back 30 seconds during media playback.\n- **touchBarSkipBack15SecondsTemplateName**: A template image for skipping back 15 seconds during media playback.\n- **touchBarSkipAhead15SecondsTemplateName**: A template image for skipping ahead 15 seconds during media playback.\n- **touchBarSkipAhead30SecondsTemplateName**: A template image for skipping ahead 30 seconds during media playback.\n- **touchBarSkipToEndTemplateName**: A template image for skipping to the end of media playback.\n- **touchBarSkipAheadTemplateName**: A template image for skipping to the next chapter or location during media playback.\n- **touchBarSlideshowTemplateName**: A template image for starting a slideshow.\n- **touchBarTagIconTemplateName**: A template image for applying a tag to an item.\n- **touchBarTextBoxTemplateName**: A template image for inserting a text box.\n- **touchBarTextListTemplateName**: A template image for inserting a list or converting text to list form.\n- **touchBarTextBoldTemplateName**: A template image for making selected text bold.\n- **touchBarTextItalicTemplateName**: A template image for italicizing the selected text.\n- **touchBarTextUnderlineTemplateName**: A template image for underlining text.\n- **touchBarTextStrikethroughTemplateName**: A template image for striking through text.\n- **touchBarTextJustifiedAlignTemplateName**: A template image for fully justifying text.\n- **touchBarTextLeftAlignTemplateName**: A template image for aligning text to the left.\n- **touchBarTextCenterAlignTemplateName**: A template image for centering text.\n- **touchBarTextRightAlignTemplateName**: A template image for aligning text to the right.\n- **touchBarUserTemplateName**: A template image for showing or representing user information.\n- **touchBarUserAddTemplateName**: A template image for creating a new user account.\n- **touchBarUserGroupTemplateName**: A template image for showing or representing a group of users.\n- **touchBarVolumeUpTemplateName**: A template image for increasing the audio output volume.\n- **touchBarVolumeDownTemplateName**: A template image for reducing the audio output volume.\n\n## Touch Bar items\n\n- **NSCandidateListTouchBarItem**: A bar item that, along with its delegate, provides a list of textual suggestions for the current text view.\n- **NSColorPickerTouchBarItem**: A bar item that provides a system-defined color picker.\n- **NSCustomTouchBarItem**: A bar item that contains a responder of your choice, such as a view, a button, or a scrubber.\n- **NSGroupTouchBarItem**: A bar item that provides a bar to contain other items.\n- **NSPopoverTouchBarItem**: A bar item that provides a two-state control that can expand into its second state, showing the contents of a bar that it owns.\n- **NSSharingServicePickerTouchBarItem**: A bar item that, along with its delegate, provides a list of objects eligible for sharing.\n- **NSSliderTouchBarItem**: A bar item that provides a slider control for choosing a value in a range.\n- **NSStepperTouchBarItem**: A bar item that provides a stepper control for incrementing or decrementing a value.\n- **NSUserInterfaceCompressionOptions**: An object that specifies how user interface elements resize themselves when space is constrained.\n- **NSButtonTouchBarItem**: A bar item that provides a button.\n- **NSPickerTouchBarItem**: A bar item that provides a picker control with multiple options.\n- **NSPickerTouchBarItem.ControlRepresentation**: Constants that specify display styles for picker bar items.\n- **NSPickerTouchBarItem.SelectionMode**: Constants that specify selection modes for picker bar items.\n\n## Inherits From\n\n- NSObject\n\n## Inherited By\n\n- NSButtonTouchBarItem\n- NSCandidateListTouchBarItem\n- NSColorPickerTouchBarItem\n- NSCustomTouchBarItem\n- NSGroupTouchBarItem\n- NSPickerTouchBarItem\n- NSPopoverTouchBarItem\n- NSSharingServicePickerTouchBarItem\n- NSSliderTouchBarItem\n- NSStepperTouchBarItem\n\n## Conforms To\n\n- CVarArg\n- Copyable\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCoding\n- NSObjectProtocol\n- Sendable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new item with the specified identifier.",
+          "name" : "init(identifier:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/init(identifier:)"
+        },
+        {
+          "description" : "An identifier for an item in the Touch Bar.",
+          "name" : "NSTouchBarItem.Identifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/Identifier-swift.struct"
+        },
+        {
+          "description" : "Initializes and returns a new item from a storyboard or nib file.",
+          "name" : "init(coder:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/init(coder:)"
+        }
+      ],
+      "title" : "Creating a bar item"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The identifier for this item.",
+          "name" : "identifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/identifier-swift.property"
+        },
+        {
+          "description" : "An identifier for an item in the Touch Bar.",
+          "name" : "NSTouchBarItem.Identifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/Identifier-swift.struct"
+        }
+      ],
+      "title" : "Identifying a bar item"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Determines which items are shown in a bar when space is limited.",
+          "name" : "visibilityPriority",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/visibilityPriority"
+        },
+        {
+          "description" : "Priorities for the visibility of a Touch Bar item.",
+          "name" : "NSTouchBarItem.Priority",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/Priority"
+        },
+        {
+          "description" : "A Boolean value that reflects whether or not the item is visible.",
+          "name" : "isVisible",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/isVisible"
+        }
+      ],
+      "title" : "Managing item visibility"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The user-visible string identifying this item during bar customization.",
+          "name" : "customizationLabel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/customizationLabel"
+        }
+      ],
+      "title" : "Configuring bar customization"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The view controller associated with this item.",
+          "name" : "viewController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/viewController"
+        },
+        {
+          "description" : "The view associated with this item.",
+          "name" : "view",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem\/view"
+        }
+      ],
+      "title" : "Subclassing bar items"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A template image for showing additional detail for an item.",
+          "name" : "touchBarAddDetailTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarAddDetailTemplateName"
+        },
+        {
+          "description" : "A template image for creating a new item.",
+          "name" : "touchBarAddTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarAddTemplateName"
+        },
+        {
+          "description" : "A template image for setting or showing an alarm.",
+          "name" : "touchBarAlarmTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarAlarmTemplateName"
+        },
+        {
+          "description" : "A template image for muting audio input or denoting that audio input is muted.",
+          "name" : "touchBarAudioInputMuteTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarAudioInputMuteTemplateName"
+        },
+        {
+          "description" : "A template image for denoting audio input.",
+          "name" : "touchBarAudioInputTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarAudioInputTemplateName"
+        },
+        {
+          "description" : "A template image for muting audio output or for denoting that audio output is muted.",
+          "name" : "touchBarAudioOutputMuteTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarAudioOutputMuteTemplateName"
+        },
+        {
+          "description" : "A template image for setting the audio output volume to a high level, or for denoting that the audio is at the peak volume.",
+          "name" : "touchBarAudioOutputVolumeHighTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarAudioOutputVolumeHighTemplateName"
+        },
+        {
+          "description" : "A template image for setting the audio output volume to a low level, or for denoting that it is set to a low level.",
+          "name" : "touchBarAudioOutputVolumeLowTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarAudioOutputVolumeLowTemplateName"
+        },
+        {
+          "description" : "A template image for setting the audio output volume to a medium level, or for denoting that it is set to a medium level.",
+          "name" : "touchBarAudioOutputVolumeMediumTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarAudioOutputVolumeMediumTemplateName"
+        },
+        {
+          "description" : "A template image for setting the audio output volume to silent, or for denoting that it is set to silent.",
+          "name" : "touchBarAudioOutputVolumeOffTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarAudioOutputVolumeOffTemplateName"
+        },
+        {
+          "description" : "A template image for showing app-specific bookmarks.",
+          "name" : "touchBarBookmarksTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarBookmarksTemplateName"
+        },
+        {
+          "description" : "A template image for showing a color picker so the user can select a fill color.",
+          "name" : "touchBarColorPickerFillName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarColorPickerFillName"
+        },
+        {
+          "description" : "A template image for showing a color picker so the user can select a text color.",
+          "name" : "touchBarColorPickerFontName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarColorPickerFontName"
+        },
+        {
+          "description" : "A template image for showing a color picker so the user can select a stroke color.",
+          "name" : "touchBarColorPickerStrokeName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarColorPickerStrokeName"
+        },
+        {
+          "description" : "A template image for initiating or denoting audio communication.",
+          "name" : "touchBarCommunicationAudioTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarCommunicationAudioTemplateName"
+        },
+        {
+          "description" : "A template image for initiating or denoting video communication.",
+          "name" : "touchBarCommunicationVideoTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarCommunicationVideoTemplateName"
+        },
+        {
+          "description" : "A template image for opening a new document or view in edit mode.",
+          "name" : "touchBarComposeTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarComposeTemplateName"
+        },
+        {
+          "description" : "A template image for deleting the current or selected item.",
+          "name" : "touchBarDeleteTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarDeleteTemplateName"
+        },
+        {
+          "description" : "A template image for downloading an item.",
+          "name" : "touchBarDownloadTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarDownloadTemplateName"
+        },
+        {
+          "description" : "A template image for entering full screen mode.",
+          "name" : "touchBarEnterFullScreenTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarEnterFullScreenTemplateName"
+        },
+        {
+          "description" : "A template image for exiting full screen mode.",
+          "name" : "touchBarExitFullScreenTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarExitFullScreenTemplateName"
+        },
+        {
+          "description" : "A template image for moving forward through media playback or slides.",
+          "name" : "touchBarFastForwardTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarFastForwardTemplateName"
+        },
+        {
+          "description" : "A template image for opening or representing a folder.",
+          "name" : "touchBarFolderTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarFolderTemplateName"
+        },
+        {
+          "description" : "A template image for copying an item to a destination.",
+          "name" : "touchBarFolderCopyToTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarFolderCopyToTemplateName"
+        },
+        {
+          "description" : "A template image for moving an item to a destination.",
+          "name" : "touchBarFolderMoveToTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarFolderMoveToTemplateName"
+        },
+        {
+          "description" : "A template image for showing information about an item.",
+          "name" : "touchBarGetInfoTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarGetInfoTemplateName"
+        },
+        {
+          "description" : "A template image for returning to the previous screen or location.",
+          "name" : "touchBarGoBackTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarGoBackTemplateName"
+        },
+        {
+          "description" : "A template image for moving to the next item in a list.",
+          "name" : "touchBarGoDownTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarGoDownTemplateName"
+        },
+        {
+          "description" : "A template image for moving to the next screen or location.",
+          "name" : "touchBarGoForwardTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarGoForwardTemplateName"
+        },
+        {
+          "description" : "A template image for moving to the previous item in a list.",
+          "name" : "touchBarGoUpTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarGoUpTemplateName"
+        },
+        {
+          "description" : "A template image for showing history information, such as recent downloads.",
+          "name" : "touchBarHistoryTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarHistoryTemplateName"
+        },
+        {
+          "description" : "A template image for showing items in an icon view.",
+          "name" : "touchBarIconViewTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarIconViewTemplateName"
+        },
+        {
+          "description" : "A template image for showing items in a list view.",
+          "name" : "touchBarListViewTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarListViewTemplateName"
+        },
+        {
+          "description" : "A template image for creating an email message.",
+          "name" : "touchBarMailTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarMailTemplateName"
+        },
+        {
+          "description" : "A template image for creating a new folder.",
+          "name" : "touchBarNewFolderTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarNewFolderTemplateName"
+        },
+        {
+          "description" : "A template image for creating a new message, or for denoting the use of messaging.",
+          "name" : "touchBarNewMessageTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarNewMessageTemplateName"
+        },
+        {
+          "description" : "A template image for opening an item in the user’s browser.",
+          "name" : "touchBarOpenInBrowserTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarOpenInBrowserTemplateName"
+        },
+        {
+          "description" : "A template image for pausing media playback or slides.",
+          "name" : "touchBarPauseTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarPauseTemplateName"
+        },
+        {
+          "description" : "A template image for starting or resuming playback of media or slides.",
+          "name" : "touchBarPlayTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarPlayTemplateName"
+        },
+        {
+          "description" : "A template image for toggling between playing and pausing media or slides.",
+          "name" : "touchBarPlayPauseTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarPlayPauseTemplateName"
+        },
+        {
+          "description" : "A template image for denoting the current playback position within a timeline track.",
+          "name" : "touchBarPlayheadTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarPlayheadTemplateName"
+        },
+        {
+          "description" : "A template image for opening an item in Quick Look.",
+          "name" : "touchBarQuickLookTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarQuickLookTemplateName"
+        },
+        {
+          "description" : "A template image for starting recording.",
+          "name" : "touchBarRecordStartTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarRecordStartTemplateName"
+        },
+        {
+          "description" : "A template image for stopping recording or stopping playback of media or slides.",
+          "name" : "touchBarRecordStopTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarRecordStopTemplateName"
+        },
+        {
+          "description" : "A template image for refreshing displayed data.",
+          "name" : "touchBarRefreshTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarRefreshTemplateName"
+        },
+        {
+          "description" : "A template image for moving backwards through media or slides.",
+          "name" : "touchBarRewindTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarRewindTemplateName"
+        },
+        {
+          "description" : "A template image for rotating an item counterclockwise.",
+          "name" : "touchBarRotateLeftTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarRotateLeftTemplateName"
+        },
+        {
+          "description" : "A template image for rotating an item clockwise.",
+          "name" : "touchBarRotateRightTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarRotateRightTemplateName"
+        },
+        {
+          "description" : "A template image for showing a search field or for initiating a search.",
+          "name" : "touchBarSearchTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSearchTemplateName"
+        },
+        {
+          "description" : "A template image for sharing content with others directly or via social media.",
+          "name" : "touchBarShareTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarShareTemplateName"
+        },
+        {
+          "description" : "A template image for showing a sidebar in the current view.",
+          "name" : "touchBarSidebarTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSidebarTemplateName"
+        },
+        {
+          "description" : "A template image for skipping to the previous chapter or location during media playback.",
+          "name" : "touchBarSkipBackTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSkipBackTemplateName"
+        },
+        {
+          "description" : "A template image for skipping to the start of media playback.",
+          "name" : "touchBarSkipToStartTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSkipToStartTemplateName"
+        },
+        {
+          "description" : "A template image for skipping back 30 seconds during media playback.",
+          "name" : "touchBarSkipBack30SecondsTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSkipBack30SecondsTemplateName"
+        },
+        {
+          "description" : "A template image for skipping back 15 seconds during media playback.",
+          "name" : "touchBarSkipBack15SecondsTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSkipBack15SecondsTemplateName"
+        },
+        {
+          "description" : "A template image for skipping ahead 15 seconds during media playback.",
+          "name" : "touchBarSkipAhead15SecondsTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSkipAhead15SecondsTemplateName"
+        },
+        {
+          "description" : "A template image for skipping ahead 30 seconds during media playback.",
+          "name" : "touchBarSkipAhead30SecondsTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSkipAhead30SecondsTemplateName"
+        },
+        {
+          "description" : "A template image for skipping to the end of media playback.",
+          "name" : "touchBarSkipToEndTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSkipToEndTemplateName"
+        },
+        {
+          "description" : "A template image for skipping to the next chapter or location during media playback.",
+          "name" : "touchBarSkipAheadTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSkipAheadTemplateName"
+        },
+        {
+          "description" : "A template image for starting a slideshow.",
+          "name" : "touchBarSlideshowTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarSlideshowTemplateName"
+        },
+        {
+          "description" : "A template image for applying a tag to an item.",
+          "name" : "touchBarTagIconTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTagIconTemplateName"
+        },
+        {
+          "description" : "A template image for inserting a text box.",
+          "name" : "touchBarTextBoxTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTextBoxTemplateName"
+        },
+        {
+          "description" : "A template image for inserting a list or converting text to list form.",
+          "name" : "touchBarTextListTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTextListTemplateName"
+        },
+        {
+          "description" : "A template image for making selected text bold.",
+          "name" : "touchBarTextBoldTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTextBoldTemplateName"
+        },
+        {
+          "description" : "A template image for italicizing the selected text.",
+          "name" : "touchBarTextItalicTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTextItalicTemplateName"
+        },
+        {
+          "description" : "A template image for underlining text.",
+          "name" : "touchBarTextUnderlineTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTextUnderlineTemplateName"
+        },
+        {
+          "description" : "A template image for striking through text.",
+          "name" : "touchBarTextStrikethroughTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTextStrikethroughTemplateName"
+        },
+        {
+          "description" : "A template image for fully justifying text.",
+          "name" : "touchBarTextJustifiedAlignTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTextJustifiedAlignTemplateName"
+        },
+        {
+          "description" : "A template image for aligning text to the left.",
+          "name" : "touchBarTextLeftAlignTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTextLeftAlignTemplateName"
+        },
+        {
+          "description" : "A template image for centering text.",
+          "name" : "touchBarTextCenterAlignTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTextCenterAlignTemplateName"
+        },
+        {
+          "description" : "A template image for aligning text to the right.",
+          "name" : "touchBarTextRightAlignTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarTextRightAlignTemplateName"
+        },
+        {
+          "description" : "A template image for showing or representing user information.",
+          "name" : "touchBarUserTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarUserTemplateName"
+        },
+        {
+          "description" : "A template image for creating a new user account.",
+          "name" : "touchBarUserAddTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarUserAddTemplateName"
+        },
+        {
+          "description" : "A template image for showing or representing a group of users.",
+          "name" : "touchBarUserGroupTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarUserGroupTemplateName"
+        },
+        {
+          "description" : "A template image for increasing the audio output volume.",
+          "name" : "touchBarVolumeUpTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarVolumeUpTemplateName"
+        },
+        {
+          "description" : "A template image for reducing the audio output volume.",
+          "name" : "touchBarVolumeDownTemplateName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/touchBarVolumeDownTemplateName"
+        }
+      ],
+      "title" : "Using template images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A bar item that, along with its delegate, provides a list of textual suggestions for the current text view.",
+          "name" : "NSCandidateListTouchBarItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCandidateListTouchBarItem"
+        },
+        {
+          "description" : "A bar item that provides a system-defined color picker.",
+          "name" : "NSColorPickerTouchBarItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSColorPickerTouchBarItem"
+        },
+        {
+          "description" : "A bar item that contains a responder of your choice, such as a view, a button, or a scrubber.",
+          "name" : "NSCustomTouchBarItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCustomTouchBarItem"
+        },
+        {
+          "description" : "A bar item that provides a bar to contain other items.",
+          "name" : "NSGroupTouchBarItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSGroupTouchBarItem"
+        },
+        {
+          "description" : "A bar item that provides a two-state control that can expand into its second state, showing the contents of a bar that it owns.",
+          "name" : "NSPopoverTouchBarItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSPopoverTouchBarItem"
+        },
+        {
+          "description" : "A bar item that, along with its delegate, provides a list of objects eligible for sharing.",
+          "name" : "NSSharingServicePickerTouchBarItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSSharingServicePickerTouchBarItem"
+        },
+        {
+          "description" : "A bar item that provides a slider control for choosing a value in a range.",
+          "name" : "NSSliderTouchBarItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSSliderTouchBarItem"
+        },
+        {
+          "description" : "A bar item that provides a stepper control for incrementing or decrementing a value.",
+          "name" : "NSStepperTouchBarItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSStepperTouchBarItem"
+        },
+        {
+          "description" : "An object that specifies how user interface elements resize themselves when space is constrained.",
+          "name" : "NSUserInterfaceCompressionOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSUserInterfaceCompressionOptions"
+        },
+        {
+          "description" : "A bar item that provides a button.",
+          "name" : "NSButtonTouchBarItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSButtonTouchBarItem"
+        },
+        {
+          "description" : "A bar item that provides a picker control with multiple options.",
+          "name" : "NSPickerTouchBarItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSPickerTouchBarItem"
+        },
+        {
+          "description" : "Constants that specify display styles for picker bar items.",
+          "name" : "NSPickerTouchBarItem.ControlRepresentation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSPickerTouchBarItem\/ControlRepresentation-swift.enum"
+        },
+        {
+          "description" : "Constants that specify selection modes for picker bar items.",
+          "name" : "NSPickerTouchBarItem.SelectionMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSPickerTouchBarItem\/SelectionMode-swift.enum"
+        }
+      ],
+      "title" : "Touch Bar items"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSTouchBarItem",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTouchBarItem"
+}

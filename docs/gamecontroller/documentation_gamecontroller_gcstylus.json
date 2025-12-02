@@ -1,0 +1,159 @@
+{
+  "abstract" : "An object that represents a physical stylus connected to the device.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Register for notifications\nNotificationCenter.default.addObserver(self, selector: #selector(stylus(didConnect:)), name: NSNotification.Name.GCStylusDidConnect, object: nil)\nNotificationCenter.default.addObserver(self, selector: #selector(stylus(didDisconnect:)), name: NSNotification.Name.GCStylusDidConnect, object: nil)\n\n\/\/ Query current stylus devices\nfor stylus in GCStylus.styluses {\n    ...\n}\n\n\/\/ Later, handle connection\n@objc func stylus(didConnect notification: Notification) {\n    guard let stylus = notification.object as? GCStylus else { return }\n    ...\n}"
+    },
+    {
+      "code" : "guard let input = stylus.input else { return }\ninput.inputStateQueueDepth = 20\ninput.inputStateAvailableHandler = { input in\n    \/\/ This block will be enqueued for execution when the state of\n    \/\/ any stylus input changes.\n\n    \/\/ Iterate through all input state changes since last execution of\n    \/\/ the block.\n    while let nextState = input.nextInputState() {\n        \/\/ Use the value of `pressedInput.isPressed` for binary\n        \/\/ interactions, such as object selection.\n        let primaryButtonPressed = nextState.buttons[.stylusPrimaryButton]?.pressedInput.isPressed\n        let secondaryButtonPressed = nextState.buttons[.stylusSecondaryButton]?.pressedInput.isPressed\n        \/\/ Use the normalized press value for analog actions such as\n        \/\/ controlling virtual ink flow.\n        let secondaryButtonPressure = nextState.buttons[.stylusSecondaryButton]?.pressedInput.value\n        let tipPressure = nextState.buttons[.stylusTip]?.pressedInput.value\n\n        ...\n    }\n}"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "GCDevice",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "d07f006e756cafde88600a91ae8dad7547ac04e4bacb8e541dd0657b920ba8da",
+  "crawledAt" : "2025-12-02T16:00:51Z",
+  "declaration" : {
+    "code" : "class GCStylus",
+    "language" : "swift"
+  },
+  "id" : "DB05C6A2-E3BD-463D-8A27-3A69E383E17B",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Game Controller",
+  "overview" : "## Overview\n\nUse the `styli` property to get the currently connect stylus accessories when your application starts.  Register for `GCStylusDidConnectNotification` and `GCStylusDidDisconnectNotification` to get notified when a stylus connects of disconnects while your application is running.\n\nCheck the `productCategory` to determine the type of stylus.  A spatial stylus - capable of 6DoF tracking by Apple Vision Pro - has a `GCProductCategorySpatialStylus` category.\n\nUse the `input` property to get the input profile of the stylus.  A spatial stylus includes a pressure sensitive tip and an input cluster composed of two buttons.\n\nUse the `haptics` property to get the haptics profile of the stylus.  A spatial stylus may optionally support haptic feedback to a single locality - `GCHapticsLocalityDefault`.",
+  "platforms" : [
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/GameController\/GCStylus\ncrawled: 2025-12-02T16:00:51Z\n---\n\n# GCStylus\n\n**Class**\n\nAn object that represents a physical stylus connected to the device.\n\n## Declaration\n\n```swift\nclass GCStylus\n```\n\n## Overview\n\nUse the `styli` property to get the currently connect stylus accessories when your application starts.  Register for `GCStylusDidConnectNotification` and `GCStylusDidDisconnectNotification` to get notified when a stylus connects of disconnects while your application is running.\n\n```\n\/\/ Register for notifications\nNotificationCenter.default.addObserver(self, selector: #selector(stylus(didConnect:)), name: NSNotification.Name.GCStylusDidConnect, object: nil)\nNotificationCenter.default.addObserver(self, selector: #selector(stylus(didDisconnect:)), name: NSNotification.Name.GCStylusDidConnect, object: nil)\n\n\/\/ Query current stylus devices\nfor stylus in GCStylus.styluses {\n    ...\n}\n\n\/\/ Later, handle connection\n@objc func stylus(didConnect notification: Notification) {\n    guard let stylus = notification.object as? GCStylus else { return }\n    ...\n}\n```\n\nCheck the `productCategory` to determine the type of stylus.  A spatial stylus - capable of 6DoF tracking by Apple Vision Pro - has a `GCProductCategorySpatialStylus` category.\n\nUse the `input` property to get the input profile of the stylus.  A spatial stylus includes a pressure sensitive tip and an input cluster composed of two buttons.\n\n- The primary button (`GCInputStylusPrimaryButton`) is the front button (closest to the stylus tip) in the input cluster of the stylus.  This button is frequently used grab virtual objects.\n- The secondary button (`GCInputStylusSecondaryButton`) is the middle button in the input cluster.  It can measures pressure\/force levels. It’s intended to be used for controlling in-air drawing, selection, and generic interactions.\n- The tip is also represented as a button (`GCInputStylusTip`).\n\n```\nguard let input = stylus.input else { return }\ninput.inputStateQueueDepth = 20\ninput.inputStateAvailableHandler = { input in\n    \/\/ This block will be enqueued for execution when the state of\n    \/\/ any stylus input changes.\n\n    \/\/ Iterate through all input state changes since last execution of\n    \/\/ the block.\n    while let nextState = input.nextInputState() {\n        \/\/ Use the value of `pressedInput.isPressed` for binary\n        \/\/ interactions, such as object selection.\n        let primaryButtonPressed = nextState.buttons[.stylusPrimaryButton]?.pressedInput.isPressed\n        let secondaryButtonPressed = nextState.buttons[.stylusSecondaryButton]?.pressedInput.isPressed\n        \/\/ Use the normalized press value for analog actions such as\n        \/\/ controlling virtual ink flow.\n        let secondaryButtonPressure = nextState.buttons[.stylusSecondaryButton]?.pressedInput.value\n        let tipPressure = nextState.buttons[.stylusTip]?.pressedInput.value\n\n        ...\n    }\n}\n```\n\nUse the `haptics` property to get the haptics profile of the stylus.  A spatial stylus may optionally support haptic feedback to a single locality - `GCHapticsLocalityDefault`.\n\n## Accessing the styli\n\n- **styli**: Get the collection of stylus accessories currently connected to the device.\n\n## Getting input values and haptics\n\n- **input**: Gets the input profile for the stylus.\n- **haptics**: Gets the haptics profile for the stylus, if supported.\n\n## Retrieving the buttons\n\n- **GCInputStylusPrimaryButton**\n- **GCInputStylusSecondaryButton**\n- **GCInputStylusTip**\n\n## Structures\n\n- **GCStylus.DidConnectMessage**: A message that posts after a stylus accessory connects to the device.\n- **GCStylus.DidDisconnectMessage**: A message that posts after a stylus accessory disconnects from the device.\n\n## Game controllers\n\n- **Supporting Game Controllers**: Support a physical controller or add a virtual controller to enhance how people interact with your game through haptics, lighting, and motion sensing.\n- **Letting players use their second-generation Siri Remote as a game controller**: Support the second-generation Siri Remote as a game controller in your Apple TV game.\n- **Discovering and tracking spatial game controllers and styli**: Receive controller and stylus input to interact with content in your augmented reality app.\n- **GCDevice**: A protocol that defines a common interface for game input devices.\n- **GCController**: A representation of a real game controller, a virtual controller, or a snapshot of a controller.\n- **GCRacingWheel**: An object that represents a physical racing wheel controller connected to a device.\n- **GCKeyboard**: An object that represents a physical keyboard connected to a device.\n- **GCMouse**: An object that represents a physical mouse connected to a device.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- GCDevice\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Get the collection of stylus accessories currently connected to the device.",
+          "name" : "styli",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCStylus\/styli"
+        }
+      ],
+      "title" : "Accessing the styli"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Gets the input profile for the stylus.",
+          "name" : "input",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCStylus\/input"
+        },
+        {
+          "description" : "Gets the haptics profile for the stylus, if supported.",
+          "name" : "haptics",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCStylus\/haptics"
+        }
+      ],
+      "title" : "Getting input values and haptics"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "GCInputStylusPrimaryButton",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCInputStylusPrimaryButton-18g2p"
+        },
+        {
+          "description" : "",
+          "name" : "GCInputStylusSecondaryButton",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCInputStylusSecondaryButton-6r3q"
+        },
+        {
+          "description" : "",
+          "name" : "GCInputStylusTip",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCInputStylusTip-1rhuw"
+        }
+      ],
+      "title" : "Retrieving the buttons"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A message that posts after a stylus accessory connects to the device.",
+          "name" : "GCStylus.DidConnectMessage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCStylus\/DidConnectMessage"
+        },
+        {
+          "description" : "A message that posts after a stylus accessory disconnects from the device.",
+          "name" : "GCStylus.DidDisconnectMessage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCStylus\/DidDisconnectMessage"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Support a physical controller or add a virtual controller to enhance how people interact with your game through haptics, lighting, and motion sensing.",
+          "name" : "Supporting Game Controllers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/supporting-game-controllers"
+        },
+        {
+          "description" : "Support the second-generation Siri Remote as a game controller in your Apple TV game.",
+          "name" : "Letting players use their second-generation Siri Remote as a game controller",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/letting-players-use-their-second-generation-siri-remote-as-a-game-controller"
+        },
+        {
+          "description" : "Receive controller and stylus input to interact with content in your augmented reality app.",
+          "name" : "Discovering and tracking spatial game controllers and styli",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/discovering-and-tracking-spatial-game-controllers-and-styli"
+        },
+        {
+          "description" : "A protocol that defines a common interface for game input devices.",
+          "name" : "GCDevice",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCDevice"
+        },
+        {
+          "description" : "A representation of a real game controller, a virtual controller, or a snapshot of a controller.",
+          "name" : "GCController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCController"
+        },
+        {
+          "description" : "An object that represents a physical racing wheel controller connected to a device.",
+          "name" : "GCRacingWheel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCRacingWheel"
+        },
+        {
+          "description" : "An object that represents a physical keyboard connected to a device.",
+          "name" : "GCKeyboard",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCKeyboard"
+        },
+        {
+          "description" : "An object that represents a physical mouse connected to a device.",
+          "name" : "GCMouse",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCMouse"
+        }
+      ],
+      "title" : "Game controllers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "GCStylus",
+  "url" : "https:\/\/developer.apple.com\/documentation\/GameController\/GCStylus"
+}

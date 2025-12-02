@@ -1,0 +1,85 @@
+{
+  "abstract" : "Tells the input to request media data, at its convenience, to write to the output file.",
+  "codeExamples" : [
+    {
+      "code" : "let serialQueue = DispatchQueue(label: \"RequestMedia\")\nassetWriterInput?.requestMediaDataWhenReady(on: serialQueue) { [weak self] in\n    guard let self = self,\n          let assetWriterInput = self.assetWriterInput else { return }\n    while self.assetWriterInput!.isReadyForMoreMediaData {\n        \/\/ Copy the next sample buffer from your source media.\n        guard let nextSampleBuffer = copyNextSampleBufferToWrite() else {\n            \/\/ Mark the input as finished.\n            self.assetWriterInput!.markAsFinished()\n            break\n        }\n        \/\/ Append the sample buffer to the input.\n        self.assetWriterInput!.append(nextSampleBuffer)\n    }      \n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "4b60a4f271d473537d37376f5f945a5938906e7c35d11e9b40ba303432173c02",
+  "crawledAt" : "2025-12-02T17:59:24Z",
+  "declaration" : {
+    "code" : "func requestMediaDataWhenReady(on queue: dispatch_queue_t, using block: @escaping () -> Void)",
+    "language" : "swift"
+  },
+  "id" : "03E6961D-DB5B-4913-AEDB-6ED14AD04228",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "AVFoundation",
+  "overview" : "## Discussion\n\nUse this method when working with pull-style buffer sources, such as an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAssetReaderOutput]. The callback you provide appends media data to the input until its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAssetWriterInput\/isReadyForMoreMediaData] property becomes [doc:\/\/com.apple.documentation\/documentation\/Swift\/false], or when there’s no more media data to process (at which point you may mark the input as finished by calling its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAssetWriterInput\/markAsFinished()] method). If you don’t mark the input as finished, after the input processes the media data and becomes ready for more, it invokes the callback again to append more data. The example below shows a typical callback implementation.\n\nWhen working with push-style sources, such as an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureAudioDataOutput] or [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureVideoDataOutput], append buffers directly to the asset writer input when you receive them using its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAssetWriterInput\/append(_:)] method. Using this method helps avoid having to queue up buffers in between the buffer source and the asset writer input.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/requestMediaDataWhenReady(on:using:)\ncrawled: 2025-12-02T17:59:24Z\n---\n\n# requestMediaDataWhenReady(on:using:)\n\n**Instance Method**\n\nTells the input to request media data, at its convenience, to write to the output file.\n\n## Declaration\n\n```swift\nfunc requestMediaDataWhenReady(on queue: dispatch_queue_t, using block: @escaping () -> Void)\n```\n\n## Parameters\n\n- **queue**: The queue on which the system invokes the callback.\n- **block**: A callback that the input invokes to retrieve additional media data.\n\n## Discussion\n\nUse this method when working with pull-style buffer sources, such as an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAssetReaderOutput]. The callback you provide appends media data to the input until its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAssetWriterInput\/isReadyForMoreMediaData] property becomes [doc:\/\/com.apple.documentation\/documentation\/Swift\/false], or when there’s no more media data to process (at which point you may mark the input as finished by calling its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAssetWriterInput\/markAsFinished()] method). If you don’t mark the input as finished, after the input processes the media data and becomes ready for more, it invokes the callback again to append more data. The example below shows a typical callback implementation.\n\n```swift\nlet serialQueue = DispatchQueue(label: \"RequestMedia\")\nassetWriterInput?.requestMediaDataWhenReady(on: serialQueue) { [weak self] in\n    guard let self = self,\n          let assetWriterInput = self.assetWriterInput else { return }\n    while self.assetWriterInput!.isReadyForMoreMediaData {\n        \/\/ Copy the next sample buffer from your source media.\n        guard let nextSampleBuffer = copyNextSampleBufferToWrite() else {\n            \/\/ Mark the input as finished.\n            self.assetWriterInput!.markAsFinished()\n            break\n        }\n        \/\/ Append the sample buffer to the input.\n        self.assetWriterInput!.append(nextSampleBuffer)\n    }      \n}\n```\n\nWhen working with push-style sources, such as an [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureAudioDataOutput] or [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCaptureVideoDataOutput], append buffers directly to the asset writer input when you receive them using its [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAssetWriterInput\/append(_:)] method. Using this method helps avoid having to queue up buffers in between the buffer source and the asset writer input.\n\n## Appending media samples\n\n- **expectsMediaDataInRealTime**: A Boolean value that indicates whether the input tailors its processing for real-time sources.\n- **isReadyForMoreMediaData**: A Boolean value that indicates whether the input is ready to accept media data.\n- **append(_:)**: Appends a sample buffer to an input to write to the output file.\n- **markAsFinished()**: Marks the input as finished to indicate that you’re done appending samples to it.\n- **AVAssetWriterInput.SampleBufferReceiver**: Provides an interface for writing sample buffers to an input.\n- **AVAssetWriterInput.PixelBufferReceiver**: Provides an interface for writing pixel buffers to an input.\n- **AVAssetWriterInput.TaggedPixelBufferGroupReceiver**: Provides an interface for writing tagged pixel buffers to an input.\n- **AVAssetWriterInput.MetadataReceiver**: Provides an interface for writing timed metadata groups to an input.\n- **AVAssetWriterInput.CaptionReceiver**: Provides an interface for writing caption data to an input.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the input tailors its processing for real-time sources.",
+          "name" : "expectsMediaDataInRealTime",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/expectsMediaDataInRealTime"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the input is ready to accept media data.",
+          "name" : "isReadyForMoreMediaData",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/isReadyForMoreMediaData"
+        },
+        {
+          "description" : "Appends a sample buffer to an input to write to the output file.",
+          "name" : "append(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/append(_:)"
+        },
+        {
+          "description" : "Marks the input as finished to indicate that you’re done appending samples to it.",
+          "name" : "markAsFinished()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/markAsFinished()"
+        },
+        {
+          "description" : "Provides an interface for writing sample buffers to an input.",
+          "name" : "AVAssetWriterInput.SampleBufferReceiver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/SampleBufferReceiver"
+        },
+        {
+          "description" : "Provides an interface for writing pixel buffers to an input.",
+          "name" : "AVAssetWriterInput.PixelBufferReceiver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/PixelBufferReceiver"
+        },
+        {
+          "description" : "Provides an interface for writing tagged pixel buffers to an input.",
+          "name" : "AVAssetWriterInput.TaggedPixelBufferGroupReceiver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/TaggedPixelBufferGroupReceiver"
+        },
+        {
+          "description" : "Provides an interface for writing timed metadata groups to an input.",
+          "name" : "AVAssetWriterInput.MetadataReceiver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/MetadataReceiver"
+        },
+        {
+          "description" : "Provides an interface for writing caption data to an input.",
+          "name" : "AVAssetWriterInput.CaptionReceiver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/CaptionReceiver"
+        }
+      ],
+      "title" : "Appending media samples"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "requestMediaDataWhenReady(on:using:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVAssetWriterInput\/requestMediaDataWhenReady(on:using:)"
+}

@@ -1,0 +1,97 @@
+{
+  "abstract" : "A property wrapper type that you use to create a UIKit app delegate.",
+  "codeExamples" : [
+    {
+      "code" : "class MyAppDelegate: NSObject, UIApplicationDelegate, ObservableObject {\n    func application(\n        _ application: UIApplication,\n        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data\n    ) {\n        \/\/ Record the device token.\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@main\nstruct MyApp: App {\n    @UIApplicationDelegateAdaptor private var appDelegate: MyAppDelegate\n\n    var body: some Scene { ... }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "@EnvironmentObject private var appDelegate: MyAppDelegate",
+      "language" : "swift"
+    },
+    {
+      "code" : "class MySceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {\n    func windowScene(\n        _ windowScene: UIWindowScene,\n        performActionFor shortcutItem: UIApplicationShortcutItem\n    ) async -> Bool {\n        \/\/ Do something with the shortcut...\n\n        return true\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension MyAppDelegate {\n    func application(\n        _ application: UIApplication,\n        configurationForConnecting connectingSceneSession: UISceneSession,\n        options: UIScene.ConnectionOptions\n    ) -> UISceneConfiguration {\n\n        let configuration = UISceneConfiguration(\n                                name: nil,\n                                sessionRole: connectingSceneSession.role)\n        if connectingSceneSession.role == .windowApplication {\n            configuration.delegateClass = MySceneDelegate.self\n        }\n        return configuration\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "DynamicProperty",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "6d5afc1b4013dd32d7fc692ba58f3e67b43e90c9683b772ff293e5752dcd9d26",
+  "crawledAt" : "2025-12-02T17:20:38Z",
+  "declaration" : {
+    "code" : "@MainActor @preconcurrency @propertyWrapper struct UIApplicationDelegateAdaptor<DelegateType> where DelegateType : NSObject, DelegateType : UIApplicationDelegate",
+    "language" : "swift"
+  },
+  "id" : "975373B9-0B71-4E68-B94D-861DDA249391",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nTo handle app delegate callbacks in an app that uses the SwiftUI life cycle, define a type that conforms to the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate] protocol, and implement the delegate methods that you need. For example, you can implement the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/application(_:didRegisterForRemoteNotificationsWithDeviceToken:)] method to handle remote notification registration:\n\nThen use the `UIApplicationDelegateAdaptor` property wrapper inside your [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/App] declaration to tell SwiftUI about the delegate type:\n\nSwiftUI instantiates the delegate and calls the delegate’s methods in response to life cycle events. Define the delegate adaptor only in your [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/App] declaration, and only once for a given app. If you declare it more than once, SwiftUI generates a runtime error.\n\nIf your app delegate conforms to the [doc:\/\/com.apple.documentation\/documentation\/Combine\/ObservableObject] protocol, as in the example above, then SwiftUI puts the delegate it creates into the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Environment]. You can access the delegate from any scene or view in your app using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentObject] property wrapper:\n\nThis enables you to use the dollar sign (`$`) prefix to get a binding to published properties that you declare in the delegate. For more information, see [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/UIApplicationDelegateAdaptor\/projectedValue].\n\n### Scene delegates\n\nSome iOS apps define a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIWindowSceneDelegate] to handle scene-based events, like app shortcuts:\n\nYou can provide this kind of delegate to a SwiftUI app by returning the scene delegate’s type from the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/application(_:configurationForConnecting:options:)] method inside your app delegate:\n\nWhen you configure the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UISceneConfiguration] instance, you only need to indicate the delegate class, and not a scene class or storyboard. SwiftUI creates and manages the delegate instance, and sends it any relevant delegate callbacks.\n\nAs with the app delegate, if you make your scene delegate an observable object, SwiftUI automatically puts it in the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Environment], from where you can access it with the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentObject] property wrapper, and create bindings to its published properties.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/UIApplicationDelegateAdaptor\ncrawled: 2025-12-02T17:20:38Z\n---\n\n# UIApplicationDelegateAdaptor\n\n**Structure**\n\nA property wrapper type that you use to create a UIKit app delegate.\n\n## Declaration\n\n```swift\n@MainActor @preconcurrency @propertyWrapper struct UIApplicationDelegateAdaptor<DelegateType> where DelegateType : NSObject, DelegateType : UIApplicationDelegate\n```\n\n## Overview\n\nTo handle app delegate callbacks in an app that uses the SwiftUI life cycle, define a type that conforms to the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate] protocol, and implement the delegate methods that you need. For example, you can implement the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/application(_:didRegisterForRemoteNotificationsWithDeviceToken:)] method to handle remote notification registration:\n\n```swift\nclass MyAppDelegate: NSObject, UIApplicationDelegate, ObservableObject {\n    func application(\n        _ application: UIApplication,\n        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data\n    ) {\n        \/\/ Record the device token.\n    }\n}\n```\n\nThen use the `UIApplicationDelegateAdaptor` property wrapper inside your [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/App] declaration to tell SwiftUI about the delegate type:\n\n```swift\n@main\nstruct MyApp: App {\n    @UIApplicationDelegateAdaptor private var appDelegate: MyAppDelegate\n\n    var body: some Scene { ... }\n}\n```\n\nSwiftUI instantiates the delegate and calls the delegate’s methods in response to life cycle events. Define the delegate adaptor only in your [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/App] declaration, and only once for a given app. If you declare it more than once, SwiftUI generates a runtime error.\n\nIf your app delegate conforms to the [doc:\/\/com.apple.documentation\/documentation\/Combine\/ObservableObject] protocol, as in the example above, then SwiftUI puts the delegate it creates into the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Environment]. You can access the delegate from any scene or view in your app using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentObject] property wrapper:\n\n```swift\n@EnvironmentObject private var appDelegate: MyAppDelegate\n```\n\nThis enables you to use the dollar sign (`$`) prefix to get a binding to published properties that you declare in the delegate. For more information, see [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/UIApplicationDelegateAdaptor\/projectedValue].\n\n\n\n### Scene delegates\n\nSome iOS apps define a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIWindowSceneDelegate] to handle scene-based events, like app shortcuts:\n\n```swift\nclass MySceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {\n    func windowScene(\n        _ windowScene: UIWindowScene,\n        performActionFor shortcutItem: UIApplicationShortcutItem\n    ) async -> Bool {\n        \/\/ Do something with the shortcut...\n\n        return true\n    }\n}\n```\n\nYou can provide this kind of delegate to a SwiftUI app by returning the scene delegate’s type from the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/application(_:configurationForConnecting:options:)] method inside your app delegate:\n\n```swift\nextension MyAppDelegate {\n    func application(\n        _ application: UIApplication,\n        configurationForConnecting connectingSceneSession: UISceneSession,\n        options: UIScene.ConnectionOptions\n    ) -> UISceneConfiguration {\n\n        let configuration = UISceneConfiguration(\n                                name: nil,\n                                sessionRole: connectingSceneSession.role)\n        if connectingSceneSession.role == .windowApplication {\n            configuration.delegateClass = MySceneDelegate.self\n        }\n        return configuration\n    }\n}\n```\n\nWhen you configure the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UISceneConfiguration] instance, you only need to indicate the delegate class, and not a scene class or storyboard. SwiftUI creates and manages the delegate instance, and sends it any relevant delegate callbacks.\n\nAs with the app delegate, if you make your scene delegate an observable object, SwiftUI automatically puts it in the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Environment], from where you can access it with the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentObject] property wrapper, and create bindings to its published properties.\n\n## Creating a delegate adaptor\n\n- **init(_:)**: Creates a UIKit app delegate adaptor using an observable delegate.\n\n## Getting the delegate adaptor\n\n- **projectedValue**: A projection of the observed object that provides bindings to its properties.\n- **wrappedValue**: The underlying app delegate.\n\n## Targeting iOS and iPadOS\n\n- **UILaunchScreen**: The user interface to show while an app launches.\n- **UILaunchScreens**: The user interfaces to show while an app launches in response to different URL schemes.\n\n## Conforms To\n\n- DynamicProperty\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a UIKit app delegate adaptor using an observable delegate.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/UIApplicationDelegateAdaptor\/init(_:)"
+        }
+      ],
+      "title" : "Creating a delegate adaptor"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A projection of the observed object that provides bindings to its properties.",
+          "name" : "projectedValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/UIApplicationDelegateAdaptor\/projectedValue"
+        },
+        {
+          "description" : "The underlying app delegate.",
+          "name" : "wrappedValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/UIApplicationDelegateAdaptor\/wrappedValue"
+        }
+      ],
+      "title" : "Getting the delegate adaptor"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The user interface to show while an app launches.",
+          "name" : "UILaunchScreen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Information-Property-List\/UILaunchScreen"
+        },
+        {
+          "description" : "The user interfaces to show while an app launches in response to different URL schemes.",
+          "name" : "UILaunchScreens",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Information-Property-List\/UILaunchScreens"
+        }
+      ],
+      "title" : "Targeting iOS and iPadOS"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "UIApplicationDelegateAdaptor",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/UIApplicationDelegateAdaptor"
+}

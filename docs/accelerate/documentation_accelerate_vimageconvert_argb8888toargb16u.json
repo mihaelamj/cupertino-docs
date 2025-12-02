@@ -1,0 +1,65 @@
+{
+  "abstract" : "Converts an 8-bit-per-channel, 4-channel interleaved buffer to an unsigned 16-bit-per-channel, 4-channel buffer with permutation.",
+  "codeExamples" : [
+    {
+      "code" : " Pixel_8888 *srcPixel;\n Pixel_16U *destPixel;\n uint8_t result8;\n uint16_t result[4];\n uint8_t mask = 0x8;\n \n for( int i = 0; i < 4; i++ )\n {\n     result8 = srcPixel[ permuteMap[i] ];\n     result[i] = (result8 * 65535U + 127U) \/ 255U;\n     if( mask & copyMask )\n         result[i] = backgroundColor[i];\n     mask = mask >> 1;\n }\n srcPixel += 4;\n \n destPixel[0] = result[0];\n destPixel[1] = result[1];\n destPixel[2] = result[2];\n destPixel[3] = result[3];\n destPixel += 4;",
+      "language" : "objc"
+    }
+  ],
+  "contentHash" : "339ca8001123c615a65054d340fa44687adee96ba269ccc4148a133759b681b5",
+  "crawledAt" : "2025-12-01T03:48:54Z",
+  "declaration" : {
+    "code" : "func vImageConvert_ARGB8888ToARGB16U(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ permuteMap: UnsafePointer<UInt8>, _ copyMask: UInt8, _ backgroundColor: UnsafePointer<UInt16>, _ flags: vImage_Flags) -> vImage_Error",
+    "language" : "swift"
+  },
+  "id" : "DAFEFCA3-0126-4084-9B49-4C535E6C1C02",
+  "kind" : "function",
+  "module" : "Accelerate",
+  "overview" : "## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nThe function uses the following calculation to perform the conversion:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_ARGB8888ToARGB16U(_:_:_:_:_:_:)\ncrawled: 2025-12-01T03:48:54Z\n---\n\n# vImageConvert_ARGB8888ToARGB16U(_:_:_:_:_:_:)\n\n**Function**\n\nConverts an 8-bit-per-channel, 4-channel interleaved buffer to an unsigned 16-bit-per-channel, 4-channel buffer with permutation.\n\n## Declaration\n\n```swift\nfunc vImageConvert_ARGB8888ToARGB16U(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ permuteMap: UnsafePointer<UInt8>, _ copyMask: UInt8, _ backgroundColor: UnsafePointer<UInt16>, _ flags: vImage_Flags) -> vImage_Error\n```\n\n## Parameters\n\n- **src**: The source vImage buffer.\n- **dest**: A pointer to the destination vImage buffer structure. You’re responsible for filling out the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer\/height], [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer\/width], and [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer\/rowBytes] fields of this structure, and for allocating a data buffer of the appropriate size. On return, the data buffer this structure points to contains the destination image data. When you no longer need the data buffer, deallocate the memory to prevent memory leaks.\n- **permuteMap**: An array of four 8-bit integers with the values `0`, `1`, `2`, and 3, in some order. Each value specifies the channel from the source image that the function copies to the destination channel at the corresponding index.\n- **copyMask**: A bitmask that specifies the channel from the background color that the function copies to the destination channel at the corresponding index. The `1000` bit corresponds to the alpha channel, the `0100` bit corresponds to the red channel, the `0010` corresponds to the green channel, and the `0001` bit corresponds to the green channel.\n- **backgroundColor**: A 16-bit-per-channel, 4-channel pixel value that replaces the destination pixels based on the copy mask.\n- **flags**: The options to use when performing the operation. If your code implements its own tiling or its own multithreading, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageDoNotTile]; otherwise, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoFlags].\n\n## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nThe function uses the following calculation to perform the conversion:\n\n```objc\n Pixel_8888 *srcPixel;\n Pixel_16U *destPixel;\n uint8_t result8;\n uint16_t result[4];\n uint8_t mask = 0x8;\n \n for( int i = 0; i < 4; i++ )\n {\n     result8 = srcPixel[ permuteMap[i] ];\n     result[i] = (result8 * 65535U + 127U) \/ 255U;\n     if( mask & copyMask )\n         result[i] = backgroundColor[i];\n     mask = mask >> 1;\n }\n srcPixel += 4;\n \n destPixel[0] = result[0];\n destPixel[1] = result[1];\n destPixel[2] = result[2];\n destPixel[3] = result[3];\n destPixel += 4;\n```\n\n## Converting from 8-bit buffers\n\n- **vImageConvert_RGB888toRGB565_dithered(_:_:_:_:_:)**: Converts an 8-bit-per-channel, 3-channel interleaved buffer to an RGB565 3-channel interleaved buffer using the specified dithering algorithm.\n- **vImageConvert_ARGB8888toARGB1555(_:_:_:)**: Converts an 8-bit-per-channel, 4-channel interleaved buffer to an ARGB1555 4-channel interleaved buffer.\n- **vImageConvert_ARGB8888toARGB1555_dithered(_:_:_:_:_:)**: Converts an 8-bit-per-channel, 4-channel interleaved buffer to an ARGB1555 4-channel interleaved buffer usng the specified dithering algorithm.\n- **vImageConvert_RGBA8888toRGBA5551(_:_:_:)**: Converts an 8-bit-per-channel, 4-channel interleaved buffer to an RGBA5551 4-channel interleaved buffer.\n- **vImageConvert_RGBA8888toRGBA5551_dithered(_:_:_:_:_:)**: Converts an 8-bit-per-channel, 4-channel interleaved buffer to an RGBA5551 4-channel interleaved buffer usng the specified dithering algorithm.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Converts an 8-bit-per-channel, 3-channel interleaved buffer to an RGB565 3-channel interleaved buffer using the specified dithering algorithm.",
+          "name" : "vImageConvert_RGB888toRGB565_dithered(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_RGB888toRGB565_dithered(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Converts an 8-bit-per-channel, 4-channel interleaved buffer to an ARGB1555 4-channel interleaved buffer.",
+          "name" : "vImageConvert_ARGB8888toARGB1555(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_ARGB8888toARGB1555(_:_:_:)"
+        },
+        {
+          "description" : "Converts an 8-bit-per-channel, 4-channel interleaved buffer to an ARGB1555 4-channel interleaved buffer usng the specified dithering algorithm.",
+          "name" : "vImageConvert_ARGB8888toARGB1555_dithered(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_ARGB8888toARGB1555_dithered(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Converts an 8-bit-per-channel, 4-channel interleaved buffer to an RGBA5551 4-channel interleaved buffer.",
+          "name" : "vImageConvert_RGBA8888toRGBA5551(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_RGBA8888toRGBA5551(_:_:_:)"
+        },
+        {
+          "description" : "Converts an 8-bit-per-channel, 4-channel interleaved buffer to an RGBA5551 4-channel interleaved buffer usng the specified dithering algorithm.",
+          "name" : "vImageConvert_RGBA8888toRGBA5551_dithered(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_RGBA8888toRGBA5551_dithered(_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Converting from 8-bit buffers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vImageConvert_ARGB8888ToARGB16U(_:_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConvert_ARGB8888ToARGB16U(_:_:_:_:_:_:)"
+}

@@ -1,0 +1,77 @@
+{
+  "abstract" : "A template for constructing a URL from variable expansions.",
+  "codeExamples" : [
+    {
+      "code" : "let template = URL.Template(\"http:\/\/www.example.com\/foo{?query,number}\")!\nlet url = URL(\n    template: template,\n    variables: [\n        .query: \"bar baz\",\n        .number: \"234\",\n    ]\n)\n\nextension URL.Template.VariableName {\n    static var query: URL.Template.VariableName { .init(\"query\") }\n    static var number: URL.Template.VariableName { .init(\"number\") }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "http:\/\/www.example.com\/foo?query=bar%20baz&number=234",
+      "language" : "text"
+    },
+    {
+      "code" : "struct MyQueryTemplate: Sendable, Hashable {\n    var template: URL.Template\n\n    init?(_ template: String) {\n        guard let t = URL.Template(template) else { return nil }\n        self.template = t\n    }\n}\n\nstruct MyQuery: Sendable, Hashable {\n    var query: String\n    var number: Int?\n\n    var variables: [URL.Template.VariableName: URL.Template.Value] {\n        var result: [URL.Template.VariableName: URL.Template.Value] = [\n            .query: .text(query)\n        ]\n        if let number {\n            result[.number] = .text(\"\\(number)\")\n        }\n        return result\n    }\n}\n\nextension URL.Template.VariableName {\n    static var query: URL.Template.VariableName { .init(\"query\") }\n    static var number: URL.Template.VariableName { .init(\"number\") }\n}\n\nextension URL {\n    init?(\n        template: MyQueryTemplate,\n        query: MyQuery\n    ) {\n        self.init(\n            template: template.template,\n            variables: query.variables\n        )\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "b0a4b58be375d149873b47613b29e471b046c790177dc7089748c07140208607",
+  "crawledAt" : "2025-12-01T21:32:01Z",
+  "declaration" : {
+    "code" : "struct Template",
+    "language" : "swift"
+  },
+  "id" : "8B100EBA-80D0-4E50-892D-16DCDAAAFAE8",
+  "kind" : "struct",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nThis is an template that can be expanded into a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL] by calling `URL(template:variables:)`.\n\nTemplating has a rich set of options for substituting various parts of URLs. See [https:\/\/datatracker.ietf.org\/doc\/html\/rfc6570] for details.\n\n### Example 1\n\nThe resulting URL will be\n\n### Usage\n\nTemplates provide a description of a URL space and define how URLs can be constructed given specific variable values. Their intended use is, for example, to allow a server to communicate to a client how to construct URLs for particular resources.\n\nFor each specific resource, an API contract is required to clearly define the variables applicable to that resource and its associated template. For example, such an API contract might specify that the variable `query` is mandatory and must be an alphanumeric string while the variable `number` is optional and must be a positive integer if provided. The server could then provide the client with a template such as `http:\/\/www.example.com\/foo{?query,number}`, which the client can subsequently use to substitute variables accordingly.\n\nAn API contract is necessary to define which substitutions are valid within a given URL space. There is no guarantee that every possible expansion of variable expressions corresponds to an existing resource URL; indeed, some expansions may not even produce a valid URL. Only the API specification itself can determine which expansions are expected to yield valid URLs corresponding to existing resources.\n\n### Example 2\n\nHere’s an example, that illustrates how to define a specific set of variables:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/Template\ncrawled: 2025-12-01T21:32:01Z\n---\n\n# URL.Template\n\n**Structure**\n\nA template for constructing a URL from variable expansions.\n\n## Declaration\n\n```swift\nstruct Template\n```\n\n## Overview\n\nThis is an template that can be expanded into a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL] by calling `URL(template:variables:)`.\n\nTemplating has a rich set of options for substituting various parts of URLs. See [https:\/\/datatracker.ietf.org\/doc\/html\/rfc6570] for details.\n\n### Example 1\n\n```swift\nlet template = URL.Template(\"http:\/\/www.example.com\/foo{?query,number}\")!\nlet url = URL(\n    template: template,\n    variables: [\n        .query: \"bar baz\",\n        .number: \"234\",\n    ]\n)\n\nextension URL.Template.VariableName {\n    static var query: URL.Template.VariableName { .init(\"query\") }\n    static var number: URL.Template.VariableName { .init(\"number\") }\n}\n```\n\nThe resulting URL will be\n\n```text\nhttp:\/\/www.example.com\/foo?query=bar%20baz&number=234\n```\n\n### Usage\n\nTemplates provide a description of a URL space and define how URLs can be constructed given specific variable values. Their intended use is, for example, to allow a server to communicate to a client how to construct URLs for particular resources.\n\nFor each specific resource, an API contract is required to clearly define the variables applicable to that resource and its associated template. For example, such an API contract might specify that the variable `query` is mandatory and must be an alphanumeric string while the variable `number` is optional and must be a positive integer if provided. The server could then provide the client with a template such as `http:\/\/www.example.com\/foo{?query,number}`, which the client can subsequently use to substitute variables accordingly.\n\nAn API contract is necessary to define which substitutions are valid within a given URL space. There is no guarantee that every possible expansion of variable expressions corresponds to an existing resource URL; indeed, some expansions may not even produce a valid URL. Only the API specification itself can determine which expansions are expected to yield valid URLs corresponding to existing resources.\n\n### Example 2\n\nHere’s an example, that illustrates how to define a specific set of variables:\n\n```swift\nstruct MyQueryTemplate: Sendable, Hashable {\n    var template: URL.Template\n\n    init?(_ template: String) {\n        guard let t = URL.Template(template) else { return nil }\n        self.template = t\n    }\n}\n\nstruct MyQuery: Sendable, Hashable {\n    var query: String\n    var number: Int?\n\n    var variables: [URL.Template.VariableName: URL.Template.Value] {\n        var result: [URL.Template.VariableName: URL.Template.Value] = [\n            .query: .text(query)\n        ]\n        if let number {\n            result[.number] = .text(\"\\(number)\")\n        }\n        return result\n    }\n}\n\nextension URL.Template.VariableName {\n    static var query: URL.Template.VariableName { .init(\"query\") }\n    static var number: URL.Template.VariableName { .init(\"number\") }\n}\n\nextension URL {\n    init?(\n        template: MyQueryTemplate,\n        query: MyQuery\n    ) {\n        self.init(\n            template: template.template,\n            variables: query.variables\n        )\n    }\n}\n```\n\n## Structures\n\n- **URL.Template.Value**: The value of a variable used for expanding a template.\n- **URL.Template.VariableName**: The name of a variable used for expanding a template.\n\n## Initializers\n\n- **init(_:)**: Creates a new template from its text form.\n\n## Conforms To\n\n- Copyable\n- CustomStringConvertible\n- Equatable\n- Hashable\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The value of a variable used for expanding a template.",
+          "name" : "URL.Template.Value",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/Template\/Value"
+        },
+        {
+          "description" : "The name of a variable used for expanding a template.",
+          "name" : "URL.Template.VariableName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/Template\/VariableName"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new template from its text form.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/Template\/init(_:)"
+        }
+      ],
+      "title" : "Initializers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "URL.Template",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/Template"
+}

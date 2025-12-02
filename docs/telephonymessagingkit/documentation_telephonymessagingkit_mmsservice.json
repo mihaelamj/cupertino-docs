@@ -1,0 +1,161 @@
+{
+  "abstract" : "A class that provides an interface for performing MMS operations.",
+  "codeExamples" : [
+    {
+      "code" : "import TelephonyMessagingKit\n\nlet service = TelephonyMessagingSession.shared.mmsService\n\nlet cellularServices = try session.cellularServices\nlet cellularServiceID = cellularServices[0].id\n\nguard service.isViable(for: cellularServiceID) else {\n    return\n}\n\nvar recipients: [MMSHandle] = []\nfor phone in recipientPhoneNumbers {\n    recipients.append(MMSHandle(phoneNumber: phone))\n}\nvar parts: [MMSPartContent] = []\n\nlet content1 = MMSPartContent(data: text.data(using: .utf8)!,\n                              contentType: UTType.plainText,\n                              contentID: UUID().uuidString,\n                              disposition: .inline,\n                              fileName: \"\")\n\nlet content2 = MMSPartContent(data: imageData,\n                              contentType: UTType.jpeg,\n                              contentID: UUID().uuidString,\n                              disposition: .attachment,\n                              fileName: \"Image_1.jpg\")\n\nparts.append(content1)\nparts.append(content2)\n\nlet content = MMSContent(parts: parts, recipients: recipients, subject: \"\")\nlet msgID = MMSMessageID(rawValue: SAMPLE_MMS_MESSAGE_ID)\n\nlet message = MMSMessage(cellularServiceID: cellularServiceID,\n                         messageID: msgID,\n                         content: content)\n\nTask {\n    do {\n        try await service.sendMessage(message:message)\n        \/\/ Handle MMS send success.\n    } catch {\n        \/\/ Handle MMS send failure.\n    }\n}\n",
+      "language" : "swift"
+    },
+    {
+      "code" : "import TelephonyMessagingKit\n\nlet service = TelephonyMessagingSession.shared.mmsService\n\nlet incomingMessageNotifications = try service.incomingMessageNotifications\nTask {\n    for await notification in incomingMessageNotifications {\n        let receivedMessage = notification.message\n        \/\/ Process receivedMessage.\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "cc3d757c73b209011fc05cc83517141883203b82bee1e63238fceb353c5853c3",
+  "crawledAt" : "2025-12-02T05:55:37Z",
+  "declaration" : {
+    "code" : "final class MMSService",
+    "language" : "swift"
+  },
+  "id" : "35AA2C58-DC26-4BEB-A6EC-852978582BEE",
+  "kind" : "class",
+  "module" : "TelephonyMessagingKit",
+  "overview" : "## Overview\n\nUse the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/TelephonyMessagingSession] property [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/TelephonyMessagingSession\/mmsService] to get an instance of this class. You can then monitor the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/MMSService\/incomingMessageNotifications] asynchronous sequence to receive notification of incoming messages, and the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/MMSService\/sendMessage(_:)] method to send outgoing messages.\n\nThe following example shows how to send an message consisting of a text portion and an image attachment.\n\nTo receive messages, iterate over the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/MMSService\/incomingMessageNotifications] asynchronous sequence, and retrieve messages from each notification as it arrives, as shown below:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\ncrawled: 2025-12-02T05:55:37Z\n---\n\n# MMSService\n\n**Class**\n\nA class that provides an interface for performing MMS operations.\n\n## Declaration\n\n```swift\nfinal class MMSService\n```\n\n## Overview\n\nUse the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/TelephonyMessagingSession] property [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/TelephonyMessagingSession\/mmsService] to get an instance of this class. You can then monitor the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/MMSService\/incomingMessageNotifications] asynchronous sequence to receive notification of incoming messages, and the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/MMSService\/sendMessage(_:)] method to send outgoing messages.\n\nThe following example shows how to send an message consisting of a text portion and an image attachment.\n\n```swift\nimport TelephonyMessagingKit\n\nlet service = TelephonyMessagingSession.shared.mmsService\n\nlet cellularServices = try session.cellularServices\nlet cellularServiceID = cellularServices[0].id\n\nguard service.isViable(for: cellularServiceID) else {\n    return\n}\n\nvar recipients: [MMSHandle] = []\nfor phone in recipientPhoneNumbers {\n    recipients.append(MMSHandle(phoneNumber: phone))\n}\nvar parts: [MMSPartContent] = []\n\nlet content1 = MMSPartContent(data: text.data(using: .utf8)!,\n                              contentType: UTType.plainText,\n                              contentID: UUID().uuidString,\n                              disposition: .inline,\n                              fileName: \"\")\n\nlet content2 = MMSPartContent(data: imageData,\n                              contentType: UTType.jpeg,\n                              contentID: UUID().uuidString,\n                              disposition: .attachment,\n                              fileName: \"Image_1.jpg\")\n\nparts.append(content1)\nparts.append(content2)\n\nlet content = MMSContent(parts: parts, recipients: recipients, subject: \"\")\nlet msgID = MMSMessageID(rawValue: SAMPLE_MMS_MESSAGE_ID)\n\nlet message = MMSMessage(cellularServiceID: cellularServiceID,\n                         messageID: msgID,\n                         content: content)\n\nTask {\n    do {\n        try await service.sendMessage(message:message)\n        \/\/ Handle MMS send success.\n    } catch {\n        \/\/ Handle MMS send failure.\n    }\n}\n\n```\n\nTo receive messages, iterate over the [doc:\/\/com.apple.availability\/documentation\/TelephonyMessagingKit\/MMSService\/incomingMessageNotifications] asynchronous sequence, and retrieve messages from each notification as it arrives, as shown below:\n\n```swift\nimport TelephonyMessagingKit\n\nlet service = TelephonyMessagingSession.shared.mmsService\n\nlet incomingMessageNotifications = try service.incomingMessageNotifications\nTask {\n    for await notification in incomingMessageNotifications {\n        let receivedMessage = notification.message\n        \/\/ Process receivedMessage.\n    }\n}\n```\n\n## Determining service viabililty\n\n- **isViable(for:)**: Queries whether the device can perform MMS operations at this time.\n- **viabilityNotifications**: An asynchronous sequence of service viability notifications produced by the service.\n- **MMSService.ViabilityNotification**: A notification that indicates if MMS is viable for a given cellular service.\n\n## Managing MMS configuration\n\n- **configuration(for:)**: Retrieves the MMS configuration for the carrier.\n- **MMSService.Configuration**: A structure that provides information about MMS messages sent and received using the current carrier.\n\n## Sending messages\n\n- **sendMessage(_:)**: Sends an MMS message to the given destination.\n- **MMSMessage**: A structure that contains the data of an MMS message.\n\n## Receiving messages\n\n- **CellularServiceID**: An opaque identifier that represents the cellular service for which to provide operations.\n- **MMSMessageID**: A structure that represents an MMS message identifier.\n- **incomingMessageNotifications**: An asynchronous sequence of incoming message notifications produced by the service.\n- **MMSService.IncomingMessageNotification**: A structure that contains information about an incoming MMS message.\n\n## Reporting spam\n\n- **reportSpam(_:)**: Reports an MMS message as spam to the carrier and to partners.\n\n## Handling errors\n\n- **MMSService.Error**: Enumeration for errors that can occur when performing MMS operations.\n\n## Deprecated symbols\n\n- **receiveMessage(using:messageID:)**: Retrieves an MMS message that matches the given identifiers.\n\n## Using Multimedia Messaging Service (MMS)\n\n- **mmsService**: MMS service associated with this session.\n\n## Conforms To\n\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Queries whether the device can perform MMS operations at this time.",
+          "name" : "isViable(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/isViable(for:)"
+        },
+        {
+          "description" : "An asynchronous sequence of service viability notifications produced by the service.",
+          "name" : "viabilityNotifications",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/viabilityNotifications"
+        },
+        {
+          "description" : "A notification that indicates if MMS is viable for a given cellular service.",
+          "name" : "MMSService.ViabilityNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/ViabilityNotification"
+        }
+      ],
+      "title" : "Determining service viabililty"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Retrieves the MMS configuration for the carrier.",
+          "name" : "configuration(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/configuration(for:)"
+        },
+        {
+          "description" : "A structure that provides information about MMS messages sent and received using the current carrier.",
+          "name" : "MMSService.Configuration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/Configuration"
+        }
+      ],
+      "title" : "Managing MMS configuration"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sends an MMS message to the given destination.",
+          "name" : "sendMessage(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/sendMessage(_:)"
+        },
+        {
+          "description" : "A structure that contains the data of an MMS message.",
+          "name" : "MMSMessage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSMessage"
+        }
+      ],
+      "title" : "Sending messages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An opaque identifier that represents the cellular service for which to provide operations.",
+          "name" : "CellularServiceID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/CellularServiceID"
+        },
+        {
+          "description" : "A structure that represents an MMS message identifier.",
+          "name" : "MMSMessageID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSMessageID"
+        },
+        {
+          "description" : "An asynchronous sequence of incoming message notifications produced by the service.",
+          "name" : "incomingMessageNotifications",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/incomingMessageNotifications"
+        },
+        {
+          "description" : "A structure that contains information about an incoming MMS message.",
+          "name" : "MMSService.IncomingMessageNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/IncomingMessageNotification"
+        }
+      ],
+      "title" : "Receiving messages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Reports an MMS message as spam to the carrier and to partners.",
+          "name" : "reportSpam(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/reportSpam(_:)"
+        }
+      ],
+      "title" : "Reporting spam"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Enumeration for errors that can occur when performing MMS operations.",
+          "name" : "MMSService.Error",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/Error"
+        }
+      ],
+      "title" : "Handling errors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Retrieves an MMS message that matches the given identifiers.",
+          "name" : "receiveMessage(using:messageID:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService\/receiveMessage(using:messageID:)"
+        }
+      ],
+      "title" : "Deprecated symbols"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "MMS service associated with this session.",
+          "name" : "mmsService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/TelephonyMessagingSession\/mmsService"
+        }
+      ],
+      "title" : "Using Multimedia Messaging Service (MMS)"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MMSService",
+  "url" : "https:\/\/developer.apple.com\/documentation\/TelephonyMessagingKit\/MMSService"
+}

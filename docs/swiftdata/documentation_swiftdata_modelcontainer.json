@@ -1,0 +1,192 @@
+{
+  "abstract" : "An object that manages an app’s schema and model storage configuration.",
+  "codeExamples" : [
+    {
+      "code" : "@main\nstruct RecipesApp: App {\n    var body: some Scene {\n        WindowGroup {\n            RecipesList()\n        }\n        .modelContainer(for: Recipe.self)\n    }\n}\n\nstruct RecipesList: View {\n    @Query private var recipes: [Recipe]\n    \n    var body: some View {\n        List(recipes) { RecipeRowView($0) }\n    }\n} \n",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Equatable",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "8e26a10a1ded6295afdd60df136f5db2689f450d2819788806e11d8675984ebe",
+  "crawledAt" : "2025-12-02T16:15:24Z",
+  "declaration" : {
+    "code" : "class ModelContainer",
+    "language" : "swift"
+  },
+  "id" : "F9A6E91F-4EF6-4D91-B043-A5EB3C1DCFB2",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "SwiftData",
+  "overview" : "## Overview\n\nA model container mediates between its associated model contexts and your app’s underlying persistent storage. The container manages all aspects of that storage and ensures it remains in a consistent and usable state. Whenever you run a fetch or call a context’s [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/save()] method, the container performs the actual read or write of the underlying data using information from the schema you provide. This helps safeguard an app’s resources and ensures those operations happen only in an efficient and coordinated manner. Additionally, if your app’s entitlements include CloudKit, the container automatically handles syncing the persisted storage across devices. For more information about syncing model data, see [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/Syncing-model-data-across-a-persons-devices].\n\nAs your app’s schema evolves, the container performs automatic migrations of the persisted model data so it remains consistent with the app’s model classes. If the aggregate changes between two versions of your schema exceed the capabilities of automatic migrations, provide the container with a [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/SchemaMigrationPlan] to participate in those migrations and help ensure they complete successfully.\n\nBy default, a model container makes a number of assumptions about how it configures an app’s persistent storage. If you need to customize this behavior, provide the container with one or more instances of [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelConfiguration]. For example, you may want use a particular app group container or specify that the storage is ephemeral and should exist only in memory.\n\nAn app that uses SwiftData requires at least one model container. You create a container using one of the class’s initializers or the corresponding SwiftUI view modifier. Using the view modifier ensures all windows in the modified window group, or all child views of the modified view, access the same model container. Additionally, the view modifier makes an associated model context available in the SwiftUI environment, which the `Query()` macro depends on.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\ncrawled: 2025-12-02T16:15:24Z\n---\n\n# ModelContainer\n\n**Class**\n\nAn object that manages an app’s schema and model storage configuration.\n\n## Declaration\n\n```swift\nclass ModelContainer\n```\n\n## Overview\n\nA model container mediates between its associated model contexts and your app’s underlying persistent storage. The container manages all aspects of that storage and ensures it remains in a consistent and usable state. Whenever you run a fetch or call a context’s [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelContext\/save()] method, the container performs the actual read or write of the underlying data using information from the schema you provide. This helps safeguard an app’s resources and ensures those operations happen only in an efficient and coordinated manner. Additionally, if your app’s entitlements include CloudKit, the container automatically handles syncing the persisted storage across devices. For more information about syncing model data, see [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/Syncing-model-data-across-a-persons-devices].\n\nAs your app’s schema evolves, the container performs automatic migrations of the persisted model data so it remains consistent with the app’s model classes. If the aggregate changes between two versions of your schema exceed the capabilities of automatic migrations, provide the container with a [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/SchemaMigrationPlan] to participate in those migrations and help ensure they complete successfully.\n\nBy default, a model container makes a number of assumptions about how it configures an app’s persistent storage. If you need to customize this behavior, provide the container with one or more instances of [doc:\/\/com.apple.SwiftData\/documentation\/SwiftData\/ModelConfiguration]. For example, you may want use a particular app group container or specify that the storage is ephemeral and should exist only in memory.\n\nAn app that uses SwiftData requires at least one model container. You create a container using one of the class’s initializers or the corresponding SwiftUI view modifier. Using the view modifier ensures all windows in the modified window group, or all child views of the modified view, access the same model container. Additionally, the view modifier makes an associated model context available in the SwiftUI environment, which the `Query()` macro depends on.\n\n```swift\n@main\nstruct RecipesApp: App {\n    var body: some Scene {\n        WindowGroup {\n            RecipesList()\n        }\n        .modelContainer(for: Recipe.self)\n    }\n}\n\nstruct RecipesList: View {\n    @Query private var recipes: [Recipe]\n    \n    var body: some View {\n        List(recipes) { RecipeRowView($0) }\n    }\n} \n\n```\n\n## Creating a model container\n\n- **init(for:migrationPlan:configurations:)**: Creates a model container using the specified schema, migration plan, and configurations.\n- **init(for:migrationPlan:configurations:)**: Creates a model container using the specified model types, migration plan, and zero or more configurations.\n- **init(for:migrationPlan:configurations:)**: Creates a model container using the specified schema, migration plan, and zero or more configurations.\n- **PersistentModel**: An interface that enables SwiftData to manage a Swift class as a stored model.\n- **ModelConfiguration**: A type that describes the configuration of an app’s schema or specific group of models.\n- **Schema**: An object that maps model classes to data in the model store, and helps with the migration of that data between releases.\n- **SchemaMigrationPlan**: An interface for describing the evolution of a schema and how to migrate between specific versions.\n\n## Managing schema and configuration details\n\n- **schema**: The schema that maps your app’s model classes to the associated data in the app’s persistent storage.\n- **configurations**: The configurations that describe how to manage the persisted data for specific groups of models.\n- **migrationPlan**: The plan that describes the evolution of your app’s schema and how to migrate between specific versions.\n\n## Accessing the context\n\n- **mainContext**: A model context that’s bound to app’s main actor.\n\n## Deleting the container\n\n- **deleteAllData()**: Removes all persisted model data from the app’s persistent storage.\n\n## Initializers\n\n- **init(for:configurations:)**\n- **init(for:configurations:)**\n\n## Instance Methods\n\n- **erase()**\n\n## Model life cycle\n\n- **ModelContext**: An object that enables you to fetch, insert, and delete models, and save any changes to disk.\n- **Fetching and filtering time-based model changes**: Track all inserts, updates, and deletes that occur in a data store and process them as a series of chronological transactions.\n- **HistoryDescriptor**: A type that describes the criteria, and, optionally, sort order, to use when fetching history data\n- **Deleting persistent data from your app**: Explore different ways to use SwiftData to delete persistent data.\n- **Reverting data changes using the undo manager**: Automatically record data change operations that people perform in your SwiftUI app, and let them undo and redo those changes.\n- **Syncing model data across a person’s devices**: Add the required capabilities and define a compatible schema to enable SwiftData to automatically sync your app’s model data using iCloud.\n- **Concurrency support**: Types you use to access model attributes and perform storage-related tasks in a safe and isolated way.\n\n## Conforms To\n\n- Equatable\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a model container using the specified schema, migration plan, and configurations.",
+          "name" : "init(for:migrationPlan:configurations:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/init(for:migrationPlan:configurations:)-1czix"
+        },
+        {
+          "description" : "Creates a model container using the specified model types, migration plan, and zero or more configurations.",
+          "name" : "init(for:migrationPlan:configurations:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/init(for:migrationPlan:configurations:)-8s4ts"
+        },
+        {
+          "description" : "Creates a model container using the specified schema, migration plan, and zero or more configurations.",
+          "name" : "init(for:migrationPlan:configurations:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/init(for:migrationPlan:configurations:)-qof9"
+        },
+        {
+          "description" : "An interface that enables SwiftData to manage a Swift class as a stored model.",
+          "name" : "PersistentModel",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/PersistentModel"
+        },
+        {
+          "description" : "A type that describes the configuration of an app’s schema or specific group of models.",
+          "name" : "ModelConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelConfiguration"
+        },
+        {
+          "description" : "An object that maps model classes to data in the model store, and helps with the migration of that data between releases.",
+          "name" : "Schema",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Schema"
+        },
+        {
+          "description" : "An interface for describing the evolution of a schema and how to migrate between specific versions.",
+          "name" : "SchemaMigrationPlan",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/SchemaMigrationPlan"
+        }
+      ],
+      "title" : "Creating a model container"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The schema that maps your app’s model classes to the associated data in the app’s persistent storage.",
+          "name" : "schema",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/schema"
+        },
+        {
+          "description" : "The configurations that describe how to manage the persisted data for specific groups of models.",
+          "name" : "configurations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/configurations"
+        },
+        {
+          "description" : "The plan that describes the evolution of your app’s schema and how to migrate between specific versions.",
+          "name" : "migrationPlan",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/migrationPlan"
+        }
+      ],
+      "title" : "Managing schema and configuration details"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A model context that’s bound to app’s main actor.",
+          "name" : "mainContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/mainContext"
+        }
+      ],
+      "title" : "Accessing the context"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Removes all persisted model data from the app’s persistent storage.",
+          "name" : "deleteAllData()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/deleteAllData()"
+        }
+      ],
+      "title" : "Deleting the container"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "init(for:configurations:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/init(for:configurations:)-621ei"
+        },
+        {
+          "description" : "",
+          "name" : "init(for:configurations:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/init(for:configurations:)-93ifi"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "erase()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer\/erase()"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that enables you to fetch, insert, and delete models, and save any changes to disk.",
+          "name" : "ModelContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContext"
+        },
+        {
+          "description" : "Track all inserts, updates, and deletes that occur in a data store and process them as a series of chronological transactions.",
+          "name" : "Fetching and filtering time-based model changes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Fetching-and-filtering-time-based-model-changes"
+        },
+        {
+          "description" : "A type that describes the criteria, and, optionally, sort order, to use when fetching history data",
+          "name" : "HistoryDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/HistoryDescriptor"
+        },
+        {
+          "description" : "Explore different ways to use SwiftData to delete persistent data.",
+          "name" : "Deleting persistent data from your app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Deleting-persistent-data-from-your-app"
+        },
+        {
+          "description" : "Automatically record data change operations that people perform in your SwiftUI app, and let them undo and redo those changes.",
+          "name" : "Reverting data changes using the undo manager",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Reverting-data-changes-using-the-undo-manager"
+        },
+        {
+          "description" : "Add the required capabilities and define a compatible schema to enable SwiftData to automatically sync your app’s model data using iCloud.",
+          "name" : "Syncing model data across a person’s devices",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/Syncing-model-data-across-a-persons-devices"
+        },
+        {
+          "description" : "Types you use to access model attributes and perform storage-related tasks in a safe and isolated way.",
+          "name" : "Concurrency support",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ConcurrencySupport"
+        }
+      ],
+      "title" : "Model life cycle"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "ModelContainer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftData\/ModelContainer"
+}

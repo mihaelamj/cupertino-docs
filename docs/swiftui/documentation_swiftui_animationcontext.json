@@ -1,0 +1,122 @@
+{
+  "abstract" : "Contextual values that a custom animation can use to manage state and access a view’s environment.",
+  "codeExamples" : [
+    {
+      "code" : "private struct PausableState<Value: VectorArithmetic>: AnimationStateKey {\n    var paused = false\n    var pauseTime: TimeInterval = 0.0\n\n    static var defaultValue: Self { .init() }\n}\n\nextension AnimationContext {\n    fileprivate var pausableState: PausableState<Value> {\n        get { state[PausableState<Value>.self] }\n        set { state[PausableState<Value>.self] = newValue }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct PausableAnimation: CustomAnimation {\n    let base: Animation\n\n    func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {\n        let paused = context.environment.animationPaused\n\n        let pausableState = context.pausableState\n        var pauseTime = pausableState.pauseTime\n        if pausableState.paused != paused {\n            pauseTime = time - pauseTime\n            context.pausableState = PausableState(paused: paused, pauseTime: pauseTime)\n        }\n\n        let effectiveTime = paused ? pauseTime : time - pauseTime\n        let result = base.animate(value: value, time: effectiveTime, context: &context)\n        return result\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension EnvironmentValues {\n    @Entry var animationPaused: Bool = false\n}\n\nstruct PausableAnimationView: View {\n    @State private var paused = false\n\n    var body: some View {\n        VStack {\n            ...\n        }\n        .environment(\\.animationPaused, paused)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct PausableAnimation: CustomAnimation {\n    func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {\n        let paused = context.environment.animationPaused\n        ...\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "ff220b7ba60a0cc1778789571f17538257884b0a0e2e337cb303a40462a45690",
+  "crawledAt" : "2025-12-02T17:34:00Z",
+  "declaration" : {
+    "code" : "struct AnimationContext<Value> where Value : VectorArithmetic",
+    "language" : "swift"
+  },
+  "id" : "90D7C46A-98BC-4D63-BA72-9E5B79CA830C",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nThe system provides an `AnimationContext` to a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/CustomAnimation] instance so that the animation can store and retrieve values in an instance of [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationState]. To access these values, use the context’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext\/state] property.\n\nFor more convenient access to state, create an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationStateKey] and extend `AnimationContext` to include a computed property that gets and sets the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationState] value. Then use this property instead of [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext\/state] to retrieve the state of a custom animation. For example, the following code creates an animation state key named `PausableState`. Then the code extends `AnimationContext` to include the `pausableState` property:\n\nTo access the pausable state, the custom animation `PausableAnimation` uses the `pausableState` property instead of the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext\/state] property:\n\nThe animation can also retrieve environment values of the view that created the animation. To retrieve a view’s environment value, use the context’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext\/environment] property. For instance, the following code creates a custom [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues] property named `animationPaused`, and the view `PausableAnimationView` uses the property to store the paused state:\n\nThen the custom animation `PausableAnimation` retrieves the paused state from the view’s environment using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext\/environment] property:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationContext\ncrawled: 2025-12-02T17:34:00Z\n---\n\n# AnimationContext\n\n**Structure**\n\nContextual values that a custom animation can use to manage state and access a view’s environment.\n\n## Declaration\n\n```swift\nstruct AnimationContext<Value> where Value : VectorArithmetic\n```\n\n## Overview\n\nThe system provides an `AnimationContext` to a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/CustomAnimation] instance so that the animation can store and retrieve values in an instance of [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationState]. To access these values, use the context’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext\/state] property.\n\nFor more convenient access to state, create an [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationStateKey] and extend `AnimationContext` to include a computed property that gets and sets the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationState] value. Then use this property instead of [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext\/state] to retrieve the state of a custom animation. For example, the following code creates an animation state key named `PausableState`. Then the code extends `AnimationContext` to include the `pausableState` property:\n\n```swift\nprivate struct PausableState<Value: VectorArithmetic>: AnimationStateKey {\n    var paused = false\n    var pauseTime: TimeInterval = 0.0\n\n    static var defaultValue: Self { .init() }\n}\n\nextension AnimationContext {\n    fileprivate var pausableState: PausableState<Value> {\n        get { state[PausableState<Value>.self] }\n        set { state[PausableState<Value>.self] = newValue }\n    }\n}\n```\n\nTo access the pausable state, the custom animation `PausableAnimation` uses the `pausableState` property instead of the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext\/state] property:\n\n```swift\nstruct PausableAnimation: CustomAnimation {\n    let base: Animation\n\n    func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {\n        let paused = context.environment.animationPaused\n\n        let pausableState = context.pausableState\n        var pauseTime = pausableState.pauseTime\n        if pausableState.paused != paused {\n            pauseTime = time - pauseTime\n            context.pausableState = PausableState(paused: paused, pauseTime: pauseTime)\n        }\n\n        let effectiveTime = paused ? pauseTime : time - pauseTime\n        let result = base.animate(value: value, time: effectiveTime, context: &context)\n        return result\n    }\n}\n```\n\nThe animation can also retrieve environment values of the view that created the animation. To retrieve a view’s environment value, use the context’s [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext\/environment] property. For instance, the following code creates a custom [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues] property named `animationPaused`, and the view `PausableAnimationView` uses the property to store the paused state:\n\n```swift\nextension EnvironmentValues {\n    @Entry var animationPaused: Bool = false\n}\n\nstruct PausableAnimationView: View {\n    @State private var paused = false\n\n    var body: some View {\n        VStack {\n            ...\n        }\n        .environment(\\.animationPaused, paused)\n    }\n}\n```\n\nThen the custom animation `PausableAnimation` retrieves the paused state from the view’s environment using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/AnimationContext\/environment] property:\n\n```swift\nstruct PausableAnimation: CustomAnimation {\n    func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {\n        let paused = context.environment.animationPaused\n        ...\n    }\n}\n```\n\n## Managing state\n\n- **state**: The current state of a custom animation.\n\n## Retrieving view environment values\n\n- **environment**: The current environment of the view that created the custom animation.\n\n## Creating context\n\n- **withState(_:)**: Creates a new context from another one with a state that you provide.\n\n## Instance Properties\n\n- **isLogicallyComplete**: Set this to `true` to indicate that an animation is logically complete.\n\n## Creating custom animations\n\n- **CustomAnimation**: A type that defines how an animatable value changes over time.\n- **AnimationState**: A container that stores the state for a custom animation.\n- **AnimationStateKey**: A key for accessing animation state values.\n- **UnitCurve**: A  function defined by a two-dimensional curve that maps an input progress in the range [0,1] to an output progress that is also in the range [0,1]. By changing the shape of the curve, the effective speed of an animation or other interpolation can be changed.\n- **Spring**: A representation of a spring’s motion.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The current state of a custom animation.",
+          "name" : "state",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationContext\/state"
+        }
+      ],
+      "title" : "Managing state"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The current environment of the view that created the custom animation.",
+          "name" : "environment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationContext\/environment"
+        }
+      ],
+      "title" : "Retrieving view environment values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new context from another one with a state that you provide.",
+          "name" : "withState(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationContext\/withState(_:)"
+        }
+      ],
+      "title" : "Creating context"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Set this to `true` to indicate that an animation is logically complete.",
+          "name" : "isLogicallyComplete",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationContext\/isLogicallyComplete"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A type that defines how an animatable value changes over time.",
+          "name" : "CustomAnimation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/CustomAnimation"
+        },
+        {
+          "description" : "A container that stores the state for a custom animation.",
+          "name" : "AnimationState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationState"
+        },
+        {
+          "description" : "A key for accessing animation state values.",
+          "name" : "AnimationStateKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationStateKey"
+        },
+        {
+          "description" : "A  function defined by a two-dimensional curve that maps an input progress in the range [0,1] to an output progress that is also in the range [0,1]. By changing the shape of the curve, the effective speed of an animation or other interpolation can be changed.",
+          "name" : "UnitCurve",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/UnitCurve"
+        },
+        {
+          "description" : "A representation of a spring’s motion.",
+          "name" : "Spring",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Spring"
+        }
+      ],
+      "title" : "Creating custom animations"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AnimationContext",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/AnimationContext"
+}

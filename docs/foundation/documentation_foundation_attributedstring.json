@@ -1,0 +1,735 @@
+{
+  "abstract" : "A value type for a string with associated attributes for portions of its text.",
+  "codeExamples" : [
+    {
+      "code" : "var attributedString = AttributedString(\"This is a string with empty attributes.\")\nvar container = AttributeContainer()\ncontainer[AttributeScopes.AppKitAttributes.ForegroundColorAttribute.self] = .red\nattributedString.mergeAttributes(container, mergePolicy: .keepNew)",
+      "language" : "swift"
+    },
+    {
+      "code" : "attributedString[AttributeScopes.AppKitAttributes.ForegroundColorAttribute.self] = .yellow",
+      "language" : "swift"
+    },
+    {
+      "code" : "attributedString.foregroundColor = .green",
+      "language" : "swift"
+    },
+    {
+      "code" : "var attributedString = AttributedString(\"The first month of your subscription is free.\")\nguard let range = attributedString.range(of: \"free\") else {return}\nattributedString[range].foregroundColor = .green",
+      "language" : "swift"
+    },
+    {
+      "code" : "do {\n    let thankYouString = try AttributedString(\n        markdown:\"**Thank you!** Please visit our [website](https:\/\/example.com)\")\n} catch {\n    print(\"Couldn't parse the string. \\(error.localizedDescription)\")\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "AttributedStringAttributeMutation",
+    "AttributedStringProtocol",
+    "Copyable",
+    "CustomStringConvertible",
+    "Decodable",
+    "DecodableWithConfiguration",
+    "Encodable",
+    "EncodableWithConfiguration",
+    "Equatable",
+    "ExpressibleByExtendedGraphemeClusterLiteral",
+    "ExpressibleByStringLiteral",
+    "ExpressibleByUnicodeScalarLiteral",
+    "Hashable",
+    "Sendable",
+    "SendableMetatype",
+    "Transferable"
+  ],
+  "contentHash" : "4c24169340e1775ae588df40cdb82c6c817fff44da31a2ee9cdcd5a35f99a7ac",
+  "crawledAt" : "2025-12-02T17:05:22Z",
+  "declaration" : {
+    "code" : "@dynamicMemberLookup struct AttributedString",
+    "language" : "swift"
+  },
+  "id" : "86D2A03F-B05E-4665-B960-6814B5DB2369",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nAttributed strings are character strings that have attributes for individual characters or ranges of characters. Attributes provide traits like visual styles for display, accessibility for guided access, and hyperlink data for linking between data sources. Attribute keys provide the name and value type of each attribute. System frameworks like Foundation and SwiftUI define common keys, and you can define your own in custom extensions.\n\n### String Attributes\n\nYou can apply an attribute to an entire string, or to a range within the string. The string represents each range with consistent attributes as a *run*.\n\n[doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString] uses subscripts and dynamic member lookup to simplify working with attributes from your call points. In its most verbose form, you set an attribute by creating an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeContainer] and merging it into an existing attributed string, like this:\n\nUsing the attributed string’s [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedStringProtocol\/subscript(_:)-4thnp] method, you can omit the explicit use of an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeContainer] and just set the attribute by its type:\n\nBecause an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString] supports dynamic member lookup — as described under [https:\/\/docs.swift.org\/swift-book\/ReferenceManual\/Attributes.html] in [https:\/\/docs.swift.org\/swift-book\/] — you can access its subscripts with dot syntax instead. When combined with properties like [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScopes\/AppKitAttributes\/foregroundColor] that return the attribute key type, this final form offers a natural way to set an attribute that applies to an entire string:\n\nThis example works because AppKit defines an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScope], [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScopes\/AppKitAttributes], in which the property [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScopes\/AppKitAttributes\/foregroundColor] returns the type `AttributeScopes.AppKitAttributes.ForegroundColorAttribute`. Because AppKit’s attribute scope implements [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeDynamicLookup], the dot syntax resolves to an equivalent subscript expression, allowing `attributedString.foregroundColor` to replace `attributedString[AttributeScopes.AppKitAttributes.ForegroundColorAttribute.self]`.\n\nYou can also set an attribute to apply only to part of an attributed string, by applying the attribute to a range, as seen here:\n\nYou can access portions of the string with unique combinations of attributes by iterating over the string’s `runs` property.\n\nYou can define your own custom attributes by creating types that conform to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedStringKey], and collecting them in an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScope]. Custom keys should also extend [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeDynamicLookup], so callers can use dot-syntax to access the attribute.\n\n### Creating Attributed Strings with Markdown\n\nYou can create an attributed string by passing a standard [doc:\/\/com.apple.documentation\/documentation\/Swift\/String] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Data] instance that contains Markdown to initializers like [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString\/init(markdown:options:baseURL:)-52n3u]. The attributed string creates attributes by parsing the markup in the string.\n\nLocalized strings that you load from strings files with initializers like [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString\/init(localized:options:table:bundle:locale:comment:)-8dlnl] can also contain Markdown to add styling. In addition, these localized attributed string initializers can apply the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/replacementIndex] attribute, which allows you to determine the range of replacement strings, whose order may vary between languages.\n\nBy declaring new attributes that conform to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/MarkdownDecodableAttributedStringKey], you can add attributes that you invoke by using Apple’s Markdown extension syntax: `^[text](name:value, name:value, …)`. See the sample code project doc:building-a-localized-food-ordering-app for an example of creating custom attributes and using them with Markdown.\n\nLocalized attributed strings can also use the extension syntax to indicate parts of the string where the system can apply automatic grammar agreement. See the initializers that take a `localized:` parameter for examples of this extension syntax, as used with automatic grammar agreement.\n\n### Attribute Scopes\n\nThe [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString] API defines keys for common uses, such as text styling, semantically marking up formattable types like dates and numbers, and hyperlinking. You can find these in the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScopes] enumeration, which contains attributes for AppKit, Foundation, SwiftUI, and UIKit.\n\nYou can define your own attributes by implementing [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedStringKey], and reference them by name by collecting them in an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScope].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\ncrawled: 2025-12-02T17:05:22Z\n---\n\n# AttributedString\n\n**Structure**\n\nA value type for a string with associated attributes for portions of its text.\n\n## Declaration\n\n```swift\n@dynamicMemberLookup struct AttributedString\n```\n\n## Overview\n\nAttributed strings are character strings that have attributes for individual characters or ranges of characters. Attributes provide traits like visual styles for display, accessibility for guided access, and hyperlink data for linking between data sources. Attribute keys provide the name and value type of each attribute. System frameworks like Foundation and SwiftUI define common keys, and you can define your own in custom extensions.\n\n### String Attributes\n\nYou can apply an attribute to an entire string, or to a range within the string. The string represents each range with consistent attributes as a *run*.\n\n[doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString] uses subscripts and dynamic member lookup to simplify working with attributes from your call points. In its most verbose form, you set an attribute by creating an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeContainer] and merging it into an existing attributed string, like this:\n\n```swift\nvar attributedString = AttributedString(\"This is a string with empty attributes.\")\nvar container = AttributeContainer()\ncontainer[AttributeScopes.AppKitAttributes.ForegroundColorAttribute.self] = .red\nattributedString.mergeAttributes(container, mergePolicy: .keepNew)\n```\n\nUsing the attributed string’s [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedStringProtocol\/subscript(_:)-4thnp] method, you can omit the explicit use of an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeContainer] and just set the attribute by its type:\n\n```swift\nattributedString[AttributeScopes.AppKitAttributes.ForegroundColorAttribute.self] = .yellow\n```\n\nBecause an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString] supports dynamic member lookup — as described under [https:\/\/docs.swift.org\/swift-book\/ReferenceManual\/Attributes.html] in [https:\/\/docs.swift.org\/swift-book\/] — you can access its subscripts with dot syntax instead. When combined with properties like [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScopes\/AppKitAttributes\/foregroundColor] that return the attribute key type, this final form offers a natural way to set an attribute that applies to an entire string:\n\n```swift\nattributedString.foregroundColor = .green\n```\n\nThis example works because AppKit defines an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScope], [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScopes\/AppKitAttributes], in which the property [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScopes\/AppKitAttributes\/foregroundColor] returns the type `AttributeScopes.AppKitAttributes.ForegroundColorAttribute`. Because AppKit’s attribute scope implements [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeDynamicLookup], the dot syntax resolves to an equivalent subscript expression, allowing `attributedString.foregroundColor` to replace `attributedString[AttributeScopes.AppKitAttributes.ForegroundColorAttribute.self]`.\n\nYou can also set an attribute to apply only to part of an attributed string, by applying the attribute to a range, as seen here:\n\n```swift\nvar attributedString = AttributedString(\"The first month of your subscription is free.\")\nguard let range = attributedString.range(of: \"free\") else {return}\nattributedString[range].foregroundColor = .green\n```\n\nYou can access portions of the string with unique combinations of attributes by iterating over the string’s `runs` property.\n\nYou can define your own custom attributes by creating types that conform to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedStringKey], and collecting them in an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScope]. Custom keys should also extend [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeDynamicLookup], so callers can use dot-syntax to access the attribute.\n\n### Creating Attributed Strings with Markdown\n\nYou can create an attributed string by passing a standard [doc:\/\/com.apple.documentation\/documentation\/Swift\/String] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Data] instance that contains Markdown to initializers like [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString\/init(markdown:options:baseURL:)-52n3u]. The attributed string creates attributes by parsing the markup in the string.\n\n```swift\ndo {\n    let thankYouString = try AttributedString(\n        markdown:\"**Thank you!** Please visit our [website](https:\/\/example.com)\")\n} catch {\n    print(\"Couldn't parse the string. \\(error.localizedDescription)\")\n}\n```\n\nLocalized strings that you load from strings files with initializers like [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString\/init(localized:options:table:bundle:locale:comment:)-8dlnl] can also contain Markdown to add styling. In addition, these localized attributed string initializers can apply the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/replacementIndex] attribute, which allows you to determine the range of replacement strings, whose order may vary between languages.\n\nBy declaring new attributes that conform to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/MarkdownDecodableAttributedStringKey], you can add attributes that you invoke by using Apple’s Markdown extension syntax: `^[text](name:value, name:value, …)`. See the sample code project doc:building-a-localized-food-ordering-app for an example of creating custom attributes and using them with Markdown.\n\nLocalized attributed strings can also use the extension syntax to indicate parts of the string where the system can apply automatic grammar agreement. See the initializers that take a `localized:` parameter for examples of this extension syntax, as used with automatic grammar agreement.\n\n### Attribute Scopes\n\nThe [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString] API defines keys for common uses, such as text styling, semantically marking up formattable types like dates and numbers, and hyperlinking. You can find these in the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScopes] enumeration, which contains attributes for AppKit, Foundation, SwiftUI, and UIKit.\n\nYou can define your own attributes by implementing [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedStringKey], and reference them by name by collecting them in an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributeScope].\n\n## Creating an Attributed String\n\n- **init()**: Creates an empty attributed string.\n- **init(_:)**: Creates an attributed string from an attributed substring.\n- **init(_:attributes:)**: Creates an attributed string from a string and an attribute container.\n- **init(_:attributes:)**: Creates an attributed string from a substring and an attribute container.\n- **init(_:attributes:)**: Creates an attributed string from a character sequence and an attribute container.\n- **AttributeContainer**: A container for attribute keys and values.\n\n## Creating a Localized Attributed String\n\n- **init(localized:options:table:bundle:locale:comment:)**: Creates an attributed string by looking up a localized string from the app’s bundle.\n- **init(localized:options:table:bundle:locale:comment:including:)**: Creates an attributed string by looking up a localized string from the app’s bundle, including an attribute scope.\n- **init(localized:options:table:bundle:locale:comment:including:)**: Creates an attributed string by looking up a localized string from the app’s bundle, including an attribute scope that a key path identifies.\n- **String.LocalizationValue**: A reference to a localizable string, with optional string interpolation.\n- **AttributedString.FormattingOptions**: Options that affect the handling of attributes.\n- **init(localized:)**: Creates a localized attributed string from a localized string resource.\n- **init(localized:including:)**: Creates a localized attributed string from a localized string resource, including an attribute scope.\n- **init(localized:including:)**: Creates a localized attributed string from a localized string resource, including an attribute scope that a key path identifies.\n- **LocalizedStringResource**: A reference to a localizable string, accessible from another process.\n\n## Creating a Localized Attributed String with a Default Value\n\n- **init(localized:defaultValue:options:table:bundle:locale:comment:)**: Creates an attributed string by looking up a localized string from the app’s bundle, using a default value if necessary.\n- **init(localized:defaultValue:options:table:bundle:locale:comment:including:)**: Creates an attributed string by looking up a localized string from the app’s bundle, including an attribute scope, using a default value if necessary.\n- **init(localized:defaultValue:options:table:bundle:locale:comment:including:)**: Creates an attributed string by looking up a localized string from the app’s bundle, including an attribute scope that a key path identifies, using a default value if necessary.\n\n## Creating an Attributed String from Markdown\n\n- **Instantiating Attributed Strings with Markdown Syntax**: Use a Markdown-syntax string to iniitalize an attributed string with standard or custom attributes.\n\n## Creating an Attributed String from a Reference Type\n\n- **init(_:including:)**: Creates a value-type attributed string from a reference type, including an attribute scope.\n- **init(_:including:)**: Creates a value-type attributed string from a reference type, including an attribute scope that a key path identifies.\n- **init(_:)**: Creates a value-type attributed string from a reference type.\n\n## Creating a Duplicate Attributed String\n\n- **init(_:including:)**: Creates an attributed string from another attributed string, including an attribute scope.\n- **init(_:including:)**: Creates an attributed string from another attributed string, including an attribute scope that a key path identifies.\n\n## Applying and Modifying Attributes\n\n- **AttributedString.AttributeMergePolicy**: An enumeration of behaviors to apply when merging attributes.\n- **AttributedStringAttributeMutation**: A protocol that defines in-place mutations for attributes in an attributed string.\n\n## Using Defined Attributes\n\n- **AttributeScopes**: Collections of attributes that system frameworks define.\n- **AttributeDynamicLookup**: A type to support dynamic member lookup of attributes and containers.\n- **ScopedAttributeContainer**: An attribute container that allows dynamic member lookup of its contents within the specified attribute scope.\n\n## Accessing Indices\n\n- **Accessing Indicies Within an Attributed String**: Access a position within an attributed string, offset from the beginning, or before or after another known position.\n\n## Accessing Views into the Attributed String\n\n- **AttributedString.CharacterView**: A view into the underlying storage of the attributed string, as Unicode characters.\n- **AttributedString.UnicodeScalarView**: A view into the underlying storage of the attributed string, as Unicode scalars.\n- **AttributedString.Runs**: An iterable view into segments of the attributed string, each of which indicates where a run of identical attributes begins or ends.\n\n## Modifying an Attributed String\n\n- **insert(_:at:)**: Inserts the specified string at a specific index in the attributed string.\n- **AttributedString.Index**: A type that represents the position of a character or code unit within an attributed string.\n- **removeSubrange(_:)**: Removes a range of characters from the attributed string.\n- **replaceSubrange(_:with:)**: Replaces the contents in a range of the attributed string.\n\n## Transforming Attributes\n\n- **transformingAttributes(_:_:)**: Returns an attributed string by calling a closure that transforms one attribute of a source attributed string.\n- **transformingAttributes(_:_:)**: Returns an attributed string by calling a closure that transforms one attribute, which a key path identifies, of a source attributed string.\n- **transformingAttributes(_:_:_:)**: Returns an attributed string by calling a closure that transforms two attributes of a source attributed string.\n- **transformingAttributes(_:_:_:)**: Returns an attributed string created by calling a closure that transforms two attributes, which key paths identify, of a source attributed string.\n- **transformingAttributes(_:_:_:_:)**: Returns an attributed string by calling a closure that transforms three attributes of a source attributed string.\n- **transformingAttributes(_:_:_:_:)**: Returns an attributed string by calling a closure that transforms three attributes, which key paths identify, of a source attributed string.\n- **transformingAttributes(_:_:_:_:_:)**: Returns an attributed string by calling a closure that transforms four attributes of a source attributed string.\n- **transformingAttributes(_:_:_:_:_:)**: Returns an attributed string created by calling a closure that transforms four attributes, which key paths identify, of a source attributed string.\n- **transformingAttributes(_:_:_:_:_:_:)**: Returns an attributed string created by calling a closure that transforms five attributes of a source attributed string.\n- **transformingAttributes(_:_:_:_:_:_:)**: Returns an attributed string created by calling a closure that transforms five attributes, which key paths identify, of a source attributed string.\n- **AttributedString.SingleAttributeTransformer**: A type that transforms an attribute by altering its range or value, or by replacing it entirely.\n\n## Accessing Whole-String Attributes\n\n- **AttributeDynamicLookup**: A type to support dynamic member lookup of attributes and containers.\n- **ScopedAttributeContainer**: An attribute container that allows dynamic member lookup of its contents within the specified attribute scope.\n\n## Combining Attributed Strings\n\n- **append(_:)**: Appends a string to the attributed string.\n- **+(_:_:)**: Concatenates two attributed strings.\n- **+(_:_:)**: Concatenates two attributed strings or substrings.\n- **+=(_:_:)**: Appends an attributed string to another attributed string.\n- **+=(_:_:)**: Appends an attributed string or substring to another attributed string.\n\n## Performing Automatic Grammar Agreement\n\n- **inflected()**: Applies automatic grammar agreement inflection rules to the attributed string and returns the result.\n\n## Performing String Interpolation\n\n- **AttributedString.InterpolationOptions**: Options that affect the behavior of string interpolation on the attributed string.\n\n## Encoding and Decoding\n\n- **AttributeScopeCodableConfiguration**: A configuration type for encoding and decoding attributed strings.\n- **Encoding and Decoding Attributed String Keys**: Protocols adopted by attribute keys to encode or decode data.\n\n## Structures\n\n- **AttributedString.AdaptiveImageGlyph**\n- **AttributedString.AttributeInvalidationCondition**\n- **AttributedString.LineHeight**: The line height definition of a paragraph.\n- **AttributedString.LocalizationOptions**: Configuration options for the localization of text.\n- **AttributedString.MarkdownSourcePosition**: The position of attributed string text in its original Markdown source string.\n- **AttributedString.UTF16View**: A view of an attributed string’s contents as a collection of UTF-16 code units.\n- **AttributedString.UTF8View**: A view of an attributed string’s contents as a collection of UTF-8 code units.\n\n## Initializers\n\n- **init(_:)**: Creates an attributed string from a discontiguous attributed substring.\n- **init(localized:defaultValue:options:table:bundle:locale:comment:)**\n- **init(localized:defaultValue:options:table:bundle:locale:comment:including:)**\n- **init(localized:defaultValue:options:table:bundle:locale:comment:including:)**\n- **init(localized:options:)**\n- **init(localized:options:including:)**\n- **init(localized:options:including:)**\n- **init(localized:options:table:bundle:locale:comment:)**\n- **init(localized:options:table:bundle:locale:comment:including:)**\n- **init(localized:options:table:bundle:locale:comment:including:)**\n- **init(transferable:in:)**: Extract an attributed string from SwiftUI’s transferable representation in a certain environment.\n\n## Instance Methods\n\n- **inflected(locale:userTermOfAddress:inflectionConcepts:)**\n- **rangeOfAudioTimeRangeAttributes(intersecting:)**: Returns the range of indices of the receiver that are part of given time range.\n- **removeSubranges(_:)**: Removes the elements at the given indices.\n- **replaceSelection(_:with:)**: Replace the selection with new attributed content.\n- **replaceSelection(_:withCharacters:)**: Replace the selection with new content, attributed with the typing attributes.\n- **transform(updating:body:)**: Tracks the location of the provided range throughout the mutation closure, updating the provided range to one that represents the same effective locations after the mutation.\n- **transform(updating:body:)**: Tracks the location of the provided ranges throughout the mutation closure, updating them to new ranges that represent the same effective locations after the mutation.\n- **transform(updating:body:)**: Tracks the location of the provided range throughout the mutation closure, returning a new, updated range that represents the same effective locations after the mutation.\n- **transform(updating:body:)**: Tracks the location of the provided ranges throughout the mutation closure, returning a new, updated range that represents the same effective locations after the mutation\n- **transform(updating:body:)**: Tracks the location of the selection throughout the mutation closure, updating the selection so it represents the same effective locations after the mutation.\n- **transformAttributes(in:body:)**: Apply a change to the attributes in the entire selection.\n\n## Subscripts\n\n- **subscript(_:)**: Obtain the discontiguous substring of a selection.\n- **subscript(_:)**: Returns a discontiguous substring of this discontiguous attributed string using a set of ranges to indicate the discontiguous substring bounds.\n\n## Type Aliases\n\n- **AttributedString.Specification**\n- **AttributedString.UnwrappedType**\n- **AttributedString.ValueType**\n\n## Type Properties\n\n- **defaultResolverSpecification**\n\n## Enumerations\n\n- **AttributedString.AttributeRunBoundaries**\n- **AttributedString.TextAlignment**: The explicit alignment of text within its container.\n- **AttributedString.WritingDirection**: The writing direction of a piece of text.\n\n## Default Implementations\n\n- **AttributedStringProtocol Implementations**\n\n## Strings with Metadata\n\n- **AttributedSubstring**: A portion of an attributed string.\n- **Attributed String Supporting Types**: Types that the attributed string, attributed substring, and helper types extend or conform to, for sharing common functionality.\n- **NSAttributedString**: A string of text that manages data, layout, and stylistic information for ranges of characters to support rendering.\n- **NSMutableAttributedString**: A mutable string with associated attributes (such as visual style, hyperlinks, or accessibility data) for portions of its text.\n\n## Conforms To\n\n- AttributedStringAttributeMutation\n- AttributedStringProtocol\n- Copyable\n- CustomStringConvertible\n- Decodable\n- DecodableWithConfiguration\n- Encodable\n- EncodableWithConfiguration\n- Equatable\n- ExpressibleByExtendedGraphemeClusterLiteral\n- ExpressibleByStringLiteral\n- ExpressibleByUnicodeScalarLiteral\n- Hashable\n- Sendable\n- SendableMetatype\n- Transferable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an empty attributed string.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init()"
+        },
+        {
+          "description" : "Creates an attributed string from an attributed substring.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(_:)-8tnoq"
+        },
+        {
+          "description" : "Creates an attributed string from a string and an attribute container.",
+          "name" : "init(_:attributes:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(_:attributes:)-2a45h"
+        },
+        {
+          "description" : "Creates an attributed string from a substring and an attribute container.",
+          "name" : "init(_:attributes:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(_:attributes:)-8jqhp"
+        },
+        {
+          "description" : "Creates an attributed string from a character sequence and an attribute container.",
+          "name" : "init(_:attributes:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(_:attributes:)-8l0iq"
+        },
+        {
+          "description" : "A container for attribute keys and values.",
+          "name" : "AttributeContainer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeContainer"
+        }
+      ],
+      "title" : "Creating an Attributed String"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an attributed string by looking up a localized string from the app’s bundle.",
+          "name" : "init(localized:options:table:bundle:locale:comment:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:options:table:bundle:locale:comment:)-8dlnl"
+        },
+        {
+          "description" : "Creates an attributed string by looking up a localized string from the app’s bundle, including an attribute scope.",
+          "name" : "init(localized:options:table:bundle:locale:comment:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:options:table:bundle:locale:comment:including:)-8uknv"
+        },
+        {
+          "description" : "Creates an attributed string by looking up a localized string from the app’s bundle, including an attribute scope that a key path identifies.",
+          "name" : "init(localized:options:table:bundle:locale:comment:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:options:table:bundle:locale:comment:including:)-5jzpg"
+        },
+        {
+          "description" : "A reference to a localizable string, with optional string interpolation.",
+          "name" : "String.LocalizationValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/String\/LocalizationValue"
+        },
+        {
+          "description" : "Options that affect the handling of attributes.",
+          "name" : "AttributedString.FormattingOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/FormattingOptions"
+        },
+        {
+          "description" : "Creates a localized attributed string from a localized string resource.",
+          "name" : "init(localized:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:)"
+        },
+        {
+          "description" : "Creates a localized attributed string from a localized string resource, including an attribute scope.",
+          "name" : "init(localized:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:including:)-2xebo"
+        },
+        {
+          "description" : "Creates a localized attributed string from a localized string resource, including an attribute scope that a key path identifies.",
+          "name" : "init(localized:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:including:)-15xc5"
+        },
+        {
+          "description" : "A reference to a localizable string, accessible from another process.",
+          "name" : "LocalizedStringResource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/LocalizedStringResource"
+        }
+      ],
+      "title" : "Creating a Localized Attributed String"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an attributed string by looking up a localized string from the app’s bundle, using a default value if necessary.",
+          "name" : "init(localized:defaultValue:options:table:bundle:locale:comment:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:defaultValue:options:table:bundle:locale:comment:)-4n8e2"
+        },
+        {
+          "description" : "Creates an attributed string by looking up a localized string from the app’s bundle, including an attribute scope, using a default value if necessary.",
+          "name" : "init(localized:defaultValue:options:table:bundle:locale:comment:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:defaultValue:options:table:bundle:locale:comment:including:)-2elmp"
+        },
+        {
+          "description" : "Creates an attributed string by looking up a localized string from the app’s bundle, including an attribute scope that a key path identifies, using a default value if necessary.",
+          "name" : "init(localized:defaultValue:options:table:bundle:locale:comment:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:defaultValue:options:table:bundle:locale:comment:including:)-9gjtg"
+        }
+      ],
+      "title" : "Creating a Localized Attributed String with a Default Value"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Use a Markdown-syntax string to iniitalize an attributed string with standard or custom attributes.",
+          "name" : "Instantiating Attributed Strings with Markdown Syntax",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/instantiating-attributed-strings-with-markdown-syntax"
+        }
+      ],
+      "title" : "Creating an Attributed String from Markdown"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a value-type attributed string from a reference type, including an attribute scope.",
+          "name" : "init(_:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(_:including:)-9no47"
+        },
+        {
+          "description" : "Creates a value-type attributed string from a reference type, including an attribute scope that a key path identifies.",
+          "name" : "init(_:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(_:including:)-puv0"
+        },
+        {
+          "description" : "Creates a value-type attributed string from a reference type.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(_:)-1fru0"
+        }
+      ],
+      "title" : "Creating an Attributed String from a Reference Type"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an attributed string from another attributed string, including an attribute scope.",
+          "name" : "init(_:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(_:including:)-6u3ho"
+        },
+        {
+          "description" : "Creates an attributed string from another attributed string, including an attribute scope that a key path identifies.",
+          "name" : "init(_:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(_:including:)-9ejyj"
+        }
+      ],
+      "title" : "Creating a Duplicate Attributed String"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An enumeration of behaviors to apply when merging attributes.",
+          "name" : "AttributedString.AttributeMergePolicy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/AttributeMergePolicy"
+        },
+        {
+          "description" : "A protocol that defines in-place mutations for attributes in an attributed string.",
+          "name" : "AttributedStringAttributeMutation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedStringAttributeMutation"
+        }
+      ],
+      "title" : "Applying and Modifying Attributes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Collections of attributes that system frameworks define.",
+          "name" : "AttributeScopes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes"
+        },
+        {
+          "description" : "A type to support dynamic member lookup of attributes and containers.",
+          "name" : "AttributeDynamicLookup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeDynamicLookup"
+        },
+        {
+          "description" : "An attribute container that allows dynamic member lookup of its contents within the specified attribute scope.",
+          "name" : "ScopedAttributeContainer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/ScopedAttributeContainer"
+        }
+      ],
+      "title" : "Using Defined Attributes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Access a position within an attributed string, offset from the beginning, or before or after another known position.",
+          "name" : "Accessing Indicies Within an Attributed String",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/accessing-indicies-within-an-attributed-string"
+        }
+      ],
+      "title" : "Accessing Indices"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A view into the underlying storage of the attributed string, as Unicode characters.",
+          "name" : "AttributedString.CharacterView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/CharacterView"
+        },
+        {
+          "description" : "A view into the underlying storage of the attributed string, as Unicode scalars.",
+          "name" : "AttributedString.UnicodeScalarView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/UnicodeScalarView"
+        },
+        {
+          "description" : "An iterable view into segments of the attributed string, each of which indicates where a run of identical attributes begins or ends.",
+          "name" : "AttributedString.Runs",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/Runs"
+        }
+      ],
+      "title" : "Accessing Views into the Attributed String"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Inserts the specified string at a specific index in the attributed string.",
+          "name" : "insert(_:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/insert(_:at:)"
+        },
+        {
+          "description" : "A type that represents the position of a character or code unit within an attributed string.",
+          "name" : "AttributedString.Index",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/Index"
+        },
+        {
+          "description" : "Removes a range of characters from the attributed string.",
+          "name" : "removeSubrange(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/removeSubrange(_:)"
+        },
+        {
+          "description" : "Replaces the contents in a range of the attributed string.",
+          "name" : "replaceSubrange(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/replaceSubrange(_:with:)"
+        }
+      ],
+      "title" : "Modifying an Attributed String"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns an attributed string by calling a closure that transforms one attribute of a source attributed string.",
+          "name" : "transformingAttributes(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformingAttributes(_:_:)-9prm2"
+        },
+        {
+          "description" : "Returns an attributed string by calling a closure that transforms one attribute, which a key path identifies, of a source attributed string.",
+          "name" : "transformingAttributes(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformingAttributes(_:_:)-64qnl"
+        },
+        {
+          "description" : "Returns an attributed string by calling a closure that transforms two attributes of a source attributed string.",
+          "name" : "transformingAttributes(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformingAttributes(_:_:_:)-7kw1o"
+        },
+        {
+          "description" : "Returns an attributed string created by calling a closure that transforms two attributes, which key paths identify, of a source attributed string.",
+          "name" : "transformingAttributes(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformingAttributes(_:_:_:)-8gt2n"
+        },
+        {
+          "description" : "Returns an attributed string by calling a closure that transforms three attributes of a source attributed string.",
+          "name" : "transformingAttributes(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformingAttributes(_:_:_:_:)-4owv7"
+        },
+        {
+          "description" : "Returns an attributed string by calling a closure that transforms three attributes, which key paths identify, of a source attributed string.",
+          "name" : "transformingAttributes(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformingAttributes(_:_:_:_:)-5xmlf"
+        },
+        {
+          "description" : "Returns an attributed string by calling a closure that transforms four attributes of a source attributed string.",
+          "name" : "transformingAttributes(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformingAttributes(_:_:_:_:_:)-9uodg"
+        },
+        {
+          "description" : "Returns an attributed string created by calling a closure that transforms four attributes, which key paths identify, of a source attributed string.",
+          "name" : "transformingAttributes(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformingAttributes(_:_:_:_:_:)-all0"
+        },
+        {
+          "description" : "Returns an attributed string created by calling a closure that transforms five attributes of a source attributed string.",
+          "name" : "transformingAttributes(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformingAttributes(_:_:_:_:_:_:)-3i7ac"
+        },
+        {
+          "description" : "Returns an attributed string created by calling a closure that transforms five attributes, which key paths identify, of a source attributed string.",
+          "name" : "transformingAttributes(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformingAttributes(_:_:_:_:_:_:)-9hppo"
+        },
+        {
+          "description" : "A type that transforms an attribute by altering its range or value, or by replacing it entirely.",
+          "name" : "AttributedString.SingleAttributeTransformer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/SingleAttributeTransformer"
+        }
+      ],
+      "title" : "Transforming Attributes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A type to support dynamic member lookup of attributes and containers.",
+          "name" : "AttributeDynamicLookup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeDynamicLookup"
+        },
+        {
+          "description" : "An attribute container that allows dynamic member lookup of its contents within the specified attribute scope.",
+          "name" : "ScopedAttributeContainer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/ScopedAttributeContainer"
+        }
+      ],
+      "title" : "Accessing Whole-String Attributes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Appends a string to the attributed string.",
+          "name" : "append(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/append(_:)"
+        },
+        {
+          "description" : "Concatenates two attributed strings.",
+          "name" : "+(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/+(_:_:)-8sbsq"
+        },
+        {
+          "description" : "Concatenates two attributed strings or substrings.",
+          "name" : "+(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/+(_:_:)-drfc"
+        },
+        {
+          "description" : "Appends an attributed string to another attributed string.",
+          "name" : "+=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/+=(_:_:)-4dk88"
+        },
+        {
+          "description" : "Appends an attributed string or substring to another attributed string.",
+          "name" : "+=(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/+=(_:_:)-6yimu"
+        }
+      ],
+      "title" : "Combining Attributed Strings"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Applies automatic grammar agreement inflection rules to the attributed string and returns the result.",
+          "name" : "inflected()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/inflected()"
+        }
+      ],
+      "title" : "Performing Automatic Grammar Agreement"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Options that affect the behavior of string interpolation on the attributed string.",
+          "name" : "AttributedString.InterpolationOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/InterpolationOptions"
+        }
+      ],
+      "title" : "Performing String Interpolation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A configuration type for encoding and decoding attributed strings.",
+          "name" : "AttributeScopeCodableConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopeCodableConfiguration"
+        },
+        {
+          "description" : "Protocols adopted by attribute keys to encode or decode data.",
+          "name" : "Encoding and Decoding Attributed String Keys",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/encoding-and-decoding-attributed-string-keys"
+        }
+      ],
+      "title" : "Encoding and Decoding"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "AttributedString.AdaptiveImageGlyph",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/AdaptiveImageGlyph"
+        },
+        {
+          "description" : "",
+          "name" : "AttributedString.AttributeInvalidationCondition",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/AttributeInvalidationCondition"
+        },
+        {
+          "description" : "The line height definition of a paragraph.",
+          "name" : "AttributedString.LineHeight",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/LineHeight"
+        },
+        {
+          "description" : "Configuration options for the localization of text.",
+          "name" : "AttributedString.LocalizationOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/LocalizationOptions"
+        },
+        {
+          "description" : "The position of attributed string text in its original Markdown source string.",
+          "name" : "AttributedString.MarkdownSourcePosition",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/MarkdownSourcePosition"
+        },
+        {
+          "description" : "A view of an attributed string’s contents as a collection of UTF-16 code units.",
+          "name" : "AttributedString.UTF16View",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/UTF16View"
+        },
+        {
+          "description" : "A view of an attributed string’s contents as a collection of UTF-8 code units.",
+          "name" : "AttributedString.UTF8View",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/UTF8View"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an attributed string from a discontiguous attributed substring.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(_:)-83wi"
+        },
+        {
+          "description" : "",
+          "name" : "init(localized:defaultValue:options:table:bundle:locale:comment:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:defaultValue:options:table:bundle:locale:comment:)-2nmk8"
+        },
+        {
+          "description" : "",
+          "name" : "init(localized:defaultValue:options:table:bundle:locale:comment:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:defaultValue:options:table:bundle:locale:comment:including:)-6qaoe"
+        },
+        {
+          "description" : "",
+          "name" : "init(localized:defaultValue:options:table:bundle:locale:comment:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:defaultValue:options:table:bundle:locale:comment:including:)-iisj"
+        },
+        {
+          "description" : "",
+          "name" : "init(localized:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:options:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(localized:options:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:options:including:)-3dycp"
+        },
+        {
+          "description" : "",
+          "name" : "init(localized:options:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:options:including:)-4cbfv"
+        },
+        {
+          "description" : "",
+          "name" : "init(localized:options:table:bundle:locale:comment:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:options:table:bundle:locale:comment:)-1w4s"
+        },
+        {
+          "description" : "",
+          "name" : "init(localized:options:table:bundle:locale:comment:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:options:table:bundle:locale:comment:including:)-3zy6h"
+        },
+        {
+          "description" : "",
+          "name" : "init(localized:options:table:bundle:locale:comment:including:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(localized:options:table:bundle:locale:comment:including:)-8ao6x"
+        },
+        {
+          "description" : "Extract an attributed string from SwiftUI’s transferable representation in a certain environment.",
+          "name" : "init(transferable:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/init(transferable:in:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "inflected(locale:userTermOfAddress:inflectionConcepts:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/inflected(locale:userTermOfAddress:inflectionConcepts:)"
+        },
+        {
+          "description" : "Returns the range of indices of the receiver that are part of given time range.",
+          "name" : "rangeOfAudioTimeRangeAttributes(intersecting:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/rangeOfAudioTimeRangeAttributes(intersecting:)"
+        },
+        {
+          "description" : "Removes the elements at the given indices.",
+          "name" : "removeSubranges(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/removeSubranges(_:)"
+        },
+        {
+          "description" : "Replace the selection with new attributed content.",
+          "name" : "replaceSelection(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/replaceSelection(_:with:)"
+        },
+        {
+          "description" : "Replace the selection with new content, attributed with the typing attributes.",
+          "name" : "replaceSelection(_:withCharacters:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/replaceSelection(_:withCharacters:)"
+        },
+        {
+          "description" : "Tracks the location of the provided range throughout the mutation closure, updating the provided range to one that represents the same effective locations after the mutation.",
+          "name" : "transform(updating:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transform(updating:body:)-1b6eb"
+        },
+        {
+          "description" : "Tracks the location of the provided ranges throughout the mutation closure, updating them to new ranges that represent the same effective locations after the mutation.",
+          "name" : "transform(updating:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transform(updating:body:)-3j625"
+        },
+        {
+          "description" : "Tracks the location of the provided range throughout the mutation closure, returning a new, updated range that represents the same effective locations after the mutation.",
+          "name" : "transform(updating:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transform(updating:body:)-79te9"
+        },
+        {
+          "description" : "Tracks the location of the provided ranges throughout the mutation closure, returning a new, updated range that represents the same effective locations after the mutation",
+          "name" : "transform(updating:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transform(updating:body:)-89r96"
+        },
+        {
+          "description" : "Tracks the location of the selection throughout the mutation closure, updating the selection so it represents the same effective locations after the mutation.",
+          "name" : "transform(updating:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transform(updating:body:)-9wpg2"
+        },
+        {
+          "description" : "Apply a change to the attributes in the entire selection.",
+          "name" : "transformAttributes(in:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/transformAttributes(in:body:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Obtain the discontiguous substring of a selection.",
+          "name" : "subscript(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/subscript(_:)-2yypq"
+        },
+        {
+          "description" : "Returns a discontiguous substring of this discontiguous attributed string using a set of ranges to indicate the discontiguous substring bounds.",
+          "name" : "subscript(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/subscript(_:)-ftoi"
+        }
+      ],
+      "title" : "Subscripts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "AttributedString.Specification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/Specification"
+        },
+        {
+          "description" : "",
+          "name" : "AttributedString.UnwrappedType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/UnwrappedType"
+        },
+        {
+          "description" : "",
+          "name" : "AttributedString.ValueType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/ValueType"
+        }
+      ],
+      "title" : "Type Aliases"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "defaultResolverSpecification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/defaultResolverSpecification"
+        }
+      ],
+      "title" : "Type Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "AttributedString.AttributeRunBoundaries",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/AttributeRunBoundaries"
+        },
+        {
+          "description" : "The explicit alignment of text within its container.",
+          "name" : "AttributedString.TextAlignment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/TextAlignment"
+        },
+        {
+          "description" : "The writing direction of a piece of text.",
+          "name" : "AttributedString.WritingDirection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/WritingDirection"
+        }
+      ],
+      "title" : "Enumerations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "AttributedStringProtocol Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString\/AttributedStringProtocol-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A portion of an attributed string.",
+          "name" : "AttributedSubstring",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedSubstring"
+        },
+        {
+          "description" : "Types that the attributed string, attributed substring, and helper types extend or conform to, for sharing common functionality.",
+          "name" : "Attributed String Supporting Types",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/attributed-string-supporting-types"
+        },
+        {
+          "description" : "A string of text that manages data, layout, and stylistic information for ranges of characters to support rendering.",
+          "name" : "NSAttributedString",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSAttributedString"
+        },
+        {
+          "description" : "A mutable string with associated attributes (such as visual style, hyperlinks, or accessibility data) for portions of its text.",
+          "name" : "NSMutableAttributedString",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSMutableAttributedString"
+        }
+      ],
+      "title" : "Strings with Metadata"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AttributedString",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributedString"
+}

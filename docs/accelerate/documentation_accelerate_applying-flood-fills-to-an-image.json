@@ -1,0 +1,67 @@
+{
+  "abstract" : "Fill consistently colored connected parts of an image with a new color.",
+  "codeExamples" : [
+    {
+      "code" : "var cgImageFormatPlanarF = vImage_CGImageFormat(\n    bitsPerComponent: 32,\n    bitsPerPixel: 32,\n    colorSpace: CGColorSpaceCreateDeviceGray(),\n    bitmapInfo: CGBitmapInfo(\n        rawValue: kCGBitmapByteOrder32Host.rawValue |\n        CGBitmapInfo.floatComponents.rawValue |\n        CGImageAlphaInfo.none.rawValue),\n    renderingIntent: .defaultIntent)!\n\nlet image: CGImage = [ ... ]\n\nlet bufferPlanarF = try! vImage.PixelBuffer<vImage.PlanarF>(\n    cgImage: image,\n    cgImageFormat: &cgImageFormatPlanarF)\n",
+      "language" : "swift"
+    },
+    {
+      "code" : "bufferPlanarF.colorThreshold(\n    0.5,\n    destination: bufferPlanarF)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let bufferRGB8 = vImage.PixelBuffer<vImage.Interleaved8x4>(\n    planarBuffers: [bufferPlanarF, bufferPlanarF, bufferPlanarF, bufferPlanarF])",
+      "language" : "swift"
+    },
+    {
+      "code" : "bufferRGB8.withUnsafePointerToVImageBuffer { src in\n    let alpha = UInt8(255)\n    \n    var newARGB: [UInt8] = [alpha, 68, 41, 11]\n    let seedX: vImagePixelCount = 600\n    var seedY: vImagePixelCount = 10\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n    \n    newARGB = [alpha, 160, 198, 212]\n    seedY = 200\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n\n    newARGB = [alpha, 147, 163, 169]\n    seedY = 450\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n\n    newARGB = [alpha, 90, 101, 103]\n    seedY = 700\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n\n    newARGB = [alpha, 54, 62, 65]\n    seedY = 900\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n\n    newARGB = [alpha, 51, 81, 28]\n    seedY = 1300\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n}\n",
+      "language" : "swift"
+    },
+    {
+      "code" : "let cgImageFormatRGB8 = vImage_CGImageFormat(\n    bitsPerComponent: 8,\n    bitsPerPixel: 8 * 4,\n    colorSpace: CGColorSpaceCreateDeviceRGB(),\n    bitmapInfo: CGBitmapInfo(\n        rawValue: CGImageAlphaInfo.noneSkipFirst.rawValue),\n    renderingIntent: .defaultIntent)!\n",
+      "language" : "swift"
+    },
+    {
+      "code" : "let result = bufferRGB8.makeCGImage(cgImageFormat: cgImageFormatRGB8)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "64c1482eed92b9c3f4bcad7799b3097fcd84eb4e98cd6f537ba1e1be6af4fb6d",
+  "crawledAt" : "2025-12-02T02:00:26Z",
+  "id" : "83BD131C-5017-446E-8D8E-F59A76F1A415",
+  "kind" : "article",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nThe vImage library provides a set of functions that allow you to flood fill areas of an image with a new color. The following image demonstrates how the flood-fill operation can colorize a hand-drawn line illustration:\n\n\n\nThe flood-fill functions fill areas with identical pixel values. The process of applying lossy compression, such as when generating JPG images, may subtly change pixel values. Use losslessly compressed or uncompressed images, such as PNGs, to achieve the best flood-fill results.\n\n### Create the planar vImage buffer that represents the source image\n\nCreate a 32-bit-per-pixel, planar image to store the image of the line drawing.\n\nCall the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/colorThreshold(_:destination:)] function to binarize the image, that is, reduce it to only black and white colors with no midtones. Pass a threshold value of `0.5` to convert all pixel values below `0.5` to `0.0`, and other pixel values to `1.0`.\n\n### Create the interleaved vImage buffer that represents the destination image\n\nUse the 32-bit planar buffer to create a four-channel, 8-bit-per-pixel buffer.\n\n### Apply the flood-fill operation\n\nThe source image is 1024 pixels wide and 1585 pixels high. The following image shows the coordinates of the six seed pixels:\n\n\n\nCall [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageFloodFill_ARGB8888(_:_:_:_:_:_:_:)] to apply different colors to different parts of the line drawing. Note that the vImage flood-fill functions only work in place. That is, a single vImage buffer is the source and the destination for the flood-fill operation.\n\n### Create a Core Graphics image of the result\n\nCreate a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure that describes the four-channel, 8-bit-per-channel output image.\n\nFinally, call [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)] to generate the image.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-flood-fills-to-an-image\ncrawled: 2025-12-02T02:00:26Z\n---\n\n# Applying flood fills to an image\n\n**Article**\n\nFill consistently colored connected parts of an image with a new color.\n\n## Overview\n\nThe vImage library provides a set of functions that allow you to flood fill areas of an image with a new color. The following image demonstrates how the flood-fill operation can colorize a hand-drawn line illustration:\n\n\n\nThe flood-fill functions fill areas with identical pixel values. The process of applying lossy compression, such as when generating JPG images, may subtly change pixel values. Use losslessly compressed or uncompressed images, such as PNGs, to achieve the best flood-fill results.\n\n### Create the planar vImage buffer that represents the source image\n\nCreate a 32-bit-per-pixel, planar image to store the image of the line drawing.\n\n```swift\nvar cgImageFormatPlanarF = vImage_CGImageFormat(\n    bitsPerComponent: 32,\n    bitsPerPixel: 32,\n    colorSpace: CGColorSpaceCreateDeviceGray(),\n    bitmapInfo: CGBitmapInfo(\n        rawValue: kCGBitmapByteOrder32Host.rawValue |\n        CGBitmapInfo.floatComponents.rawValue |\n        CGImageAlphaInfo.none.rawValue),\n    renderingIntent: .defaultIntent)!\n\nlet image: CGImage = [ ... ]\n\nlet bufferPlanarF = try! vImage.PixelBuffer<vImage.PlanarF>(\n    cgImage: image,\n    cgImageFormat: &cgImageFormatPlanarF)\n\n```\n\nCall the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/colorThreshold(_:destination:)] function to binarize the image, that is, reduce it to only black and white colors with no midtones. Pass a threshold value of `0.5` to convert all pixel values below `0.5` to `0.0`, and other pixel values to `1.0`.\n\n```swift\nbufferPlanarF.colorThreshold(\n    0.5,\n    destination: bufferPlanarF)\n```\n\n### Create the interleaved vImage buffer that represents the destination image\n\nUse the 32-bit planar buffer to create a four-channel, 8-bit-per-pixel buffer.\n\n```swift\nlet bufferRGB8 = vImage.PixelBuffer<vImage.Interleaved8x4>(\n    planarBuffers: [bufferPlanarF, bufferPlanarF, bufferPlanarF, bufferPlanarF])\n```\n\n### Apply the flood-fill operation\n\nThe source image is 1024 pixels wide and 1585 pixels high. The following image shows the coordinates of the six seed pixels:\n\n\n\nCall [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageFloodFill_ARGB8888(_:_:_:_:_:_:_:)] to apply different colors to different parts of the line drawing. Note that the vImage flood-fill functions only work in place. That is, a single vImage buffer is the source and the destination for the flood-fill operation.\n\n```swift\nbufferRGB8.withUnsafePointerToVImageBuffer { src in\n    let alpha = UInt8(255)\n    \n    var newARGB: [UInt8] = [alpha, 68, 41, 11]\n    let seedX: vImagePixelCount = 600\n    var seedY: vImagePixelCount = 10\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n    \n    newARGB = [alpha, 160, 198, 212]\n    seedY = 200\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n\n    newARGB = [alpha, 147, 163, 169]\n    seedY = 450\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n\n    newARGB = [alpha, 90, 101, 103]\n    seedY = 700\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n\n    newARGB = [alpha, 54, 62, 65]\n    seedY = 900\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n\n    newARGB = [alpha, 51, 81, 28]\n    seedY = 1300\n    vImageFloodFill_ARGB8888(src, nil,\n                             seedX, seedY,\n                             &newARGB, 8, 0)\n}\n\n```\n\n### Create a Core Graphics image of the result\n\nCreate a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure that describes the four-channel, 8-bit-per-channel output image.\n\n```swift\nlet cgImageFormatRGB8 = vImage_CGImageFormat(\n    bitsPerComponent: 8,\n    bitsPerPixel: 8 * 4,\n    colorSpace: CGColorSpaceCreateDeviceRGB(),\n    bitmapInfo: CGBitmapInfo(\n        rawValue: CGImageAlphaInfo.noneSkipFirst.rawValue),\n    renderingIntent: .defaultIntent)!\n\n```\n\nFinally, call [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/makeCGImage(cgImageFormat:)] to generate the image.\n\n```swift\nlet result = bufferRGB8.makeCGImage(cgImageFormat: cgImageFormatRGB8)\n```\n\n## Flood-filling buffers\n\n- **vImageFloodFill_Planar8(_:_:_:_:_:_:_:)**: Applies a flood-fill operation to an 8-bit planar image.\n- **vImageFloodFill_Planar16U(_:_:_:_:_:_:_:)**: Applies a flood fill-operation to an unsigned 16-bit planar image.\n- **vImageFloodFill_ARGB8888(_:_:_:_:_:_:_:)**: Applies a flood-fill operation to an 8-bit-per-channel, four-channel interleaved image.\n- **vImageFloodFill_ARGB16U(_:_:_:_:_:_:_:)**: Applies a flood-fill operation to an unsigned 16-bit-per-channel, four-channel interleaved image.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Applies a flood-fill operation to an 8-bit planar image.",
+          "name" : "vImageFloodFill_Planar8(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageFloodFill_Planar8(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a flood fill-operation to an unsigned 16-bit planar image.",
+          "name" : "vImageFloodFill_Planar16U(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageFloodFill_Planar16U(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a flood-fill operation to an 8-bit-per-channel, four-channel interleaved image.",
+          "name" : "vImageFloodFill_ARGB8888(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageFloodFill_ARGB8888(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a flood-fill operation to an unsigned 16-bit-per-channel, four-channel interleaved image.",
+          "name" : "vImageFloodFill_ARGB16U(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageFloodFill_ARGB16U(_:_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Flood-filling buffers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Applying flood fills to an image",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/applying-flood-fills-to-an-image"
+}

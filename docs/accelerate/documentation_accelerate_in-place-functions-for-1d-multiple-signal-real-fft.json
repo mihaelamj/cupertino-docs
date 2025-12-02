@@ -1,0 +1,69 @@
+{
+  "abstract" : "Perform fast Fourier transforms in place on multiple-signal 1D real data.",
+  "codeExamples" : [
+    {
+      "code" : "\nN = 1 << Log2N;\n\n\/\/ Repeat M times:\nfor (m = 0; m < M; ++m)\n{\n    scale = 2;\n\n    \/\/ Define a real vector, h:\n    for (j = 0; j < N\/2; ++j)\n    {\n        h[2*j + 0] = C->realp[m*IM + j*IC];\n        h[2*j + 1] = C->imagp[m*IM + j*IC];\n    }\n\n    \/\/ Perform Discrete Fourier Transform.\n    for (k = 0; k < N; ++k)\n        H[k] = scale *\n            sum(h[j] * e**(-Direction*2*pi*i*j*k\/N), 0 <= j < N);\n\n    \/\/ Pack DC and Nyquist components into initial elements.\n    C->realp[m*IM + 0*IC] = Re(H[ 0 ]).\n    C->imagp[m*IM + 0*IC] = Re(H[N\/2]).\n\n    \/\/ Store regular components:\n    for (k = 1; k < N\/2; ++k)\n    {\n        C->realp[m*IM + k*IC] = Re(H[k]);\n        C->imagp[m*IM + k*IC] = Im(H[k]);\n    }\n}\n\n",
+      "language" : "c"
+    },
+    {
+      "code" : "N = 1 << Log2N;\n            \nscale = 1.\/N;\n\n\/\/ Repeat M times:\nfor (m = 0; m < M; ++m)\n{\n    \/\/ Define a complex vector, h:\n    h[ 0 ] = C->realp[m*IM + 0*IC];\n    h[N\/2] = C->imagp[m*IM + 0*IC];\n    for (j = 1; j < N\/2; ++j)\n    {\n        h[ j ] = C->realp[m*IM + j*IC] + i * C->imagp[m*IM + j*IC];\n        h[N-j] = conj(h[j]);\n    }\n\n    \/\/ Perform Discrete Fourier Transform.\n    for (k = 0; k < N; ++k)\n        H[k] = scale *\n            sum(h[j] * e**(-Direction*2*pi*i*j*k\/N), 0 <= j < N);\n\n    \/\/ Coerce real results into complex structure:\n    for (k = 0; k < N\/2; ++k)\n    {\n        C->realp[m*IM + k*IC] = H[2*k+0];\n        C->imagp[m*IM + k*IC] = H[2*k+1];\n    }\n}\n\n",
+      "language" : "c"
+    }
+  ],
+  "contentHash" : "2cc7a4f26296e19d0443c338190bca3c6f31a4347e5db204da034b48995492df",
+  "crawledAt" : "2025-12-02T16:28:42Z",
+  "id" : "34CB4209-BBB4-49DF-9ADB-C393BB81ADEC",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Overview\n\nThe functions in this group use the following operation for a forward real-to-complex transform:\n\nThe functions in this group use the following operation for an inverse complex-to-real transform:\n\nThe temporary buffer versions perform the same operation but use a temporary buffer for improved performance.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/in-place-functions-for-1d-multiple-signal-real-fft\ncrawled: 2025-12-02T16:28:42Z\n---\n\n# In-Place Functions for 1D Multiple-Signal Real FFT\n\n**API Collection**\n\nPerform fast Fourier transforms in place on multiple-signal 1D real data.\n\n## Overview\n\nThe functions in this group use the following operation for a forward real-to-complex transform:\n\n```c\n\nN = 1 << Log2N;\n\n\/\/ Repeat M times:\nfor (m = 0; m < M; ++m)\n{\n    scale = 2;\n\n    \/\/ Define a real vector, h:\n    for (j = 0; j < N\/2; ++j)\n    {\n        h[2*j + 0] = C->realp[m*IM + j*IC];\n        h[2*j + 1] = C->imagp[m*IM + j*IC];\n    }\n\n    \/\/ Perform Discrete Fourier Transform.\n    for (k = 0; k < N; ++k)\n        H[k] = scale *\n            sum(h[j] * e**(-Direction*2*pi*i*j*k\/N), 0 <= j < N);\n\n    \/\/ Pack DC and Nyquist components into initial elements.\n    C->realp[m*IM + 0*IC] = Re(H[ 0 ]).\n    C->imagp[m*IM + 0*IC] = Re(H[N\/2]).\n\n    \/\/ Store regular components:\n    for (k = 1; k < N\/2; ++k)\n    {\n        C->realp[m*IM + k*IC] = Re(H[k]);\n        C->imagp[m*IM + k*IC] = Im(H[k]);\n    }\n}\n\n\n```\n\nThe functions in this group use the following operation for an inverse complex-to-real transform:\n\n```c\nN = 1 << Log2N;\n            \nscale = 1.\/N;\n\n\/\/ Repeat M times:\nfor (m = 0; m < M; ++m)\n{\n    \/\/ Define a complex vector, h:\n    h[ 0 ] = C->realp[m*IM + 0*IC];\n    h[N\/2] = C->imagp[m*IM + 0*IC];\n    for (j = 1; j < N\/2; ++j)\n    {\n        h[ j ] = C->realp[m*IM + j*IC] + i * C->imagp[m*IM + j*IC];\n        h[N-j] = conj(h[j]);\n    }\n\n    \/\/ Perform Discrete Fourier Transform.\n    for (k = 0; k < N; ++k)\n        H[k] = scale *\n            sum(h[j] * e**(-Direction*2*pi*i*j*k\/N), 0 <= j < N);\n\n    \/\/ Coerce real results into complex structure:\n    for (k = 0; k < N\/2; ++k)\n    {\n        C->realp[m*IM + k*IC] = H[2*k+0];\n        C->imagp[m*IM + k*IC] = H[2*k+1];\n    }\n}\n\n\n```\n\nThe temporary buffer versions perform the same operation but use a temporary buffer for improved performance.\n\n## In-Place FFT Functions\n\n- **vDSP_fftm_zrip**: Computes a forward or inverse in-place, single-precision real FFT on multiple signals.\n- **vDSP_fftm_zripD**: Computes a forward or inverse in-place, double-precision real FFT on multiple signals.\n\n## In-Place FFT Functions with Temporary Buffer\n\n- **vDSP_fftm_zript**: Computes a forward or inverse in-place, single-precision real FFT on multiple signals using a temporary buffer.\n- **vDSP_fftm_zriptD**: Computes a forward or inverse in-place, double-precision real FFT on multiple signals using a temporary buffer.\n\n## Functions for 1D Multiple-Signal Real FFT\n\n- **Out-of-Place Functions for 1D Multiple-Signal Real FFT**: Perform fast Fourier transforms out of place on multiple-signal 1D real data.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Computes a forward or inverse in-place, single-precision real FFT on multiple signals.",
+          "name" : "vDSP_fftm_zrip",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fftm_zrip"
+        },
+        {
+          "description" : "Computes a forward or inverse in-place, double-precision real FFT on multiple signals.",
+          "name" : "vDSP_fftm_zripD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fftm_zripD"
+        }
+      ],
+      "title" : "In-Place FFT Functions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Computes a forward or inverse in-place, single-precision real FFT on multiple signals using a temporary buffer.",
+          "name" : "vDSP_fftm_zript",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fftm_zript"
+        },
+        {
+          "description" : "Computes a forward or inverse in-place, double-precision real FFT on multiple signals using a temporary buffer.",
+          "name" : "vDSP_fftm_zriptD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP_fftm_zriptD"
+        }
+      ],
+      "title" : "In-Place FFT Functions with Temporary Buffer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Perform fast Fourier transforms out of place on multiple-signal 1D real data.",
+          "name" : "Out-of-Place Functions for 1D Multiple-Signal Real FFT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/out-of-place-functions-for-1d-multiple-signal-real-fft"
+        }
+      ],
+      "title" : "Functions for 1D Multiple-Signal Real FFT"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "In-Place Functions for 1D Multiple-Signal Real FFT",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/in-place-functions-for-1d-multiple-signal-real-fft"
+}

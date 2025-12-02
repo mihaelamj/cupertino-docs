@@ -1,0 +1,49 @@
+{
+  "abstract" : "Creates and configures a canvas that you supply with renderable child views.",
+  "codeExamples" : [
+    {
+      "code" : "struct ScatterPlotView<Mark: View>: View {\n    let rects: [CGRect]\n    let mark: Mark\n\n    enum SymbolID: Int {\n        case mark\n    }\n\n    var body: some View {\n        Canvas { context, size in\n            if let mark = context.resolveSymbol(id: SymbolID.mark) {\n                for rect in rects {\n                    context.draw(mark, in: rect)\n                }\n            }\n        } symbols: {\n            mark.tag(SymbolID.mark)\n        }\n        .frame(width: 300, height: 200)\n        .border(Color.blue)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "ScatterPlotView(rects: rects, mark: Image(systemName: \"circle\"))",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "d63119c6eef357648a5483f9b41c4e604aa9513f18922e97210436d1e697eb13",
+  "crawledAt" : "2025-12-01T00:42:07Z",
+  "declaration" : {
+    "code" : "init(opaque: Bool = false, colorMode: ColorRenderingMode = .nonLinear, rendersAsynchronously: Bool = false, renderer: @escaping (inout GraphicsContext, CGSize) -> Void, @ViewBuilder symbols: () -> Symbols)",
+    "language" : "swift"
+  },
+  "id" : "16D80B63-56CE-43A5-A694-F6246B89225F",
+  "kind" : "unknown",
+  "module" : "SwiftUI",
+  "overview" : "## Discussion\n\nThis initializer behaves like the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Canvas\/init(opaque:colorMode:rendersAsynchronously:renderer:)] initializer, except that you also provide a collection of SwiftUI views for the renderer to use as drawing elements.\n\nSwiftUI stores a rendered version of each child view that you specify in the `symbols` view builder and makes these available to the canvas. Tag each child view so that you can retrieve it from within the renderer using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext\/resolveSymbol(id:)] method. For example, you can create a scatter plot using a passed-in child view as the mark for each data point:\n\nYou can use any SwiftUI view for the `mark` input:\n\nIf the `rects` input contains 50 randomly arranged [doc:\/\/com.apple.documentation\/documentation\/CoreFoundation\/CGRect] instances, SwiftUI draws a plot like this:\n\n\n\nThe symbol inputs, like all other elements that you draw to the canvas, lack individual accessibility and interactivity, even if the original SwiftUI view has these attributes. However, you can add accessibility and interactivity modifers to the canvas as a whole.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/Canvas\/init(opaque:colorMode:rendersAsynchronously:renderer:symbols:)\ncrawled: 2025-12-01T00:42:07Z\n---\n\n# init(opaque:colorMode:rendersAsynchronously:renderer:symbols:)\n\n**Initializer**\n\nCreates and configures a canvas that you supply with renderable child views.\n\n## Declaration\n\n```swift\ninit(opaque: Bool = false, colorMode: ColorRenderingMode = .nonLinear, rendersAsynchronously: Bool = false, renderer: @escaping (inout GraphicsContext, CGSize) -> Void, @ViewBuilder symbols: () -> Symbols)\n```\n\n## Parameters\n\n- **opaque**: A Boolean that indicates whether the canvas is fully opaque. You might be able to improve performance by setting this value to `true`, but then drawing a non-opaque image into the context produces undefined results. The default is `false`.\n- **colorMode**: A working color space and storage format of the canvas. The default is [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ColorRenderingMode\/nonLinear].\n- **rendersAsynchronously**: A Boolean that indicates whether the canvas can present its contents to its parent view asynchronously. The default is `false`.\n- **renderer**: A closure in which you conduct immediate mode drawing. The closure takes two inputs: a context that you use to issue drawing commands and a size — representing the current size of the canvas — that you can use to customize the content. The canvas calls the renderer any time it needs to redraw the content.\n- **symbols**: A [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ViewBuilder] that you use to supply SwiftUI views to the canvas for use during drawing. Uniquely tag each view using the `View\/tag(_:)` modifier, so that you can find them from within your renderer using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext\/resolveSymbol(id:)] method.\n\n## Discussion\n\nThis initializer behaves like the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Canvas\/init(opaque:colorMode:rendersAsynchronously:renderer:)] initializer, except that you also provide a collection of SwiftUI views for the renderer to use as drawing elements.\n\nSwiftUI stores a rendered version of each child view that you specify in the `symbols` view builder and makes these available to the canvas. Tag each child view so that you can retrieve it from within the renderer using the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/GraphicsContext\/resolveSymbol(id:)] method. For example, you can create a scatter plot using a passed-in child view as the mark for each data point:\n\n```swift\nstruct ScatterPlotView<Mark: View>: View {\n    let rects: [CGRect]\n    let mark: Mark\n\n    enum SymbolID: Int {\n        case mark\n    }\n\n    var body: some View {\n        Canvas { context, size in\n            if let mark = context.resolveSymbol(id: SymbolID.mark) {\n                for rect in rects {\n                    context.draw(mark, in: rect)\n                }\n            }\n        } symbols: {\n            mark.tag(SymbolID.mark)\n        }\n        .frame(width: 300, height: 200)\n        .border(Color.blue)\n    }\n}\n```\n\nYou can use any SwiftUI view for the `mark` input:\n\n```swift\nScatterPlotView(rects: rects, mark: Image(systemName: \"circle\"))\n```\n\nIf the `rects` input contains 50 randomly arranged [doc:\/\/com.apple.documentation\/documentation\/CoreFoundation\/CGRect] instances, SwiftUI draws a plot like this:\n\n\n\nThe symbol inputs, like all other elements that you draw to the canvas, lack individual accessibility and interactivity, even if the original SwiftUI view has these attributes. However, you can add accessibility and interactivity modifers to the canvas as a whole.\n\n## Creating a canvas\n\n- **init(opaque:colorMode:rendersAsynchronously:renderer:)**: Creates and configures a canvas.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates and configures a canvas.",
+          "name" : "init(opaque:colorMode:rendersAsynchronously:renderer:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Canvas\/init(opaque:colorMode:rendersAsynchronously:renderer:)"
+        }
+      ],
+      "title" : "Creating a canvas"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "init(opaque:colorMode:rendersAsynchronously:renderer:symbols:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/Canvas\/init(opaque:colorMode:rendersAsynchronously:renderer:symbols:)"
+}

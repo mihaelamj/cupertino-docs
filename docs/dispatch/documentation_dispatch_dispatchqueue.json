@@ -1,0 +1,396 @@
+{
+  "abstract" : "An object that manages the execution of tasks serially or concurrently on your app’s main thread or on a background thread.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "Copyable",
+    "Equatable",
+    "Executor",
+    "Hashable",
+    "NSObjectProtocol",
+    "Scheduler",
+    "Sendable",
+    "SendableMetatype",
+    "TaskExecutor"
+  ],
+  "contentHash" : "95da2ea3ce539dc9079049c4e3fd48265d6ac00bd7879d8beca83117693c4d93",
+  "crawledAt" : "2025-12-02T06:40:04Z",
+  "declaration" : {
+    "code" : "class DispatchQueue",
+    "language" : "swift"
+  },
+  "id" : "5082A635-E24B-419D-9A92-829E336B009E",
+  "inheritedBy" : [
+    "DispatchConcurrentQueue",
+    "DispatchSerialQueue",
+    "DispatchWorkloop",
+    "OS_dispatch_queue_global"
+  ],
+  "kind" : "class",
+  "module" : "Dispatch",
+  "overview" : "## Overview\n\nDispatch queues are FIFO queues to which your application can submit tasks in the form of block objects. Dispatch queues execute tasks either serially or concurrently. Work submitted to dispatch queues executes on a pool of threads managed by the system. Except for the dispatch queue representing your app’s main thread, the system makes no guarantees about which thread it uses to execute a task.\n\nYou schedule work items synchronously or asynchronously. When you schedule a work item synchronously, your code waits until that item finishes execution. When you schedule a work item asynchronously, your code continues executing while the work item runs elsewhere.\n\n### Avoiding Excessive Thread Creation\n\nWhen designing tasks for concurrent execution, do not call methods that block the current thread of execution. When a task scheduled by a concurrent dispatch queue blocks a thread, the system creates additional threads to run other queued concurrent tasks. If too many tasks block, the system may run out of threads for your app.\n\nAnother way that apps consume too many threads is by creating too many private concurrent dispatch queues. Because each dispatch queue consumes thread resources, creating additional concurrent dispatch queues exacerbates the thread consumption problem. Instead of creating private concurrent queues, submit tasks to one of the global concurrent dispatch queues. For serial tasks, set the target of your serial queue to one of the global concurrent queues. That way, you can maintain the serialized behavior of the queue while minimizing the number of separate queues creating threads.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\ncrawled: 2025-12-02T06:40:04Z\n---\n\n# DispatchQueue\n\n**Class**\n\nAn object that manages the execution of tasks serially or concurrently on your app’s main thread or on a background thread.\n\n## Declaration\n\n```swift\nclass DispatchQueue\n```\n\n## Overview\n\nDispatch queues are FIFO queues to which your application can submit tasks in the form of block objects. Dispatch queues execute tasks either serially or concurrently. Work submitted to dispatch queues executes on a pool of threads managed by the system. Except for the dispatch queue representing your app’s main thread, the system makes no guarantees about which thread it uses to execute a task.\n\nYou schedule work items synchronously or asynchronously. When you schedule a work item synchronously, your code waits until that item finishes execution. When you schedule a work item asynchronously, your code continues executing while the work item runs elsewhere.\n\n\n\n### Avoiding Excessive Thread Creation\n\nWhen designing tasks for concurrent execution, do not call methods that block the current thread of execution. When a task scheduled by a concurrent dispatch queue blocks a thread, the system creates additional threads to run other queued concurrent tasks. If too many tasks block, the system may run out of threads for your app.\n\nAnother way that apps consume too many threads is by creating too many private concurrent dispatch queues. Because each dispatch queue consumes thread resources, creating additional concurrent dispatch queues exacerbates the thread consumption problem. Instead of creating private concurrent queues, submit tasks to one of the global concurrent dispatch queues. For serial tasks, set the target of your serial queue to one of the global concurrent queues. That way, you can maintain the serialized behavior of the queue while minimizing the number of separate queues creating threads.\n\n## Creating a Dispatch Queue\n\n- **main**: The dispatch queue associated with the main thread of the current process.\n- **global(qos:)**: Returns the global system queue with the specified quality-of-service class.\n- **init(label:qos:attributes:autoreleaseFrequency:target:)**: Creates a new dispatch queue to which you can submit blocks.\n- **DispatchQoS.QoSClass**: Quality-of-service classes that specify the priorities for executing tasks.\n- **DispatchQueue.Attributes**: Attributes that define the behavior of a dispatch queue.\n- **DispatchQueue.AutoreleaseFrequency**: Constants indicating the frequency with which a dispatch queue autoreleases objects.\n- **OS_dispatch_queue_main**: A system-provided dispatch queue that schedules tasks for serial execution on the app’s main thread.\n- **OS_dispatch_queue_global**: A system-provided dispatch queue that schedules tasks for concurrent execution.\n- **DispatchSerialQueue**: A custom dispatch queue that schedules tasks for serial execution on an arbitrary thread.\n- **DispatchConcurrentQueue**: A custom dispatch queue that schedules tasks for concurrent execution.\n- **dispatch_queue_main_t**: A dispatch queue that is bound to the app’s main thread and executes tasks serially on that thread.\n- **dispatch_queue_global_t**: A dispatch queue that executes tasks concurrently using threads from the global thread pool.\n- **dispatch_queue_serial_t**: A dispatch queue that executes tasks serially in first-in, first-out (FIFO) order.\n- **dispatch_queue_concurrent_t**: A dispatch queue that executes tasks concurrently and in any order, respecting any barriers that may be in place.\n\n## Executing Tasks Asynchronously\n\n- **async(execute:)**: Schedules a work item for immediate execution, and returns immediately.\n- **asyncAfter(deadline:execute:)**: Schedules a work item for execution at the specified time, and returns immediately.\n- **asyncAfter(deadline:qos:flags:execute:)**: Schedules a block for execution using the specified attributes, and returns immediately.\n- **asyncAfter(wallDeadline:execute:)**: Schedules a work item for execution after the specified time, and returns immediately.\n- **asyncAfter(wallDeadline:qos:flags:execute:)**: Schedules a block for execution using the specified attributes, and returns immediately.\n\n## Executing Tasks Synchronously\n\n- **sync(execute:)**: Submits a work item for execution on the current queue and returns after that block finishes executing.\n- **sync(execute:)**: Submits a block object for execution and returns after that block finishes executing.\n- **sync(execute:)**: Submits a work item for execution and returns the results from that item after it finishes executing.\n- **sync(flags:execute:)**: Submits a work item for execution using the specified attributes and returns the results from that item after it finishes executing.\n- **asyncAndWait(execute:)**: Submits a work item for execution and returns only after it finishes executing.\n\n## Executing a Task in Parallel\n\n- **concurrentPerform(iterations:execute:)**: Submits a single block to the dispatch queue and causes the block to be executed the specified number of times.\n\n## Dispatching Work to Groups\n\n- **async(group:execute:)**: Schedules a work item asynchronously for execution and associates it with the specified dispatch group.\n- **async(group:qos:flags:execute:)**: Schedules a block asynchronously for execution and optionally associates it with a dispatch group.\n\n## Managing Queue Attributes\n\n- **label**: The label you assigned to the dispatch queue at creation time.\n- **qos**: The quality-of-service level assgined to the queue.\n- **setTarget(queue:)**: Specifies the dispatch queue on which to perform work associated with the current object.\n\n## Getting and Setting Contextual Data\n\n- **setSpecific(key:value:)**: Sets the key\/value data for the specified dispatch queue.\n- **getSpecific(key:)**: Returns the value for the key associated with this dispatch queue.\n- **getSpecific(key:)**: Returns the value for the key associated with the current execution context.\n- **DispatchSpecificKey**: A key associated with a specific contextual value on a dispatch queue.\n\n## Managing the Main Dispatch Queue\n\n- **dispatchMain()**: Executes blocks submitted to the main queue.\n\n## Scheduling Combine Publishers\n\n- **DispatchQueue.SchedulerTimeType**: The scheduler time type used by the dispatch queue.\n- **DispatchQueue.SchedulerOptions**: A set of options that affect the operation of the dispatch queue scheduler.\n\n## Deprecated\n\n- **global(priority:)**\n- **DispatchQueue.GlobalQueuePriority**: Legacy constants for queue priorities.\n\n## Instance Methods\n\n- **asyncAfterUnsafe(deadline:qos:flags:execute:)**\n- **asyncAfterUnsafe(wallDeadline:qos:flags:execute:)**\n- **asyncAndWait(execute:)**\n- **asyncAndWait(execute:)**\n- **asyncAndWait(flags:execute:)**\n- **asyncUnsafe(group:qos:flags:execute:)**\n\n## Default Implementations\n\n- **Scheduler Implementations**\n\n## Queues and Tasks\n\n- **DispatchWorkItem**: The work you want to perform, encapsulated in a way that lets you attach a completion handle or execution dependencies.\n- **DispatchGroup**: A group of tasks that you monitor as a single unit.\n- **Dispatch Queue**: An object that manages the execution of tasks serially or concurrently on your app’s main thread or on a background thread.\n- **Dispatch Work Item**: The work you want to perform, encapsulated in a way that lets you attach a completion handle or execution dependencies.\n- **Dispatch Group**: A group of tasks that you monitor as a single unit.\n- **Workloop**: A dispatch object that prioritizes the execution of tasks based on their quality-of-service (QoS) level.\n\n## Inherits From\n\n- DispatchObject\n\n## Inherited By\n\n- DispatchConcurrentQueue\n- DispatchSerialQueue\n- DispatchWorkloop\n- OS_dispatch_queue_global\n\n## Conforms To\n\n- CVarArg\n- Copyable\n- Equatable\n- Executor\n- Hashable\n- NSObjectProtocol\n- Scheduler\n- Sendable\n- SendableMetatype\n- TaskExecutor\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The dispatch queue associated with the main thread of the current process.",
+          "name" : "main",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/main"
+        },
+        {
+          "description" : "Returns the global system queue with the specified quality-of-service class.",
+          "name" : "global(qos:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/global(qos:)"
+        },
+        {
+          "description" : "Creates a new dispatch queue to which you can submit blocks.",
+          "name" : "init(label:qos:attributes:autoreleaseFrequency:target:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/init(label:qos:attributes:autoreleaseFrequency:target:)"
+        },
+        {
+          "description" : "Quality-of-service classes that specify the priorities for executing tasks.",
+          "name" : "DispatchQoS.QoSClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQoS\/QoSClass-swift.enum"
+        },
+        {
+          "description" : "Attributes that define the behavior of a dispatch queue.",
+          "name" : "DispatchQueue.Attributes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/Attributes"
+        },
+        {
+          "description" : "Constants indicating the frequency with which a dispatch queue autoreleases objects.",
+          "name" : "DispatchQueue.AutoreleaseFrequency",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/AutoreleaseFrequency"
+        },
+        {
+          "description" : "A system-provided dispatch queue that schedules tasks for serial execution on the app’s main thread.",
+          "name" : "OS_dispatch_queue_main",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/OS_dispatch_queue_main-swift.class"
+        },
+        {
+          "description" : "A system-provided dispatch queue that schedules tasks for concurrent execution.",
+          "name" : "OS_dispatch_queue_global",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/OS_dispatch_queue_global-swift.class"
+        },
+        {
+          "description" : "A custom dispatch queue that schedules tasks for serial execution on an arbitrary thread.",
+          "name" : "DispatchSerialQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchSerialQueue"
+        },
+        {
+          "description" : "A custom dispatch queue that schedules tasks for concurrent execution.",
+          "name" : "DispatchConcurrentQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchConcurrentQueue"
+        },
+        {
+          "description" : "A dispatch queue that is bound to the app’s main thread and executes tasks serially on that thread.",
+          "name" : "dispatch_queue_main_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/dispatch_queue_main_t"
+        },
+        {
+          "description" : "A dispatch queue that executes tasks concurrently using threads from the global thread pool.",
+          "name" : "dispatch_queue_global_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/dispatch_queue_global_t"
+        },
+        {
+          "description" : "A dispatch queue that executes tasks serially in first-in, first-out (FIFO) order.",
+          "name" : "dispatch_queue_serial_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/dispatch_queue_serial_t"
+        },
+        {
+          "description" : "A dispatch queue that executes tasks concurrently and in any order, respecting any barriers that may be in place.",
+          "name" : "dispatch_queue_concurrent_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/dispatch_queue_concurrent_t"
+        }
+      ],
+      "title" : "Creating a Dispatch Queue"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Schedules a work item for immediate execution, and returns immediately.",
+          "name" : "async(execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/async(execute:)"
+        },
+        {
+          "description" : "Schedules a work item for execution at the specified time, and returns immediately.",
+          "name" : "asyncAfter(deadline:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncAfter(deadline:execute:)"
+        },
+        {
+          "description" : "Schedules a block for execution using the specified attributes, and returns immediately.",
+          "name" : "asyncAfter(deadline:qos:flags:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncAfter(deadline:qos:flags:execute:)"
+        },
+        {
+          "description" : "Schedules a work item for execution after the specified time, and returns immediately.",
+          "name" : "asyncAfter(wallDeadline:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncAfter(wallDeadline:execute:)"
+        },
+        {
+          "description" : "Schedules a block for execution using the specified attributes, and returns immediately.",
+          "name" : "asyncAfter(wallDeadline:qos:flags:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncAfter(wallDeadline:qos:flags:execute:)"
+        }
+      ],
+      "title" : "Executing Tasks Asynchronously"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Submits a work item for execution on the current queue and returns after that block finishes executing.",
+          "name" : "sync(execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/sync(execute:)-2fzvo"
+        },
+        {
+          "description" : "Submits a block object for execution and returns after that block finishes executing.",
+          "name" : "sync(execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/sync(execute:)-3segw"
+        },
+        {
+          "description" : "Submits a work item for execution and returns the results from that item after it finishes executing.",
+          "name" : "sync(execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/sync(execute:)-20xby"
+        },
+        {
+          "description" : "Submits a work item for execution using the specified attributes and returns the results from that item after it finishes executing.",
+          "name" : "sync(flags:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/sync(flags:execute:)"
+        },
+        {
+          "description" : "Submits a work item for execution and returns only after it finishes executing.",
+          "name" : "asyncAndWait(execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncAndWait(execute:)-1udeu"
+        }
+      ],
+      "title" : "Executing Tasks Synchronously"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Submits a single block to the dispatch queue and causes the block to be executed the specified number of times.",
+          "name" : "concurrentPerform(iterations:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/concurrentPerform(iterations:execute:)"
+        }
+      ],
+      "title" : "Executing a Task in Parallel"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Schedules a work item asynchronously for execution and associates it with the specified dispatch group.",
+          "name" : "async(group:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/async(group:execute:)"
+        },
+        {
+          "description" : "Schedules a block asynchronously for execution and optionally associates it with a dispatch group.",
+          "name" : "async(group:qos:flags:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/async(group:qos:flags:execute:)"
+        }
+      ],
+      "title" : "Dispatching Work to Groups"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The label you assigned to the dispatch queue at creation time.",
+          "name" : "label",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/label"
+        },
+        {
+          "description" : "The quality-of-service level assgined to the queue.",
+          "name" : "qos",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/qos"
+        },
+        {
+          "description" : "Specifies the dispatch queue on which to perform work associated with the current object.",
+          "name" : "setTarget(queue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchObject\/setTarget(queue:)"
+        }
+      ],
+      "title" : "Managing Queue Attributes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the key\/value data for the specified dispatch queue.",
+          "name" : "setSpecific(key:value:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/setSpecific(key:value:)"
+        },
+        {
+          "description" : "Returns the value for the key associated with this dispatch queue.",
+          "name" : "getSpecific(key:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/getSpecific(key:)-swift.method"
+        },
+        {
+          "description" : "Returns the value for the key associated with the current execution context.",
+          "name" : "getSpecific(key:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/getSpecific(key:)-swift.type.method"
+        },
+        {
+          "description" : "A key associated with a specific contextual value on a dispatch queue.",
+          "name" : "DispatchSpecificKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchSpecificKey"
+        }
+      ],
+      "title" : "Getting and Setting Contextual Data"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Executes blocks submitted to the main queue.",
+          "name" : "dispatchMain()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/dispatchMain()"
+        }
+      ],
+      "title" : "Managing the Main Dispatch Queue"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The scheduler time type used by the dispatch queue.",
+          "name" : "DispatchQueue.SchedulerTimeType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/SchedulerTimeType"
+        },
+        {
+          "description" : "A set of options that affect the operation of the dispatch queue scheduler.",
+          "name" : "DispatchQueue.SchedulerOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/SchedulerOptions"
+        }
+      ],
+      "title" : "Scheduling Combine Publishers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "global(priority:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/global(priority:)"
+        },
+        {
+          "description" : "Legacy constants for queue priorities.",
+          "name" : "DispatchQueue.GlobalQueuePriority",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/GlobalQueuePriority"
+        }
+      ],
+      "title" : "Deprecated"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "asyncAfterUnsafe(deadline:qos:flags:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncAfterUnsafe(deadline:qos:flags:execute:)"
+        },
+        {
+          "description" : "",
+          "name" : "asyncAfterUnsafe(wallDeadline:qos:flags:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncAfterUnsafe(wallDeadline:qos:flags:execute:)"
+        },
+        {
+          "description" : "",
+          "name" : "asyncAndWait(execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncAndWait(execute:)-52p9n"
+        },
+        {
+          "description" : "",
+          "name" : "asyncAndWait(execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncAndWait(execute:)-pfxy"
+        },
+        {
+          "description" : "",
+          "name" : "asyncAndWait(flags:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncAndWait(flags:execute:)"
+        },
+        {
+          "description" : "",
+          "name" : "asyncUnsafe(group:qos:flags:execute:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/asyncUnsafe(group:qos:flags:execute:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Scheduler Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue\/Scheduler-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The work you want to perform, encapsulated in a way that lets you attach a completion handle or execution dependencies.",
+          "name" : "DispatchWorkItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchWorkItem"
+        },
+        {
+          "description" : "A group of tasks that you monitor as a single unit.",
+          "name" : "DispatchGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchGroup"
+        },
+        {
+          "description" : "An object that manages the execution of tasks serially or concurrently on your app’s main thread or on a background thread.",
+          "name" : "Dispatch Queue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/dispatch-queue"
+        },
+        {
+          "description" : "The work you want to perform, encapsulated in a way that lets you attach a completion handle or execution dependencies.",
+          "name" : "Dispatch Work Item",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/dispatch-work-item"
+        },
+        {
+          "description" : "A group of tasks that you monitor as a single unit.",
+          "name" : "Dispatch Group",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/dispatch-group"
+        },
+        {
+          "description" : "A dispatch object that prioritizes the execution of tasks based on their quality-of-service (QoS) level.",
+          "name" : "Workloop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/workloop"
+        }
+      ],
+      "title" : "Queues and Tasks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "DispatchObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "DispatchQueue",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Dispatch\/DispatchQueue"
+}

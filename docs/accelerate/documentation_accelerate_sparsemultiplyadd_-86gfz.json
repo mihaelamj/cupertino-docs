@@ -1,0 +1,55 @@
+{
+  "abstract" : "Performs the multiply operation *Y += alpha * AX* on a sparse matrix of double-precision, floating-point values.",
+  "codeExamples" : [
+    {
+      "code" : "let rowCount = Int32(4)\nlet columnCount = Int32(4)\nlet blockCount = 4\nlet blockSize = UInt8(1)\nlet rowIndices: [Int32] = [0, 3, 0, 3]\nlet columnIndices: [Int32] = [0, 0, 3, 3]\nlet data = [1.0, 4.0, 13.0, 16.0]\n\n\/\/\/ The _A_ in _Y += alpha * AX_.\nlet A = SparseConvertFromCoordinate(rowCount, columnCount,\n                                    blockCount, blockSize,\n                                    SparseAttributes_t(),\n                                    rowIndices, columnIndices,\n                                    data)\ndefer {\n    SparseCleanup(A)\n}\n\n\/\/\/ The values for _X_ in _Y += alpha * AX_.\nvar xValues = [10.0, -1.0, -1.0, 10.0,\n               100.0, -1.0, -1.0, 100.0]\n\n\/\/\/ The values for _Y_ in _Y += alpha * AX_.\nvar yValues = [Double](repeating: 1,\n                       count: xValues.count)\n\nlet alpha = 2.0\n\nyValues.withUnsafeMutableBufferPointer { yValuesPtr in\n    xValues.withUnsafeMutableBufferPointer { denseMatrixPtr in\n        \/\/\/ The _X_ in _Y += alpha * AX_.\n        let X = DenseMatrix_Double(rowCount: 4,\n                                   columnCount: 2,\n                                   columnStride: 4,\n                                   attributes: SparseAttributes_t(),\n                                   data: denseMatrixPtr.baseAddress!)\n        \n        \/\/\/ The _Y_ in _Y += alpha * AX_.\n        let Y = DenseMatrix_Double(rowCount: 4,\n                                   columnCount: 2,\n                                   columnStride: 4,\n                                   attributes: SparseAttributes_t(),\n                                   data: yValuesPtr.baseAddress!)\n        \n        SparseMultiplyAdd(alpha, A, X, Y)\n    }\n}\n\n\/\/ On return, `yValues` contains:\n\/\/      `[ 281.0, 1.0, 1.0,  401.0,\n\/\/        2801.0, 1.0, 1.0, 4001.0]`",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "0daae287f8e597668ee82e671d4818a112fbe62f92382ff84fb732250dbd075a",
+  "crawledAt" : "2025-12-01T04:00:03Z",
+  "declaration" : {
+    "code" : "func SparseMultiplyAdd(_ alpha: Double, _ A: SparseMatrix_Double, _ X: DenseMatrix_Double, _ Y: DenseMatrix_Double)",
+    "language" : "swift"
+  },
+  "id" : "63E51DF0-FF0F-45B1-BF58-7B9CD9339943",
+  "kind" : "function",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to multiply a scalar value by a sparse matrix, then by a dense matrix, and accumulate the result. The following equation is an example of a matrix-matrix multiplication where the first matrix is sparse:\n\n\n\nCall [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseMultiplyAdd(_:_:_:_:)-3oa6n] to calculate the result.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseMultiplyAdd(_:_:_:_:)-86gfz\ncrawled: 2025-12-01T04:00:03Z\n---\n\n# SparseMultiplyAdd(_:_:_:_:)\n\n**Function**\n\nPerforms the multiply operation *Y += alpha * AX* on a sparse matrix of double-precision, floating-point values.\n\n## Declaration\n\n```swift\nfunc SparseMultiplyAdd(_ alpha: Double, _ A: SparseMatrix_Double, _ X: DenseMatrix_Double, _ Y: DenseMatrix_Double)\n```\n\n## Parameters\n\n- **alpha**: The scalar value *alpha* in *Y += alpha * AX*.\n- **A**: The sparse matrix *A* in *Y* *+= AX*.\n- **X**: The dense matrix *X* in *Y* *+= AX*.\n- **Y**: The dense matrix *Y* in *Y* *+= AX*.\n\n## Discussion\n\nUse this function to multiply a scalar value by a sparse matrix, then by a dense matrix, and accumulate the result. The following equation is an example of a matrix-matrix multiplication where the first matrix is sparse:\n\n\n\nCall [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseMultiplyAdd(_:_:_:_:)-3oa6n] to calculate the result.\n\n```swift\nlet rowCount = Int32(4)\nlet columnCount = Int32(4)\nlet blockCount = 4\nlet blockSize = UInt8(1)\nlet rowIndices: [Int32] = [0, 3, 0, 3]\nlet columnIndices: [Int32] = [0, 0, 3, 3]\nlet data = [1.0, 4.0, 13.0, 16.0]\n\n\/\/\/ The _A_ in _Y += alpha * AX_.\nlet A = SparseConvertFromCoordinate(rowCount, columnCount,\n                                    blockCount, blockSize,\n                                    SparseAttributes_t(),\n                                    rowIndices, columnIndices,\n                                    data)\ndefer {\n    SparseCleanup(A)\n}\n\n\/\/\/ The values for _X_ in _Y += alpha * AX_.\nvar xValues = [10.0, -1.0, -1.0, 10.0,\n               100.0, -1.0, -1.0, 100.0]\n\n\/\/\/ The values for _Y_ in _Y += alpha * AX_.\nvar yValues = [Double](repeating: 1,\n                       count: xValues.count)\n\nlet alpha = 2.0\n\nyValues.withUnsafeMutableBufferPointer { yValuesPtr in\n    xValues.withUnsafeMutableBufferPointer { denseMatrixPtr in\n        \/\/\/ The _X_ in _Y += alpha * AX_.\n        let X = DenseMatrix_Double(rowCount: 4,\n                                   columnCount: 2,\n                                   columnStride: 4,\n                                   attributes: SparseAttributes_t(),\n                                   data: denseMatrixPtr.baseAddress!)\n        \n        \/\/\/ The _Y_ in _Y += alpha * AX_.\n        let Y = DenseMatrix_Double(rowCount: 4,\n                                   columnCount: 2,\n                                   columnStride: 4,\n                                   attributes: SparseAttributes_t(),\n                                   data: yValuesPtr.baseAddress!)\n        \n        SparseMultiplyAdd(alpha, A, X, Y)\n    }\n}\n\n\/\/ On return, `yValues` contains:\n\/\/      `[ 281.0, 1.0, 1.0,  401.0,\n\/\/        2801.0, 1.0, 1.0, 4001.0]`\n```\n\n## Multiply-add functions\n\n- **SparseMultiplyAdd(_:_:_:)**: Performs the multiply operation *Y += AX* on a sparse matrix of double-precision, floating-point values.\n- **SparseMultiplyAdd(_:_:_:)**: Performs the multiply operation *Y += AX* on a sparse matrix of single-precision, floating-point values.\n- **SparseMultiplyAdd(_:_:_:_:)**: Performs the multiply operation *Y += alpha * AX* on a sparse matrix of single-precision, floating-point values.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Performs the multiply operation *Y += AX* on a sparse matrix of double-precision, floating-point values.",
+          "name" : "SparseMultiplyAdd(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseMultiplyAdd(_:_:_:)-lgm5"
+        },
+        {
+          "description" : "Performs the multiply operation *Y += AX* on a sparse matrix of single-precision, floating-point values.",
+          "name" : "SparseMultiplyAdd(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseMultiplyAdd(_:_:_:)-8pgpq"
+        },
+        {
+          "description" : "Performs the multiply operation *Y += alpha * AX* on a sparse matrix of single-precision, floating-point values.",
+          "name" : "SparseMultiplyAdd(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseMultiplyAdd(_:_:_:_:)-n61k"
+        }
+      ],
+      "title" : "Multiply-add functions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "SparseMultiplyAdd(_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseMultiplyAdd(_:_:_:_:)-86gfz"
+}

@@ -1,0 +1,387 @@
+{
+  "abstract" : "Represents a location in the file system.",
+  "codeExamples" : [
+    {
+      "code" : "let message: String = \"This is a log message.\"\nlet path: FilePath = \"\/tmp\/log\"\nlet fd = try FileDescriptor.open(path, .writeOnly, options: .append)\ntry fd.closeAfter { try fd.writeAll(message.utf8) }",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Decodable",
+    "Encodable",
+    "Equatable",
+    "ExpressibleByExtendedGraphemeClusterLiteral",
+    "ExpressibleByStringLiteral",
+    "ExpressibleByUnicodeScalarLiteral",
+    "Hashable",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "6a4729f51e876aa1c43b731ff219336797d96615fbc6061e6eea80e1bac384c9",
+  "crawledAt" : "2025-12-01T21:15:49Z",
+  "declaration" : {
+    "code" : "struct FilePath",
+    "language" : "swift"
+  },
+  "id" : "C58D7153-F9A9-4809-9F3D-08B0ECC67934",
+  "kind" : "struct",
+  "module" : "System",
+  "overview" : "## Overview\n\nThis structure recognizes directory separators  (e.g. `\/`), roots, and requires that the content terminates in a NUL (`0x0`). Beyond that, it does not give any meaning to the bytes that it contains. The file system defines how the content is interpreted; for example, by its choice of string encoding.\n\nOn construction, `FilePath` will normalize separators by removing redundant intermediary separators and stripping any trailing separators. On Windows, `FilePath` will also normalize forward slashes `\/` into backslashes `\\`, as preferred by the platform.\n\nThe code below creates a file path from a string literal, and then uses it to open and append to a log file:\n\nFile paths conform to the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Equatable] and [doc:\/\/com.apple.documentation\/documentation\/Swift\/Hashable] protocols by performing the protocols’ operations on their raw byte contents. This conformance allows file paths to be used, for example, as keys in a dictionary. However, the rules for path equivalence are file-system–specific and have additional considerations like case insensitivity, Unicode normalization, and symbolic links.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/System\/FilePath\ncrawled: 2025-12-01T21:15:49Z\n---\n\n# FilePath\n\n**Structure**\n\nRepresents a location in the file system.\n\n## Declaration\n\n```swift\nstruct FilePath\n```\n\n## Overview\n\nThis structure recognizes directory separators  (e.g. `\/`), roots, and requires that the content terminates in a NUL (`0x0`). Beyond that, it does not give any meaning to the bytes that it contains. The file system defines how the content is interpreted; for example, by its choice of string encoding.\n\nOn construction, `FilePath` will normalize separators by removing redundant intermediary separators and stripping any trailing separators. On Windows, `FilePath` will also normalize forward slashes `\/` into backslashes `\\`, as preferred by the platform.\n\nThe code below creates a file path from a string literal, and then uses it to open and append to a log file:\n\n```swift\nlet message: String = \"This is a log message.\"\nlet path: FilePath = \"\/tmp\/log\"\nlet fd = try FileDescriptor.open(path, .writeOnly, options: .append)\ntry fd.closeAfter { try fd.writeAll(message.utf8) }\n```\n\nFile paths conform to the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Equatable] and [doc:\/\/com.apple.documentation\/documentation\/Swift\/Hashable] protocols by performing the protocols’ operations on their raw byte contents. This conformance allows file paths to be used, for example, as keys in a dictionary. However, the rules for path equivalence are file-system–specific and have additional considerations like case insensitivity, Unicode normalization, and symbolic links.\n\n## Creating a File Path\n\n- **init()**: Creates an empty, null-terminated path.\n- **init(stringLiteral:)**: Creates a file path from a string literal.\n\n## Working with File Paths\n\n- **length**: The length of the file path, excluding the null terminator.\n- **description**: A textual representation of the file path.\n- **debugDescription**: A textual representation of the file path, suitable for debugging.\n\n## Interacting with C APIs\n\n- **withCString(_:)**: For backwards compatibility only. This function is equivalent to the preferred `withPlatformString`.\n\n## Structures\n\n- **FilePath.Component**: Represents an individual, non-root component of a file path.\n- **FilePath.ComponentView**: A bidirectional, range replaceable collection of the non-root components that make up a file path.\n- **FilePath.Root**: Represents a root of a file path.\n\n## Initializers\n\n- **init(_:)**: Creates a file path from a URL\n- **init(_:)**: Creates a file path from a string.\n- **init(cString:)**\n- **init(cString:)**\n- **init(cString:)**: For backwards compatibility only. This initializer is equivalent to the preferred `FilePath(platformString:)`.\n- **init(cString:)**\n- **init(platformString:)**\n- **init(platformString:)**: Creates a file path by copying bytes from a null-terminated platform string.\n- **init(platformString:)**\n- **init(platformString:)**: Creates a file path by copying bytes from a null-terminated platform string.\n- **init(root:_:)**: Create a file path from a root and a collection of components.\n- **init(root:_:)**: Create a file path from an optional root and a slice of another path’s components.\n- **init(root:components:)**: Create a file path from a root and any number of components.\n\n## Instance Properties\n\n- **components**: View the non-root components that make up this path.\n- **extension**: The extension of the file or directory last component.\n- **isAbsolute**: Returns true if this path uniquely identifies the location of a file without reference to an additional starting location.\n- **isEmpty**: Whether this path is empty\n- **isLexicallyNormal**: Whether the path is in lexical-normal form, that is `.` and `..` components have been collapsed lexically (i.e. without following symlinks).\n- **isRelative**: Returns true if this path is not absolute (see `isAbsolute`).\n- **lastComponent**: Returns the final component of the path. Returns `nil` if the path is empty or only contains a root.\n- **root**: Returns the root of a path if there is one, otherwise `nil`.\n- **stem**: The non-extension portion of the file or directory last component.\n- **string**: Creates a string by interpreting the path’s content as UTF-8 on Unix and UTF-16 on Windows.\n\n## Instance Methods\n\n- **append(_:)**: Append `components` on to the end of this path.\n- **append(_:)**: Append the contents of `other`, ignoring any spurious leading separators.\n- **append(_:)**: Append a `component` on to the end of this path.\n- **appending(_:)**: Non-mutating version of `append(_:String)`.\n- **appending(_:)**: Non-mutating version of `append(_:Component)`.\n- **appending(_:)**: Non-mutating version of `append(_:C)`.\n- **ends(with:)**: Returns whether `other` is a suffix of `self`, only considering whole path components.\n- **lexicallyNormalize()**: Collapse `.` and `..` components lexically (i.e. without following symlinks).\n- **lexicallyNormalized()**: Returns a copy of `self` in lexical-normal form, that is `.` and `..` components have been collapsed lexically (i.e. without following symlinks). See `lexicallyNormalize`\n- **lexicallyResolving(_:)**: Create a new `FilePath` by resolving `subpath` relative to `self`, ensuring that the result is lexically contained within `self`.\n- **push(_:)**: If `other` does not have a root, append each component of `other`. If `other` has a root, replaces `self` with other.\n- **pushing(_:)**: Non-mutating version of `push()`.\n- **removeAll(keepingCapacity:)**: Remove the contents of the path, keeping the null terminator.\n- **removeLastComponent()**: In-place mutating variant of `removingLastComponent`.\n- **removePrefix(_:)**: If `prefix` is a prefix of `self`, removes it and returns `true`. Otherwise returns `false`.\n- **removingLastComponent()**: Creates a new path with everything up to but not including `lastComponent`.\n- **removingRoot()**: Creates a new path containing just the components, i.e. everything after `root`.\n- **reserveCapacity(_:)**: Reserve enough storage space to store `minimumCapacity` platform characters.\n- **starts(with:)**: Returns whether `other` is a prefix of `self`, only considering whole path components.\n- **withPlatformString(_:)**: Calls the given closure with a pointer to the contents of the file path, represented as a null-terminated platform string.\n\n## Default Implementations\n\n- **CustomDebugStringConvertible Implementations**\n- **CustomStringConvertible Implementations**\n- **ExpressibleByStringLiteral Implementations**\n\n## Files\n\n- **FileDescriptor**: An abstract handle to an input or output data resource, such as a file or a socket.\n- **FilePermissions**: The access permissions for a file.\n\n## Conforms To\n\n- Copyable\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Decodable\n- Encodable\n- Equatable\n- ExpressibleByExtendedGraphemeClusterLiteral\n- ExpressibleByStringLiteral\n- ExpressibleByUnicodeScalarLiteral\n- Hashable\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an empty, null-terminated path.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init()"
+        },
+        {
+          "description" : "Creates a file path from a string literal.",
+          "name" : "init(stringLiteral:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(stringLiteral:)"
+        }
+      ],
+      "title" : "Creating a File Path"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The length of the file path, excluding the null terminator.",
+          "name" : "length",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/length"
+        },
+        {
+          "description" : "A textual representation of the file path.",
+          "name" : "description",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/description"
+        },
+        {
+          "description" : "A textual representation of the file path, suitable for debugging.",
+          "name" : "debugDescription",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/debugDescription"
+        }
+      ],
+      "title" : "Working with File Paths"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "For backwards compatibility only. This function is equivalent to the preferred `withPlatformString`.",
+          "name" : "withCString(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/withCString(_:)"
+        }
+      ],
+      "title" : "Interacting with C APIs"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Represents an individual, non-root component of a file path.",
+          "name" : "FilePath.Component",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/Component"
+        },
+        {
+          "description" : "A bidirectional, range replaceable collection of the non-root components that make up a file path.",
+          "name" : "FilePath.ComponentView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/ComponentView"
+        },
+        {
+          "description" : "Represents a root of a file path.",
+          "name" : "FilePath.Root",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/Root-swift.struct"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a file path from a URL",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(_:)-2gkpw"
+        },
+        {
+          "description" : "Creates a file path from a string.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(_:)-61dsw"
+        },
+        {
+          "description" : "",
+          "name" : "init(cString:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(cString:)-2hetg"
+        },
+        {
+          "description" : "",
+          "name" : "init(cString:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(cString:)-3xw0n"
+        },
+        {
+          "description" : "For backwards compatibility only. This initializer is equivalent to the preferred `FilePath(platformString:)`.",
+          "name" : "init(cString:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(cString:)-5igtz"
+        },
+        {
+          "description" : "",
+          "name" : "init(cString:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(cString:)-8d3vx"
+        },
+        {
+          "description" : "",
+          "name" : "init(platformString:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(platformString:)-4b3o6"
+        },
+        {
+          "description" : "Creates a file path by copying bytes from a null-terminated platform string.",
+          "name" : "init(platformString:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(platformString:)-5o7oh"
+        },
+        {
+          "description" : "",
+          "name" : "init(platformString:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(platformString:)-6i5cc"
+        },
+        {
+          "description" : "Creates a file path by copying bytes from a null-terminated platform string.",
+          "name" : "init(platformString:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(platformString:)-8amn5"
+        },
+        {
+          "description" : "Create a file path from a root and a collection of components.",
+          "name" : "init(root:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(root:_:)-19uu0"
+        },
+        {
+          "description" : "Create a file path from an optional root and a slice of another path’s components.",
+          "name" : "init(root:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(root:_:)-19xzy"
+        },
+        {
+          "description" : "Create a file path from a root and any number of components.",
+          "name" : "init(root:components:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/init(root:components:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "View the non-root components that make up this path.",
+          "name" : "components",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/components"
+        },
+        {
+          "description" : "The extension of the file or directory last component.",
+          "name" : "extension",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/extension"
+        },
+        {
+          "description" : "Returns true if this path uniquely identifies the location of a file without reference to an additional starting location.",
+          "name" : "isAbsolute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/isAbsolute"
+        },
+        {
+          "description" : "Whether this path is empty",
+          "name" : "isEmpty",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/isEmpty"
+        },
+        {
+          "description" : "Whether the path is in lexical-normal form, that is `.` and `..` components have been collapsed lexically (i.e. without following symlinks).",
+          "name" : "isLexicallyNormal",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/isLexicallyNormal"
+        },
+        {
+          "description" : "Returns true if this path is not absolute (see `isAbsolute`).",
+          "name" : "isRelative",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/isRelative"
+        },
+        {
+          "description" : "Returns the final component of the path. Returns `nil` if the path is empty or only contains a root.",
+          "name" : "lastComponent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/lastComponent"
+        },
+        {
+          "description" : "Returns the root of a path if there is one, otherwise `nil`.",
+          "name" : "root",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/root-swift.property"
+        },
+        {
+          "description" : "The non-extension portion of the file or directory last component.",
+          "name" : "stem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/stem"
+        },
+        {
+          "description" : "Creates a string by interpreting the path’s content as UTF-8 on Unix and UTF-16 on Windows.",
+          "name" : "string",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/string"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Append `components` on to the end of this path.",
+          "name" : "append(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/append(_:)-66nkr"
+        },
+        {
+          "description" : "Append the contents of `other`, ignoring any spurious leading separators.",
+          "name" : "append(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/append(_:)-7ttzp"
+        },
+        {
+          "description" : "Append a `component` on to the end of this path.",
+          "name" : "append(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/append(_:)-8f41n"
+        },
+        {
+          "description" : "Non-mutating version of `append(_:String)`.",
+          "name" : "appending(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/appending(_:)-1dtn3"
+        },
+        {
+          "description" : "Non-mutating version of `append(_:Component)`.",
+          "name" : "appending(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/appending(_:)-24s87"
+        },
+        {
+          "description" : "Non-mutating version of `append(_:C)`.",
+          "name" : "appending(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/appending(_:)-60fwk"
+        },
+        {
+          "description" : "Returns whether `other` is a suffix of `self`, only considering whole path components.",
+          "name" : "ends(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/ends(with:)"
+        },
+        {
+          "description" : "Collapse `.` and `..` components lexically (i.e. without following symlinks).",
+          "name" : "lexicallyNormalize()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/lexicallyNormalize()"
+        },
+        {
+          "description" : "Returns a copy of `self` in lexical-normal form, that is `.` and `..` components have been collapsed lexically (i.e. without following symlinks). See `lexicallyNormalize`",
+          "name" : "lexicallyNormalized()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/lexicallyNormalized()"
+        },
+        {
+          "description" : "Create a new `FilePath` by resolving `subpath` relative to `self`, ensuring that the result is lexically contained within `self`.",
+          "name" : "lexicallyResolving(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/lexicallyResolving(_:)"
+        },
+        {
+          "description" : "If `other` does not have a root, append each component of `other`. If `other` has a root, replaces `self` with other.",
+          "name" : "push(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/push(_:)"
+        },
+        {
+          "description" : "Non-mutating version of `push()`.",
+          "name" : "pushing(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/pushing(_:)"
+        },
+        {
+          "description" : "Remove the contents of the path, keeping the null terminator.",
+          "name" : "removeAll(keepingCapacity:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/removeAll(keepingCapacity:)"
+        },
+        {
+          "description" : "In-place mutating variant of `removingLastComponent`.",
+          "name" : "removeLastComponent()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/removeLastComponent()"
+        },
+        {
+          "description" : "If `prefix` is a prefix of `self`, removes it and returns `true`. Otherwise returns `false`.",
+          "name" : "removePrefix(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/removePrefix(_:)"
+        },
+        {
+          "description" : "Creates a new path with everything up to but not including `lastComponent`.",
+          "name" : "removingLastComponent()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/removingLastComponent()"
+        },
+        {
+          "description" : "Creates a new path containing just the components, i.e. everything after `root`.",
+          "name" : "removingRoot()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/removingRoot()"
+        },
+        {
+          "description" : "Reserve enough storage space to store `minimumCapacity` platform characters.",
+          "name" : "reserveCapacity(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/reserveCapacity(_:)"
+        },
+        {
+          "description" : "Returns whether `other` is a prefix of `self`, only considering whole path components.",
+          "name" : "starts(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/starts(with:)"
+        },
+        {
+          "description" : "Calls the given closure with a pointer to the contents of the file path, represented as a null-terminated platform string.",
+          "name" : "withPlatformString(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/withPlatformString(_:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "CustomDebugStringConvertible Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/CustomDebugStringConvertible-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "CustomStringConvertible Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/CustomStringConvertible-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "ExpressibleByStringLiteral Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath\/ExpressibleByStringLiteral-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An abstract handle to an input or output data resource, such as a file or a socket.",
+          "name" : "FileDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FileDescriptor"
+        },
+        {
+          "description" : "The access permissions for a file.",
+          "name" : "FilePermissions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePermissions"
+        }
+      ],
+      "title" : "Files"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "FilePath",
+  "url" : "https:\/\/developer.apple.com\/documentation\/System\/FilePath"
+}

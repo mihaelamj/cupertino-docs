@@ -1,0 +1,70 @@
+{
+  "abstract" : "An action that initiates a refresh operation.",
+  "codeExamples" : [
+    {
+      "code" : "List(mailbox.conversations) { conversation in\n    ConversationCell(conversation)\n}\n.refreshable {\n    await mailbox.fetch()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct RefreshableView: View {\n    @Environment(\\.refresh) private var refresh\n\n    var body: some View {\n        Button(\"Refresh\") {\n            Task {\n                await refresh?()\n            }\n        }\n        .disabled(refresh == nil)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "dff68201687deda5517ab25b0e8b8995c5a1d3404f3c751156c057025ed33dc8",
+  "crawledAt" : "2025-12-02T17:39:48Z",
+  "declaration" : {
+    "code" : "struct RefreshAction",
+    "language" : "swift"
+  },
+  "id" : "FA58360A-0D4F-4D79-8CB9-3304D2AD3A20",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "SwiftUI",
+  "overview" : "## Overview\n\nWhen the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues\/refresh] environment value contains an instance of this structure, certain built-in views in the corresponding [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Environment] begin offering a refresh capability. They apply the instance’s handler to any refresh operation that the user initiates. By default, the environment value is `nil`, but you can use the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/refreshable(action:)] modifier to create and store a new refresh action that uses the handler that you specify:\n\nOn iOS and iPadOS, the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/List] in the example above offers a pull to refresh gesture because it detects the refresh action. When the user drags the list down and releases, the list calls the action’s handler. Because SwiftUI declares the handler as asynchronous, it can safely make long-running asynchronous calls, like fetching network data.\n\n### Refreshing custom views\n\nYou can also offer refresh capability in your custom views. Read the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues\/refresh] environment value to get the `RefreshAction` instance for a given [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Environment]. If you find a non-`nil` value, change your view’s appearance or behavior to offer the refresh to the user, and call the instance to conduct the refresh. You can call the refresh instance directly because it defines a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/RefreshAction\/callAsFunction()] method that Swift calls when you call the instance:\n\nBe sure to call the handler asynchronously by preceding it with `await`. Because the call is asynchronous, you can use its lifetime to indicate progress to the user. For example, you might reveal an indeterminate [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ProgressView] before calling the handler, and hide it when the handler completes.\n\nIf your code isn’t already in an asynchronous context, create a [doc:\/\/com.apple.documentation\/documentation\/Swift\/Task] for the method to run in. If you do this, consider adding a way for the user to cancel the task. For more information, see [https:\/\/docs.swift.org\/swift-book\/LanguageGuide\/Concurrency.html] in *The Swift Programming Language*.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SwiftUI\/RefreshAction\ncrawled: 2025-12-02T17:39:48Z\n---\n\n# RefreshAction\n\n**Structure**\n\nAn action that initiates a refresh operation.\n\n## Declaration\n\n```swift\nstruct RefreshAction\n```\n\n## Overview\n\nWhen the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues\/refresh] environment value contains an instance of this structure, certain built-in views in the corresponding [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Environment] begin offering a refresh capability. They apply the instance’s handler to any refresh operation that the user initiates. By default, the environment value is `nil`, but you can use the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/View\/refreshable(action:)] modifier to create and store a new refresh action that uses the handler that you specify:\n\n```swift\nList(mailbox.conversations) { conversation in\n    ConversationCell(conversation)\n}\n.refreshable {\n    await mailbox.fetch()\n}\n```\n\nOn iOS and iPadOS, the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/List] in the example above offers a pull to refresh gesture because it detects the refresh action. When the user drags the list down and releases, the list calls the action’s handler. Because SwiftUI declares the handler as asynchronous, it can safely make long-running asynchronous calls, like fetching network data.\n\n### Refreshing custom views\n\nYou can also offer refresh capability in your custom views. Read the [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/EnvironmentValues\/refresh] environment value to get the `RefreshAction` instance for a given [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/Environment]. If you find a non-`nil` value, change your view’s appearance or behavior to offer the refresh to the user, and call the instance to conduct the refresh. You can call the refresh instance directly because it defines a [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/RefreshAction\/callAsFunction()] method that Swift calls when you call the instance:\n\n```swift\nstruct RefreshableView: View {\n    @Environment(\\.refresh) private var refresh\n\n    var body: some View {\n        Button(\"Refresh\") {\n            Task {\n                await refresh?()\n            }\n        }\n        .disabled(refresh == nil)\n    }\n}\n```\n\nBe sure to call the handler asynchronously by preceding it with `await`. Because the call is asynchronous, you can use its lifetime to indicate progress to the user. For example, you might reveal an indeterminate [doc:\/\/com.apple.SwiftUI\/documentation\/SwiftUI\/ProgressView] before calling the handler, and hide it when the handler completes.\n\nIf your code isn’t already in an asynchronous context, create a [doc:\/\/com.apple.documentation\/documentation\/Swift\/Task] for the method to run in. If you do this, consider adding a way for the user to cancel the task. For more information, see [https:\/\/docs.swift.org\/swift-book\/LanguageGuide\/Concurrency.html] in *The Swift Programming Language*.\n\n## Calling the action\n\n- **callAsFunction()**: Initiates a refresh action.\n\n## Refreshing a list’s content\n\n- **refreshable(action:)**: Marks this view as refreshable.\n- **refresh**: A refresh action stored in a view’s environment.\n\n## Conforms To\n\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initiates a refresh action.",
+          "name" : "callAsFunction()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/RefreshAction\/callAsFunction()"
+        }
+      ],
+      "title" : "Calling the action"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Marks this view as refreshable.",
+          "name" : "refreshable(action:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/View\/refreshable(action:)"
+        },
+        {
+          "description" : "A refresh action stored in a view’s environment.",
+          "name" : "refresh",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/EnvironmentValues\/refresh"
+        }
+      ],
+      "title" : "Refreshing a list’s content"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "RefreshAction",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SwiftUI\/RefreshAction"
+}

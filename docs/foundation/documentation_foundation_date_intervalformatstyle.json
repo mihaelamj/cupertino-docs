@@ -1,0 +1,223 @@
+{
+  "abstract" : "A format style that creates string representations of date intervals.",
+  "codeExamples" : [
+    {
+      "code" : "if let today = Calendar.current.date(byAdding: .day, value: -120, to: Date()),\n    let thirtyDaysBeforeToday = Calendar.current.date(byAdding: .day, value: -30, to: today) {\n    \/\/ today: June 5, 2023\n    \/\/ thirtyDaysBeforeToday: May 6, 2023\n\n    \/\/ Create a Range<Date>.\n    let last30days = thirtyDaysBeforeToday..<today\n\n    let formatted = last30days.formatted(date: .complete, time: .omitted)\n    \/\/ \"Saturday, January 30 – Monday, March 1, 2021\"\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "if let today = Calendar.current.date(byAdding: .day, value: -120, to: Date()),\n   let thirtyDaysBeforeToday = Calendar.current.date(byAdding: .day, value: -30, to: today) {\n   \/\/ today: Mar 1, 2021 at 8:01 PM\n   \/\/ thirtyDaysBeforeToday: Jan 30, 2021 at 8:01 PM\n\n   \/\/ Create a Range<Date>.\n   let last30days = thirtyDaysBeforeToday..<today\n\n   print(last30days.formatted(date: .long, time: .shortened))\n   \/\/ January 30, 2021, 8:01 PM – March 1, 2021, 8:01 PM\n\n   print(last30days.formatted(date: .abbreviated, time: .standard))\n   \/\/ Jan 30, 2021, 8:01:49 PM – Mar 1, 2021, 8:01:49 PM\n\n   print(last30days.formatted(date: .numeric, time: .complete))\n   \/\/ 1\/30\/2021, 8:01:49 PM CST – 3\/1\/2021, 8:01:49 PM CST\n\n   print(last30days.formatted())\n   \/\/ 1\/30\/21, 8:01 PM – 3\/1\/21, 8:01 PM\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "if let today = Calendar.current.date(byAdding: .day, value: -140, to: Date()),\n   let sevenDaysAfterToday = Calendar.current.date(byAdding: .day, value: 7, to: today) {\n\n    \/\/ Create a Range<Date>.\n    let weekFromNow = today..<sevenDaysAfterToday\n    \n    \/\/ Call the .formatted method on a Range<Date> and pass in an instance of Date.IntervalFormatStyle.\n    weekFromNow.formatted(\n        Date.IntervalFormatStyle()\n            .year()\n            .month(.abbreviated)\n            .day()\n            .hour(.defaultDigits(amPM: .narrow))\n            .weekday(.abbreviated)\n    ) \/\/  Wed, Feb 10, 2021, 3 p – Wed, Feb 17, 2021, 3 p\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "if let today = Calendar.current.date(byAdding: .day, value: -140, to: Date()),\n   let sevenDaysBeforeToday = Calendar.current.date(byAdding: .day, value: -7, to: today) {\n\n    \/\/ Create a Range<Date>.\n    let weekBefore = sevenDaysBeforeToday..<today\n\n    let localeArray = [\"en_US\", \"sv_SE\", \"en_GB\", \"th_TH\", \"fr_BE\"]\n    for localeID in localeArray {\n        \/\/ Call the .formatted method on a Range<Date> and pass in an instance of Date.IntervalFormatStyle.\n        print(weekBefore.formatted(.interval\n                 .day()\n                 .month(.wide)\n                 .weekday(.short)\n                 .hour(.conversationalTwoDigits(amPM: .wide))\n                 .locale(Locale(identifier: localeID))))\n    }\n}\n\/\/ We, February 3, 3 PM – We, February 10, 3 PM\n\/\/ on 3 februari 15 – on 10 februari 15\n\/\/ We 3 February, 15 – We 10 February, 15\n\/\/ พ. 3 กุมภาพันธ์ 15 – พ. 10 กุมภาพันธ์ 15\n\/\/ me 3 février, 15 h – me 10 février, 15 h\n",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "Decodable",
+    "Encodable",
+    "Equatable",
+    "FormatStyle",
+    "Hashable",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "4922d3d013e5e9c5b8324df21f4cd388be9720058fe3ded416cab6576c1909f7",
+  "crawledAt" : "2025-12-02T18:04:33Z",
+  "declaration" : {
+    "code" : "struct IntervalFormatStyle",
+    "language" : "swift"
+  },
+  "id" : "F3356461-B4BA-4523-816F-BC1097DC2E74",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nUse a date interval format style to create user-readable strings in the form of `<start> - <end>` for your app’s interface, where `<start>` and `<end>` are date values that you supply. The format style uses locale and language information, along with custom formatting options, to define the content of the resulting string.\n\n`Date.IntervalFormatStyle` provides a variety of localized presets and configuration options to create user-visible representations of date intervals. When displaying a date interval to a user, use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/formatted(date:time:)] instance method of `Range<Date>`. Set the date and time styles of the date interval format style separately, according to your particular needs.\n\nFor example, to create a date interval string with a full date and no time representation, set the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/IntervalFormatStyle\/DateStyle] to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/DateStyle\/complete] and the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/IntervalFormatStyle\/TimeStyle] to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/TimeStyle\/omitted]. The following example creates a formatted interval string with this style:\n\nYou can create string representations of date intervals with various levels of brevity using a variety of preset date and time styles. The following example shows date styles of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/DateStyle\/long], [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/DateStyle\/abbreviated], and [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/DateStyle\/numeric], and time styles of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/TimeStyle\/shortened], [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/TimeStyle\/standard], and [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/TimeStyle\/complete]:\n\nThe default date style is [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/DateStyle\/abbreviated] and the default time style is [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/TimeStyle\/shortened].\n\nFor full customization of the string representation of a date interval, use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/formatted(_:)] instance method of `Range<Date>` and provide a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/IntervalFormatStyle] instance.\n\nYou can achieve any customization of date and time representation your app requires by appying a series of convenience modifiers to your format style. The following example applies a series of modifiers to the format style to precisely define the formatting of the year, month, day, hour, minute, and time zone components of the resulting string:\n\n[doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/IntervalFormatStyle] provides a convenient factory variable, `interval`, to shorten the syntax when applying date and time modifiers to customize the format.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\ncrawled: 2025-12-02T18:04:33Z\n---\n\n# Date.IntervalFormatStyle\n\n**Structure**\n\nA format style that creates string representations of date intervals.\n\n## Declaration\n\n```swift\nstruct IntervalFormatStyle\n```\n\n## Overview\n\nUse a date interval format style to create user-readable strings in the form of `<start> - <end>` for your app’s interface, where `<start>` and `<end>` are date values that you supply. The format style uses locale and language information, along with custom formatting options, to define the content of the resulting string.\n\n`Date.IntervalFormatStyle` provides a variety of localized presets and configuration options to create user-visible representations of date intervals. When displaying a date interval to a user, use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/formatted(date:time:)] instance method of `Range<Date>`. Set the date and time styles of the date interval format style separately, according to your particular needs.\n\nFor example, to create a date interval string with a full date and no time representation, set the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/IntervalFormatStyle\/DateStyle] to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/DateStyle\/complete] and the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/IntervalFormatStyle\/TimeStyle] to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/TimeStyle\/omitted]. The following example creates a formatted interval string with this style:\n\n```swift\nif let today = Calendar.current.date(byAdding: .day, value: -120, to: Date()),\n    let thirtyDaysBeforeToday = Calendar.current.date(byAdding: .day, value: -30, to: today) {\n    \/\/ today: June 5, 2023\n    \/\/ thirtyDaysBeforeToday: May 6, 2023\n\n    \/\/ Create a Range<Date>.\n    let last30days = thirtyDaysBeforeToday..<today\n\n    let formatted = last30days.formatted(date: .complete, time: .omitted)\n    \/\/ \"Saturday, January 30 – Monday, March 1, 2021\"\n}\n```\n\nYou can create string representations of date intervals with various levels of brevity using a variety of preset date and time styles. The following example shows date styles of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/DateStyle\/long], [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/DateStyle\/abbreviated], and [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/DateStyle\/numeric], and time styles of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/TimeStyle\/shortened], [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/TimeStyle\/standard], and [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/TimeStyle\/complete]:\n\n```swift\nif let today = Calendar.current.date(byAdding: .day, value: -120, to: Date()),\n   let thirtyDaysBeforeToday = Calendar.current.date(byAdding: .day, value: -30, to: today) {\n   \/\/ today: Mar 1, 2021 at 8:01 PM\n   \/\/ thirtyDaysBeforeToday: Jan 30, 2021 at 8:01 PM\n\n   \/\/ Create a Range<Date>.\n   let last30days = thirtyDaysBeforeToday..<today\n\n   print(last30days.formatted(date: .long, time: .shortened))\n   \/\/ January 30, 2021, 8:01 PM – March 1, 2021, 8:01 PM\n\n   print(last30days.formatted(date: .abbreviated, time: .standard))\n   \/\/ Jan 30, 2021, 8:01:49 PM – Mar 1, 2021, 8:01:49 PM\n\n   print(last30days.formatted(date: .numeric, time: .complete))\n   \/\/ 1\/30\/2021, 8:01:49 PM CST – 3\/1\/2021, 8:01:49 PM CST\n\n   print(last30days.formatted())\n   \/\/ 1\/30\/21, 8:01 PM – 3\/1\/21, 8:01 PM\n}\n```\n\nThe default date style is [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/DateStyle\/abbreviated] and the default time style is [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/FormatStyle\/TimeStyle\/shortened].\n\nFor full customization of the string representation of a date interval, use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/formatted(_:)] instance method of `Range<Date>` and provide a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/IntervalFormatStyle] instance.\n\nYou can achieve any customization of date and time representation your app requires by appying a series of convenience modifiers to your format style. The following example applies a series of modifiers to the format style to precisely define the formatting of the year, month, day, hour, minute, and time zone components of the resulting string:\n\n```swift\nif let today = Calendar.current.date(byAdding: .day, value: -140, to: Date()),\n   let sevenDaysAfterToday = Calendar.current.date(byAdding: .day, value: 7, to: today) {\n\n    \/\/ Create a Range<Date>.\n    let weekFromNow = today..<sevenDaysAfterToday\n    \n    \/\/ Call the .formatted method on a Range<Date> and pass in an instance of Date.IntervalFormatStyle.\n    weekFromNow.formatted(\n        Date.IntervalFormatStyle()\n            .year()\n            .month(.abbreviated)\n            .day()\n            .hour(.defaultDigits(amPM: .narrow))\n            .weekday(.abbreviated)\n    ) \/\/  Wed, Feb 10, 2021, 3 p – Wed, Feb 17, 2021, 3 p\n}\n```\n\n[doc:\/\/com.apple.foundation\/documentation\/Foundation\/Date\/IntervalFormatStyle] provides a convenient factory variable, `interval`, to shorten the syntax when applying date and time modifiers to customize the format.\n\n```swift\nif let today = Calendar.current.date(byAdding: .day, value: -140, to: Date()),\n   let sevenDaysBeforeToday = Calendar.current.date(byAdding: .day, value: -7, to: today) {\n\n    \/\/ Create a Range<Date>.\n    let weekBefore = sevenDaysBeforeToday..<today\n\n    let localeArray = [\"en_US\", \"sv_SE\", \"en_GB\", \"th_TH\", \"fr_BE\"]\n    for localeID in localeArray {\n        \/\/ Call the .formatted method on a Range<Date> and pass in an instance of Date.IntervalFormatStyle.\n        print(weekBefore.formatted(.interval\n                 .day()\n                 .month(.wide)\n                 .weekday(.short)\n                 .hour(.conversationalTwoDigits(amPM: .wide))\n                 .locale(Locale(identifier: localeID))))\n    }\n}\n\/\/ We, February 3, 3 PM – We, February 10, 3 PM\n\/\/ on 3 februari 15 – on 10 februari 15\n\/\/ We 3 February, 15 – We 10 February, 15\n\/\/ พ. 3 กุมภาพันธ์ 15 – พ. 10 กุมภาพันธ์ 15\n\/\/ me 3 février, 15 h – me 10 février, 15 h\n\n```\n\n## Creating a Date Interval Format Style\n\n- **init(date:time:locale:calendar:timeZone:)**: Creates an instance using the provided date, time, locale, calendar, time zone, and capitalization context.\n\n## Specifying Date Interval Format Styles\n\n- **timeZone(_:)**: Modifies the date interval format style to use the specified time zone format.\n- **calendar**: The calendar for formatting the date interval.\n- **locale**: The locale for formatting the date and time interval components.\n- **timeZone**: The time zone for formatting the date interval components.\n\n## Modifying Date Interval Format Styles\n\n- **day()**: Modifies the date interval format style to include the day.\n- **hour(_:)**: Modifies the date interval format style to use the specified hour format style.\n- **minute()**: Modifies the date interval format style to include the minutes.\n- **month(_:)**: Modifies the date interval format style to include the month.\n- **second()**: Modifies the date interval format style to include the seconds.\n- **weekday(_:)**: Modifies the date interval format style to include the specified weekday style.\n- **year()**: Modifies the date interval format style to include the year.\n\n## Comparing Date Interval Format Styles\n\n- **==(_:_:)**: Returns true if the two `Date` values represent the same point in time.\n\n## Supporting Types\n\n- **Date.IntervalFormatStyle.DateStyle**: The type that defines date interval styles that vary in length or in their included components.\n- **Date.IntervalFormatStyle.Symbol**: The type that supports customizing formatting templates using the date format style’s modifier functions, and constructing fixed-pattern date format strings.\n- **Date.IntervalFormatStyle.TimeStyle**: The type that defines time styles that vary in length or in their included components.\n\n## Applying date and time styles\n\n- **dateTime**: A style for formatting a date and time.\n- **Date.FormatStyle**: A structure that creates a locale-appropriate string representation of a date instance and converts strings of dates and times into date instances.\n- **Date.ISO8601FormatStyle**: A type that converts between dates and their ISO-8601 string representations.\n- **verbatim(_:locale:timeZone:calendar:)**: Returns a style for formatting a date with an explicitly-specified style.\n- **Date.VerbatimFormatStyle**: A style that formats a date with an explicitly-specified style.\n- **interval**: A style for formatting a date interval.\n- **relative(presentation:unitsStyle:)**: Returns a style for formatting a date as relative to the current date.\n- **Date.RelativeFormatStyle**: A format style that forms locale-aware string representations of a relative date or time.\n- **components(style:fields:)**: Returns a style for formatting a date interval in terms of specific date components.\n- **Date.ComponentsFormatStyle**: A style for formatting a date interval in terms of specific date components.\n\n## Conforms To\n\n- Copyable\n- Decodable\n- Encodable\n- Equatable\n- FormatStyle\n- Hashable\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an instance using the provided date, time, locale, calendar, time zone, and capitalization context.",
+          "name" : "init(date:time:locale:calendar:timeZone:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/init(date:time:locale:calendar:timeZone:)"
+        }
+      ],
+      "title" : "Creating a Date Interval Format Style"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Modifies the date interval format style to use the specified time zone format.",
+          "name" : "timeZone(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/timeZone(_:)"
+        },
+        {
+          "description" : "The calendar for formatting the date interval.",
+          "name" : "calendar",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/calendar"
+        },
+        {
+          "description" : "The locale for formatting the date and time interval components.",
+          "name" : "locale",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/locale"
+        },
+        {
+          "description" : "The time zone for formatting the date interval components.",
+          "name" : "timeZone",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/timeZone"
+        }
+      ],
+      "title" : "Specifying Date Interval Format Styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Modifies the date interval format style to include the day.",
+          "name" : "day()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/day()"
+        },
+        {
+          "description" : "Modifies the date interval format style to use the specified hour format style.",
+          "name" : "hour(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/hour(_:)"
+        },
+        {
+          "description" : "Modifies the date interval format style to include the minutes.",
+          "name" : "minute()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/minute()"
+        },
+        {
+          "description" : "Modifies the date interval format style to include the month.",
+          "name" : "month(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/month(_:)"
+        },
+        {
+          "description" : "Modifies the date interval format style to include the seconds.",
+          "name" : "second()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/second()"
+        },
+        {
+          "description" : "Modifies the date interval format style to include the specified weekday style.",
+          "name" : "weekday(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/weekday(_:)"
+        },
+        {
+          "description" : "Modifies the date interval format style to include the year.",
+          "name" : "year()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/year()"
+        }
+      ],
+      "title" : "Modifying Date Interval Format Styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns true if the two `Date` values represent the same point in time.",
+          "name" : "==(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/==(_:_:)"
+        }
+      ],
+      "title" : "Comparing Date Interval Format Styles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The type that defines date interval styles that vary in length or in their included components.",
+          "name" : "Date.IntervalFormatStyle.DateStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/DateStyle"
+        },
+        {
+          "description" : "The type that supports customizing formatting templates using the date format style’s modifier functions, and constructing fixed-pattern date format strings.",
+          "name" : "Date.IntervalFormatStyle.Symbol",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/Symbol"
+        },
+        {
+          "description" : "The type that defines time styles that vary in length or in their included components.",
+          "name" : "Date.IntervalFormatStyle.TimeStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle\/TimeStyle"
+        }
+      ],
+      "title" : "Supporting Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A style for formatting a date and time.",
+          "name" : "dateTime",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/dateTime"
+        },
+        {
+          "description" : "A structure that creates a locale-appropriate string representation of a date instance and converts strings of dates and times into date instances.",
+          "name" : "Date.FormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/FormatStyle"
+        },
+        {
+          "description" : "A type that converts between dates and their ISO-8601 string representations.",
+          "name" : "Date.ISO8601FormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/ISO8601FormatStyle"
+        },
+        {
+          "description" : "Returns a style for formatting a date with an explicitly-specified style.",
+          "name" : "verbatim(_:locale:timeZone:calendar:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/verbatim(_:locale:timeZone:calendar:)"
+        },
+        {
+          "description" : "A style that formats a date with an explicitly-specified style.",
+          "name" : "Date.VerbatimFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/VerbatimFormatStyle"
+        },
+        {
+          "description" : "A style for formatting a date interval.",
+          "name" : "interval",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/interval"
+        },
+        {
+          "description" : "Returns a style for formatting a date as relative to the current date.",
+          "name" : "relative(presentation:unitsStyle:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/relative(presentation:unitsStyle:)"
+        },
+        {
+          "description" : "A format style that forms locale-aware string representations of a relative date or time.",
+          "name" : "Date.RelativeFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/RelativeFormatStyle"
+        },
+        {
+          "description" : "Returns a style for formatting a date interval in terms of specific date components.",
+          "name" : "components(style:fields:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle\/components(style:fields:)"
+        },
+        {
+          "description" : "A style for formatting a date interval in terms of specific date components.",
+          "name" : "Date.ComponentsFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/ComponentsFormatStyle"
+        }
+      ],
+      "title" : "Applying date and time styles"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Date.IntervalFormatStyle",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Date\/IntervalFormatStyle"
+}

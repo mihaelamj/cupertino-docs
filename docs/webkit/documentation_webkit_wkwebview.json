@@ -1,0 +1,692 @@
+{
+  "abstract" : "An object that displays interactive web content, such as for an in-app browser.",
+  "codeExamples" : [
+    {
+      "code" : "import UIKit\nimport WebKit\n\nclass ViewController: UIViewController, WKUIDelegate {\n    \n    var webView: WKWebView!\n    \n    override func loadView() {\n        let webConfiguration = WKWebViewConfiguration()\n        webView = WKWebView(frame: .zero, configuration: webConfiguration)\n        webView.uiDelegate = self\n        view = webView\n    }\n\n    override func viewDidLoad() {\n        super.viewDidLoad()\n        \n        let myURL = URL(string:\"https:\/\/www.apple.com\")\n        let myRequest = URLRequest(url: myURL!)\n        webView.load(myRequest)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CALayerDelegate",
+    "CVarArg",
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSAccessibilityElementProtocol",
+    "NSAccessibilityProtocol",
+    "NSAnimatablePropertyContainer",
+    "NSAppearanceCustomization",
+    "NSCoding",
+    "NSDraggingDestination",
+    "NSObjectProtocol",
+    "NSStandardKeyBindingResponding",
+    "NSTextFinderClient",
+    "NSTouchBarProvider",
+    "NSUserActivityRestoring",
+    "NSUserInterfaceItemIdentification",
+    "NSUserInterfaceValidations",
+    "UIAccessibilityIdentification",
+    "UIActivityItemsConfigurationProviding",
+    "UIAppearance",
+    "UIAppearanceContainer",
+    "UICoordinateSpace",
+    "UIDynamicItem",
+    "UIFocusEnvironment",
+    "UIFocusItem",
+    "UIFocusItemContainer",
+    "UILargeContentViewerItem",
+    "UIPasteConfigurationSupporting",
+    "UIPopoverPresentationControllerSourceItem",
+    "UIResponderStandardEditActions",
+    "UITraitChangeObservable",
+    "UITraitEnvironment",
+    "UIUserActivityRestoring"
+  ],
+  "contentHash" : "879164caa61832c7f63bbc180db6a4ca165301cb752eda48fcc9c7e90a7a3d35",
+  "crawledAt" : "2025-12-02T16:24:46Z",
+  "declaration" : {
+    "code" : "@MainActor class WKWebView",
+    "language" : "swift"
+  },
+  "id" : "DF7D40ED-78DF-4DFA-AD71-6A1913ACAEA8",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "WebKit",
+  "overview" : "## Overview\n\nA [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] object is a platform-native view that you use to incorporate web content seamlessly into your app’s UI. A web view supports a full web-browsing experience, and presents HTML, CSS, and JavaScript content alongside your app’s native views. Use it when web technologies satisfy your app’s layout and styling requirements more readily than native views. For example, you might use it when your app’s content changes frequently.\n\nA web view offers control over the navigation and user experience through delegate objects. Use the navigation delegate to react when the user clicks links in your web content, or interacts with the content in a way that affects navigation. For example, you might prevent the user from navigating to new content unless specific conditions are met. Use the UI delegate to present native UI elements, such as alerts or contextual menus, in response to interactions with your web content.\n\nEmbed a [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] object programmatically into your view hierarchy, or add it using Interface Builder. Interface Builder supports many customizations, such as configuring data detectors, media playback, and interaction behaviors. For more extensive customizations, create your web view programmatically using a [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebViewConfiguration] object. For example, use a web view configuration object to specify handlers for custom URL schemes, manage cookies, and customize preferences for your web content.\n\nBefore your web view appears onscreen, load content from a web server using a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/URLRequest] structure or load content directly from a local file or HTML string. The web view automatically loads embedded resources such as images or videos as part of the initial load request. It then renders your content and displays the results inside the view’s bounds rectangle. The following code example shows a view controller that replaces its default view with a custom [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] object.\n\nA web view automatically converts telephone numbers that appear in web content to Phone links. When the user taps a Phone link, the Phone app launches and dials the number. Use the [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebViewConfiguration] object to change the default data detector behavior.\n\nYou can also use [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView\/setMagnification(_:centeredAt:)] to programmatically set the scale of web content the first time it appears in a web view. Thereafter, the user can change the scale using gestures.\n\n### Manage the navigation through your web content\n\n[doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] provides a complete browsing experience, including the ability to navigate between different webpages using links, forward and back buttons, and more. When the user clicks a link in your content, the web view acts like a browser and displays the content at that link. To disallow navigation, or to customize your web view’s navigation behavior, provide your web view with a navigation delegate — an object that conforms to the [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKNavigationDelegate] protocol. Use your navigation delegate to modify the web view’s navigation behavior, or to track the loading progress of new content.\n\nYou can also use the methods of [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] to navigate programmatically through your content, or to trigger navigation from other parts of your app’s interface. For example, if your UI includes forward and back buttons, connect those buttons to the [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView\/goBack(_:)] and [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView\/goForward(_:)] methods of your web view to trigger the corresponding web navigation. Use the [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView\/canGoBack] and [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView\/canGoForward] properties to determine when to enable or disable your buttons.\n\n### Provide sharing options\n\nPeople may want to share the contents of your web view with an app or other people. Use a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIActivityViewController] to present a share sheet offering all the ways people can share the web content.\n\nIf your app has the [doc:\/\/com.apple.documentation\/documentation\/BundleResources\/Entitlements\/com.apple.developer.web-browser] entitlement, the iOS share sheet can offer Add to Home Screen for an `http` or `https` webpage, creating a convenient link to a web app or bookmark. To allow someone to add the current webpage to the Home Screen, include the [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] instance in the `activityItems` array when you call [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIActivityViewController\/init(activityItems:applicationActivities:)] to create the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIActivityViewController]. For more information about building a browser app, see [doc:\/\/com.apple.documentation\/documentation\/Xcode\/preparing-your-app-to-be-the-default-browser].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\ncrawled: 2025-12-02T16:24:46Z\n---\n\n# WKWebView\n\n**Class**\n\nAn object that displays interactive web content, such as for an in-app browser.\n\n## Declaration\n\n```swift\n@MainActor class WKWebView\n```\n\n## Overview\n\nA [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] object is a platform-native view that you use to incorporate web content seamlessly into your app’s UI. A web view supports a full web-browsing experience, and presents HTML, CSS, and JavaScript content alongside your app’s native views. Use it when web technologies satisfy your app’s layout and styling requirements more readily than native views. For example, you might use it when your app’s content changes frequently.\n\nA web view offers control over the navigation and user experience through delegate objects. Use the navigation delegate to react when the user clicks links in your web content, or interacts with the content in a way that affects navigation. For example, you might prevent the user from navigating to new content unless specific conditions are met. Use the UI delegate to present native UI elements, such as alerts or contextual menus, in response to interactions with your web content.\n\n\n\nEmbed a [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] object programmatically into your view hierarchy, or add it using Interface Builder. Interface Builder supports many customizations, such as configuring data detectors, media playback, and interaction behaviors. For more extensive customizations, create your web view programmatically using a [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebViewConfiguration] object. For example, use a web view configuration object to specify handlers for custom URL schemes, manage cookies, and customize preferences for your web content.\n\nBefore your web view appears onscreen, load content from a web server using a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/URLRequest] structure or load content directly from a local file or HTML string. The web view automatically loads embedded resources such as images or videos as part of the initial load request. It then renders your content and displays the results inside the view’s bounds rectangle. The following code example shows a view controller that replaces its default view with a custom [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] object.\n\n```swift\nimport UIKit\nimport WebKit\n\nclass ViewController: UIViewController, WKUIDelegate {\n    \n    var webView: WKWebView!\n    \n    override func loadView() {\n        let webConfiguration = WKWebViewConfiguration()\n        webView = WKWebView(frame: .zero, configuration: webConfiguration)\n        webView.uiDelegate = self\n        view = webView\n    }\n\n    override func viewDidLoad() {\n        super.viewDidLoad()\n        \n        let myURL = URL(string:\"https:\/\/www.apple.com\")\n        let myRequest = URLRequest(url: myURL!)\n        webView.load(myRequest)\n    }\n}\n```\n\nA web view automatically converts telephone numbers that appear in web content to Phone links. When the user taps a Phone link, the Phone app launches and dials the number. Use the [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebViewConfiguration] object to change the default data detector behavior.\n\nYou can also use [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView\/setMagnification(_:centeredAt:)] to programmatically set the scale of web content the first time it appears in a web view. Thereafter, the user can change the scale using gestures.\n\n### Manage the navigation through your web content\n\n[doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] provides a complete browsing experience, including the ability to navigate between different webpages using links, forward and back buttons, and more. When the user clicks a link in your content, the web view acts like a browser and displays the content at that link. To disallow navigation, or to customize your web view’s navigation behavior, provide your web view with a navigation delegate — an object that conforms to the [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKNavigationDelegate] protocol. Use your navigation delegate to modify the web view’s navigation behavior, or to track the loading progress of new content.\n\nYou can also use the methods of [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] to navigate programmatically through your content, or to trigger navigation from other parts of your app’s interface. For example, if your UI includes forward and back buttons, connect those buttons to the [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView\/goBack(_:)] and [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView\/goForward(_:)] methods of your web view to trigger the corresponding web navigation. Use the [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView\/canGoBack] and [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView\/canGoForward] properties to determine when to enable or disable your buttons.\n\n### Provide sharing options\n\nPeople may want to share the contents of your web view with an app or other people. Use a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIActivityViewController] to present a share sheet offering all the ways people can share the web content.\n\nIf your app has the [doc:\/\/com.apple.documentation\/documentation\/BundleResources\/Entitlements\/com.apple.developer.web-browser] entitlement, the iOS share sheet can offer Add to Home Screen for an `http` or `https` webpage, creating a convenient link to a web app or bookmark. To allow someone to add the current webpage to the Home Screen, include the [doc:\/\/com.apple.webkit\/documentation\/WebKit\/WKWebView] instance in the `activityItems` array when you call [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIActivityViewController\/init(activityItems:applicationActivities:)] to create the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIActivityViewController]. For more information about building a browser app, see [doc:\/\/com.apple.documentation\/documentation\/Xcode\/preparing-your-app-to-be-the-default-browser].\n\n## Creating a web view\n\n- **init(frame:configuration:)**: Creates a web view and initializes it with the specified frame and configuration data.\n- **init(coder:)**: Returns an object initialized from data in the specified coder object.\n- **configuration**: The object that contains the configuration details for the web view.\n\n## Determining whether WebKit can load content\n\n- **handlesURLScheme(_:)**: Returns a Boolean value that indicates whether WebKit natively supports resources with the specified URL scheme.\n\n## Displaying native user interface elements\n\n- **uiDelegate**: The object you use to integrate custom user interface elements, such as contextual menus or panels, into web view interactions.\n- **WKUIDelegate**: The methods for presenting native user interface elements on behalf of a webpage.\n\n## Managing navigation between webpages\n\n- **navigationDelegate**: The object you use to manage navigation behavior for the web view.\n- **WKNavigationDelegate**: Methods for accepting or rejecting navigation changes, and for tracking the progress of navigation requests.\n\n## Loading web content\n\n- **load(_:)**: Loads the web content that the specified URL request object references and navigates to that content.\n- **load(_:mimeType:characterEncodingName:baseURL:)**: Loads the content of the specified data object and navigates to it.\n- **loadHTMLString(_:baseURL:)**: Loads the contents of the specified HTML string and navigates to it.\n- **loadFileRequest(_:allowingReadAccessTo:)**: Loads the web content from the file the URL request object specifies and navigates to that content.\n- **loadFileURL(_:allowingReadAccessTo:)**: Loads the web content from the specified file and navigates to it.\n- **loadSimulatedRequest(_:response:responseData:)**: Loads the web content from the data you provide as if the data were the response to the request.\n- **loadSimulatedRequest(_:responseHTML:)**: Loads the web content from the HTML you provide as if the HTML were the response to the request.\n- **isLoading**: A Boolean value that indicates whether the view is currently loading content.\n- **estimatedProgress**: An estimate of what fraction of the current navigation has been loaded.\n\n## Managing the loading process\n\n- **reload()**: Reloads the current webpage.\n- **reload(_:)**: Reloads the current webpage.\n- **reloadFromOrigin()**: Reloads the current webpage, and performs end-to-end revalidation of the content using cache-validating conditionals, if possible.\n- **reloadFromOrigin(_:)**: Reloads the current webpage, and performs end-to-end revalidation of the content using cache-validating conditionals, if possible.\n- **stopLoading()**: Stops loading all resources on the current page.\n- **stopLoading(_:)**: Stops loading all resources on the current page.\n\n## Managing downloads\n\n- **startDownload(using:completionHandler:)**: Starts to download the resource at the URL in the request.\n- **resumeDownload(fromResumeData:completionHandler:)**: Resumes a failed or canceled download.\n\n## Making web content inspectable\n\n- **isInspectable**: A Boolean value that indicates whether you can inspect the view with Safari Web Inspector.\n\n## Inspecting the view information\n\n- **scrollView**: The scroll view associated with the web view.\n- **title**: The page title.\n- **url**: The URL for the current webpage.\n- **mediaType**: The media type for the contents of the web view.\n- **customUserAgent**: The custom user agent string.\n- **serverTrust**: The trust management object you use to evaluate trust for the current webpage.\n- **hasOnlySecureContent**: A Boolean value that indicates whether the web view loaded all resources on the page through securely encrypted connections.\n- **themeColor**: The theme color that the system gets from the first valid meta tag in the webpage.\n- **underPageBackgroundColor**: The color the web view displays behind the active page, visible when the user scrolls beyond the bounds of the page.\n\n## Scaling content\n\n- **pageZoom**: The scale factor by which the web view scales content relative to its bounds.\n- **allowsMagnification**: A Boolean value that indicates whether magnify gestures change the web view’s magnification.\n- **magnification**: The factor by which the page content is currently scaled.\n- **setMagnification(_:centeredAt:)**: Scales the page content and centers the result on the specified point.\n\n## Interacting with media\n\n- **pauseAllMediaPlayback(completionHandler:)**: Pauses playback of all media in the web view.\n- **requestMediaPlaybackState(completionHandler:)**: Requests the playback status of media in the web view.\n- **setAllMediaPlaybackSuspended(_:completionHandler:)**: Changes whether the webpage is suspending playback of all media in the page.\n- **closeAllMediaPresentations(completionHandler:)**: Closes all media the web view is presenting, including picture-in-picture video and fullscreen video.\n- **WKMediaPlaybackState**: An enumeration that describes whether an audio or video presentation is playing, paused, or suspended.\n\n## Managing the microphone and camera\n\n- **cameraCaptureState**: An enumeration case that indicates whether the webpage is using the camera to capture images or video.\n- **microphoneCaptureState**: An enumeration case that indicates whether the webpage is using the microphone to capture audio.\n- **setCameraCaptureState(_:completionHandler:)**: Changes whether the webpage is using the camera to capture images or video.\n- **setMicrophoneCaptureState(_:completionHandler:)**: Changes whether the webpage is using the microphone to capture audio.\n- **WKMediaCaptureState**: An enumeration that describes whether a media device, like a camera or microphone, is currently capturing audio or video.\n\n## Searching the current page’s content\n\n- **find(_:configuration:completionHandler:)**: Searches for the specified string in the web view’s content.\n- **find(_:configuration:)**: Searches for the specified string in the web view’s content.\n- **WKFindConfiguration**: The configuration parameters to use when searching the contents of the web view.\n- **WKFindResult**: An object that contains the results of searching the web view’s contents.\n\n## Navigating between webpages\n\n- **allowsBackForwardNavigationGestures**: A Boolean value that indicates whether horizontal swipe gestures trigger backward and forward page navigation.\n- **backForwardList**: The web view’s back-forward list.\n- **goBack(_:)**: Navigates to the back item in the back-forward list.\n- **goBack()**: Navigates to the back item in the back-forward list.\n- **goForward(_:)**: Navigates to the forward item in the back-forward list.\n- **goForward()**: Navigates to the forward item in the back-forward list.\n- **go(to:)**: Navigates to an item from the back-forward list and sets it as the current item.\n- **canGoBack**: A Boolean value that indicates whether there is a valid back item in the back-forward list.\n- **canGoForward**: A Boolean value that indicates whether there is a valid forward item in the back-forward list.\n- **allowsLinkPreview**: A Boolean value that determines whether pressing a link displays a preview of the destination for the link.\n- **interactionState**: An object you use to capture the current state of interaction in a web view so that you can restore that state later to another web view.\n\n## Executing JavaScript\n\n- **evaluateJavaScript(_:completionHandler:)**: Evaluates the specified JavaScript string.\n- **evaluateJavaScript(_:in:in:completionHandler:)**: Evaluates a JavaScript string in the context of the specified frame and content world.\n- **evaluateJavaScript(_:in:contentWorld:)**: Evaluates a JavaScript string in the context of the specified frame and content world.\n- **callAsyncJavaScript(_:arguments:in:in:completionHandler:)**: Executes the specified string as an asynchronous JavaScript function.\n- **callAsyncJavaScript(_:arguments:in:contentWorld:)**: Executes the specified string as an asynchronous JavaScript function.\n\n## Capturing the web view’s content\n\n- **takeSnapshot(with:completionHandler:)**: Generates a platform-native image from the web view’s contents asynchronously.\n- **createPDF(configuration:completionHandler:)**: Generates PDF data from the web view’s contents asynchronously.\n- **pdf(configuration:)**: Generates PDF data from the web view’s contents asynchronously.\n- **createWebArchiveData(completionHandler:)**: Creates a web archive of the web view’s current contents asynchronously.\n- **printOperation(with:)**: Returns the print operation object to use when printing the contents of the web view.\n- **WKSnapshotConfiguration**: The configuration data to use when generating an image from a web view’s contents.\n- **WKPDFConfiguration**: The configuration data to use when generating a PDF representation of a web view’s contents.\n\n## Supporting Find and Replace\n\n- **isFindInteractionEnabled**\n- **findInteraction**\n\n## Handling full-screen transitions\n\n- **fullscreenState**\n- **WKWebView.FullscreenState**\n\n## Configuring viewport insets\n\n- **setMinimumViewportInset(_:maximumViewportInset:)**\n- **minimumViewportInset**\n- **maximumViewportInset**\n\n## Examining data types\n\n- **WKWebViewDataType**\n\n## Deprecated\n\n- **Deprecated symbols**: Review unsupported symbols and their replacements.\n\n## Instance Properties\n\n- **isBlockedByScreenTime**\n- **isWritingToolsActive**\n- **obscuredContentInsets**\n\n## Instance Methods\n\n- **fetchData(of:completionHandler:)**\n- **restoreData(_:completionHandler:)**\n\n## Web views\n\n- **Replacing UIWebView in your app**: Find a suitable alternative to handle your app’s web content.\n- **Viewing Desktop or Mobile Web Content Using a Web View**: Implement a simple iPad web browser that can view either the desktop or mobile version of a website.\n- **WKUIDelegate**: The methods for presenting native user interface elements on behalf of a webpage.\n\n## Inherits From\n\n- NSView\n- UIView\n\n## Conforms To\n\n- CALayerDelegate\n- CVarArg\n- Copyable\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSAccessibilityElementProtocol\n- NSAccessibilityProtocol\n- NSAnimatablePropertyContainer\n- NSAppearanceCustomization\n- NSCoding\n- NSDraggingDestination\n- NSObjectProtocol\n- NSStandardKeyBindingResponding\n- NSTextFinderClient\n- NSTouchBarProvider\n- NSUserActivityRestoring\n- NSUserInterfaceItemIdentification\n- NSUserInterfaceValidations\n- UIAccessibilityIdentification\n- UIActivityItemsConfigurationProviding\n- UIAppearance\n- UIAppearanceContainer\n- UICoordinateSpace\n- UIDynamicItem\n- UIFocusEnvironment\n- UIFocusItem\n- UIFocusItemContainer\n- UILargeContentViewerItem\n- UIPasteConfigurationSupporting\n- UIPopoverPresentationControllerSourceItem\n- UIResponderStandardEditActions\n- UITraitChangeObservable\n- UITraitEnvironment\n- UIUserActivityRestoring\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a web view and initializes it with the specified frame and configuration data.",
+          "name" : "init(frame:configuration:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/init(frame:configuration:)"
+        },
+        {
+          "description" : "Returns an object initialized from data in the specified coder object.",
+          "name" : "init(coder:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/init(coder:)"
+        },
+        {
+          "description" : "The object that contains the configuration details for the web view.",
+          "name" : "configuration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/configuration"
+        }
+      ],
+      "title" : "Creating a web view"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value that indicates whether WebKit natively supports resources with the specified URL scheme.",
+          "name" : "handlesURLScheme(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/handlesURLScheme(_:)"
+        }
+      ],
+      "title" : "Determining whether WebKit can load content"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The object you use to integrate custom user interface elements, such as contextual menus or panels, into web view interactions.",
+          "name" : "uiDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/uiDelegate"
+        },
+        {
+          "description" : "The methods for presenting native user interface elements on behalf of a webpage.",
+          "name" : "WKUIDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKUIDelegate"
+        }
+      ],
+      "title" : "Displaying native user interface elements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The object you use to manage navigation behavior for the web view.",
+          "name" : "navigationDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/navigationDelegate"
+        },
+        {
+          "description" : "Methods for accepting or rejecting navigation changes, and for tracking the progress of navigation requests.",
+          "name" : "WKNavigationDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKNavigationDelegate"
+        }
+      ],
+      "title" : "Managing navigation between webpages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Loads the web content that the specified URL request object references and navigates to that content.",
+          "name" : "load(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/load(_:)"
+        },
+        {
+          "description" : "Loads the content of the specified data object and navigates to it.",
+          "name" : "load(_:mimeType:characterEncodingName:baseURL:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/load(_:mimeType:characterEncodingName:baseURL:)"
+        },
+        {
+          "description" : "Loads the contents of the specified HTML string and navigates to it.",
+          "name" : "loadHTMLString(_:baseURL:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/loadHTMLString(_:baseURL:)"
+        },
+        {
+          "description" : "Loads the web content from the file the URL request object specifies and navigates to that content.",
+          "name" : "loadFileRequest(_:allowingReadAccessTo:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/loadFileRequest(_:allowingReadAccessTo:)"
+        },
+        {
+          "description" : "Loads the web content from the specified file and navigates to it.",
+          "name" : "loadFileURL(_:allowingReadAccessTo:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/loadFileURL(_:allowingReadAccessTo:)"
+        },
+        {
+          "description" : "Loads the web content from the data you provide as if the data were the response to the request.",
+          "name" : "loadSimulatedRequest(_:response:responseData:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/loadSimulatedRequest(_:response:responseData:)"
+        },
+        {
+          "description" : "Loads the web content from the HTML you provide as if the HTML were the response to the request.",
+          "name" : "loadSimulatedRequest(_:responseHTML:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/loadSimulatedRequest(_:responseHTML:)"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the view is currently loading content.",
+          "name" : "isLoading",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/isLoading"
+        },
+        {
+          "description" : "An estimate of what fraction of the current navigation has been loaded.",
+          "name" : "estimatedProgress",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/estimatedProgress"
+        }
+      ],
+      "title" : "Loading web content"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Reloads the current webpage.",
+          "name" : "reload()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/reload()"
+        },
+        {
+          "description" : "Reloads the current webpage.",
+          "name" : "reload(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/reload(_:)"
+        },
+        {
+          "description" : "Reloads the current webpage, and performs end-to-end revalidation of the content using cache-validating conditionals, if possible.",
+          "name" : "reloadFromOrigin()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/reloadFromOrigin()"
+        },
+        {
+          "description" : "Reloads the current webpage, and performs end-to-end revalidation of the content using cache-validating conditionals, if possible.",
+          "name" : "reloadFromOrigin(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/reloadFromOrigin(_:)"
+        },
+        {
+          "description" : "Stops loading all resources on the current page.",
+          "name" : "stopLoading()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/stopLoading()"
+        },
+        {
+          "description" : "Stops loading all resources on the current page.",
+          "name" : "stopLoading(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/stopLoading(_:)"
+        }
+      ],
+      "title" : "Managing the loading process"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Starts to download the resource at the URL in the request.",
+          "name" : "startDownload(using:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/startDownload(using:completionHandler:)"
+        },
+        {
+          "description" : "Resumes a failed or canceled download.",
+          "name" : "resumeDownload(fromResumeData:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/resumeDownload(fromResumeData:completionHandler:)"
+        }
+      ],
+      "title" : "Managing downloads"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether you can inspect the view with Safari Web Inspector.",
+          "name" : "isInspectable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/isInspectable"
+        }
+      ],
+      "title" : "Making web content inspectable"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The scroll view associated with the web view.",
+          "name" : "scrollView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/scrollView"
+        },
+        {
+          "description" : "The page title.",
+          "name" : "title",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/title"
+        },
+        {
+          "description" : "The URL for the current webpage.",
+          "name" : "url",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/url"
+        },
+        {
+          "description" : "The media type for the contents of the web view.",
+          "name" : "mediaType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/mediaType"
+        },
+        {
+          "description" : "The custom user agent string.",
+          "name" : "customUserAgent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/customUserAgent"
+        },
+        {
+          "description" : "The trust management object you use to evaluate trust for the current webpage.",
+          "name" : "serverTrust",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/serverTrust"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the web view loaded all resources on the page through securely encrypted connections.",
+          "name" : "hasOnlySecureContent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/hasOnlySecureContent"
+        },
+        {
+          "description" : "The theme color that the system gets from the first valid meta tag in the webpage.",
+          "name" : "themeColor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/themeColor"
+        },
+        {
+          "description" : "The color the web view displays behind the active page, visible when the user scrolls beyond the bounds of the page.",
+          "name" : "underPageBackgroundColor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/underPageBackgroundColor"
+        }
+      ],
+      "title" : "Inspecting the view information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The scale factor by which the web view scales content relative to its bounds.",
+          "name" : "pageZoom",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/pageZoom"
+        },
+        {
+          "description" : "A Boolean value that indicates whether magnify gestures change the web view’s magnification.",
+          "name" : "allowsMagnification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/allowsMagnification"
+        },
+        {
+          "description" : "The factor by which the page content is currently scaled.",
+          "name" : "magnification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/magnification"
+        },
+        {
+          "description" : "Scales the page content and centers the result on the specified point.",
+          "name" : "setMagnification(_:centeredAt:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/setMagnification(_:centeredAt:)"
+        }
+      ],
+      "title" : "Scaling content"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Pauses playback of all media in the web view.",
+          "name" : "pauseAllMediaPlayback(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/pauseAllMediaPlayback(completionHandler:)"
+        },
+        {
+          "description" : "Requests the playback status of media in the web view.",
+          "name" : "requestMediaPlaybackState(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/requestMediaPlaybackState(completionHandler:)"
+        },
+        {
+          "description" : "Changes whether the webpage is suspending playback of all media in the page.",
+          "name" : "setAllMediaPlaybackSuspended(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/setAllMediaPlaybackSuspended(_:completionHandler:)"
+        },
+        {
+          "description" : "Closes all media the web view is presenting, including picture-in-picture video and fullscreen video.",
+          "name" : "closeAllMediaPresentations(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/closeAllMediaPresentations(completionHandler:)"
+        },
+        {
+          "description" : "An enumeration that describes whether an audio or video presentation is playing, paused, or suspended.",
+          "name" : "WKMediaPlaybackState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKMediaPlaybackState"
+        }
+      ],
+      "title" : "Interacting with media"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An enumeration case that indicates whether the webpage is using the camera to capture images or video.",
+          "name" : "cameraCaptureState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/cameraCaptureState"
+        },
+        {
+          "description" : "An enumeration case that indicates whether the webpage is using the microphone to capture audio.",
+          "name" : "microphoneCaptureState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/microphoneCaptureState"
+        },
+        {
+          "description" : "Changes whether the webpage is using the camera to capture images or video.",
+          "name" : "setCameraCaptureState(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/setCameraCaptureState(_:completionHandler:)"
+        },
+        {
+          "description" : "Changes whether the webpage is using the microphone to capture audio.",
+          "name" : "setMicrophoneCaptureState(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/setMicrophoneCaptureState(_:completionHandler:)"
+        },
+        {
+          "description" : "An enumeration that describes whether a media device, like a camera or microphone, is currently capturing audio or video.",
+          "name" : "WKMediaCaptureState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKMediaCaptureState"
+        }
+      ],
+      "title" : "Managing the microphone and camera"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Searches for the specified string in the web view’s content.",
+          "name" : "find(_:configuration:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/find(_:configuration:completionHandler:)"
+        },
+        {
+          "description" : "Searches for the specified string in the web view’s content.",
+          "name" : "find(_:configuration:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/find(_:configuration:)"
+        },
+        {
+          "description" : "The configuration parameters to use when searching the contents of the web view.",
+          "name" : "WKFindConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKFindConfiguration"
+        },
+        {
+          "description" : "An object that contains the results of searching the web view’s contents.",
+          "name" : "WKFindResult",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKFindResult"
+        }
+      ],
+      "title" : "Searching the current page’s content"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether horizontal swipe gestures trigger backward and forward page navigation.",
+          "name" : "allowsBackForwardNavigationGestures",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/allowsBackForwardNavigationGestures"
+        },
+        {
+          "description" : "The web view’s back-forward list.",
+          "name" : "backForwardList",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/backForwardList"
+        },
+        {
+          "description" : "Navigates to the back item in the back-forward list.",
+          "name" : "goBack(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/goBack(_:)"
+        },
+        {
+          "description" : "Navigates to the back item in the back-forward list.",
+          "name" : "goBack()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/goBack()"
+        },
+        {
+          "description" : "Navigates to the forward item in the back-forward list.",
+          "name" : "goForward(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/goForward(_:)"
+        },
+        {
+          "description" : "Navigates to the forward item in the back-forward list.",
+          "name" : "goForward()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/goForward()"
+        },
+        {
+          "description" : "Navigates to an item from the back-forward list and sets it as the current item.",
+          "name" : "go(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/go(to:)"
+        },
+        {
+          "description" : "A Boolean value that indicates whether there is a valid back item in the back-forward list.",
+          "name" : "canGoBack",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/canGoBack"
+        },
+        {
+          "description" : "A Boolean value that indicates whether there is a valid forward item in the back-forward list.",
+          "name" : "canGoForward",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/canGoForward"
+        },
+        {
+          "description" : "A Boolean value that determines whether pressing a link displays a preview of the destination for the link.",
+          "name" : "allowsLinkPreview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/allowsLinkPreview"
+        },
+        {
+          "description" : "An object you use to capture the current state of interaction in a web view so that you can restore that state later to another web view.",
+          "name" : "interactionState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/interactionState"
+        }
+      ],
+      "title" : "Navigating between webpages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Evaluates the specified JavaScript string.",
+          "name" : "evaluateJavaScript(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/evaluateJavaScript(_:completionHandler:)"
+        },
+        {
+          "description" : "Evaluates a JavaScript string in the context of the specified frame and content world.",
+          "name" : "evaluateJavaScript(_:in:in:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/evaluateJavaScript(_:in:in:completionHandler:)"
+        },
+        {
+          "description" : "Evaluates a JavaScript string in the context of the specified frame and content world.",
+          "name" : "evaluateJavaScript(_:in:contentWorld:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/evaluateJavaScript(_:in:contentWorld:)"
+        },
+        {
+          "description" : "Executes the specified string as an asynchronous JavaScript function.",
+          "name" : "callAsyncJavaScript(_:arguments:in:in:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/callAsyncJavaScript(_:arguments:in:in:completionHandler:)"
+        },
+        {
+          "description" : "Executes the specified string as an asynchronous JavaScript function.",
+          "name" : "callAsyncJavaScript(_:arguments:in:contentWorld:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/callAsyncJavaScript(_:arguments:in:contentWorld:)"
+        }
+      ],
+      "title" : "Executing JavaScript"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Generates a platform-native image from the web view’s contents asynchronously.",
+          "name" : "takeSnapshot(with:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/takeSnapshot(with:completionHandler:)"
+        },
+        {
+          "description" : "Generates PDF data from the web view’s contents asynchronously.",
+          "name" : "createPDF(configuration:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/createPDF(configuration:completionHandler:)"
+        },
+        {
+          "description" : "Generates PDF data from the web view’s contents asynchronously.",
+          "name" : "pdf(configuration:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/pdf(configuration:)"
+        },
+        {
+          "description" : "Creates a web archive of the web view’s current contents asynchronously.",
+          "name" : "createWebArchiveData(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/createWebArchiveData(completionHandler:)"
+        },
+        {
+          "description" : "Returns the print operation object to use when printing the contents of the web view.",
+          "name" : "printOperation(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/printOperation(with:)"
+        },
+        {
+          "description" : "The configuration data to use when generating an image from a web view’s contents.",
+          "name" : "WKSnapshotConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKSnapshotConfiguration"
+        },
+        {
+          "description" : "The configuration data to use when generating a PDF representation of a web view’s contents.",
+          "name" : "WKPDFConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKPDFConfiguration"
+        }
+      ],
+      "title" : "Capturing the web view’s content"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "isFindInteractionEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/isFindInteractionEnabled"
+        },
+        {
+          "description" : "",
+          "name" : "findInteraction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/findInteraction"
+        }
+      ],
+      "title" : "Supporting Find and Replace"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "fullscreenState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/fullscreenState-swift.property"
+        },
+        {
+          "description" : "",
+          "name" : "WKWebView.FullscreenState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/FullscreenState-swift.enum"
+        }
+      ],
+      "title" : "Handling full-screen transitions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "setMinimumViewportInset(_:maximumViewportInset:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/setMinimumViewportInset(_:maximumViewportInset:)"
+        },
+        {
+          "description" : "",
+          "name" : "minimumViewportInset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/minimumViewportInset"
+        },
+        {
+          "description" : "",
+          "name" : "maximumViewportInset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/maximumViewportInset"
+        }
+      ],
+      "title" : "Configuring viewport insets"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "WKWebViewDataType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebViewDataType"
+        }
+      ],
+      "title" : "Examining data types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Review unsupported symbols and their replacements.",
+          "name" : "Deprecated symbols",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/wkwebview-deprecated-symbols"
+        }
+      ],
+      "title" : "Deprecated"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "isBlockedByScreenTime",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/isBlockedByScreenTime"
+        },
+        {
+          "description" : "",
+          "name" : "isWritingToolsActive",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/isWritingToolsActive"
+        },
+        {
+          "description" : "",
+          "name" : "obscuredContentInsets",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/obscuredContentInsets"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "fetchData(of:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/fetchData(of:completionHandler:)"
+        },
+        {
+          "description" : "",
+          "name" : "restoreData(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView\/restoreData(_:completionHandler:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Find a suitable alternative to handle your app’s web content.",
+          "name" : "Replacing UIWebView in your app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/replacing-uiwebview-in-your-app"
+        },
+        {
+          "description" : "Implement a simple iPad web browser that can view either the desktop or mobile version of a website.",
+          "name" : "Viewing Desktop or Mobile Web Content Using a Web View",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/viewing-desktop-or-mobile-web-content-using-a-web-view"
+        },
+        {
+          "description" : "The methods for presenting native user interface elements on behalf of a webpage.",
+          "name" : "WKUIDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKUIDelegate"
+        }
+      ],
+      "title" : "Web views"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSView"
+        },
+        {
+          "name" : "UIView"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "WKWebView",
+  "url" : "https:\/\/developer.apple.com\/documentation\/WebKit\/WKWebView"
+}

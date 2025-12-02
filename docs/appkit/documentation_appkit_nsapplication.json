@@ -1,0 +1,706 @@
+{
+  "abstract" : "An object that manages an app’s main event loop and resources used by all of that app’s objects.",
+  "codeExamples" : [
+    {
+      "code" : "void NSApplicationMain(int argc, char *argv[]) {\n    [NSApplication sharedApplication];\n    [NSBundle loadNibNamed:@\"myMain\" owner:NSApp];\n    [NSApp run];\n}",
+      "language" : "objc"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSAccessibilityElementProtocol",
+    "NSAccessibilityProtocol",
+    "NSAppearanceCustomization",
+    "NSCoding",
+    "NSMenuItemValidation",
+    "NSObjectProtocol",
+    "NSStandardKeyBindingResponding",
+    "NSTouchBarProvider",
+    "NSUserActivityRestoring",
+    "NSUserInterfaceValidations",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "86d5ed23aa48d7b413c68069d7da491dedd7f9c7071de46b029cf42209bdf120",
+  "crawledAt" : "2025-12-02T18:23:54Z",
+  "declaration" : {
+    "code" : "@MainActor class NSApplication",
+    "language" : "swift"
+  },
+  "id" : "976B6999-51C1-4000-A190-13B4E7ED944E",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "AppKit",
+  "overview" : "## Overview\n\nEvery app uses a single instance of [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] to control the main event loop, keep track of the app’s windows and menus, distribute events to the appropriate objects (that’s, itself or one of its windows), set up autorelease pools, and receive notification of app-level events. An [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] object has a delegate (an object that you assign) that’s notified when the app starts or terminates, is hidden or activated, should open a file selected by the user, and so forth. By setting the delegate and implementing the delegate methods, you customize the behavior of your app without having to subclass [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication]. In your app’s `main()` function, create the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] instance by calling the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] class method. After creating the application object, the `main()` function should load your app’s main nib file and then start the event loop by sending the application object a [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/run()] message. If you create an Application project in Xcode, this `main()` function is created for you. The `main()` function Xcode creates begins by calling a function named `NSApplicationMain()`, which is functionally similar to the following:\n\nThe [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] class method initializes the display environment and connects your program to the window server and the display server. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] object maintains a list of all the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSWindow] objects the app uses, so it can retrieve any of the app’s [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSView] objects. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] method also initializes the global variable `NSApp`, which you use to retrieve the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] instance. [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] only performs the initialization once. If you invoke it more than once, it returns the application object it created previously.\n\nThe shared [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] object performs the important task of receiving events from the window server and distributing them to the proper [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSResponder] objects. `NSApp` translates an event into an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSEvent] object, then forwards the event object to the affected [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSWindow] object. All keyboard and mouse events go directly to the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSWindow] object associated with the event. The only exception to this rule is if the Command key is pressed when a key-down event occurs; in this case, every [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSWindow] object has an opportunity to respond to the event. When a window object receives an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSEvent] object from `NSApp`, it distributes it to the objects in its view hierarchy.\n\n[doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] is also responsible for dispatching certain Apple events received by the app. For example, macOS sends Apple events to your app at various times, such as when the app is launched or reopened. [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] installs Apple event handlers to handle these events by sending a message to the appropriate object. You can also use the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSAppleEventManager] class to register your own Apple event handlers. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/applicationWillFinishLaunching(_:)] method is generally the best place to do so. For more information on how events are handled and how you can modify the default behavior, including information on working with Apple events in scriptable apps, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/ScriptableCocoaApplications\/SApps_handle_AEs\/SAppsHandleAEs.html#\/\/apple_ref\/doc\/uid\/20001239] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/ScriptableCocoaApplications\/SApps_intro\/SAppsIntro.html#\/\/apple_ref\/doc\/uid\/TP40002164].\n\nThe [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] class sets up `@autorelease` block during initialization and inside the event loop—specifically, within its initialization (or [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared]) and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/run()] methods. Similarly, the methods AppKit adds to [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Bundle] employ `@autorelease` blocks during the loading of nib files. These `@autorelease` blocks aren’t accessible outside the scope of the respective [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] and [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Bundle] methods. Typically, an app creates objects either while the event loop is running or by loading objects from nib files, so this lack of access usually isn’t a problem. However, if you do need to use Cocoa classes within the `main()` function itself (other than to load nib files or to instantiate [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication]), you should create an `@autorelease` block to contain the code using the classes.\n\n### The delegate and notifications\n\nYou can assign a delegate to your [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] object. The delegate responds to certain messages on behalf of the object. Some of these messages, such as [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/application(_:openFile:)], ask the delegate to perform an action. Another message, [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/applicationShouldTerminate(_:)], lets the delegate determine whether the app should be allowed to quit. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] class sends these messages directly to its delegate.\n\n[doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] also posts notifications to the app’s default notification center. Any object may register to receive one or more of the notifications posted by [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] by sending the message [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NotificationCenter\/addObserver(_:selector:name:object:)] to the default notification center (an instance of the `NSNotificationCenter` class). The delegate of [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] is automatically registered to receive these notifications if it implements certain delegate methods. For example, [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] posts notifications when it’s about to be done launching the app and when it’s done launching the app ([doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/willFinishLaunchingNotification] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/didFinishLaunchingNotification]). The delegate has an opportunity to respond to these notifications by implementing the methods [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/applicationWillFinishLaunching(_:)] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/applicationDidFinishLaunching(_:)]. If the delegate wants to be informed of both events, it implements both methods. If it needs to know only when the app is finished launching, it implements only [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/applicationDidFinishLaunching(_:)].\n\n### System services\n\n`NSApplication` interacts with the system services architecture to provide services to your app through the Services menu.\n\n### Subclassing notes\n\nYou rarely should find a real need to create a custom `NSApplication` subclass. Unlike some object-oriented libraries, Cocoa doesn’t require you to subclass `NSApplication` to customize app behavior. Instead it gives you many other ways to customize an app. This section discusses both some of the possible reasons to subclass `NSApplication` and some of the reasons *not* to subclass `NSApplication`.\n\nTo use a custom subclass of `NSApplication`, send [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] to your subclass rather than directly to `NSApplication`. If you create your app in Xcode, you can accomplish this by setting your custom app class to be the principal class. In Xcode, double-click the app target in the Groups and Files list to open the Info window for the target. Then display the Properties pane of the window and replace “NSApplication” in the Principal Class field with the name of your custom class. The `NSApplicationMain` function sends [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] to the principal class to obtain the global app instance (`NSApp`)—which in this case will be an instance of your custom subclass of `NSApplication`.\n\n#### Methods to override\n\nGenerally, you subclass `NSApplication` to provide your own special responses to messages that are routinely sent to the global app object (`NSApp`). `NSApplication` doesn’t have primitive methods in the sense of methods that you must override in your subclass. Here are four methods that are possible candidates for overriding:\n\n#### Special considerations\n\nThe global app object uses `@autorelease` blocks in its [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/run()] method; if you override this method, you’ll need to create your own `@autorelease` blocks.\n\nDo not override [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared]. The default implementation, which is essential to app behavior, is too complex to duplicate on your own.\n\n#### Alternatives to subclassing\n\n`NSApplication` defines numerous [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/DevPedia-CocoaCore\/Delegation.html#\/\/apple_ref\/doc\/uid\/TP40008195-CH14] methods that offer opportunities for modifying specific aspects of app behavior. Instead of making a custom subclass of `NSApplication`, your app delegate may be able to implement one or more of these methods to accomplish your design goals. In general, a better design than subclassing `NSApplication` is to put the code that expresses your app’s special behavior into one or more custom objects called controllers. Methods defined in your controllers can be invoked from a small dispatcher object without being closely tied to the global app object.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\ncrawled: 2025-12-02T18:23:54Z\n---\n\n# NSApplication\n\n**Class**\n\nAn object that manages an app’s main event loop and resources used by all of that app’s objects.\n\n## Declaration\n\n```swift\n@MainActor class NSApplication\n```\n\n## Overview\n\nEvery app uses a single instance of [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] to control the main event loop, keep track of the app’s windows and menus, distribute events to the appropriate objects (that’s, itself or one of its windows), set up autorelease pools, and receive notification of app-level events. An [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] object has a delegate (an object that you assign) that’s notified when the app starts or terminates, is hidden or activated, should open a file selected by the user, and so forth. By setting the delegate and implementing the delegate methods, you customize the behavior of your app without having to subclass [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication]. In your app’s `main()` function, create the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] instance by calling the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] class method. After creating the application object, the `main()` function should load your app’s main nib file and then start the event loop by sending the application object a [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/run()] message. If you create an Application project in Xcode, this `main()` function is created for you. The `main()` function Xcode creates begins by calling a function named `NSApplicationMain()`, which is functionally similar to the following:\n\n```objc\nvoid NSApplicationMain(int argc, char *argv[]) {\n    [NSApplication sharedApplication];\n    [NSBundle loadNibNamed:@\"myMain\" owner:NSApp];\n    [NSApp run];\n}\n```\n\nThe [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] class method initializes the display environment and connects your program to the window server and the display server. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] object maintains a list of all the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSWindow] objects the app uses, so it can retrieve any of the app’s [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSView] objects. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] method also initializes the global variable `NSApp`, which you use to retrieve the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] instance. [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] only performs the initialization once. If you invoke it more than once, it returns the application object it created previously.\n\nThe shared [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] object performs the important task of receiving events from the window server and distributing them to the proper [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSResponder] objects. `NSApp` translates an event into an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSEvent] object, then forwards the event object to the affected [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSWindow] object. All keyboard and mouse events go directly to the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSWindow] object associated with the event. The only exception to this rule is if the Command key is pressed when a key-down event occurs; in this case, every [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSWindow] object has an opportunity to respond to the event. When a window object receives an [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSEvent] object from `NSApp`, it distributes it to the objects in its view hierarchy.\n\n[doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] is also responsible for dispatching certain Apple events received by the app. For example, macOS sends Apple events to your app at various times, such as when the app is launched or reopened. [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] installs Apple event handlers to handle these events by sending a message to the appropriate object. You can also use the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSAppleEventManager] class to register your own Apple event handlers. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/applicationWillFinishLaunching(_:)] method is generally the best place to do so. For more information on how events are handled and how you can modify the default behavior, including information on working with Apple events in scriptable apps, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/ScriptableCocoaApplications\/SApps_handle_AEs\/SAppsHandleAEs.html#\/\/apple_ref\/doc\/uid\/20001239] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/ScriptableCocoaApplications\/SApps_intro\/SAppsIntro.html#\/\/apple_ref\/doc\/uid\/TP40002164].\n\nThe [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] class sets up `@autorelease` block during initialization and inside the event loop—specifically, within its initialization (or [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared]) and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/run()] methods. Similarly, the methods AppKit adds to [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Bundle] employ `@autorelease` blocks during the loading of nib files. These `@autorelease` blocks aren’t accessible outside the scope of the respective [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] and [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Bundle] methods. Typically, an app creates objects either while the event loop is running or by loading objects from nib files, so this lack of access usually isn’t a problem. However, if you do need to use Cocoa classes within the `main()` function itself (other than to load nib files or to instantiate [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication]), you should create an `@autorelease` block to contain the code using the classes.\n\n### The delegate and notifications\n\nYou can assign a delegate to your [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] object. The delegate responds to certain messages on behalf of the object. Some of these messages, such as [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/application(_:openFile:)], ask the delegate to perform an action. Another message, [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/applicationShouldTerminate(_:)], lets the delegate determine whether the app should be allowed to quit. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] class sends these messages directly to its delegate.\n\n[doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] also posts notifications to the app’s default notification center. Any object may register to receive one or more of the notifications posted by [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] by sending the message [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NotificationCenter\/addObserver(_:selector:name:object:)] to the default notification center (an instance of the `NSNotificationCenter` class). The delegate of [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] is automatically registered to receive these notifications if it implements certain delegate methods. For example, [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication] posts notifications when it’s about to be done launching the app and when it’s done launching the app ([doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/willFinishLaunchingNotification] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/didFinishLaunchingNotification]). The delegate has an opportunity to respond to these notifications by implementing the methods [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/applicationWillFinishLaunching(_:)] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/applicationDidFinishLaunching(_:)]. If the delegate wants to be informed of both events, it implements both methods. If it needs to know only when the app is finished launching, it implements only [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplicationDelegate\/applicationDidFinishLaunching(_:)].\n\n### System services\n\n`NSApplication` interacts with the system services architecture to provide services to your app through the Services menu.\n\n### Subclassing notes\n\nYou rarely should find a real need to create a custom `NSApplication` subclass. Unlike some object-oriented libraries, Cocoa doesn’t require you to subclass `NSApplication` to customize app behavior. Instead it gives you many other ways to customize an app. This section discusses both some of the possible reasons to subclass `NSApplication` and some of the reasons *not* to subclass `NSApplication`.\n\nTo use a custom subclass of `NSApplication`, send [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] to your subclass rather than directly to `NSApplication`. If you create your app in Xcode, you can accomplish this by setting your custom app class to be the principal class. In Xcode, double-click the app target in the Groups and Files list to open the Info window for the target. Then display the Properties pane of the window and replace “NSApplication” in the Principal Class field with the name of your custom class. The `NSApplicationMain` function sends [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared] to the principal class to obtain the global app instance (`NSApp`)—which in this case will be an instance of your custom subclass of `NSApplication`.\n\n\n\n#### Methods to override\n\nGenerally, you subclass `NSApplication` to provide your own special responses to messages that are routinely sent to the global app object (`NSApp`). `NSApplication` doesn’t have primitive methods in the sense of methods that you must override in your subclass. Here are four methods that are possible candidates for overriding:\n\n- Override [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/run()] if you want the app to manage the main event loop differently than it does by default. (This a critical and complex task, however, that you should only attempt with good reason).\n- Override [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/sendEvent(_:)] if you want to change how events are dispatched or perform some special event processing.\n- Override [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/requestUserAttention(_:)] if you want to modify how your app attracts the attention of the user (for example, offering an alternative to the bouncing app icon in the Dock).\n- Override [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/target(forAction:)] to substitute another object for the target of an action message.\n\n#### Special considerations\n\nThe global app object uses `@autorelease` blocks in its [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/run()] method; if you override this method, you’ll need to create your own `@autorelease` blocks.\n\nDo not override [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/shared]. The default implementation, which is essential to app behavior, is too complex to duplicate on your own.\n\n#### Alternatives to subclassing\n\n`NSApplication` defines numerous [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/DevPedia-CocoaCore\/Delegation.html#\/\/apple_ref\/doc\/uid\/TP40008195-CH14] methods that offer opportunities for modifying specific aspects of app behavior. Instead of making a custom subclass of `NSApplication`, your app delegate may be able to implement one or more of these methods to accomplish your design goals. In general, a better design than subclassing `NSApplication` is to put the code that expresses your app’s special behavior into one or more custom objects called controllers. Methods defined in your controllers can be invoked from a small dispatcher object without being closely tied to the global app object.\n\n## Getting the shared app object\n\n- **shared**: Returns the application instance, creating it if it doesn’t exist yet.\n- **NSApp**: The global variable for the shared app instance.\n\n## Managing the app’s behavior\n\n- **delegate**: The app delegate object.\n- **NSApplicationDelegate**: A set of methods that manage your app’s life cycle and its interaction with common system services.\n\n## Managing the event loop\n\n- **nextEvent(matching:until:inMode:dequeue:)**: Returns the next event matching a given mask, or `nil` if no such event is found before a specified expiration date.\n- **discardEvents(matching:before:)**: Removes all events matching the given mask and generated before the specified event.\n- **currentEvent**: The last event object that the app retrieved from the event queue.\n- **isRunning**: A Boolean value indicating whether the main event loop is running.\n- **run()**: Starts the main event loop.\n- **finishLaunching()**: Activates the app, opens any files specified by the `NSOpen` user default, and unhighlights the app’s icon.\n- **stop(_:)**: Stops the main event loop.\n- **sendEvent(_:)**: Dispatches an event to other objects.\n- **postEvent(_:atStart:)**: Adds a given event to the receiver’s event queue.\n\n## Posting actions\n\n- **tryToPerform(_:with:)**: Dispatches an action message to the specified target.\n- **sendAction(_:to:from:)**: Sends the given action message to the given target.\n- **target(forAction:)**: Returns the object that receives the action message specified by the given selector.\n- **target(forAction:to:from:)**: Searches for an object that can receive the message specified by the given selector.\n\n## Terminating the app\n\n- **terminate(_:)**: Terminates the receiver.\n- **reply(toApplicationShouldTerminate:)**: Responds to `NSTerminateLater` once the app knows whether it can terminate.\n\n## Activating and deactivating the app\n\n- **Passing control from one app to another with cooperative activation**: Request focus for your app, and coordinate passing control from one app to another.\n- **activate()**: Activates the receiver app, if appropriate.\n- **deactivate()**: Deactivates the receiver.\n- **isActive**: A Boolean value indicating whether this is the active app.\n- **yieldActivation(to:)**: Explicitly allows another app to make itself active.\n- **yieldActivation(toApplicationWithBundleIdentifier:)**: Explicitly allows another app to make itself active.\n- **NSApplication.ActivationOptions**: The following flags are for [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSRunningApplication\/activate(options:)].\n\n## Managing relaunch on login\n\n- **disableRelaunchOnLogin()**: Disables relaunching the app on login.\n- **enableRelaunchOnLogin()**: Enables relaunching the app on login.\n\n## Managing remote notifications\n\n- **registerForRemoteNotifications()**: Register for notifications sent by Apple Push Notification service (APNs).\n- **unregisterForRemoteNotifications()**: Unregister for notifications received from Apple Push Notification service.\n- **enabledRemoteNotificationTypes**: The types of push notifications that the app accepts.\n- **registerForRemoteNotifications(matching:)**: Register to receive notifications of the specified types from a provider through the Apple Push Notification service.\n- **isRegisteredForRemoteNotifications**: A Boolean value indicating whether the app is registered with Apple Push Notification service (APNs).\n- **NSApplication.RemoteNotificationType**: These constants determine whether apps launched by remote notifications display a badge.\n\n## Managing the app’s appearance\n\n- **appearance**: The appearance associated with the app’s windows.\n- **effectiveAppearance**: The appearance that AppKit uses to draw the app’s interface.\n- **currentSystemPresentationOptions**: The set of app presentation options that are currently in effect for the system.\n- **presentationOptions**: The presentation options that should be in effect for the system when this app is active.\n- **NSApplication.PresentationOptions**: Constants that control the presentation of the app, typically for fullscreen apps such as games or kiosks.\n- **applicationShouldSuppressHighDynamicRangeContent**: A boolean value indicating whether your application should suppress HDR content based on established policy. Built-in AppKit components such as NSImageView will automatically behave correctly with HDR content. You should use this value in conjunction with notifications (`NSApplicationShouldBeginSuppressingHighDynamicRangeContentNotification` and `NSApplicationShouldEndSuppressingHighDynamicRangeContentNotification`) to suppress HDR content in your application when signaled to do so.\n\n## Managing windows, panels, and menus\n\n- **App Windows**: Show, hide, minimize, arrange, and update your app’s windows.\n- **Modal Windows and Panels**: Display a modal window or show one of the standard app panels, such as the app’s About panel.\n- **Menus**: Access the app’s main menu items and update the window and services menus.\n\n## User interface layout direction\n\n- **userInterfaceLayoutDirection**: The layout direction of the user interface.\n- **NSUserInterfaceLayoutDirection**: Specifies the directional flow of the user interface.\n\n## Accessing the dock tile\n\n- **dockTile**: The app’s Dock tile.\n- **applicationIconImage**: The image used for the app’s icon.\n\n## Customizing the Touch Bar\n\n- **toggleTouchBarCustomizationPalette(_:)**: Show or hides the interface for customizing the Touch Bar.\n\n## Managing user attention requests\n\n- **requestUserAttention(_:)**: Starts a user attention request.\n- **NSApplication.RequestUserAttentionType**: These constants specify the level of severity of a user attention request and are used by [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/cancelUserAttentionRequest(_:)] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/requestUserAttention(_:)].\n- **cancelUserAttentionRequest(_:)**: Cancels a previous user attention request.\n- **reply(toOpenOrPrint:)**: Handles errors that might occur when the user attempts to open or print files.\n- **NSApplication.DelegateReply**: Constants that indicate whether a copy or print operation was successful, was canceled, or failed.\n\n## Providing help information\n\n- **registerUserInterfaceItemSearchHandler(_:)**: Register an object that provides help data to your app.\n- **searchString(_:inUserInterfaceItemString:range:found:)**: Searches for the string in the user interface.\n- **unregisterUserInterfaceItemSearchHandler(_:)**: Unregister an object that provides help data to your app.\n- **showHelp(_:)**: If your project is properly registered, and the necessary keys have been set in the property list, this method launches Help Viewer and displays the first page of your app’s help book.\n- **activateContextHelpMode(_:)**: Places the receiver in context-sensitive help mode.\n- **helpMenu**: The help menu used by the app.\n\n## Providing services\n\n- **validRequestor(forSendType:returnType:)**: Indicates whether the receiver can send and receive the specified pasteboard types.\n- **servicesProvider**: The object that provides the services the current app advertises in the Services menu of other apps.\n\n## Determining access to the keyboard\n\n- **isFullKeyboardAccessEnabled**: A Boolean value indicating whether Full Keyboard Access is enabled in the Keyboard preference pane.\n\n## Hiding apps\n\n- **hideOtherApplications(_:)**: Hides all apps, except the receiver.\n- **unhideAllApplications(_:)**: Unhides all apps, including the receiver.\n\n## Managing threads\n\n- **detachDrawingThread(_:toTarget:with:)**: Creates and executes a new thread based on the specified target and selector.\n\n## Logging exceptions\n\n- **reportException(_:)**: Logs a given exception by calling `NSLog()`.\n\n## Configuring the activation policy\n\n- **activationPolicy()**: Returns the app’s activation policy.\n- **setActivationPolicy(_:)**: Attempts to modify the app’s activation policy.\n- **NSApplication.ActivationPolicy**: Activation policies (used by [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSRunningApplication\/activationPolicy]) that control whether and how an app may be activated.\n\n## Scripting your app\n\n- **orderedDocuments**: An array of document objects arranged according to the front-to-back ordering of their associated windows.\n- **orderedWindows**: An array of window objects arranged according to their front-to-back ordering on the screen.\n\n## Notifications\n\n- **didBecomeActiveNotification**: Posted immediately after the app becomes active.\n- **didChangeScreenParametersNotification**: Posted when the configuration of the displays attached to the computer is changed.\n- **didFinishLaunchingNotification**: Posted at the end of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/finishLaunching()] method to indicate that the app has completed launching and is ready to run.\n- **didHideNotification**: Posted at the end of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/hide(_:)] method to indicate that the app is now hidden.\n- **didResignActiveNotification**: Posted immediately after the app gives up its active status to another app.\n- **didUnhideNotification**: Posted at the end of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/unhideWithoutActivation()] method to indicate that the app is now visible.\n- **didUpdateNotification**: Posted at the end of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/updateWindows()] method to indicate that the app has finished updating its windows.\n- **willBecomeActiveNotification**: Posted immediately before the app becomes active.\n- **willFinishLaunchingNotification**: Posted at the start of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/finishLaunching()] method to indicate that the app has completed its initialization process and is about to finish launching.\n- **willHideNotification**: Posted at the start of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/hide(_:)] method to indicate that the app is about to be hidden.\n- **willResignActiveNotification**: Posted immediately before the app gives up its active status to another app.\n- **willTerminateNotification**: Sends a notification to terminate the app.\n- **willUnhideNotification**: Posted at the start of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/unhideWithoutActivation()] method to indicate that the app is about to become visible.\n- **willUpdateNotification**: Posted at the start of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/updateWindows()] method to indicate that the app is about to update its windows.\n- **didFinishRestoringWindowsNotification**: Posted when the app has finished restoring windows.\n- **didChangeOcclusionStateNotification**: Posted when the app’s occlusion state changes.\n\n## Loading Cocoa bundles\n\n- **loadApplication()**\n\n## Displaying high dynamic resolution (HDR) content\n\n- **applicationShouldSuppressHighDynamicRangeContent**: A boolean value indicating whether your application should suppress HDR content based on established policy. Built-in AppKit components such as NSImageView will automatically behave correctly with HDR content. You should use this value in conjunction with notifications (`NSApplicationShouldBeginSuppressingHighDynamicRangeContentNotification` and `NSApplicationShouldEndSuppressingHighDynamicRangeContentNotification`) to suppress HDR content in your application when signaled to do so.\n- **NSApplication.ShouldBeginSuppressingHighDynamicRangeContent**\n- **NSApplication.ShouldEndSuppressingHighDynamicRangeContent**\n\n## Deprecated\n\n- **Deprecated Symbols**: Review symbols that are no longer supported, and find the replacements to use instead.\n\n## Instance Methods\n\n- **addSceneRepresentation(_:)**: Adds the specified SwiftUI scene representation to the current application.\n\n## Life Cycle\n\n- **NSRunningApplication**: An object that can manipulate and provide information for a single instance of an app.\n- **NSApplicationDelegate**: A set of methods that manage your app’s life cycle and its interaction with common system services.\n- **NSApplicationMain(_:_:)**: Called by the main function to create and run the application.\n\n## Inherits From\n\n- NSResponder\n\n## Conforms To\n\n- CVarArg\n- Copyable\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSAccessibilityElementProtocol\n- NSAccessibilityProtocol\n- NSAppearanceCustomization\n- NSCoding\n- NSMenuItemValidation\n- NSObjectProtocol\n- NSStandardKeyBindingResponding\n- NSTouchBarProvider\n- NSUserActivityRestoring\n- NSUserInterfaceValidations\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the application instance, creating it if it doesn’t exist yet.",
+          "name" : "shared",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/shared"
+        },
+        {
+          "description" : "The global variable for the shared app instance.",
+          "name" : "NSApp",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApp"
+        }
+      ],
+      "title" : "Getting the shared app object"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The app delegate object.",
+          "name" : "delegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/delegate"
+        },
+        {
+          "description" : "A set of methods that manage your app’s life cycle and its interaction with common system services.",
+          "name" : "NSApplicationDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplicationDelegate"
+        }
+      ],
+      "title" : "Managing the app’s behavior"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the next event matching a given mask, or `nil` if no such event is found before a specified expiration date.",
+          "name" : "nextEvent(matching:until:inMode:dequeue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/nextEvent(matching:until:inMode:dequeue:)"
+        },
+        {
+          "description" : "Removes all events matching the given mask and generated before the specified event.",
+          "name" : "discardEvents(matching:before:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/discardEvents(matching:before:)"
+        },
+        {
+          "description" : "The last event object that the app retrieved from the event queue.",
+          "name" : "currentEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/currentEvent"
+        },
+        {
+          "description" : "A Boolean value indicating whether the main event loop is running.",
+          "name" : "isRunning",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/isRunning"
+        },
+        {
+          "description" : "Starts the main event loop.",
+          "name" : "run()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/run()"
+        },
+        {
+          "description" : "Activates the app, opens any files specified by the `NSOpen` user default, and unhighlights the app’s icon.",
+          "name" : "finishLaunching()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/finishLaunching()"
+        },
+        {
+          "description" : "Stops the main event loop.",
+          "name" : "stop(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/stop(_:)"
+        },
+        {
+          "description" : "Dispatches an event to other objects.",
+          "name" : "sendEvent(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/sendEvent(_:)"
+        },
+        {
+          "description" : "Adds a given event to the receiver’s event queue.",
+          "name" : "postEvent(_:atStart:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/postEvent(_:atStart:)"
+        }
+      ],
+      "title" : "Managing the event loop"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Dispatches an action message to the specified target.",
+          "name" : "tryToPerform(_:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/tryToPerform(_:with:)"
+        },
+        {
+          "description" : "Sends the given action message to the given target.",
+          "name" : "sendAction(_:to:from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/sendAction(_:to:from:)"
+        },
+        {
+          "description" : "Returns the object that receives the action message specified by the given selector.",
+          "name" : "target(forAction:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/target(forAction:)"
+        },
+        {
+          "description" : "Searches for an object that can receive the message specified by the given selector.",
+          "name" : "target(forAction:to:from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/target(forAction:to:from:)"
+        }
+      ],
+      "title" : "Posting actions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Terminates the receiver.",
+          "name" : "terminate(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/terminate(_:)"
+        },
+        {
+          "description" : "Responds to `NSTerminateLater` once the app knows whether it can terminate.",
+          "name" : "reply(toApplicationShouldTerminate:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/reply(toApplicationShouldTerminate:)"
+        }
+      ],
+      "title" : "Terminating the app"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Request focus for your app, and coordinate passing control from one app to another.",
+          "name" : "Passing control from one app to another with cooperative activation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/passing-control-from-one-app-to-another-with-cooperative-activation"
+        },
+        {
+          "description" : "Activates the receiver app, if appropriate.",
+          "name" : "activate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/activate()"
+        },
+        {
+          "description" : "Deactivates the receiver.",
+          "name" : "deactivate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/deactivate()"
+        },
+        {
+          "description" : "A Boolean value indicating whether this is the active app.",
+          "name" : "isActive",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/isActive"
+        },
+        {
+          "description" : "Explicitly allows another app to make itself active.",
+          "name" : "yieldActivation(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/yieldActivation(to:)"
+        },
+        {
+          "description" : "Explicitly allows another app to make itself active.",
+          "name" : "yieldActivation(toApplicationWithBundleIdentifier:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/yieldActivation(toApplicationWithBundleIdentifier:)"
+        },
+        {
+          "description" : "The following flags are for [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSRunningApplication\/activate(options:)].",
+          "name" : "NSApplication.ActivationOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/ActivationOptions"
+        }
+      ],
+      "title" : "Activating and deactivating the app"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Disables relaunching the app on login.",
+          "name" : "disableRelaunchOnLogin()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/disableRelaunchOnLogin()"
+        },
+        {
+          "description" : "Enables relaunching the app on login.",
+          "name" : "enableRelaunchOnLogin()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/enableRelaunchOnLogin()"
+        }
+      ],
+      "title" : "Managing relaunch on login"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Register for notifications sent by Apple Push Notification service (APNs).",
+          "name" : "registerForRemoteNotifications()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/registerForRemoteNotifications()"
+        },
+        {
+          "description" : "Unregister for notifications received from Apple Push Notification service.",
+          "name" : "unregisterForRemoteNotifications()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/unregisterForRemoteNotifications()"
+        },
+        {
+          "description" : "The types of push notifications that the app accepts.",
+          "name" : "enabledRemoteNotificationTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/enabledRemoteNotificationTypes"
+        },
+        {
+          "description" : "Register to receive notifications of the specified types from a provider through the Apple Push Notification service.",
+          "name" : "registerForRemoteNotifications(matching:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/registerForRemoteNotifications(matching:)"
+        },
+        {
+          "description" : "A Boolean value indicating whether the app is registered with Apple Push Notification service (APNs).",
+          "name" : "isRegisteredForRemoteNotifications",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/isRegisteredForRemoteNotifications"
+        },
+        {
+          "description" : "These constants determine whether apps launched by remote notifications display a badge.",
+          "name" : "NSApplication.RemoteNotificationType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/RemoteNotificationType"
+        }
+      ],
+      "title" : "Managing remote notifications"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The appearance associated with the app’s windows.",
+          "name" : "appearance",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/appearance"
+        },
+        {
+          "description" : "The appearance that AppKit uses to draw the app’s interface.",
+          "name" : "effectiveAppearance",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/effectiveAppearance"
+        },
+        {
+          "description" : "The set of app presentation options that are currently in effect for the system.",
+          "name" : "currentSystemPresentationOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/currentSystemPresentationOptions"
+        },
+        {
+          "description" : "The presentation options that should be in effect for the system when this app is active.",
+          "name" : "presentationOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/presentationOptions-swift.property"
+        },
+        {
+          "description" : "Constants that control the presentation of the app, typically for fullscreen apps such as games or kiosks.",
+          "name" : "NSApplication.PresentationOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/PresentationOptions-swift.struct"
+        },
+        {
+          "description" : "A boolean value indicating whether your application should suppress HDR content based on established policy. Built-in AppKit components such as NSImageView will automatically behave correctly with HDR content. You should use this value in conjunction with notifications (`NSApplicationShouldBeginSuppressingHighDynamicRangeContentNotification` and `NSApplicationShouldEndSuppressingHighDynamicRangeContentNotification`) to suppress HDR content in your application when signaled to do so.",
+          "name" : "applicationShouldSuppressHighDynamicRangeContent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/applicationShouldSuppressHighDynamicRangeContent"
+        }
+      ],
+      "title" : "Managing the app’s appearance"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Show, hide, minimize, arrange, and update your app’s windows.",
+          "name" : "App Windows",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/app-windows"
+        },
+        {
+          "description" : "Display a modal window or show one of the standard app panels, such as the app’s About panel.",
+          "name" : "Modal Windows and Panels",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/modal-windows-and-panels"
+        },
+        {
+          "description" : "Access the app’s main menu items and update the window and services menus.",
+          "name" : "Menus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/menus"
+        }
+      ],
+      "title" : "Managing windows, panels, and menus"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The layout direction of the user interface.",
+          "name" : "userInterfaceLayoutDirection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/userInterfaceLayoutDirection"
+        },
+        {
+          "description" : "Specifies the directional flow of the user interface.",
+          "name" : "NSUserInterfaceLayoutDirection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSUserInterfaceLayoutDirection"
+        }
+      ],
+      "title" : "User interface layout direction"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The app’s Dock tile.",
+          "name" : "dockTile",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/dockTile"
+        },
+        {
+          "description" : "The image used for the app’s icon.",
+          "name" : "applicationIconImage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/applicationIconImage"
+        }
+      ],
+      "title" : "Accessing the dock tile"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Show or hides the interface for customizing the Touch Bar.",
+          "name" : "toggleTouchBarCustomizationPalette(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/toggleTouchBarCustomizationPalette(_:)"
+        }
+      ],
+      "title" : "Customizing the Touch Bar"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Starts a user attention request.",
+          "name" : "requestUserAttention(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/requestUserAttention(_:)"
+        },
+        {
+          "description" : "These constants specify the level of severity of a user attention request and are used by [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/cancelUserAttentionRequest(_:)] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/requestUserAttention(_:)].",
+          "name" : "NSApplication.RequestUserAttentionType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/RequestUserAttentionType"
+        },
+        {
+          "description" : "Cancels a previous user attention request.",
+          "name" : "cancelUserAttentionRequest(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/cancelUserAttentionRequest(_:)"
+        },
+        {
+          "description" : "Handles errors that might occur when the user attempts to open or print files.",
+          "name" : "reply(toOpenOrPrint:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/reply(toOpenOrPrint:)"
+        },
+        {
+          "description" : "Constants that indicate whether a copy or print operation was successful, was canceled, or failed.",
+          "name" : "NSApplication.DelegateReply",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/DelegateReply"
+        }
+      ],
+      "title" : "Managing user attention requests"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Register an object that provides help data to your app.",
+          "name" : "registerUserInterfaceItemSearchHandler(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/registerUserInterfaceItemSearchHandler(_:)"
+        },
+        {
+          "description" : "Searches for the string in the user interface.",
+          "name" : "searchString(_:inUserInterfaceItemString:range:found:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/searchString(_:inUserInterfaceItemString:range:found:)"
+        },
+        {
+          "description" : "Unregister an object that provides help data to your app.",
+          "name" : "unregisterUserInterfaceItemSearchHandler(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/unregisterUserInterfaceItemSearchHandler(_:)"
+        },
+        {
+          "description" : "If your project is properly registered, and the necessary keys have been set in the property list, this method launches Help Viewer and displays the first page of your app’s help book.",
+          "name" : "showHelp(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/showHelp(_:)"
+        },
+        {
+          "description" : "Places the receiver in context-sensitive help mode.",
+          "name" : "activateContextHelpMode(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/activateContextHelpMode(_:)"
+        },
+        {
+          "description" : "The help menu used by the app.",
+          "name" : "helpMenu",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/helpMenu"
+        }
+      ],
+      "title" : "Providing help information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Indicates whether the receiver can send and receive the specified pasteboard types.",
+          "name" : "validRequestor(forSendType:returnType:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/validRequestor(forSendType:returnType:)"
+        },
+        {
+          "description" : "The object that provides the services the current app advertises in the Services menu of other apps.",
+          "name" : "servicesProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/servicesProvider"
+        }
+      ],
+      "title" : "Providing services"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value indicating whether Full Keyboard Access is enabled in the Keyboard preference pane.",
+          "name" : "isFullKeyboardAccessEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/isFullKeyboardAccessEnabled"
+        }
+      ],
+      "title" : "Determining access to the keyboard"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Hides all apps, except the receiver.",
+          "name" : "hideOtherApplications(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/hideOtherApplications(_:)"
+        },
+        {
+          "description" : "Unhides all apps, including the receiver.",
+          "name" : "unhideAllApplications(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/unhideAllApplications(_:)"
+        }
+      ],
+      "title" : "Hiding apps"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates and executes a new thread based on the specified target and selector.",
+          "name" : "detachDrawingThread(_:toTarget:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/detachDrawingThread(_:toTarget:with:)"
+        }
+      ],
+      "title" : "Managing threads"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Logs a given exception by calling `NSLog()`.",
+          "name" : "reportException(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/reportException(_:)"
+        }
+      ],
+      "title" : "Logging exceptions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the app’s activation policy.",
+          "name" : "activationPolicy()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/activationPolicy()"
+        },
+        {
+          "description" : "Attempts to modify the app’s activation policy.",
+          "name" : "setActivationPolicy(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/setActivationPolicy(_:)"
+        },
+        {
+          "description" : "Activation policies (used by [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSRunningApplication\/activationPolicy]) that control whether and how an app may be activated.",
+          "name" : "NSApplication.ActivationPolicy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/ActivationPolicy-swift.enum"
+        }
+      ],
+      "title" : "Configuring the activation policy"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An array of document objects arranged according to the front-to-back ordering of their associated windows.",
+          "name" : "orderedDocuments",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/orderedDocuments"
+        },
+        {
+          "description" : "An array of window objects arranged according to their front-to-back ordering on the screen.",
+          "name" : "orderedWindows",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/orderedWindows"
+        }
+      ],
+      "title" : "Scripting your app"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Posted immediately after the app becomes active.",
+          "name" : "didBecomeActiveNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/didBecomeActiveNotification"
+        },
+        {
+          "description" : "Posted when the configuration of the displays attached to the computer is changed.",
+          "name" : "didChangeScreenParametersNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/didChangeScreenParametersNotification"
+        },
+        {
+          "description" : "Posted at the end of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/finishLaunching()] method to indicate that the app has completed launching and is ready to run.",
+          "name" : "didFinishLaunchingNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/didFinishLaunchingNotification"
+        },
+        {
+          "description" : "Posted at the end of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/hide(_:)] method to indicate that the app is now hidden.",
+          "name" : "didHideNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/didHideNotification"
+        },
+        {
+          "description" : "Posted immediately after the app gives up its active status to another app.",
+          "name" : "didResignActiveNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/didResignActiveNotification"
+        },
+        {
+          "description" : "Posted at the end of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/unhideWithoutActivation()] method to indicate that the app is now visible.",
+          "name" : "didUnhideNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/didUnhideNotification"
+        },
+        {
+          "description" : "Posted at the end of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/updateWindows()] method to indicate that the app has finished updating its windows.",
+          "name" : "didUpdateNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/didUpdateNotification"
+        },
+        {
+          "description" : "Posted immediately before the app becomes active.",
+          "name" : "willBecomeActiveNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/willBecomeActiveNotification"
+        },
+        {
+          "description" : "Posted at the start of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/finishLaunching()] method to indicate that the app has completed its initialization process and is about to finish launching.",
+          "name" : "willFinishLaunchingNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/willFinishLaunchingNotification"
+        },
+        {
+          "description" : "Posted at the start of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/hide(_:)] method to indicate that the app is about to be hidden.",
+          "name" : "willHideNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/willHideNotification"
+        },
+        {
+          "description" : "Posted immediately before the app gives up its active status to another app.",
+          "name" : "willResignActiveNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/willResignActiveNotification"
+        },
+        {
+          "description" : "Sends a notification to terminate the app.",
+          "name" : "willTerminateNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/willTerminateNotification"
+        },
+        {
+          "description" : "Posted at the start of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/unhideWithoutActivation()] method to indicate that the app is about to become visible.",
+          "name" : "willUnhideNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/willUnhideNotification"
+        },
+        {
+          "description" : "Posted at the start of the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSApplication\/updateWindows()] method to indicate that the app is about to update its windows.",
+          "name" : "willUpdateNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/willUpdateNotification"
+        },
+        {
+          "description" : "Posted when the app has finished restoring windows.",
+          "name" : "didFinishRestoringWindowsNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/didFinishRestoringWindowsNotification"
+        },
+        {
+          "description" : "Posted when the app’s occlusion state changes.",
+          "name" : "didChangeOcclusionStateNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/didChangeOcclusionStateNotification"
+        }
+      ],
+      "title" : "Notifications"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "loadApplication()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/loadApplication()"
+        }
+      ],
+      "title" : "Loading Cocoa bundles"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A boolean value indicating whether your application should suppress HDR content based on established policy. Built-in AppKit components such as NSImageView will automatically behave correctly with HDR content. You should use this value in conjunction with notifications (`NSApplicationShouldBeginSuppressingHighDynamicRangeContentNotification` and `NSApplicationShouldEndSuppressingHighDynamicRangeContentNotification`) to suppress HDR content in your application when signaled to do so.",
+          "name" : "applicationShouldSuppressHighDynamicRangeContent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/applicationShouldSuppressHighDynamicRangeContent"
+        },
+        {
+          "description" : "",
+          "name" : "NSApplication.ShouldBeginSuppressingHighDynamicRangeContent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/ShouldBeginSuppressingHighDynamicRangeContent"
+        },
+        {
+          "description" : "",
+          "name" : "NSApplication.ShouldEndSuppressingHighDynamicRangeContent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/ShouldEndSuppressingHighDynamicRangeContent"
+        }
+      ],
+      "title" : "Displaying high dynamic resolution (HDR) content"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Review symbols that are no longer supported, and find the replacements to use instead.",
+          "name" : "Deprecated Symbols",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/nsapplication-deprecated-symbols"
+        }
+      ],
+      "title" : "Deprecated"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds the specified SwiftUI scene representation to the current application.",
+          "name" : "addSceneRepresentation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication\/addSceneRepresentation(_:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that can manipulate and provide information for a single instance of an app.",
+          "name" : "NSRunningApplication",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSRunningApplication"
+        },
+        {
+          "description" : "A set of methods that manage your app’s life cycle and its interaction with common system services.",
+          "name" : "NSApplicationDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplicationDelegate"
+        },
+        {
+          "description" : "Called by the main function to create and run the application.",
+          "name" : "NSApplicationMain(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplicationMain(_:_:)"
+        }
+      ],
+      "title" : "Life Cycle"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSResponder"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSApplication",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSApplication"
+}

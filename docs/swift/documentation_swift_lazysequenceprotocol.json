@@ -1,0 +1,160 @@
+{
+  "abstract" : "A sequence on which normally-eager sequence operations are implemented lazily.",
+  "codeExamples" : [
+    {
+      "code" : "let doubled = [1, 2, 3].lazy.map { $0 * 2 }",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension Sequence {\n    \/\/\/ Returns an array containing the results of\n    \/\/\/\n    \/\/\/   p.reduce(initial, nextPartialResult)\n    \/\/\/\n    \/\/\/ for each prefix `p` of `self`, in order from shortest to\n    \/\/\/ longest. For example:\n    \/\/\/\n    \/\/\/     (1..<6).scan(0, +) \/\/ [0, 1, 3, 6, 10, 15]\n    \/\/\/\n    \/\/\/ - Complexity: O(n)\n    func scan<Result>(\n        _ initial: Result,\n        _ nextPartialResult: (Result, Element) -> Result\n    ) -> [Result] {\n        var result = [initial]\n        for x in self {\n            result.append(nextPartialResult(result.last!, x))\n        }\n        return result\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct LazyScanSequence<Base: Sequence, Result>\n    : LazySequenceProtocol\n{\n    let initial: Result\n    let base: Base\n    let nextPartialResult:\n        (Result, Base.Element) -> Result\n\n    struct Iterator: IteratorProtocol {\n        var base: Base.Iterator\n        var nextElement: Result?\n        let nextPartialResult:\n            (Result, Base.Element) -> Result\n        \n        mutating func next() -> Result? {\n            return nextElement.map { result in\n                nextElement = base.next().map {\n                    nextPartialResult(result, $0)\n                }\n                return result\n            }\n        }\n    }\n    \n    func makeIterator() -> Iterator {\n        return Iterator(\n            base: base.makeIterator(),\n            nextElement: initial as Result?,\n            nextPartialResult: nextPartialResult)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension LazySequenceProtocol {\n    func scan<Result>(\n        _ initial: Result,\n        _ nextPartialResult: @escaping (Result, Element) -> Result\n    ) -> LazyScanSequence<Self, Result> {\n        return LazyScanSequence(\n            initial: initial, base: self, nextPartialResult: nextPartialResult)\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension Sequence where Element == Int {\n    func sum() -> Int {\n        var result = 0\n        _ = self.map { result += $0 }\n        return result\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformingTypes" : [
+    "LazyDropWhileSequence",
+    "LazyFilterSequence",
+    "LazyMapSequence",
+    "LazyPrefixWhileSequence",
+    "LazySequence",
+    "ReversedCollection",
+    "Slice"
+  ],
+  "contentHash" : "a8471a3ec455b6bccda9c0481c5c854535f8645ceab6e5058c083d7028914eae",
+  "crawledAt" : "2025-12-01T21:39:53Z",
+  "declaration" : {
+    "code" : "protocol LazySequenceProtocol : Sequence",
+    "language" : "swift"
+  },
+  "id" : "EA7F62E1-07D0-44E5-875C-9B81A8C0C678",
+  "inheritedBy" : [
+    "LazyCollectionProtocol"
+  ],
+  "kind" : "protocol",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nLazy sequences can be used to avoid needless storage allocation and computation, because they use an underlying sequence for storage and compute their elements on demand. For example, `doubled` in this code sample is a sequence containing the values `2`, `4`, and `6`.\n\nEach time an element of the lazy sequence `doubled` is accessed, the closure accesses and transforms an element of the underlying array.\n\nSequence operations that take closure arguments, such as `map(_:)` and `filter(_:)`, are normally eager: They use the closure immediately and return a new array. When you use the `lazy` property, you give the standard library explicit permission to store the closure and the sequence in the result, and defer computation until it is needed.\n\n## Adding New Lazy Operations\n\nTo add a new lazy sequence operation, extend this protocol with a method that returns a lazy wrapper that itself conforms to `LazySequenceProtocol`.  For example, an eager `scan(_:_:)` method is defined as follows:\n\nYou can build a sequence type that lazily computes the elements in the result of a scan:\n\nFinally, you can give all lazy sequences a lazy `scan(_:_:)` method:\n\nWith this type and extension method, you can call `.lazy.scan(_:_:)` on any sequence to create a lazily computed scan. The resulting `LazyScanSequence` is itself lazy, too, so further sequence operations also defer computation.\n\nThe explicit permission to implement operations lazily applies only in contexts where the sequence is statically known to conform to `LazySequenceProtocol`. In the following example, because the extension applies only to `Sequence`, side-effects such as the accumulation of `result` are never unexpectedly dropped or deferred:\n\nDon’t actually use `map` for this purpose, however, because it creates and discards the resulting array. Instead, use `reduce` for summing operations, or `forEach` or a `for`-`in` loop for operations with side effects.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\ncrawled: 2025-12-01T21:39:53Z\n---\n\n# LazySequenceProtocol\n\n**Protocol**\n\nA sequence on which normally-eager sequence operations are implemented lazily.\n\n## Declaration\n\n```swift\nprotocol LazySequenceProtocol : Sequence\n```\n\n## Overview\n\nLazy sequences can be used to avoid needless storage allocation and computation, because they use an underlying sequence for storage and compute their elements on demand. For example, `doubled` in this code sample is a sequence containing the values `2`, `4`, and `6`.\n\n```swift\nlet doubled = [1, 2, 3].lazy.map { $0 * 2 }\n```\n\nEach time an element of the lazy sequence `doubled` is accessed, the closure accesses and transforms an element of the underlying array.\n\nSequence operations that take closure arguments, such as `map(_:)` and `filter(_:)`, are normally eager: They use the closure immediately and return a new array. When you use the `lazy` property, you give the standard library explicit permission to store the closure and the sequence in the result, and defer computation until it is needed.\n\n## Adding New Lazy Operations\n\nTo add a new lazy sequence operation, extend this protocol with a method that returns a lazy wrapper that itself conforms to `LazySequenceProtocol`.  For example, an eager `scan(_:_:)` method is defined as follows:\n\n```swift\nextension Sequence {\n    \/\/\/ Returns an array containing the results of\n    \/\/\/\n    \/\/\/   p.reduce(initial, nextPartialResult)\n    \/\/\/\n    \/\/\/ for each prefix `p` of `self`, in order from shortest to\n    \/\/\/ longest. For example:\n    \/\/\/\n    \/\/\/     (1..<6).scan(0, +) \/\/ [0, 1, 3, 6, 10, 15]\n    \/\/\/\n    \/\/\/ - Complexity: O(n)\n    func scan<Result>(\n        _ initial: Result,\n        _ nextPartialResult: (Result, Element) -> Result\n    ) -> [Result] {\n        var result = [initial]\n        for x in self {\n            result.append(nextPartialResult(result.last!, x))\n        }\n        return result\n    }\n}\n```\n\nYou can build a sequence type that lazily computes the elements in the result of a scan:\n\n```swift\nstruct LazyScanSequence<Base: Sequence, Result>\n    : LazySequenceProtocol\n{\n    let initial: Result\n    let base: Base\n    let nextPartialResult:\n        (Result, Base.Element) -> Result\n\n    struct Iterator: IteratorProtocol {\n        var base: Base.Iterator\n        var nextElement: Result?\n        let nextPartialResult:\n            (Result, Base.Element) -> Result\n        \n        mutating func next() -> Result? {\n            return nextElement.map { result in\n                nextElement = base.next().map {\n                    nextPartialResult(result, $0)\n                }\n                return result\n            }\n        }\n    }\n    \n    func makeIterator() -> Iterator {\n        return Iterator(\n            base: base.makeIterator(),\n            nextElement: initial as Result?,\n            nextPartialResult: nextPartialResult)\n    }\n}\n```\n\nFinally, you can give all lazy sequences a lazy `scan(_:_:)` method:\n\n```swift\nextension LazySequenceProtocol {\n    func scan<Result>(\n        _ initial: Result,\n        _ nextPartialResult: @escaping (Result, Element) -> Result\n    ) -> LazyScanSequence<Self, Result> {\n        return LazyScanSequence(\n            initial: initial, base: self, nextPartialResult: nextPartialResult)\n    }\n}\n```\n\nWith this type and extension method, you can call `.lazy.scan(_:_:)` on any sequence to create a lazily computed scan. The resulting `LazyScanSequence` is itself lazy, too, so further sequence operations also defer computation.\n\nThe explicit permission to implement operations lazily applies only in contexts where the sequence is statically known to conform to `LazySequenceProtocol`. In the following example, because the extension applies only to `Sequence`, side-effects such as the accumulation of `result` are never unexpectedly dropped or deferred:\n\n```swift\nextension Sequence where Element == Int {\n    func sum() -> Int {\n        var result = 0\n        _ = self.map { result += $0 }\n        return result\n    }\n}\n```\n\nDon’t actually use `map` for this purpose, however, because it creates and discards the resulting array. Instead, use `reduce` for summing operations, or `forEach` or a `for`-`in` loop for operations with side effects.\n\n## Associated Types\n\n- **Elements**: A `Sequence` that can contain the same elements as this one, possibly with a simpler type.\n\n## Instance Properties\n\n- **elements**: A sequence containing the same elements as this one, possibly with a simpler type.\n- **lazy**\n- **lazy**\n\n## Instance Methods\n\n- **compactMap(_:)**: Returns the non-`nil` results of mapping the given transformation over this sequence.\n- **drop(while:)**: Returns a lazy sequence that skips any initial elements that satisfy `predicate`.\n- **filter(_:)**: Returns the elements of `self` that satisfy `isIncluded`.\n- **flatMap(_:)**: Returns the non-`nil` results of mapping the given transformation over this sequence.\n- **flatMap(_:)**: Returns the concatenated results of mapping the given transformation over this sequence.\n- **joined()**: Returns a lazy sequence that concatenates the elements of this sequence of sequences.\n- **map(_:)**: Returns a `LazyMapSequence` over this `Sequence`.  The elements of the result are computed lazily, each time they are read, by calling `transform` function on a base element.\n- **prefix(while:)**: Returns a lazy sequence of the initial consecutive elements that satisfy `predicate`.\n\n## Lazy Collections\n\n- **LazyCollectionProtocol**\n\n## Inherits From\n\n- Sequence\n\n## Inherited By\n\n- LazyCollectionProtocol\n\n## Conforming Types\n\n- LazyDropWhileSequence\n- LazyFilterSequence\n- LazyMapSequence\n- LazyPrefixWhileSequence\n- LazySequence\n- ReversedCollection\n- Slice\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A `Sequence` that can contain the same elements as this one, possibly with a simpler type.",
+          "name" : "Elements",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/Elements-swift.associatedtype"
+        }
+      ],
+      "title" : "Associated Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A sequence containing the same elements as this one, possibly with a simpler type.",
+          "name" : "elements",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/elements-6570c"
+        },
+        {
+          "description" : "",
+          "name" : "lazy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/lazy-2u2ey"
+        },
+        {
+          "description" : "",
+          "name" : "lazy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/lazy-4q4ln"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the non-`nil` results of mapping the given transformation over this sequence.",
+          "name" : "compactMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/compactMap(_:)"
+        },
+        {
+          "description" : "Returns a lazy sequence that skips any initial elements that satisfy `predicate`.",
+          "name" : "drop(while:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/drop(while:)"
+        },
+        {
+          "description" : "Returns the elements of `self` that satisfy `isIncluded`.",
+          "name" : "filter(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/filter(_:)"
+        },
+        {
+          "description" : "Returns the non-`nil` results of mapping the given transformation over this sequence.",
+          "name" : "flatMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/flatMap(_:)-11y2e"
+        },
+        {
+          "description" : "Returns the concatenated results of mapping the given transformation over this sequence.",
+          "name" : "flatMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/flatMap(_:)-9blrr"
+        },
+        {
+          "description" : "Returns a lazy sequence that concatenates the elements of this sequence of sequences.",
+          "name" : "joined()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/joined()"
+        },
+        {
+          "description" : "Returns a `LazyMapSequence` over this `Sequence`.  The elements of the result are computed lazily, each time they are read, by calling `transform` function on a base element.",
+          "name" : "map(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/map(_:)"
+        },
+        {
+          "description" : "Returns a lazy sequence of the initial consecutive elements that satisfy `predicate`.",
+          "name" : "prefix(while:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol\/prefix(while:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "LazyCollectionProtocol",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazyCollectionProtocol"
+        }
+      ],
+      "title" : "Lazy Collections"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "Sequence"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "LazySequenceProtocol",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/LazySequenceProtocol"
+}

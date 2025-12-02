@@ -1,0 +1,108 @@
+{
+  "abstract" : "Visualize depth data in 2D and 3D from the TrueDepth camera.",
+  "codeExamples" : [
+    {
+      "code" : "private let sessionQueue = DispatchQueue(label: \"session queue\", attributes: [], autoreleaseFrequency: .workItem)",
+      "language" : "swift"
+    },
+    {
+      "code" : "sessionQueue.async {\n    self.configureSession()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "private let depthDataOutput = AVCaptureDepthDataOutput()",
+      "language" : "swift"
+    },
+    {
+      "code" : "session.addOutput(depthDataOutput)\ndepthDataOutput.isFilteringEnabled = false\nif let connection = depthDataOutput.connection(with: .depthData) {\n    connection.isEnabled = true\n} else {\n    print(\"No AVCaptureConnection\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let depthFormats = videoDevice.activeFormat.supportedDepthDataFormats\nlet filtered = depthFormats.filter({\n    CMFormatDescriptionGetMediaSubType($0.formatDescription) == kCVPixelFormatType_DepthFloat16\n})\nlet selectedFormat = filtered.max(by: {\n    first, second in CMVideoFormatDescriptionGetDimensions(first.formatDescription).width < CMVideoFormatDescriptionGetDimensions(second.formatDescription).width\n})\n\ndo {\n    try videoDevice.lockForConfiguration()\n    videoDevice.activeDepthDataFormat = selectedFormat\n    videoDevice.unlockForConfiguration()\n} catch {\n    print(\"Could not lock device for configuration: \\(error)\")\n    setupResult = .configurationFailed\n    session.commitConfiguration()\n    return\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "outputSynchronizer = AVCaptureDataOutputSynchronizer(dataOutputs: [videoDataOutput, depthDataOutput])\noutputSynchronizer!.setDelegate(self, queue: dataOutputQueue)",
+      "language" : "swift"
+    },
+    {
+      "code" : "var cvTextureOut: CVMetalTexture?\nCVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, textureCache, pixelBuffer, nil, textureFormat, width, height, 0, &cvTextureOut)\nguard let cvTexture = cvTextureOut, let texture = CVMetalTextureGetTexture(cvTexture) else {\n    print(\"Depth converter failed to create preview texture\")\n    CVMetalTextureCacheFlush(textureCache, 0)\n    return nil\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "CVMetalTextureCacheRef _depthTextureCache;\nCVMetalTextureCacheRef _colorTextureCache;",
+      "language" : "objective-c"
+    },
+    {
+      "code" : "CVPixelBufferRef depthFrame = depthData.depthDataMap;\nCVMetalTextureRef cvDepthTexture = nullptr;\nif (kCVReturnSuccess != CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,\n                        _depthTextureCache,\n                        depthFrame,\n                        nil,\n                        MTLPixelFormatR16Float,\n                        CVPixelBufferGetWidth(depthFrame),\n                        CVPixelBufferGetHeight(depthFrame),\n                        0,\n                        &cvDepthTexture)) {\n    NSLog(@\"Failed to create depth texture\");\n    CVPixelBufferRelease(colorFrame);\n    return;\n}\n\nid<MTLTexture> depthTexture = CVMetalTextureGetTexture(cvDepthTexture);",
+      "language" : "objective-c"
+    },
+    {
+      "code" : "CVMetalTextureRef cvColorTexture = nullptr;\nif (kCVReturnSuccess != CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,\n                        _colorTextureCache,\n                        colorFrame,\n                        nil,\n                        MTLPixelFormatBGRA8Unorm,\n                        CVPixelBufferGetWidth(colorFrame),\n                        CVPixelBufferGetHeight(colorFrame),\n                        0,\n                        &cvColorTexture)) {\n    NSLog(@\"Failed to create color texture\");\n    CVPixelBufferRelease(colorFrame);\n    return;\n}\n\nid<MTLTexture> colorTexture = CVMetalTextureGetTexture(cvColorTexture);",
+      "language" : "objective-c"
+    },
+    {
+      "code" : "@objc\nfunc thermalStateChanged(notification: NSNotification) {\n    if let processInfo = notification.object as? ProcessInfo {\n        showThermalState(state: processInfo.thermalState)\n    }\n}\n\nfunc showThermalState(state: ProcessInfo.ThermalState) {\n    DispatchQueue.main.async {\n        var thermalStateString = \"UNKNOWN\"\n        if state == .nominal {\n            thermalStateString = \"NOMINAL\"\n        } else if state == .fair {\n            thermalStateString = \"FAIR\"\n        } else if state == .serious {\n            thermalStateString = \"SERIOUS\"\n        } else if state == .critical {\n            thermalStateString = \"CRITICAL\"\n        }\n        \n        let message = NSLocalizedString(\"Thermal state: \\(thermalStateString)\", comment: \"Alert message when thermal state has changed\")\n        let alertController = UIAlertController(title: \"TrueDepthStreamer\", message: message, preferredStyle: .alert)\n        alertController.addAction(UIAlertAction(title: NSLocalizedString(\"OK\", comment: \"Alert OK button\"), style: .cancel, handler: nil))\n        self.present(alertController, animated: true, completion: nil)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "aac5ce52ed77eb6398fbab167989891702d969e0e5dc55fe4e06cccb337d65c0",
+  "crawledAt" : "2025-12-02T15:48:17Z",
+  "id" : "56363610-B542-4B9C-B9F1-F67FB016D21D",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "AVFoundation",
+  "overview" : "## Overview\n\nThe TrueDepth camera provides depth data in real time that allows you to determine the distance of a pixel from the front-facing camera. This sample demonstrates how to use the AVFoundation framework’s capture API to read data from the TrueDepth camera, and how to display it in an intuitive fashion onscreen.\n\nThe sample shows two different views: a 2D view that distinguishes depth values by mapping depth to color, and a 3D view that renders data as a point cloud.\n\nTo see this sample app in action, build and run the project in Xcode on an iOS device running iOS 11 or later. Because Xcode doesn’t have access to the TrueDepth camera, this sample will not build or run in the Xcode simulator.\n\n### Set up a capture session\n\nSet up an `AVCaptureSession` on a separate thread via the session queue. Initialize this session queue before configuring the camera for capture, like so:\n\nThe `startRunning` method is a blocking call that may take time to execute. Dispatch session setup to the session queue so the main queue isn’t blocked, allowing the app’s UI to stay responsive:\n\nSetting up the camera for video capture follows many of the same steps as normal video capture. See [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/setting-up-a-capture-session] for details on configuring streaming setup.\n\nOn top of normal setup, request depth data by declaring a separate output:\n\nExplicitly add this output type to your capture session:\n\nSearch for the highest resolution available with floating-point depth values, and lock the configuration to the format.\n\nSynchronize the normal RGB video data with depth data output. The first output in the `dataOutputs` array is the master output.\n\nThe `CameraViewController` implementation creates and manages this session to interface with the camera. It also contains UI to toggle between the two viewing modes, 2D and 3D.\n\n### Visualize depth data in 2D\n\nThe sample uses JET color coding to distinguish depth values, ranging from red (close) to blue (far). A slider controls the blending of the color code and the actual color values. Touching a pixel displays its depth value.\n\n`DepthToJETConverter` performs the conversion. It separates the color spectrum into histogram bins, colors a Metal texture from depth values obtained in the image buffer, and renders that texture into the preview.\n\n### Visualize depth data in 3D\n\nThe sample’s 3D viewer renders data as a point cloud. Control the camera with the following gestures:\n\nThe sample implements a 3D point cloud as a `PointCloudMetalView`. It uses a Metal vertex shader to control geometry and a Metal fragment shader to color individual vertices, keeping the depth texture and color texture separate:\n\nThe depth frame’s depth map provides the basis for the Metal view’s depth texture:\n\nThe RGB image provides the basis for the Metal view’s color texture:\n\n### Track thermal state\n\nProcessing depth data from a live stream may cause the device to heat up. Keep tabs on the thermal state so you can alert the user if it exceeds a dangerous threshold.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AVFoundation\/streaming-depth-data-from-the-truedepth-camera\ncrawled: 2025-12-02T15:48:17Z\n---\n\n# Streaming depth data from the TrueDepth camera\n\n**Sample Code**\n\nVisualize depth data in 2D and 3D from the TrueDepth camera.\n\n## Overview\n\nThe TrueDepth camera provides depth data in real time that allows you to determine the distance of a pixel from the front-facing camera. This sample demonstrates how to use the AVFoundation framework’s capture API to read data from the TrueDepth camera, and how to display it in an intuitive fashion onscreen.\n\nThe sample shows two different views: a 2D view that distinguishes depth values by mapping depth to color, and a 3D view that renders data as a point cloud.\n\nTo see this sample app in action, build and run the project in Xcode on an iOS device running iOS 11 or later. Because Xcode doesn’t have access to the TrueDepth camera, this sample will not build or run in the Xcode simulator.\n\n### Set up a capture session\n\nSet up an `AVCaptureSession` on a separate thread via the session queue. Initialize this session queue before configuring the camera for capture, like so:\n\n```swift\nprivate let sessionQueue = DispatchQueue(label: \"session queue\", attributes: [], autoreleaseFrequency: .workItem)\n```\n\nThe `startRunning` method is a blocking call that may take time to execute. Dispatch session setup to the session queue so the main queue isn’t blocked, allowing the app’s UI to stay responsive:\n\n```swift\nsessionQueue.async {\n    self.configureSession()\n}\n```\n\nSetting up the camera for video capture follows many of the same steps as normal video capture. See [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/setting-up-a-capture-session] for details on configuring streaming setup.\n\nOn top of normal setup, request depth data by declaring a separate output:\n\n```swift\nprivate let depthDataOutput = AVCaptureDepthDataOutput()\n```\n\nExplicitly add this output type to your capture session:\n\n```swift\nsession.addOutput(depthDataOutput)\ndepthDataOutput.isFilteringEnabled = false\nif let connection = depthDataOutput.connection(with: .depthData) {\n    connection.isEnabled = true\n} else {\n    print(\"No AVCaptureConnection\")\n}\n```\n\nSearch for the highest resolution available with floating-point depth values, and lock the configuration to the format.\n\n```swift\nlet depthFormats = videoDevice.activeFormat.supportedDepthDataFormats\nlet filtered = depthFormats.filter({\n    CMFormatDescriptionGetMediaSubType($0.formatDescription) == kCVPixelFormatType_DepthFloat16\n})\nlet selectedFormat = filtered.max(by: {\n    first, second in CMVideoFormatDescriptionGetDimensions(first.formatDescription).width < CMVideoFormatDescriptionGetDimensions(second.formatDescription).width\n})\n\ndo {\n    try videoDevice.lockForConfiguration()\n    videoDevice.activeDepthDataFormat = selectedFormat\n    videoDevice.unlockForConfiguration()\n} catch {\n    print(\"Could not lock device for configuration: \\(error)\")\n    setupResult = .configurationFailed\n    session.commitConfiguration()\n    return\n}\n```\n\nSynchronize the normal RGB video data with depth data output. The first output in the `dataOutputs` array is the master output.\n\n```swift\noutputSynchronizer = AVCaptureDataOutputSynchronizer(dataOutputs: [videoDataOutput, depthDataOutput])\noutputSynchronizer!.setDelegate(self, queue: dataOutputQueue)\n```\n\nThe `CameraViewController` implementation creates and manages this session to interface with the camera. It also contains UI to toggle between the two viewing modes, 2D and 3D.\n\n### Visualize depth data in 2D\n\nThe sample uses JET color coding to distinguish depth values, ranging from red (close) to blue (far). A slider controls the blending of the color code and the actual color values. Touching a pixel displays its depth value.\n\n`DepthToJETConverter` performs the conversion. It separates the color spectrum into histogram bins, colors a Metal texture from depth values obtained in the image buffer, and renders that texture into the preview.\n\n```swift\nvar cvTextureOut: CVMetalTexture?\nCVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, textureCache, pixelBuffer, nil, textureFormat, width, height, 0, &cvTextureOut)\nguard let cvTexture = cvTextureOut, let texture = CVMetalTextureGetTexture(cvTexture) else {\n    print(\"Depth converter failed to create preview texture\")\n    CVMetalTextureCacheFlush(textureCache, 0)\n    return nil\n}\n```\n\n### Visualize depth data in 3D\n\nThe sample’s 3D viewer renders data as a point cloud. Control the camera with the following gestures:\n\n- Pinch to zoom.\n- Pan to move the camera around the center.\n- Rotate with two fingers to turn the camera angle.\n- Double-tap the screen to reset the initial position.\n\nThe sample implements a 3D point cloud as a `PointCloudMetalView`. It uses a Metal vertex shader to control geometry and a Metal fragment shader to color individual vertices, keeping the depth texture and color texture separate:\n\n```objective-c\nCVMetalTextureCacheRef _depthTextureCache;\nCVMetalTextureCacheRef _colorTextureCache;\n```\n\nThe depth frame’s depth map provides the basis for the Metal view’s depth texture:\n\n```objective-c\nCVPixelBufferRef depthFrame = depthData.depthDataMap;\nCVMetalTextureRef cvDepthTexture = nullptr;\nif (kCVReturnSuccess != CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,\n                        _depthTextureCache,\n                        depthFrame,\n                        nil,\n                        MTLPixelFormatR16Float,\n                        CVPixelBufferGetWidth(depthFrame),\n                        CVPixelBufferGetHeight(depthFrame),\n                        0,\n                        &cvDepthTexture)) {\n    NSLog(@\"Failed to create depth texture\");\n    CVPixelBufferRelease(colorFrame);\n    return;\n}\n\nid<MTLTexture> depthTexture = CVMetalTextureGetTexture(cvDepthTexture);\n```\n\nThe RGB image provides the basis for the Metal view’s color texture:\n\n```objective-c\nCVMetalTextureRef cvColorTexture = nullptr;\nif (kCVReturnSuccess != CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,\n                        _colorTextureCache,\n                        colorFrame,\n                        nil,\n                        MTLPixelFormatBGRA8Unorm,\n                        CVPixelBufferGetWidth(colorFrame),\n                        CVPixelBufferGetHeight(colorFrame),\n                        0,\n                        &cvColorTexture)) {\n    NSLog(@\"Failed to create color texture\");\n    CVPixelBufferRelease(colorFrame);\n    return;\n}\n\nid<MTLTexture> colorTexture = CVMetalTextureGetTexture(cvColorTexture);\n```\n\n### Track thermal state\n\nProcessing depth data from a live stream may cause the device to heat up. Keep tabs on the thermal state so you can alert the user if it exceeds a dangerous threshold.\n\n```swift\n@objc\nfunc thermalStateChanged(notification: NSNotification) {\n    if let processInfo = notification.object as? ProcessInfo {\n        showThermalState(state: processInfo.thermalState)\n    }\n}\n\nfunc showThermalState(state: ProcessInfo.ThermalState) {\n    DispatchQueue.main.async {\n        var thermalStateString = \"UNKNOWN\"\n        if state == .nominal {\n            thermalStateString = \"NOMINAL\"\n        } else if state == .fair {\n            thermalStateString = \"FAIR\"\n        } else if state == .serious {\n            thermalStateString = \"SERIOUS\"\n        } else if state == .critical {\n            thermalStateString = \"CRITICAL\"\n        }\n        \n        let message = NSLocalizedString(\"Thermal state: \\(thermalStateString)\", comment: \"Alert message when thermal state has changed\")\n        let alertController = UIAlertController(title: \"TrueDepthStreamer\", message: message, preferredStyle: .alert)\n        alertController.addAction(UIAlertAction(title: NSLocalizedString(\"OK\", comment: \"Alert OK button\"), style: .cancel, handler: nil))\n        self.present(alertController, animated: true, completion: nil)\n    }\n}\n```\n\n## Depth data capture\n\n- **Capturing photos with depth**: Get a depth map with a photo to create effects like the system camera’s Portrait mode (on compatible devices).\n- **Creating auxiliary depth data manually**: Generate a depth image and attach it to your own image.\n- **Capturing depth using the LiDAR camera**: Access the LiDAR camera on supporting devices to capture precise depth data.\n- **AVCamFilter: Applying filters to a capture stream**: Render a capture stream with rose-colored filtering and depth effects.\n- **Enhancing live video by leveraging TrueDepth camera data**: Apply your own background to a live capture feed streamed from the front-facing TrueDepth camera.\n- **AVCaptureDepthDataOutput**: A capture output that records scene depth information on compatible camera devices.\n- **AVDepthData**: A container for per-pixel distance or disparity information captured by compatible camera devices.\n- **AVCameraCalibrationData**: Information about the camera characteristics used to capture images and depth data.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Get a depth map with a photo to create effects like the system camera’s Portrait mode (on compatible devices).",
+          "name" : "Capturing photos with depth",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/capturing-photos-with-depth"
+        },
+        {
+          "description" : "Generate a depth image and attach it to your own image.",
+          "name" : "Creating auxiliary depth data manually",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/creating-auxiliary-depth-data-manually"
+        },
+        {
+          "description" : "Access the LiDAR camera on supporting devices to capture precise depth data.",
+          "name" : "Capturing depth using the LiDAR camera",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/capturing-depth-using-the-lidar-camera"
+        },
+        {
+          "description" : "Render a capture stream with rose-colored filtering and depth effects.",
+          "name" : "AVCamFilter: Applying filters to a capture stream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/avcamfilter-applying-filters-to-a-capture-stream"
+        },
+        {
+          "description" : "Apply your own background to a live capture feed streamed from the front-facing TrueDepth camera.",
+          "name" : "Enhancing live video by leveraging TrueDepth camera data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/enhancing-live-video-by-leveraging-truedepth-camera-data"
+        },
+        {
+          "description" : "A capture output that records scene depth information on compatible camera devices.",
+          "name" : "AVCaptureDepthDataOutput",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCaptureDepthDataOutput"
+        },
+        {
+          "description" : "A container for per-pixel distance or disparity information captured by compatible camera devices.",
+          "name" : "AVDepthData",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVDepthData"
+        },
+        {
+          "description" : "Information about the camera characteristics used to capture images and depth data.",
+          "name" : "AVCameraCalibrationData",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVCameraCalibrationData"
+        }
+      ],
+      "title" : "Depth data capture"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Streaming depth data from the TrueDepth camera",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/streaming-depth-data-from-the-truedepth-camera"
+}

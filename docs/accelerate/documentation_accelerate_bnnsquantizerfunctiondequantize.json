@@ -1,0 +1,60 @@
+{
+  "abstract" : "A constant that specifes conversion to a higher precision.",
+  "codeExamples" : [
+    {
+      "code" : "static func dequantize() {\n    \n    let inputData = UnsafeMutableBufferPointer<Int16>.allocate(capacity: 8)\n    _ = inputData.initialize(from: [1000, 2000, 3000, 4000,\n                                    5000, 6000, 7000, 8000])\n    let inputDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                layout: BNNSDataLayoutRowMajorMatrix,\n                                                size: (4, 2, 0, 0, 0, 0, 0, 0),\n                                                stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                data: inputData.baseAddress!,\n                                                data_type: BNNSDataType.int16,\n                                                table_data: nil,\n                                                table_data_type: BNNSDataType.int16,\n                                                data_scale: 1, data_bias: 0)\n    \n    let outputData = UnsafeMutableBufferPointer<Float>.allocate(capacity: 8)\n    let outputDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                 layout: BNNSDataLayoutRowMajorMatrix,\n                                                 size: (4, 2, 0, 0, 0, 0, 0, 0),\n                                                 stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                 data: outputData.baseAddress!,\n                                                 data_type: BNNSDataType.float,\n                                                 table_data: nil,\n                                                 table_data_type: BNNSDataType.float,\n                                                 data_scale: 1, data_bias: 0)\n    \n    let scaleData = UnsafeMutableBufferPointer<Int16>.allocate(capacity: 4)\n    _ = scaleData.initialize(from: [1, 10, 100, 1000])\n    let scaleDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                layout: BNNSDataLayoutVector,\n                                                size: (4, 0, 0, 0, 0, 0, 0, 0),\n                                                stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                data: scaleData.baseAddress!,\n                                                data_type: BNNSDataType.int16,\n                                                table_data: nil,\n                                                table_data_type: BNNSDataType.int16,\n                                                data_scale: 1, data_bias: 0)\n    \n    var layerParams = BNNSLayerParametersQuantization(axis_mask: 1,\n                                                      function: BNNSQuantizerFunctionDequantize,\n                                                      i_desc: inputDescriptor,\n                                                      o_desc: outputDescriptor,\n                                                      scale: scaleDescriptor,\n                                                      bias: BNNSNDArrayDescriptor())\n    \n    BNNSDirectApplyQuantizer(&layerParams,\n                              nil,\n                              1,\n                              8,\n                              8)\n    \n    \/\/ Prints:\n    \/\/  [1000.0, 200.0, 30.0, 4.0,\n    \/\/   5000.0, 600.0, 70.0, 8.0]\n    print(Array(outputData))\n    \n    inputData.deallocate()\n    outputData.deallocate()\n    scaleData.deallocate()\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "30a093fdbc7bbceca27bb93d82cf7133d07c11a00baa6abdbd5d1d97eedb0098",
+  "crawledAt" : "2025-12-02T01:26:08Z",
+  "declaration" : {
+    "code" : "var BNNSQuantizerFunctionDequantize: BNNSQuantizerFunction { get }",
+    "language" : "swift"
+  },
+  "id" : "DEBE505B-E283-435D-929F-3AC78B268B05",
+  "kind" : "unknown",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nThe following code dequantizes a 16-bit integer matrix to a single-precision matrix. The code applies the scale along the zeroth axis and, therefore, the scale tensor contains four elements.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSQuantizerFunctionDequantize\ncrawled: 2025-12-02T01:26:08Z\n---\n\n# BNNSQuantizerFunctionDequantize\n\n**Global Variable**\n\nA constant that specifes conversion to a higher precision.\n\n## Declaration\n\n```swift\nvar BNNSQuantizerFunctionDequantize: BNNSQuantizerFunction { get }\n```\n\n## Discussion\n\nThe following code dequantizes a 16-bit integer matrix to a single-precision matrix. The code applies the scale along the zeroth axis and, therefore, the scale tensor contains four elements.\n\n```swift\nstatic func dequantize() {\n    \n    let inputData = UnsafeMutableBufferPointer<Int16>.allocate(capacity: 8)\n    _ = inputData.initialize(from: [1000, 2000, 3000, 4000,\n                                    5000, 6000, 7000, 8000])\n    let inputDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                layout: BNNSDataLayoutRowMajorMatrix,\n                                                size: (4, 2, 0, 0, 0, 0, 0, 0),\n                                                stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                data: inputData.baseAddress!,\n                                                data_type: BNNSDataType.int16,\n                                                table_data: nil,\n                                                table_data_type: BNNSDataType.int16,\n                                                data_scale: 1, data_bias: 0)\n    \n    let outputData = UnsafeMutableBufferPointer<Float>.allocate(capacity: 8)\n    let outputDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                 layout: BNNSDataLayoutRowMajorMatrix,\n                                                 size: (4, 2, 0, 0, 0, 0, 0, 0),\n                                                 stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                 data: outputData.baseAddress!,\n                                                 data_type: BNNSDataType.float,\n                                                 table_data: nil,\n                                                 table_data_type: BNNSDataType.float,\n                                                 data_scale: 1, data_bias: 0)\n    \n    let scaleData = UnsafeMutableBufferPointer<Int16>.allocate(capacity: 4)\n    _ = scaleData.initialize(from: [1, 10, 100, 1000])\n    let scaleDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                layout: BNNSDataLayoutVector,\n                                                size: (4, 0, 0, 0, 0, 0, 0, 0),\n                                                stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                data: scaleData.baseAddress!,\n                                                data_type: BNNSDataType.int16,\n                                                table_data: nil,\n                                                table_data_type: BNNSDataType.int16,\n                                                data_scale: 1, data_bias: 0)\n    \n    var layerParams = BNNSLayerParametersQuantization(axis_mask: 1,\n                                                      function: BNNSQuantizerFunctionDequantize,\n                                                      i_desc: inputDescriptor,\n                                                      o_desc: outputDescriptor,\n                                                      scale: scaleDescriptor,\n                                                      bias: BNNSNDArrayDescriptor())\n    \n    BNNSDirectApplyQuantizer(&layerParams,\n                              nil,\n                              1,\n                              8,\n                              8)\n    \n    \/\/ Prints:\n    \/\/  [1000.0, 200.0, 30.0, 4.0,\n    \/\/   5000.0, 600.0, 70.0, 8.0]\n    print(Array(outputData))\n    \n    inputData.deallocate()\n    outputData.deallocate()\n    scaleData.deallocate()\n}\n```\n\n## Quantization Functions\n\n- **init(_:)**: Creates a new instance with the specified raw value.\n- **init(rawValue:)**: Creates a new instance with the specified raw value.\n- **rawValue**: The corresponding value of the raw type.\n- **BNNSQuantizerFunctionQuantize**: A constant that specifes conversion to a lower precision.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new instance with the specified raw value.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSQuantizerFunction\/init(_:)"
+        },
+        {
+          "description" : "Creates a new instance with the specified raw value.",
+          "name" : "init(rawValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSQuantizerFunction\/init(rawValue:)"
+        },
+        {
+          "description" : "The corresponding value of the raw type.",
+          "name" : "rawValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSQuantizerFunction\/rawValue"
+        },
+        {
+          "description" : "A constant that specifes conversion to a lower precision.",
+          "name" : "BNNSQuantizerFunctionQuantize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSQuantizerFunctionQuantize"
+        }
+      ],
+      "title" : "Quantization Functions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSQuantizerFunctionDequantize",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSQuantizerFunctionDequantize"
+}

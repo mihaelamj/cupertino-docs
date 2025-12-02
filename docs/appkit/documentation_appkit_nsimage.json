@@ -1,0 +1,594 @@
+{
+  "abstract" : "A high-level interface for manipulating image data.",
+  "codeExamples" : [
+    {
+      "code" : "static void updateLayerWithImageInWindow1(NSImage *image, CALayer *layer, NSWindow *window) {\n   CGFloat desiredScaleFactor = [window backingScaleFactor];\n   CGFloat actualScaleFactor = [image recommendedLayerContentsScale:desiredScaleFactor];\n \n   id layerContents = [image layerContentsForContentsScale:actualScaleFactor];\n \n   [layer setContents:layerContents];\n   [layer setContentsScale:actualScaleFactor];\n}",
+      "language" : "objc"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCoding",
+    "NSCopying",
+    "NSItemProviderReading",
+    "NSItemProviderWriting",
+    "NSObjectProtocol",
+    "NSPasteboardReading",
+    "NSPasteboardWriting",
+    "NSSecureCoding",
+    "Sendable",
+    "SendableMetatype",
+    "Transferable"
+  ],
+  "contentHash" : "566727ed3ecb711385f70050c57934289715b9afbdcab46b2e2ed5ebc39f9a1f",
+  "crawledAt" : "2025-12-02T17:03:43Z",
+  "declaration" : {
+    "code" : "class NSImage",
+    "language" : "swift"
+  },
+  "id" : "74A9BE20-74C0-4D05-AED4-24FC28341CB5",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "AppKit",
+  "overview" : "## Overview\n\nYou use instances of [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSImage] to load existing images, create new images, and draw the resulting image data into your views. Although you use this class predominantly for image-related operations, the class itself knows little about the underlying image data. Instead, it works in conjunction with one or more image representation objects (subclasses of [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSImageRep]) to manage and render the image data. For the most part, these interactions are transparent.\n\nThe  class serves many purposes, providing support for the following tasks:\n\nThe `NSImage` class itself is capable of managing image data in a variety of formats. The specific list of formats is dependent on the version of the operating system but includes many standard formats such as TIFF, JPEG, GIF, PNG, and PDF among others. AppKit manages each format using a specific type of image representation object, whose job is to manage the actual image data. You can get a list of supported formats using the methods described in Determining Supported Types of Images.\n\nFor more information about how to use image objects in your app, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/CocoaDrawingGuide\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/TP40003290].\n\n### Using Images with Core Animation Layers\n\nAlthough you can assign an `NSImage` object directly to the [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayer\/contents] property of a [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayer] object, doing so may not always yield the best results. Instead of using your image object, you can use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSImage\/layerContents(forContentsScale:)] method to obtain an object that you can use for your layer’s contents. The image created by that method serves as the contents of a layer, which also supports all of the layer’s gravity modes. By contrast, the `NSImage` class supports only the [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayerContentsGravity\/resize], [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayerContentsGravity\/resizeAspect], and [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayerContentsGravity\/resizeAspectFill] modes.\n\nBefore calling the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSImage\/layerContents(forContentsScale:)] method, use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSImage\/recommendedLayerContentsScale(_:)] method to get the recommended scale factor for the resulting image. The code listing below shows a typical example that uses the scale factor of a window’s backing store as the desired scale factor. From that scale factor, the code gets the scale factor for the specified image object and creates an object that you assign to the layer. You might use this code for images that fit the layer bounds precisely or for which you rely on the [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayer\/contentsGravity] property of the layer to position or scale the image.\n\nListing 1. Assigning an image to a layer",
+  "platforms" : [
+    "Mac Catalyst",
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\ncrawled: 2025-12-02T17:03:43Z\n---\n\n# NSImage\n\n**Class**\n\nA high-level interface for manipulating image data.\n\n## Declaration\n\n```swift\nclass NSImage\n```\n\n## Overview\n\nYou use instances of [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSImage] to load existing images, create new images, and draw the resulting image data into your views. Although you use this class predominantly for image-related operations, the class itself knows little about the underlying image data. Instead, it works in conjunction with one or more image representation objects (subclasses of [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSImageRep]) to manage and render the image data. For the most part, these interactions are transparent.\n\nThe  class serves many purposes, providing support for the following tasks:\n\n- Loading images stored on disk or at a specified URL.\n- Drawing images into a view or graphics context.\n- Providing the contents of a [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayer] object.\n- Creating new images based on a series of captured drawing commands.\n- Producing versions of the image in a different format.\n\nThe `NSImage` class itself is capable of managing image data in a variety of formats. The specific list of formats is dependent on the version of the operating system but includes many standard formats such as TIFF, JPEG, GIF, PNG, and PDF among others. AppKit manages each format using a specific type of image representation object, whose job is to manage the actual image data. You can get a list of supported formats using the methods described in Determining Supported Types of Images.\n\nFor more information about how to use image objects in your app, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/CocoaDrawingGuide\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/TP40003290].\n\n### Using Images with Core Animation Layers\n\nAlthough you can assign an `NSImage` object directly to the [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayer\/contents] property of a [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayer] object, doing so may not always yield the best results. Instead of using your image object, you can use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSImage\/layerContents(forContentsScale:)] method to obtain an object that you can use for your layer’s contents. The image created by that method serves as the contents of a layer, which also supports all of the layer’s gravity modes. By contrast, the `NSImage` class supports only the [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayerContentsGravity\/resize], [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayerContentsGravity\/resizeAspect], and [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayerContentsGravity\/resizeAspectFill] modes.\n\nBefore calling the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSImage\/layerContents(forContentsScale:)] method, use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSImage\/recommendedLayerContentsScale(_:)] method to get the recommended scale factor for the resulting image. The code listing below shows a typical example that uses the scale factor of a window’s backing store as the desired scale factor. From that scale factor, the code gets the scale factor for the specified image object and creates an object that you assign to the layer. You might use this code for images that fit the layer bounds precisely or for which you rely on the [doc:\/\/com.apple.documentation\/documentation\/QuartzCore\/CALayer\/contentsGravity] property of the layer to position or scale the image.\n\nListing 1. Assigning an image to a layer\n\n```objc\nstatic void updateLayerWithImageInWindow1(NSImage *image, CALayer *layer, NSWindow *window) {\n   CGFloat desiredScaleFactor = [window backingScaleFactor];\n   CGFloat actualScaleFactor = [image recommendedLayerContentsScale:desiredScaleFactor];\n \n   id layerContents = [image layerContentsForContentsScale:actualScaleFactor];\n \n   [layer setContents:layerContents];\n   [layer setContentsScale:actualScaleFactor];\n}\n```\n\n## Creating Images by Name\n\n- **Configuring and displaying symbol images in your UI**: Create scalable images that integrate with your app’s text, and adjust the appearance of those images dynamically.\n- **init(named:)**: Returns the image object associated with the specified name.\n- **init(systemSymbolName:accessibilityDescription:)**: Creates a symbol image with the system symbol name and accessibility description you specify.\n- **init(systemSymbolName:variableValue:accessibilityDescription:)**: Creates a symbol image with the system symbol name and variable value you specify.\n- **init(symbolName:variableValue:)**: Creates a symbol image with the symbol name and variable value you specify.\n- **init(symbolName:bundle:variableValue:)**\n- **init(resource:)**\n- **setName(_:)**: Registers the image object under the specified name.\n- **name()**: Returns the name associated with the image, if any.\n- **NSImage.Name**: Named images, defined by the system or you, for use in your app.\n- **init(imageLiteralResourceName:)**: Creates an image initialized with the specified resource name.\n\n## Creating Dynamically Drawn Images\n\n- **init(size:flipped:drawingHandler:)**: Creates and returns an image object whose contents are drawn using the specified block.\n\n## Creating Images from Resource Files\n\n- **init(byReferencingFile:)**: Initializes and returns an image object using the specified file.\n- **init(byReferencing:)**: Initializes and returns an image object using the specified URL.\n- **init(contentsOfFile:)**: Initializes and returns an image object with the contents of the specified file.\n- **init(contentsOf:)**: Initializes and returns an image object with the contents of the specified URL.\n\n## Creating Images from Existing Data\n\n- **init(data:)**: Initializes and returns an image object using the provided image data.\n- **init(dataIgnoringOrientation:)**: Initializes and returns an image object using the provided image data and ignoring the EXIF orientation tags.\n- **init(cgImage:size:)**: Creates a new image using the contents of the provided image.\n- **init(pasteboard:)**: Initializes and returns an image object with data from the specified pasteboard.\n- **init(coder:)**: Initializes and returns an image object from data in an unarchiver.\n\n## Creating Empty Images\n\n- **init(size:)**: Initializes and returns an image object with the specified dimensions.\n\n## Creating Symbol Images\n\n- **withSymbolConfiguration(_:)**: Creates a new symbol image with the specified configuration.\n- **NSImage.SymbolConfiguration**: An object that contains the specific font, style, and weight attributes to apply to a symbol image.\n\n## Getting the Symbol Image Configuration\n\n- **symbolConfiguration**: The configuration details for a symbol image.\n\n## Managing Loading and Drawing of Images\n\n- **delegate**: The image’s delegate object.\n- **NSImageDelegate**: A set of optional methods that you can use to respond to drawing failures and manage incremental loads.\n\n## Setting Attributes of Images\n\n- **size**: The size of the image.\n- **isTemplate**: A Boolean value that determines whether the image represents a template image.\n- **isTemplate**: A Boolean value that determines whether the image represents a template image.\n\n## Determining Supported Types of Images\n\n- **canInit(with:)**: Tests whether the image can create an instance of itself using pasteboard data.\n- **imageTypes**: Returns an array of UTI strings identifying the image types supported by the registered image representation objects, either directly or through a user-installed filter service.\n- **imageUnfilteredTypes**: Returns an array of UTI strings identifying the image types supported directly by the registered image representation objects.\n\n## Working with Representations of Images\n\n- **addRepresentation(_:)**: Adds the specified image representation object to the image.\n- **addRepresentations(_:)**: Adds an array of image representation objects to the image.\n- **representations**: An array containing all of the image object’s image representations.\n- **removeRepresentation(_:)**: Removes and releases the specified image representation.\n- **bestRepresentation(for:context:hints:)**: Returns the best representation of the image for the specified rectangle using the provided hints.\n- **NSImageRep.HintKey**: Constants for the keys to include in a hints dictionary when drawing the image.\n- **NSImage.LayoutDirection**: Constants that describe the layout direction for the image.\n\n## Setting the Representation Selection Criteria for Images\n\n- **prefersColorMatch**: A Boolean value that indicates whether the image prefers to choose image representations using color-matching or resolution-matching.\n- **usesEPSOnResolutionMismatch**: A Boolean value that indicates whether EPS representations are preferred when no other representations match the resolution of the device.\n- **matchesOnMultipleResolution**: A Boolean value that indicates whether image representations whose resolution is an integral multiple of the device resolution are a match.\n\n## Drawing Images\n\n- **draw(in:)**: Draws the image in the specified rectangle.\n- **draw(at:from:operation:fraction:)**: Draws all or part of the image at the specified point in the current coordinate system.\n- **draw(in:from:operation:fraction:)**: Draws all or part of the image in the specified rectangle in the current coordinate system.\n- **draw(in:from:operation:fraction:respectFlipped:hints:)**: Draws all or part of the image in the specified rectangle respecting the hints and the orientation of the current coordinate system.\n- **drawRepresentation(_:in:)**: Draws the image using the specified image representation object.\n- **NSCompositingOperation**: Constants that describe compositing operators in terms of source and destination images, each having an opaque and transparent region.\n\n## Managing Drawing Options\n\n- **isValid**: A Boolean value that indicates whether it is possible to draw an image representation.\n- **backgroundColor**: The background color for the image.\n- **capInsets**: The cap insets for the image.\n- **resizingMode**: The resizing mode for the image.\n- **NSImage.ResizingMode**: Constants that describe the resizing mode for the image.\n\n## Working with Alignment Metadata\n\n- **alignmentRect**: A rectangle that you can use to position the image during layout.\n\n## Managing Caching Options\n\n- **cacheMode**: The image’s caching mode.\n- **recache()**: Invalidates and frees offscreen caches of all image representations.\n- **NSImage.CacheMode**: Constants that specify the caching policy on a per-image basis.\n\n## Producing TIFF Data for Images\n\n- **tiffRepresentation**: A data object containing TIFF data for all of the image representations in the image.\n- **tiffRepresentation(using:factor:)**: Returns a data object that contains TIFF data with the specified compression settings for all of the image representations in the image.\n\n## Producing Core Graphics Images\n\n- **cgImage(forProposedRect:context:hints:)**: Returns a Core Graphics image based on the contents of the current image object.\n\n## Hit-Testing Images\n\n- **hitTest(_:withDestinationRect:context:hints:flipped:)**: Returns whether the destination rectangle would intersect a non-transparent portion of the image.\n\n## Managing Image Accessibility\n\n- **accessibilityDescription**: The image’s accessibility description.\n\n## Using Images with Core Animation\n\n- **layerContents(forContentsScale:)**: Returns an object that may be used as the contents of a layer.\n- **recommendedLayerContentsScale(_:)**: Returns the recommended layer contents scale for this image.\n\n## Managing Axis Matching\n\n- **matchesOnlyOnBestFittingAxis**: A Boolean value that indicates whether the image matches only on the best fitting axis.\n\n## Localizing Images\n\n- **withLocale(_:)**\n- **locale**\n\n## Deprecated\n\n- **Deprecated Symbols**: Review symbols that are no longer supported, and find the replacements to use instead.\n\n## Enumerations\n\n- **NSImage.DynamicRange**: Describes how High Dynamic Range (HDR) image content displays.\n\n## Images\n\n- **Providing images for different appearances**: Supply image resources appropriate for light and dark appearances and for high-contrast environments.\n- **Supporting Continuity Camera in Your Mac App**: Incorporate scanned documents and pictures from a user’s iPhone, iPad, or iPod touch into your Mac app using Continuity Camera.\n- **Supporting HDR images in your app**: ​ Load, display, edit, and save HDR images using SwiftUI and Core Image. ​\n- **Applying Apple HDR effect to your photos**: You can decode and apply Apple’s HDR gain map to your own images.\n- **NSImageDelegate**: A set of optional methods that you can use to respond to drawing failures and manage incremental loads.\n- **NSImageRep**: A semiabstract superclass that provides subclasses that you use to draw an image from a particular type of source data.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- Copyable\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCoding\n- NSCopying\n- NSItemProviderReading\n- NSItemProviderWriting\n- NSObjectProtocol\n- NSPasteboardReading\n- NSPasteboardWriting\n- NSSecureCoding\n- Sendable\n- SendableMetatype\n- Transferable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create scalable images that integrate with your app’s text, and adjust the appearance of those images dynamically.",
+          "name" : "Configuring and displaying symbol images in your UI",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/configuring-and-displaying-symbol-images-in-your-ui"
+        },
+        {
+          "description" : "Returns the image object associated with the specified name.",
+          "name" : "init(named:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(named:)"
+        },
+        {
+          "description" : "Creates a symbol image with the system symbol name and accessibility description you specify.",
+          "name" : "init(systemSymbolName:accessibilityDescription:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(systemSymbolName:accessibilityDescription:)"
+        },
+        {
+          "description" : "Creates a symbol image with the system symbol name and variable value you specify.",
+          "name" : "init(systemSymbolName:variableValue:accessibilityDescription:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(systemSymbolName:variableValue:accessibilityDescription:)"
+        },
+        {
+          "description" : "Creates a symbol image with the symbol name and variable value you specify.",
+          "name" : "init(symbolName:variableValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(symbolName:variableValue:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(symbolName:bundle:variableValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(symbolName:bundle:variableValue:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(resource:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(resource:)"
+        },
+        {
+          "description" : "Registers the image object under the specified name.",
+          "name" : "setName(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/setName(_:)"
+        },
+        {
+          "description" : "Returns the name associated with the image, if any.",
+          "name" : "name()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/name()"
+        },
+        {
+          "description" : "Named images, defined by the system or you, for use in your app.",
+          "name" : "NSImage.Name",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/Name-swift.typealias"
+        },
+        {
+          "description" : "Creates an image initialized with the specified resource name.",
+          "name" : "init(imageLiteralResourceName:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(imageLiteralResourceName:)"
+        }
+      ],
+      "title" : "Creating Images by Name"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates and returns an image object whose contents are drawn using the specified block.",
+          "name" : "init(size:flipped:drawingHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(size:flipped:drawingHandler:)"
+        }
+      ],
+      "title" : "Creating Dynamically Drawn Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes and returns an image object using the specified file.",
+          "name" : "init(byReferencingFile:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(byReferencingFile:)"
+        },
+        {
+          "description" : "Initializes and returns an image object using the specified URL.",
+          "name" : "init(byReferencing:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(byReferencing:)"
+        },
+        {
+          "description" : "Initializes and returns an image object with the contents of the specified file.",
+          "name" : "init(contentsOfFile:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(contentsOfFile:)"
+        },
+        {
+          "description" : "Initializes and returns an image object with the contents of the specified URL.",
+          "name" : "init(contentsOf:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(contentsOf:)"
+        }
+      ],
+      "title" : "Creating Images from Resource Files"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes and returns an image object using the provided image data.",
+          "name" : "init(data:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(data:)"
+        },
+        {
+          "description" : "Initializes and returns an image object using the provided image data and ignoring the EXIF orientation tags.",
+          "name" : "init(dataIgnoringOrientation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(dataIgnoringOrientation:)"
+        },
+        {
+          "description" : "Creates a new image using the contents of the provided image.",
+          "name" : "init(cgImage:size:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(cgImage:size:)"
+        },
+        {
+          "description" : "Initializes and returns an image object with data from the specified pasteboard.",
+          "name" : "init(pasteboard:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(pasteboard:)"
+        },
+        {
+          "description" : "Initializes and returns an image object from data in an unarchiver.",
+          "name" : "init(coder:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(coder:)"
+        }
+      ],
+      "title" : "Creating Images from Existing Data"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes and returns an image object with the specified dimensions.",
+          "name" : "init(size:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/init(size:)"
+        }
+      ],
+      "title" : "Creating Empty Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new symbol image with the specified configuration.",
+          "name" : "withSymbolConfiguration(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/withSymbolConfiguration(_:)"
+        },
+        {
+          "description" : "An object that contains the specific font, style, and weight attributes to apply to a symbol image.",
+          "name" : "NSImage.SymbolConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/SymbolConfiguration-swift.class"
+        }
+      ],
+      "title" : "Creating Symbol Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The configuration details for a symbol image.",
+          "name" : "symbolConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/symbolConfiguration-swift.property"
+        }
+      ],
+      "title" : "Getting the Symbol Image Configuration"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The image’s delegate object.",
+          "name" : "delegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/delegate"
+        },
+        {
+          "description" : "A set of optional methods that you can use to respond to drawing failures and manage incremental loads.",
+          "name" : "NSImageDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImageDelegate"
+        }
+      ],
+      "title" : "Managing Loading and Drawing of Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The size of the image.",
+          "name" : "size",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/size"
+        },
+        {
+          "description" : "A Boolean value that determines whether the image represents a template image.",
+          "name" : "isTemplate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/isTemplate"
+        },
+        {
+          "description" : "A Boolean value that determines whether the image represents a template image.",
+          "name" : "isTemplate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/isTemplate"
+        }
+      ],
+      "title" : "Setting Attributes of Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tests whether the image can create an instance of itself using pasteboard data.",
+          "name" : "canInit(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/canInit(with:)"
+        },
+        {
+          "description" : "Returns an array of UTI strings identifying the image types supported by the registered image representation objects, either directly or through a user-installed filter service.",
+          "name" : "imageTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/imageTypes"
+        },
+        {
+          "description" : "Returns an array of UTI strings identifying the image types supported directly by the registered image representation objects.",
+          "name" : "imageUnfilteredTypes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/imageUnfilteredTypes"
+        }
+      ],
+      "title" : "Determining Supported Types of Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds the specified image representation object to the image.",
+          "name" : "addRepresentation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/addRepresentation(_:)"
+        },
+        {
+          "description" : "Adds an array of image representation objects to the image.",
+          "name" : "addRepresentations(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/addRepresentations(_:)"
+        },
+        {
+          "description" : "An array containing all of the image object’s image representations.",
+          "name" : "representations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/representations"
+        },
+        {
+          "description" : "Removes and releases the specified image representation.",
+          "name" : "removeRepresentation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/removeRepresentation(_:)"
+        },
+        {
+          "description" : "Returns the best representation of the image for the specified rectangle using the provided hints.",
+          "name" : "bestRepresentation(for:context:hints:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/bestRepresentation(for:context:hints:)"
+        },
+        {
+          "description" : "Constants for the keys to include in a hints dictionary when drawing the image.",
+          "name" : "NSImageRep.HintKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImageRep\/HintKey"
+        },
+        {
+          "description" : "Constants that describe the layout direction for the image.",
+          "name" : "NSImage.LayoutDirection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/LayoutDirection"
+        }
+      ],
+      "title" : "Working with Representations of Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the image prefers to choose image representations using color-matching or resolution-matching.",
+          "name" : "prefersColorMatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/prefersColorMatch"
+        },
+        {
+          "description" : "A Boolean value that indicates whether EPS representations are preferred when no other representations match the resolution of the device.",
+          "name" : "usesEPSOnResolutionMismatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/usesEPSOnResolutionMismatch"
+        },
+        {
+          "description" : "A Boolean value that indicates whether image representations whose resolution is an integral multiple of the device resolution are a match.",
+          "name" : "matchesOnMultipleResolution",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/matchesOnMultipleResolution"
+        }
+      ],
+      "title" : "Setting the Representation Selection Criteria for Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Draws the image in the specified rectangle.",
+          "name" : "draw(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/draw(in:)"
+        },
+        {
+          "description" : "Draws all or part of the image at the specified point in the current coordinate system.",
+          "name" : "draw(at:from:operation:fraction:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/draw(at:from:operation:fraction:)"
+        },
+        {
+          "description" : "Draws all or part of the image in the specified rectangle in the current coordinate system.",
+          "name" : "draw(in:from:operation:fraction:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/draw(in:from:operation:fraction:)"
+        },
+        {
+          "description" : "Draws all or part of the image in the specified rectangle respecting the hints and the orientation of the current coordinate system.",
+          "name" : "draw(in:from:operation:fraction:respectFlipped:hints:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/draw(in:from:operation:fraction:respectFlipped:hints:)"
+        },
+        {
+          "description" : "Draws the image using the specified image representation object.",
+          "name" : "drawRepresentation(_:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/drawRepresentation(_:in:)"
+        },
+        {
+          "description" : "Constants that describe compositing operators in terms of source and destination images, each having an opaque and transparent region.",
+          "name" : "NSCompositingOperation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCompositingOperation"
+        }
+      ],
+      "title" : "Drawing Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether it is possible to draw an image representation.",
+          "name" : "isValid",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/isValid"
+        },
+        {
+          "description" : "The background color for the image.",
+          "name" : "backgroundColor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/backgroundColor"
+        },
+        {
+          "description" : "The cap insets for the image.",
+          "name" : "capInsets",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/capInsets"
+        },
+        {
+          "description" : "The resizing mode for the image.",
+          "name" : "resizingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/resizingMode-swift.property"
+        },
+        {
+          "description" : "Constants that describe the resizing mode for the image.",
+          "name" : "NSImage.ResizingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/ResizingMode-swift.enum"
+        }
+      ],
+      "title" : "Managing Drawing Options"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A rectangle that you can use to position the image during layout.",
+          "name" : "alignmentRect",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/alignmentRect"
+        }
+      ],
+      "title" : "Working with Alignment Metadata"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The image’s caching mode.",
+          "name" : "cacheMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/cacheMode-swift.property"
+        },
+        {
+          "description" : "Invalidates and frees offscreen caches of all image representations.",
+          "name" : "recache()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/recache()"
+        },
+        {
+          "description" : "Constants that specify the caching policy on a per-image basis.",
+          "name" : "NSImage.CacheMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/CacheMode-swift.enum"
+        }
+      ],
+      "title" : "Managing Caching Options"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A data object containing TIFF data for all of the image representations in the image.",
+          "name" : "tiffRepresentation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/tiffRepresentation"
+        },
+        {
+          "description" : "Returns a data object that contains TIFF data with the specified compression settings for all of the image representations in the image.",
+          "name" : "tiffRepresentation(using:factor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/tiffRepresentation(using:factor:)"
+        }
+      ],
+      "title" : "Producing TIFF Data for Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Core Graphics image based on the contents of the current image object.",
+          "name" : "cgImage(forProposedRect:context:hints:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/cgImage(forProposedRect:context:hints:)"
+        }
+      ],
+      "title" : "Producing Core Graphics Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns whether the destination rectangle would intersect a non-transparent portion of the image.",
+          "name" : "hitTest(_:withDestinationRect:context:hints:flipped:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/hitTest(_:withDestinationRect:context:hints:flipped:)"
+        }
+      ],
+      "title" : "Hit-Testing Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The image’s accessibility description.",
+          "name" : "accessibilityDescription",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/accessibilityDescription"
+        }
+      ],
+      "title" : "Managing Image Accessibility"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns an object that may be used as the contents of a layer.",
+          "name" : "layerContents(forContentsScale:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/layerContents(forContentsScale:)"
+        },
+        {
+          "description" : "Returns the recommended layer contents scale for this image.",
+          "name" : "recommendedLayerContentsScale(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/recommendedLayerContentsScale(_:)"
+        }
+      ],
+      "title" : "Using Images with Core Animation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the image matches only on the best fitting axis.",
+          "name" : "matchesOnlyOnBestFittingAxis",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/matchesOnlyOnBestFittingAxis"
+        }
+      ],
+      "title" : "Managing Axis Matching"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "withLocale(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/withLocale(_:)"
+        },
+        {
+          "description" : "",
+          "name" : "locale",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/locale"
+        }
+      ],
+      "title" : "Localizing Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Review symbols that are no longer supported, and find the replacements to use instead.",
+          "name" : "Deprecated Symbols",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/nsimage-deprecated-symbols"
+        }
+      ],
+      "title" : "Deprecated"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Describes how High Dynamic Range (HDR) image content displays.",
+          "name" : "NSImage.DynamicRange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage\/DynamicRange"
+        }
+      ],
+      "title" : "Enumerations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Supply image resources appropriate for light and dark appearances and for high-contrast environments.",
+          "name" : "Providing images for different appearances",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/providing-images-for-different-appearances"
+        },
+        {
+          "description" : "Incorporate scanned documents and pictures from a user’s iPhone, iPad, or iPod touch into your Mac app using Continuity Camera.",
+          "name" : "Supporting Continuity Camera in Your Mac App",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/supporting-continuity-camera-in-your-mac-app"
+        },
+        {
+          "description" : "​ Load, display, edit, and save HDR images using SwiftUI and Core Image. ​",
+          "name" : "Supporting HDR images in your app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/supporting-hdr-images-in-your-app"
+        },
+        {
+          "description" : "You can decode and apply Apple’s HDR gain map to your own images.",
+          "name" : "Applying Apple HDR effect to your photos",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/applying-apple-hdr-effect-to-your-photos"
+        },
+        {
+          "description" : "A set of optional methods that you can use to respond to drawing failures and manage incremental loads.",
+          "name" : "NSImageDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImageDelegate"
+        },
+        {
+          "description" : "A semiabstract superclass that provides subclasses that you use to draw an image from a particular type of source data.",
+          "name" : "NSImageRep",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImageRep"
+        }
+      ],
+      "title" : "Images"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSImage",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSImage"
+}

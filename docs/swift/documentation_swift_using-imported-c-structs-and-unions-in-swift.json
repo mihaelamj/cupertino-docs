@@ -1,0 +1,65 @@
+{
+  "abstract" : "Learn how Swift represents imported C structures and unions, including types with bitfields and unnamed fields.",
+  "codeExamples" : [
+    {
+      "code" : "struct Color {\n    float r, g, b;\n};\ntypedef struct Color Color;",
+      "language" : "occ"
+    },
+    {
+      "code" : "public struct Color {\n    var r: Float\n    var g: Float\n    var b: Float\n\n    init()\n    init(r: Float, g: Float, b: Float)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "union SchroedingersCat {\n    bool isAlive;\n    bool isDead;\n};",
+      "language" : "occ"
+    },
+    {
+      "code" : "struct SchroedingersCat {\n    var isAlive: Bool { get set }\n    var isDead: Bool { get set }\n\n    init(isAlive: Bool)\n    init(isDead: Bool)\n\n    init()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "var mittens = SchroedingersCat(isAlive: false)\n\nprint(mittens.isAlive, mittens.isDead)\n\/\/ Prints \"false false\"\n\nmittens.isAlive = true\nprint(mittens.isDead)\n\/\/ Prints \"true\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct Cake {\n    union {\n        int layers;\n        double height;\n    };\n\n    struct {\n        bool icing;\n        bool sprinkles;\n    } toppings;\n};",
+      "language" : "occ"
+    },
+    {
+      "code" : "var simpleCake = Cake()\nsimpleCake.layers = 5\nprint(simpleCake.toppings.icing)\n\/\/ Prints \"false\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let cake = Cake(\n    .init(layers: 2),\n    toppings: .init(icing: true, sprinkles: false)\n)\n\nprint(\"The cake has \\(cake.layers) layers.\")\n\/\/ Prints \"The cake has 2 layers.\"\nprint(\"Does it have sprinkles?\", cake.toppings.sprinkles ? \"Yes.\" : \"No.\")\n\/\/ Prints \"Does it have sprinkles? No.\"",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "c1d5a8601d31a79c76b02431f5cf7517f4e6f401d0539c3439b542b2085fd20e",
+  "crawledAt" : "2025-12-02T07:34:59Z",
+  "id" : "6DF1FF4E-07B0-472D-B3D3-6DDB2A58310D",
+  "kind" : "article",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nSwift imports any C structure declared in a C header as a Swift structure. The imported Swift structure contains a stored property for each C structure field and an initializer whose parameters correspond to the stored properties.\n\n### Structures with Default Values\n\nIf all imported members have default values, Swift also provides a default initializer that takes no arguments. For example, given the following C structure:\n\nWhen you import the Color structure, the Swift version is equivalent to the following:\n\n### Unions\n\nSwift imports C unions as Swift structures. Although Swift doesn’t support natively declared unions, a C union imported as a Swift structure still behaves like a C union. For example, consider a C union named `SchroedingersCat` that has an `isAlive` and an `isDead` field:\n\nIn Swift, it’s imported like this:\n\nBecause unions in C use the same base memory address for all of their fields, all of the computed properties in a union imported by Swift use the same underlying memory. As a result, changing the value of a property on an instance of the imported structure changes the value of all other properties defined by that structure.\n\nIn the example below, changing the value of the `isAlive` computed property on an instance of the `SchroedingersCat` structure also changes the value of the instance’s `isDead` computed property:\n\n### Bit Fields\n\nSwift imports bit fields that are declared in structures, like those found in Foundation’s `NSDecimal` type, as computed properties. When accessing a computed property corresponding to a bit field, Swift automatically converts the value to and from compatible Swift types.\n\n### Unnamed Structure and Union Fields\n\nC `struct` and `union` types can define fields that have no name or that are of an unnamed type. Unnamed fields consist of a nested `struct` or `union` type with named fields.\n\nFor example, consider a C structure named `Cake` that contains the fields `layers` and `height` nested within an unnamed union type, and a field `toppings` of an unnamed struct type:\n\nAfter the `Cake` structure has been imported, you can use the default initializer to create an instance and use it as follows:\n\nThe imported `Cake` structure and its nested types are imported with a memberwise initializer that you can use to initialize the structure with custom values for its fields:\n\nBecause the first field of the `Cake` structure is unnamed, its initializer’s first parameter doesn’t have a label. Because the `Cake` structure has fields with unnamed types, you use the `.init` initializers (allowed due to Swift’s type inference) to set the initial value for each of the structure’s unnamed fields.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/using-imported-c-structs-and-unions-in-swift\ncrawled: 2025-12-02T07:34:59Z\n---\n\n# Using Imported C Structs and Unions in Swift\n\n**Article**\n\nLearn how Swift represents imported C structures and unions, including types with bitfields and unnamed fields.\n\n## Overview\n\nSwift imports any C structure declared in a C header as a Swift structure. The imported Swift structure contains a stored property for each C structure field and an initializer whose parameters correspond to the stored properties.\n\n### Structures with Default Values\n\nIf all imported members have default values, Swift also provides a default initializer that takes no arguments. For example, given the following C structure:\n\n```occ\nstruct Color {\n    float r, g, b;\n};\ntypedef struct Color Color;\n```\n\nWhen you import the Color structure, the Swift version is equivalent to the following:\n\n```swift\npublic struct Color {\n    var r: Float\n    var g: Float\n    var b: Float\n\n    init()\n    init(r: Float, g: Float, b: Float)\n}\n```\n\n### Unions\n\nSwift imports C unions as Swift structures. Although Swift doesn’t support natively declared unions, a C union imported as a Swift structure still behaves like a C union. For example, consider a C union named `SchroedingersCat` that has an `isAlive` and an `isDead` field:\n\n```occ\nunion SchroedingersCat {\n    bool isAlive;\n    bool isDead;\n};\n```\n\nIn Swift, it’s imported like this:\n\n```swift\nstruct SchroedingersCat {\n    var isAlive: Bool { get set }\n    var isDead: Bool { get set }\n\n    init(isAlive: Bool)\n    init(isDead: Bool)\n\n    init()\n}\n```\n\nBecause unions in C use the same base memory address for all of their fields, all of the computed properties in a union imported by Swift use the same underlying memory. As a result, changing the value of a property on an instance of the imported structure changes the value of all other properties defined by that structure.\n\nIn the example below, changing the value of the `isAlive` computed property on an instance of the `SchroedingersCat` structure also changes the value of the instance’s `isDead` computed property:\n\n```swift\nvar mittens = SchroedingersCat(isAlive: false)\n\nprint(mittens.isAlive, mittens.isDead)\n\/\/ Prints \"false false\"\n\nmittens.isAlive = true\nprint(mittens.isDead)\n\/\/ Prints \"true\"\n```\n\n### Bit Fields\n\nSwift imports bit fields that are declared in structures, like those found in Foundation’s `NSDecimal` type, as computed properties. When accessing a computed property corresponding to a bit field, Swift automatically converts the value to and from compatible Swift types.\n\n### Unnamed Structure and Union Fields\n\nC `struct` and `union` types can define fields that have no name or that are of an unnamed type. Unnamed fields consist of a nested `struct` or `union` type with named fields.\n\nFor example, consider a C structure named `Cake` that contains the fields `layers` and `height` nested within an unnamed union type, and a field `toppings` of an unnamed struct type:\n\n```occ\nstruct Cake {\n    union {\n        int layers;\n        double height;\n    };\n\n    struct {\n        bool icing;\n        bool sprinkles;\n    } toppings;\n};\n```\n\nAfter the `Cake` structure has been imported, you can use the default initializer to create an instance and use it as follows:\n\n```swift\nvar simpleCake = Cake()\nsimpleCake.layers = 5\nprint(simpleCake.toppings.icing)\n\/\/ Prints \"false\"\n```\n\nThe imported `Cake` structure and its nested types are imported with a memberwise initializer that you can use to initialize the structure with custom values for its fields:\n\n```swift\nlet cake = Cake(\n    .init(layers: 2),\n    toppings: .init(icing: true, sprinkles: false)\n)\n\nprint(\"The cake has \\(cake.layers) layers.\")\n\/\/ Prints \"The cake has 2 layers.\"\nprint(\"Does it have sprinkles?\", cake.toppings.sprinkles ? \"Yes.\" : \"No.\")\n\/\/ Prints \"Does it have sprinkles? No.\"\n```\n\nBecause the first field of the `Cake` structure is unnamed, its initializer’s first parameter doesn’t have a label. Because the `Cake` structure has fields with unnamed types, you use the `.init` initializers (allowed due to Swift’s type inference) to set the initial value for each of the structure’s unnamed fields.\n\n## C APIs\n\n- **Using Imported C Functions in Swift**: Learn how to call imported functions that are declared in a C header.\n- **Using Imported C Macros in Swift**: Use imported C-defined macros as constants.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how to call imported functions that are declared in a C header.",
+          "name" : "Using Imported C Functions in Swift",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/using-imported-c-functions-in-swift"
+        },
+        {
+          "description" : "Use imported C-defined macros as constants.",
+          "name" : "Using Imported C Macros in Swift",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/using-imported-c-macros-in-swift"
+        }
+      ],
+      "title" : "C APIs"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Using Imported C Structs and Unions in Swift",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/using-imported-c-structs-and-unions-in-swift"
+}

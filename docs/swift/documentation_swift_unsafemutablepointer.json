@@ -1,0 +1,334 @@
+{
+  "abstract" : "A pointer for accessing and manipulating data of a specific type.",
+  "codeExamples" : [
+    {
+      "code" : "let ptr: UnsafeMutablePointer<Int> = ...\n\/\/ ptr.pointee == 23\n\/\/ ptr[0] == 23",
+      "language" : "swift"
+    },
+    {
+      "code" : "var bytes: [UInt8] = [39, 77, 111, 111, 102, 33, 39, 0]\nlet uint8Pointer = UnsafeMutablePointer<UInt8>.allocate(capacity: 8)\nuint8Pointer.initialize(from: &bytes, count: 8)",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Imported from C\nfunc strlen(_ __s: UnsafePointer<Int8>!) -> UInt\n\nlet length = uint8Pointer.withMemoryRebound(to: Int8.self, capacity: 8) {\n    return strlen($0)\n}\n\/\/ length == 7",
+      "language" : "swift"
+    },
+    {
+      "code" : "let uint64Pointer = UnsafeMutableRawPointer(uint8Pointer)\n                          .bindMemory(to: UInt64.self, capacity: 1)",
+      "language" : "swift"
+    },
+    {
+      "code" : "var fullInteger = uint64Pointer.pointee          \/\/ OK\nvar firstByte = uint8Pointer.pointee             \/\/ undefined",
+      "language" : "swift"
+    },
+    {
+      "code" : "let rawPointer = UnsafeMutableRawPointer(uint64Pointer)\nlet fullInteger = rawPointer.load(as: UInt64.self)   \/\/ OK\nlet firstByte = rawPointer.load(as: UInt8.self)      \/\/ OK",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ 'intPointer' points to memory initialized with [10, 20, 30, 40]\nlet intPointer: UnsafeMutablePointer<Int> = ...\n\n\/\/ Load the first value in memory\nlet x = intPointer.pointee\n\/\/ x == 10\n\n\/\/ Load the third value in memory\nlet offsetPointer = intPointer + 2\nlet y = offsetPointer.pointee\n\/\/ y == 30",
+      "language" : "swift"
+    },
+    {
+      "code" : "let z = intPointer[2]\n\/\/ z == 30",
+      "language" : "swift"
+    },
+    {
+      "code" : "func printInt(atAddress p: UnsafeMutablePointer<Int>) {\n    print(p.pointee)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "printInt(atAddress: intPointer)\n\/\/ Prints \"42\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "var value: Int = 23\nprintInt(atAddress: &value)\n\/\/ Prints \"23\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "var numbers = [5, 10, 15, 20]\nprintInt(atAddress: &numbers)\n\/\/ Prints \"5\"",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "AtomicOptionalRepresentable",
+    "AtomicRepresentable",
+    "BitwiseCopyable",
+    "CVarArg",
+    "Comparable",
+    "Copyable",
+    "CustomDebugStringConvertible",
+    "CustomReflectable",
+    "Equatable",
+    "Hashable",
+    "Strideable"
+  ],
+  "contentHash" : "d3799ce97c6ae1f19e5d0edd13076687d09417724874938ef4d2ccb6c883badc",
+  "crawledAt" : "2025-12-01T21:04:38Z",
+  "declaration" : {
+    "code" : "@frozen struct UnsafeMutablePointer<Pointee> where Pointee : ~Copyable",
+    "language" : "swift"
+  },
+  "id" : "3AC99EAF-5D44-47AE-A4B2-9B246189D012",
+  "kind" : "struct",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nYou use instances of the `UnsafeMutablePointer` type to access data of a specific type in memory. The type of data that a pointer can access is the pointer’s `Pointee` type. `UnsafeMutablePointer` provides no automated memory management or alignment guarantees. You are responsible for handling the life cycle of any memory you work with through unsafe pointers to avoid leaks or undefined behavior.\n\nMemory that you manually manage can be either *untyped* or *bound* to a specific type. You use the `UnsafeMutablePointer` type to access and manage memory that has been bound to a specific type.\n\n# Understanding a Pointer’s Memory State\n\nThe memory referenced by an `UnsafeMutablePointer` instance can be in one of several states. Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform. Memory can be untyped and uninitialized, bound to a type and uninitialized, or bound to a type and initialized to a value. Finally, memory that was allocated previously may have been deallocated, leaving existing pointers referencing unallocated memory.\n\n## Uninitialized Memory\n\nMemory that has just been allocated through a typed pointer or has been deinitialized is in an *uninitialized* state. Uninitialized memory must be initialized before it can be accessed for reading.\n\nYou can use methods like `initialize(repeating:count:)`, `initialize(from:count:)`, and `moveInitialize(from:count:)` to initialize the memory referenced by a pointer with a value or series of values.\n\n## Initialized Memory\n\n*Initialized* memory has a value that can be read using a pointer’s `pointee` property or through subscript notation. In the following example, `ptr` is a pointer to memory initialized with a value of `23`:\n\n# Accessing a Pointer’s Memory as a Different Type\n\nWhen you access memory through an `UnsafeMutablePointer` instance, the `Pointee` type must be consistent with the bound type of the memory. If you do need to access memory that is bound to one type as a different type, Swift’s pointer types provide type-safe ways to temporarily or permanently change the bound type of the memory, or to load typed instances directly from raw memory.\n\nAn `UnsafeMutablePointer<UInt8>` instance allocated with eight bytes of memory, `uint8Pointer`, will be used for the examples below.\n\nWhen you only need to temporarily access a pointer’s memory as a different type, use the `withMemoryRebound(to:capacity:)` method. For example, you can use this method to call an API that expects a pointer to a different type that is layout compatible with your pointer’s `Pointee`. The following code temporarily rebinds the memory that `uint8Pointer` references from `UInt8` to `Int8` to call the imported C `strlen` function.\n\nWhen you need to permanently rebind memory to a different type, first obtain a raw pointer to the memory and then call the `bindMemory(to:capacity:)` method on the raw pointer. The following example binds the memory referenced by `uint8Pointer` to one instance of the `UInt64` type:\n\nAfter rebinding the memory referenced by `uint8Pointer` to `UInt64`, accessing that pointer’s referenced memory as a `UInt8` instance is undefined.\n\nAlternatively, you can access the same memory as a different type without rebinding through untyped memory access, so long as the bound type and the destination type are trivial types. Convert your pointer to an `UnsafeMutableRawPointer` instance and then use the raw pointer’s `load(fromByteOffset:as:)` and `storeBytes(of:toByteOffset:as:)` methods to read and write values.\n\n# Performing Typed Pointer Arithmetic\n\nPointer arithmetic with a typed pointer is counted in strides of the pointer’s `Pointee` type. When you add to or subtract from an `UnsafeMutablePointer` instance, the result is a new pointer of the same type, offset by that number of instances of the `Pointee` type.\n\nYou can also use subscript notation to access the value in memory at a specific offset.\n\n# Implicit Casting and Bridging\n\nWhen calling a function or method with an `UnsafeMutablePointer` parameter, you can pass an instance of that specific pointer type or use Swift’s implicit bridging to pass a compatible pointer.\n\nFor example, the `printInt(atAddress:)` function in the following code sample expects an `UnsafeMutablePointer<Int>` instance as its first parameter:\n\nAs is typical in Swift, you can call the `printInt(atAddress:)` function with an `UnsafeMutablePointer` instance. This example passes `intPointer`, a mutable pointer to an `Int` value, to `print(address:)`.\n\nAlternatively, you can use Swift’s *implicit bridging* to pass a pointer to an instance or to the elements of an array. The following example passes a pointer to the `value` variable by using inout syntax:\n\nA mutable pointer to the elements of an array is implicitly created when you pass the array using inout syntax. This example uses implicit bridging to pass a pointer to the elements of `numbers` when calling `printInt(atAddress:)`.\n\nNo matter which way you call `printInt(atAddress:)`, Swift’s type safety guarantees that you can only pass a pointer to the type required by the function—in this case, a pointer to an `Int`.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/swift\/unsafemutablepointer\ncrawled: 2025-12-01T21:04:38Z\n---\n\n# UnsafeMutablePointer\n\n**Structure**\n\nA pointer for accessing and manipulating data of a specific type.\n\n## Declaration\n\n```swift\n@frozen struct UnsafeMutablePointer<Pointee> where Pointee : ~Copyable\n```\n\n## Overview\n\nYou use instances of the `UnsafeMutablePointer` type to access data of a specific type in memory. The type of data that a pointer can access is the pointer’s `Pointee` type. `UnsafeMutablePointer` provides no automated memory management or alignment guarantees. You are responsible for handling the life cycle of any memory you work with through unsafe pointers to avoid leaks or undefined behavior.\n\nMemory that you manually manage can be either *untyped* or *bound* to a specific type. You use the `UnsafeMutablePointer` type to access and manage memory that has been bound to a specific type.\n\n# Understanding a Pointer’s Memory State\n\nThe memory referenced by an `UnsafeMutablePointer` instance can be in one of several states. Many pointer operations must only be applied to pointers with memory in a specific state—you must keep track of the state of the memory you are working with and understand the changes to that state that different operations perform. Memory can be untyped and uninitialized, bound to a type and uninitialized, or bound to a type and initialized to a value. Finally, memory that was allocated previously may have been deallocated, leaving existing pointers referencing unallocated memory.\n\n## Uninitialized Memory\n\nMemory that has just been allocated through a typed pointer or has been deinitialized is in an *uninitialized* state. Uninitialized memory must be initialized before it can be accessed for reading.\n\nYou can use methods like `initialize(repeating:count:)`, `initialize(from:count:)`, and `moveInitialize(from:count:)` to initialize the memory referenced by a pointer with a value or series of values.\n\n## Initialized Memory\n\n*Initialized* memory has a value that can be read using a pointer’s `pointee` property or through subscript notation. In the following example, `ptr` is a pointer to memory initialized with a value of `23`:\n\n```swift\nlet ptr: UnsafeMutablePointer<Int> = ...\n\/\/ ptr.pointee == 23\n\/\/ ptr[0] == 23\n```\n\n# Accessing a Pointer’s Memory as a Different Type\n\nWhen you access memory through an `UnsafeMutablePointer` instance, the `Pointee` type must be consistent with the bound type of the memory. If you do need to access memory that is bound to one type as a different type, Swift’s pointer types provide type-safe ways to temporarily or permanently change the bound type of the memory, or to load typed instances directly from raw memory.\n\nAn `UnsafeMutablePointer<UInt8>` instance allocated with eight bytes of memory, `uint8Pointer`, will be used for the examples below.\n\n```swift\nvar bytes: [UInt8] = [39, 77, 111, 111, 102, 33, 39, 0]\nlet uint8Pointer = UnsafeMutablePointer<UInt8>.allocate(capacity: 8)\nuint8Pointer.initialize(from: &bytes, count: 8)\n```\n\nWhen you only need to temporarily access a pointer’s memory as a different type, use the `withMemoryRebound(to:capacity:)` method. For example, you can use this method to call an API that expects a pointer to a different type that is layout compatible with your pointer’s `Pointee`. The following code temporarily rebinds the memory that `uint8Pointer` references from `UInt8` to `Int8` to call the imported C `strlen` function.\n\n```swift\n\/\/ Imported from C\nfunc strlen(_ __s: UnsafePointer<Int8>!) -> UInt\n\nlet length = uint8Pointer.withMemoryRebound(to: Int8.self, capacity: 8) {\n    return strlen($0)\n}\n\/\/ length == 7\n```\n\nWhen you need to permanently rebind memory to a different type, first obtain a raw pointer to the memory and then call the `bindMemory(to:capacity:)` method on the raw pointer. The following example binds the memory referenced by `uint8Pointer` to one instance of the `UInt64` type:\n\n```swift\nlet uint64Pointer = UnsafeMutableRawPointer(uint8Pointer)\n                          .bindMemory(to: UInt64.self, capacity: 1)\n```\n\nAfter rebinding the memory referenced by `uint8Pointer` to `UInt64`, accessing that pointer’s referenced memory as a `UInt8` instance is undefined.\n\n```swift\nvar fullInteger = uint64Pointer.pointee          \/\/ OK\nvar firstByte = uint8Pointer.pointee             \/\/ undefined\n```\n\nAlternatively, you can access the same memory as a different type without rebinding through untyped memory access, so long as the bound type and the destination type are trivial types. Convert your pointer to an `UnsafeMutableRawPointer` instance and then use the raw pointer’s `load(fromByteOffset:as:)` and `storeBytes(of:toByteOffset:as:)` methods to read and write values.\n\n```swift\nlet rawPointer = UnsafeMutableRawPointer(uint64Pointer)\nlet fullInteger = rawPointer.load(as: UInt64.self)   \/\/ OK\nlet firstByte = rawPointer.load(as: UInt8.self)      \/\/ OK\n```\n\n# Performing Typed Pointer Arithmetic\n\nPointer arithmetic with a typed pointer is counted in strides of the pointer’s `Pointee` type. When you add to or subtract from an `UnsafeMutablePointer` instance, the result is a new pointer of the same type, offset by that number of instances of the `Pointee` type.\n\n```swift\n\/\/ 'intPointer' points to memory initialized with [10, 20, 30, 40]\nlet intPointer: UnsafeMutablePointer<Int> = ...\n\n\/\/ Load the first value in memory\nlet x = intPointer.pointee\n\/\/ x == 10\n\n\/\/ Load the third value in memory\nlet offsetPointer = intPointer + 2\nlet y = offsetPointer.pointee\n\/\/ y == 30\n```\n\nYou can also use subscript notation to access the value in memory at a specific offset.\n\n```swift\nlet z = intPointer[2]\n\/\/ z == 30\n```\n\n# Implicit Casting and Bridging\n\nWhen calling a function or method with an `UnsafeMutablePointer` parameter, you can pass an instance of that specific pointer type or use Swift’s implicit bridging to pass a compatible pointer.\n\nFor example, the `printInt(atAddress:)` function in the following code sample expects an `UnsafeMutablePointer<Int>` instance as its first parameter:\n\n```swift\nfunc printInt(atAddress p: UnsafeMutablePointer<Int>) {\n    print(p.pointee)\n}\n```\n\nAs is typical in Swift, you can call the `printInt(atAddress:)` function with an `UnsafeMutablePointer` instance. This example passes `intPointer`, a mutable pointer to an `Int` value, to `print(address:)`.\n\n```swift\nprintInt(atAddress: intPointer)\n\/\/ Prints \"42\"\n```\n\nAlternatively, you can use Swift’s *implicit bridging* to pass a pointer to an instance or to the elements of an array. The following example passes a pointer to the `value` variable by using inout syntax:\n\n```swift\nvar value: Int = 23\nprintInt(atAddress: &value)\n\/\/ Prints \"23\"\n```\n\nA mutable pointer to the elements of an array is implicitly created when you pass the array using inout syntax. This example uses implicit bridging to pass a pointer to the elements of `numbers` when calling `printInt(atAddress:)`.\n\n```swift\nvar numbers = [5, 10, 15, 20]\nprintInt(atAddress: &numbers)\n\/\/ Prints \"5\"\n```\n\nNo matter which way you call `printInt(atAddress:)`, Swift’s type safety guarantees that you can only pass a pointer to the type required by the function—in this case, a pointer to an `Int`.\n\n\n\n## Initializers\n\n- **init(_:)**: Creates a mutable typed pointer referencing the same memory as the given mutable pointer.\n- **init(_:)**: Creates a mutable typed pointer referencing the same memory as the given mutable pointer.\n- **init(mutating:)**: Creates a mutable typed pointer referencing the same memory as the given immutable pointer.\n- **init(mutating:)**: Creates a mutable typed pointer referencing the same memory as the given immutable pointer.\n\n## Instance Properties\n\n- **customPlaygroundQuickLook**: A custom playground Quick Look for this instance.\n- **pointee**: Reads or updates the instance referenced by this pointer.\n\n## Instance Methods\n\n- **assign(from:count:)**\n- **assign(repeating:count:)**\n- **deallocate()**: Deallocates the memory block previously allocated at this pointer.\n- **deallocate(capacity:)**\n- **deinitialize()**\n- **deinitialize(count:)**: Deinitializes the specified number of values starting at this pointer.\n- **initialize(from:)**: Initializes memory starting at this pointer’s address with the elements of the given collection.\n- **initialize(from:count:)**: Initializes the memory referenced by this pointer with the values starting at the given pointer.\n- **initialize(repeating:count:)**: Initializes this pointer’s memory with the specified number of consecutive copies of the given value.\n- **initialize(to:)**: Initializes this pointer’s memory with a single instance of the given value.\n- **initialize(to:count:)**\n- **move()**: Retrieves and returns the referenced instance, returning the pointer’s memory to an uninitialized state.\n- **moveAssign(from:count:)**\n- **moveInitialize(from:count:)**: Moves instances from initialized source memory into the uninitialized memory referenced by this pointer, leaving the source memory uninitialized and the memory referenced by this pointer initialized.\n- **moveUpdate(from:count:)**: Update this pointer’s initialized memory by moving the specified number of instances the source pointer’s memory, leaving the source memory uninitialized.\n- **pointer(to:)**: Obtain a pointer to the stored property referred to by a key path.\n- **pointer(to:)**: Obtain a mutable pointer to the stored property referred to by a key path.\n- **update(from:count:)**: Update this pointer’s initialized memory with the specified number of instances, copied from the given pointer’s memory.\n- **update(repeating:count:)**: Update this pointer’s initialized memory with the specified number of consecutive copies of the given value.\n- **withMemoryRebound(to:capacity:_:)**: Executes the given closure while temporarily binding memory to the specified number of instances of the given type.\n\n## Subscripts\n\n- **subscript(_:)**: Reads or updates the pointee at the specified offset from this pointer.\n\n## Type Aliases\n\n- **UnsafeMutablePointer.Distance**: A type that represents the distance between two pointers.\n\n## Type Methods\n\n- **allocate(capacity:)**: Allocates uninitialized memory for the specified number of instances of type `Pointee`.\n\n## Default Implementations\n\n- **AtomicOptionalRepresentable Implementations**\n- **AtomicRepresentable Implementations**\n- **Comparable Implementations**\n- **CustomReflectable Implementations**\n- **Equatable Implementations**\n- **Hashable Implementations**\n- **Strideable Implementations**\n\n## Typed Pointers\n\n- **UnsafePointer**: A pointer for accessing data of a specific type.\n- **UnsafeBufferPointer**: A nonowning collection interface to a buffer of elements stored contiguously in memory.\n- **UnsafeMutableBufferPointer**: A nonowning collection interface to a buffer of mutable elements stored contiguously in memory.\n\n## Conforms To\n\n- AtomicOptionalRepresentable\n- AtomicRepresentable\n- BitwiseCopyable\n- CVarArg\n- Comparable\n- Copyable\n- CustomDebugStringConvertible\n- CustomReflectable\n- Equatable\n- Hashable\n- Strideable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a mutable typed pointer referencing the same memory as the given mutable pointer.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/init(_:)-38kdq"
+        },
+        {
+          "description" : "Creates a mutable typed pointer referencing the same memory as the given mutable pointer.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/init(_:)-7msdk"
+        },
+        {
+          "description" : "Creates a mutable typed pointer referencing the same memory as the given immutable pointer.",
+          "name" : "init(mutating:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/init(mutating:)-23779"
+        },
+        {
+          "description" : "Creates a mutable typed pointer referencing the same memory as the given immutable pointer.",
+          "name" : "init(mutating:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/init(mutating:)-9gvv3"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A custom playground Quick Look for this instance.",
+          "name" : "customPlaygroundQuickLook",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/customPlaygroundQuickLook"
+        },
+        {
+          "description" : "Reads or updates the instance referenced by this pointer.",
+          "name" : "pointee",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/pointee"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "assign(from:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/assign(from:count:)"
+        },
+        {
+          "description" : "",
+          "name" : "assign(repeating:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/assign(repeating:count:)"
+        },
+        {
+          "description" : "Deallocates the memory block previously allocated at this pointer.",
+          "name" : "deallocate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/deallocate()"
+        },
+        {
+          "description" : "",
+          "name" : "deallocate(capacity:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/deallocate(capacity:)"
+        },
+        {
+          "description" : "",
+          "name" : "deinitialize()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/deinitialize()"
+        },
+        {
+          "description" : "Deinitializes the specified number of values starting at this pointer.",
+          "name" : "deinitialize(count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/deinitialize(count:)"
+        },
+        {
+          "description" : "Initializes memory starting at this pointer’s address with the elements of the given collection.",
+          "name" : "initialize(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/initialize(from:)"
+        },
+        {
+          "description" : "Initializes the memory referenced by this pointer with the values starting at the given pointer.",
+          "name" : "initialize(from:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/initialize(from:count:)"
+        },
+        {
+          "description" : "Initializes this pointer’s memory with the specified number of consecutive copies of the given value.",
+          "name" : "initialize(repeating:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/initialize(repeating:count:)"
+        },
+        {
+          "description" : "Initializes this pointer’s memory with a single instance of the given value.",
+          "name" : "initialize(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/initialize(to:)"
+        },
+        {
+          "description" : "",
+          "name" : "initialize(to:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/initialize(to:count:)"
+        },
+        {
+          "description" : "Retrieves and returns the referenced instance, returning the pointer’s memory to an uninitialized state.",
+          "name" : "move()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/move()"
+        },
+        {
+          "description" : "",
+          "name" : "moveAssign(from:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/moveAssign(from:count:)"
+        },
+        {
+          "description" : "Moves instances from initialized source memory into the uninitialized memory referenced by this pointer, leaving the source memory uninitialized and the memory referenced by this pointer initialized.",
+          "name" : "moveInitialize(from:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/moveInitialize(from:count:)"
+        },
+        {
+          "description" : "Update this pointer’s initialized memory by moving the specified number of instances the source pointer’s memory, leaving the source memory uninitialized.",
+          "name" : "moveUpdate(from:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/moveUpdate(from:count:)"
+        },
+        {
+          "description" : "Obtain a pointer to the stored property referred to by a key path.",
+          "name" : "pointer(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/pointer(to:)-8cyek"
+        },
+        {
+          "description" : "Obtain a mutable pointer to the stored property referred to by a key path.",
+          "name" : "pointer(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/pointer(to:)-8veyb"
+        },
+        {
+          "description" : "Update this pointer’s initialized memory with the specified number of instances, copied from the given pointer’s memory.",
+          "name" : "update(from:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/update(from:count:)"
+        },
+        {
+          "description" : "Update this pointer’s initialized memory with the specified number of consecutive copies of the given value.",
+          "name" : "update(repeating:count:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/update(repeating:count:)"
+        },
+        {
+          "description" : "Executes the given closure while temporarily binding memory to the specified number of instances of the given type.",
+          "name" : "withMemoryRebound(to:capacity:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/withMemoryRebound(to:capacity:_:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Reads or updates the pointee at the specified offset from this pointer.",
+          "name" : "subscript(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/subscript(_:)"
+        }
+      ],
+      "title" : "Subscripts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A type that represents the distance between two pointers.",
+          "name" : "UnsafeMutablePointer.Distance",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/Distance"
+        }
+      ],
+      "title" : "Type Aliases"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Allocates uninitialized memory for the specified number of instances of type `Pointee`.",
+          "name" : "allocate(capacity:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/allocate(capacity:)"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "AtomicOptionalRepresentable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/AtomicOptionalRepresentable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "AtomicRepresentable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/AtomicRepresentable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Comparable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/Comparable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "CustomReflectable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/CustomReflectable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Equatable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/Equatable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Hashable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/Hashable-Implementations"
+        },
+        {
+          "description" : "",
+          "name" : "Strideable Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutablePointer\/Strideable-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A pointer for accessing data of a specific type.",
+          "name" : "UnsafePointer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafePointer"
+        },
+        {
+          "description" : "A nonowning collection interface to a buffer of elements stored contiguously in memory.",
+          "name" : "UnsafeBufferPointer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeBufferPointer"
+        },
+        {
+          "description" : "A nonowning collection interface to a buffer of mutable elements stored contiguously in memory.",
+          "name" : "UnsafeMutableBufferPointer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeMutableBufferPointer"
+        }
+      ],
+      "title" : "Typed Pointers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "UnsafeMutablePointer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/swift\/unsafemutablepointer"
+}

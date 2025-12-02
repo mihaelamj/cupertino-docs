@@ -1,0 +1,144 @@
+{
+  "abstract" : "Game Center applies different type of rules you create in a particular order to find the best matches.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "d84148f4fc9c18d1927743047a96ebcdc6f62f94115407fa08137e8c410d7dbe",
+  "crawledAt" : "2025-12-02T16:10:54Z",
+  "id" : "0BC8ADF8-5204-4C2F-8449-F624EB19CCF5",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "GameKit",
+  "overview" : "## Overview\n\nWith matchmaking rules, you have finer control over automatch of players to fill empty slots in peer-to-peer and hosted match requests. During development, you use the matchmaking rules APIs to upload your rules to the Game Center server. You group rules into rule sets and assign the rule sets to queues. In your game code, you configure match requests to use your set of matchmaking rules by specifying a queue. Game Center applies your rules to all the match requests in the queue to fill the empty slots.\n\n\n\nYou group rules into sets for each configuration, feature, or purpose in your game and associate the rule sets with a queue. Game instances submit match requests to specific queues, and Game Center applies the corresponding rules to the match requests in that queue. The rules contain an expression that behaves like a query to filter and prioritize the requests. Game Center finds the most compatible players that meet your criteria, in a reasonable amount of time.\n\nFor more information on this feature, see [https:\/\/developer.apple.com\/videos\/play\/tech-talks\/111376\/].\n\n### The matchmaking rules algorithm\n\nWhen finding players using matchmaking rules, Game Center applies four different types of rules to match requests in the queue, along with performing other steps in the algorithm. Game Center applies the expression of the rule, which is a [https:\/\/jmespath.org] formatted string with some Game Center matchmaking function additions. Depending on the type of rule, Game Center evaluates the expression on two or more match requests in the queue.\n\n\n\nGame Center performs the following steps in sequence:\n\nFor more information on matchmaking rules with examples, see [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/finding-players-using-matchmaking-rules]. For details on the matchmaking REST APIs, see Matchmaking rules in App Store Connect API.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/GameKit\/matchmaking-rules\ncrawled: 2025-12-02T16:10:54Z\n---\n\n# Matchmaking rules\n\nGame Center applies different type of rules you create in a particular order to find the best matches.\n\n## Overview\n\nWith matchmaking rules, you have finer control over automatch of players to fill empty slots in peer-to-peer and hosted match requests. During development, you use the matchmaking rules APIs to upload your rules to the Game Center server. You group rules into rule sets and assign the rule sets to queues. In your game code, you configure match requests to use your set of matchmaking rules by specifying a queue. Game Center applies your rules to all the match requests in the queue to fill the empty slots.\n\n\n\nYou group rules into sets for each configuration, feature, or purpose in your game and associate the rule sets with a queue. Game instances submit match requests to specific queues, and Game Center applies the corresponding rules to the match requests in that queue. The rules contain an expression that behaves like a query to filter and prioritize the requests. Game Center finds the most compatible players that meet your criteria, in a reasonable amount of time.\n\nFor more information on this feature, see [https:\/\/developer.apple.com\/videos\/play\/tech-talks\/111376\/].\n\n### The matchmaking rules algorithm\n\nWhen finding players using matchmaking rules, Game Center applies four different types of rules to match requests in the queue, along with performing other steps in the algorithm. Game Center applies the expression of the rule, which is a [https:\/\/jmespath.org] formatted string with some Game Center matchmaking function additions. Depending on the type of rule, Game Center evaluates the expression on two or more match requests in the queue.\n\n\n\nGame Center performs the following steps in sequence:\n\n- Sorts the match requests in a queue by age of the request to minimize player wait time and then applies compatible rules to pairs of requests. *Compatible rules* compare two requests and return a Boolean value that indicates whether the requests are compatible. If all the compatible rules return [doc:\/\/com.apple.documentation\/documentation\/Swift\/true], Game Center continues processing the pair. For example, requiring the app version to be 2.0 and above is a compatible rule.\n- Applies the distance rules to pairs of compatible requests. *Distance rules* compare two requests and return a numeric value between `0.0` and `1.0`. Game Center uses the value to prioritize similar requests, where `0.0` is the most similar and `1.0` is the least similar. For example, requiring the geo latency between players to be low is a distance rule.\n- Prioritizes compatible matches by age and distance, and generates candidate matches that have the most number of players within the range that you specify in the rule set. Sorts candidate matches by age and applies the match rules. *Match rules* apply to a set of matches and return a Boolean value that indicates whether the requests are valid matches. For example, requiring a range in skill level between `0` and `5` is a match rule.\n- Generates candidate teams from combinations of candidate matches and applies the team rules, If you add rules to assign players to teams. *Team rules* apply to a set of teams containing players and return a Boolean value that indicates whether the teams satisfy a constraint. For example, ensuring that the total skill difference between teams is less than `1` is a team rule.\n\nFor more information on matchmaking rules with examples, see [doc:\/\/com.apple.gamekit\/documentation\/GameKit\/finding-players-using-matchmaking-rules]. For details on the matchmaking REST APIs, see Matchmaking rules in App Store Connect API.\n\n## Essentials\n\n- **Finding players using matchmaking rules**: Create a more customized and optimized gaming experience by using matchmaking rules to find players in a real-time game.\n\n## Rules\n\n- **Letting players join matches using party codes**: Add a rule that lets players invite players and join matches using a shared party code.\n- **Finding players with similar skill levels**: Add a rule to find players in a range of skill levels to balance competitive gameplay.\n- **Assigning players to teams using rules**: Set criteria for assigning players to teams in your game using matchmaking rules.\n- **Creating matchmaking rules for backward compatibility**: Add matchmaking rules that support previous classic matchmaking versions of your game.\n\n## Testing\n\n- **Testing matchmaking rules**: Test your matchmaking rules before you use them in your game.\n- **Troubleshooting matchmaking rules using metrics**: Investigate issues with Game Center by evaluating your matchmaking rules using metrics endpoints.\n- **Testing rule sets with player traffic using metrics**: Get metrics on a new rule set with real match requests before releasing it.\n\n## Related Documentation\n\n- **Game Center**: Manage Game Center data and configurations for your apps.\n\n## Real-time games\n\n- **Creating real-time games**: Develop games where multiple players interact in real time.\n- **Finding multiple players for a game**: Discover and invite other players to participate in a real-time game.\n- **Exchanging data between players in real-time games**: Send data between players in a real-time multiplayer game.\n- **Adding voice chat to multiplayer games**: Enable players to voice chat with all, or groups of, players in a multiplayer game.\n- **GKMatchRequest**: An object that encapsulates the parameters to create a real-time or turn-based match.\n- **GKMatchmaker**: An object that creates matches with other players without presenting an interface to the players.\n- **GKMatchmakerViewController**: An interface that allows a player to invite other players to a real-time game and automatch to fill any empty slots.\n- **GKInviteEventListener**: A protocol that handles invite events from Game Center.\n- **GKInvite**: An invitation to join a match sent to the local player from another player.\n- **GKMatch**: A peer-to-peer network between a group of players that sign into Game Center.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create a more customized and optimized gaming experience by using matchmaking rules to find players in a real-time game.",
+          "name" : "Finding players using matchmaking rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/finding-players-using-matchmaking-rules"
+        }
+      ],
+      "title" : "Essentials"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Add a rule that lets players invite players and join matches using a shared party code.",
+          "name" : "Letting players join matches using party codes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/letting-players-join-matches-using-party-codes"
+        },
+        {
+          "description" : "Add a rule to find players in a range of skill levels to balance competitive gameplay.",
+          "name" : "Finding players with similar skill levels",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/finding-players-with-similar-skill-levels"
+        },
+        {
+          "description" : "Set criteria for assigning players to teams in your game using matchmaking rules.",
+          "name" : "Assigning players to teams using rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/assigning-players-to-teams-using-rules"
+        },
+        {
+          "description" : "Add matchmaking rules that support previous classic matchmaking versions of your game.",
+          "name" : "Creating matchmaking rules for backward compatibility",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/creating-matchmaking-rules-for-backward-compatibility"
+        }
+      ],
+      "title" : "Rules"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Test your matchmaking rules before you use them in your game.",
+          "name" : "Testing matchmaking rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/testing-matchmaking-rules"
+        },
+        {
+          "description" : "Investigate issues with Game Center by evaluating your matchmaking rules using metrics endpoints.",
+          "name" : "Troubleshooting matchmaking rules using metrics",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/troubleshooting-matchmaking-rules-using-metrics"
+        },
+        {
+          "description" : "Get metrics on a new rule set with real match requests before releasing it.",
+          "name" : "Testing rule sets with player traffic using metrics",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/testing-rule-sets-with-player-traffic-using-metrics"
+        }
+      ],
+      "title" : "Testing"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Manage Game Center data and configurations for your apps.",
+          "name" : "Game Center",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppStoreConnectAPI\/game-center#4301628"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Develop games where multiple players interact in real time.",
+          "name" : "Creating real-time games",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/creating-real-time-games"
+        },
+        {
+          "description" : "Discover and invite other players to participate in a real-time game.",
+          "name" : "Finding multiple players for a game",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/finding-multiple-players-for-a-game"
+        },
+        {
+          "description" : "Send data between players in a real-time multiplayer game.",
+          "name" : "Exchanging data between players in real-time games",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/exchanging-data-between-players-in-real-time-games"
+        },
+        {
+          "description" : "Enable players to voice chat with all, or groups of, players in a multiplayer game.",
+          "name" : "Adding voice chat to multiplayer games",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/adding-voice-chat-to-multiplayer-games"
+        },
+        {
+          "description" : "An object that encapsulates the parameters to create a real-time or turn-based match.",
+          "name" : "GKMatchRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatchRequest"
+        },
+        {
+          "description" : "An object that creates matches with other players without presenting an interface to the players.",
+          "name" : "GKMatchmaker",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatchmaker"
+        },
+        {
+          "description" : "An interface that allows a player to invite other players to a real-time game and automatch to fill any empty slots.",
+          "name" : "GKMatchmakerViewController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatchmakerViewController"
+        },
+        {
+          "description" : "A protocol that handles invite events from Game Center.",
+          "name" : "GKInviteEventListener",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKInviteEventListener"
+        },
+        {
+          "description" : "An invitation to join a match sent to the local player from another player.",
+          "name" : "GKInvite",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKInvite"
+        },
+        {
+          "description" : "A peer-to-peer network between a group of players that sign into Game Center.",
+          "name" : "GKMatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/GKMatch"
+        }
+      ],
+      "title" : "Real-time games"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Matchmaking rules",
+  "url" : "https:\/\/developer.apple.com\/documentation\/GameKit\/matchmaking-rules"
+}

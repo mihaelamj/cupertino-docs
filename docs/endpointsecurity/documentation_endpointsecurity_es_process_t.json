@@ -1,0 +1,166 @@
+{
+  "abstract" : "A type that describes a process, as delivered by an Endpoint Security message.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "BitwiseCopyable"
+  ],
+  "contentHash" : "c2101b3daf723d0c7ed0b51ff0e1ab6bd3c3825a6ff50d07dfbc316f2915f094",
+  "crawledAt" : "2025-12-01T22:26:20Z",
+  "declaration" : {
+    "code" : "struct es_process_t",
+    "language" : "swift"
+  },
+  "id" : "65921B7C-736E-4233-BE05-CEE863F56D23",
+  "kind" : "struct",
+  "module" : "Endpoint Security",
+  "overview" : "## Overview\n\nFor process events, this type also indicates the newly-executing process.\n\nYou can extract values such as the process identifier (`PID`), user identifier (`UID`), and group identifier (`GID`) from the [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t\/audit_token] field by using functions defined in `libbsm.h`.\n\n### Working with Code Signing\n\nFields related to code signing, such as [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t\/cdhash] and [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t\/signing_id], reflect the state of the process at the time Endpoint Security generated the message. In the specific case of process execution, this is after the `exec` completes in the kernel, but before any code in the process starts executing. At that point, XNU has validated the signature itself and has verified that the `cdhash` is correct. This second validation means that the hash of all individual page hashes in the Code Directory match the signed `cdhash`, essentially verifying the signature wasn’t tampered with. However, XNU doesn’t verify individual page hashes until the binary executes and pages in the corresponding pages. XNU doesn’t determine a binary shows signs of tampering until the individual pages page in, at which point XNU updates the code signing flags.\n\nEndpoint Security provides clients the current state of the CS flags in the [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t\/codesigning_flags] member of the [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t] structure. Keep the following points in mind when evaluating this field:",
+  "platforms" : [
+    "Mac Catalyst",
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\ncrawled: 2025-12-01T22:26:20Z\n---\n\n# es_process_t\n\n**Structure**\n\nA type that describes a process, as delivered by an Endpoint Security message.\n\n## Declaration\n\n```swift\nstruct es_process_t\n```\n\n## Overview\n\nFor process events, this type also indicates the newly-executing process.\n\nYou can extract values such as the process identifier (`PID`), user identifier (`UID`), and group identifier (`GID`) from the [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t\/audit_token] field by using functions defined in `libbsm.h`.\n\n### Working with Code Signing\n\nFields related to code signing, such as [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t\/cdhash] and [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t\/signing_id], reflect the state of the process at the time Endpoint Security generated the message. In the specific case of process execution, this is after the `exec` completes in the kernel, but before any code in the process starts executing. At that point, XNU has validated the signature itself and has verified that the `cdhash` is correct. This second validation means that the hash of all individual page hashes in the Code Directory match the signed `cdhash`, essentially verifying the signature wasn’t tampered with. However, XNU doesn’t verify individual page hashes until the binary executes and pages in the corresponding pages. XNU doesn’t determine a binary shows signs of tampering until the individual pages page in, at which point XNU updates the code signing flags.\n\nEndpoint Security provides clients the current state of the CS flags in the [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t\/codesigning_flags] member of the [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t] structure. Keep the following points in mind when evaluating this field:\n\n- The `CS_VALID` bit in [doc:\/\/com.apple.endpointsecurity\/documentation\/EndpointSecurity\/es_process_t\/codesigning_flags] means that everything the kernel has validated up to that point in time was valid. However, this doesn’t mean there’s been a full validation of all the pages in the executable file. If a page’s content has been tampered with, XNU won’t know until that page pages in.\n- When XNU detects a tampered page, it clears the `CS_VALID` bit. With the `CS_KILL` bit set, Endpoint Security terminates the process, preventing the tampered code from executing. Platform binaries and binaries that opted into the hardened runtime typically have the `CS_KILL` bit set.\n- If you want your Endpoint Security client to detect tampered code before it pages in, such as at execution time, you can do so with the [doc:\/\/com.apple.documentation\/documentation\/Security] framework. However, this may impose a significant performance cost.\n- Endpoint Security plays no role in verifying the validity of code signatures.\n\n## Inspecting the Source Process\n\n- **audit_token**: A token for use with Basic Security Module auditing functions.\n- **executable**: The file containing the executed process.\n- **is_es_client**: A Boolean value that indicates whether the process connects to the Endpoint Security subsystem.\n- **is_platform_binary**: A Boolean value that indicates whether the process is a platform binary.\n- **start_time**: The time the process started.\n\n## Inspecting Process IDs\n\n- **ppid**: The parent process identifier.\n- **original_ppid**: The original parent process ID.\n- **group_id**: The process group identifier.\n- **session_id**: The identifier of the session that contains the process group.\n- **tty**: The TTY associated with the process sending the message.\n\n## Inspecting Code Signing Properties\n\n- **codesigning_flags**: The flags used to sign the process.\n- **cdhash**: The code directory hash value.\n- **signing_id**: The identifier used to sign the process.\n- **team_id**: The team identifier used to sign the process.\n\n## Inspecting Audit Tokens\n\n- **responsible_audit_token**: The audit token of the process responsible for this process.\n- **parent_audit_token**: The audit token of the parent process.\n\n## Initializers\n\n- **init(audit_token:ppid:original_ppid:group_id:session_id:codesigning_flags:is_platform_binary:is_es_client:cdhash:signing_id:team_id:executable:tty:start_time:responsible_audit_token:parent_audit_token:cs_validation_category:)**\n\n## Instance Properties\n\n- **cs_validation_category**: es_cs_validation_category\n\n## Inspecting Event Properties\n\n- **target**: The process to execute.\n\n## Conforms To\n\n- BitwiseCopyable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A token for use with Basic Security Module auditing functions.",
+          "name" : "audit_token",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/audit_token"
+        },
+        {
+          "description" : "The file containing the executed process.",
+          "name" : "executable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/executable"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the process connects to the Endpoint Security subsystem.",
+          "name" : "is_es_client",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/is_es_client"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the process is a platform binary.",
+          "name" : "is_platform_binary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/is_platform_binary"
+        },
+        {
+          "description" : "The time the process started.",
+          "name" : "start_time",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/start_time"
+        }
+      ],
+      "title" : "Inspecting the Source Process"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The parent process identifier.",
+          "name" : "ppid",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/ppid"
+        },
+        {
+          "description" : "The original parent process ID.",
+          "name" : "original_ppid",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/original_ppid"
+        },
+        {
+          "description" : "The process group identifier.",
+          "name" : "group_id",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/group_id"
+        },
+        {
+          "description" : "The identifier of the session that contains the process group.",
+          "name" : "session_id",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/session_id"
+        },
+        {
+          "description" : "The TTY associated with the process sending the message.",
+          "name" : "tty",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/tty"
+        }
+      ],
+      "title" : "Inspecting Process IDs"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The flags used to sign the process.",
+          "name" : "codesigning_flags",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/codesigning_flags"
+        },
+        {
+          "description" : "The code directory hash value.",
+          "name" : "cdhash",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/cdhash"
+        },
+        {
+          "description" : "The identifier used to sign the process.",
+          "name" : "signing_id",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/signing_id"
+        },
+        {
+          "description" : "The team identifier used to sign the process.",
+          "name" : "team_id",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/team_id"
+        }
+      ],
+      "title" : "Inspecting Code Signing Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The audit token of the process responsible for this process.",
+          "name" : "responsible_audit_token",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/responsible_audit_token"
+        },
+        {
+          "description" : "The audit token of the parent process.",
+          "name" : "parent_audit_token",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/parent_audit_token"
+        }
+      ],
+      "title" : "Inspecting Audit Tokens"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "init(audit_token:ppid:original_ppid:group_id:session_id:codesigning_flags:is_platform_binary:is_es_client:cdhash:signing_id:team_id:executable:tty:start_time:responsible_audit_token:parent_audit_token:cs_validation_category:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/init(audit_token:ppid:original_ppid:group_id:session_id:codesigning_flags:is_platform_binary:is_es_client:cdhash:signing_id:team_id:executable:tty:start_time:responsible_audit_token:parent_audit_token:cs_validation_category:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "es_cs_validation_category",
+          "name" : "cs_validation_category",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t\/cs_validation_category"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The process to execute.",
+          "name" : "target",
+          "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_event_exec_t\/target"
+        }
+      ],
+      "title" : "Inspecting Event Properties"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "es_process_t",
+  "url" : "https:\/\/developer.apple.com\/documentation\/EndpointSecurity\/es_process_t"
+}

@@ -1,0 +1,77 @@
+{
+  "abstract" : "Invokes a method of the receiver on the main thread using the specified modes.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "67a3c4b5c5c660ae0463c3a8105f7213ca8a75acd17dd2f5228d117a8969b532",
+  "crawledAt" : "2025-12-01T16:56:27Z",
+  "declaration" : {
+    "code" : "func performSelector(onMainThread aSelector: Selector, with arg: Any?, waitUntilDone wait: Bool, modes array: [String]?)",
+    "language" : "swift"
+  },
+  "id" : "E10BC183-7C46-4AF6-B23B-EF948544735E",
+  "kind" : "method",
+  "module" : "Objective-C Runtime",
+  "overview" : "## Discussion\n\nYou can use this method to deliver messages to the main thread of your application. The main thread encompasses the application’s main run loop, and is where the `NSApplication` object receives events. The message in this case is a method of the current object that you want to execute on the thread.\n\nThis method queues the message on the run loop of the main thread using the run loop modes specified in the `array` parameter. As part of its normal run loop processing, the main thread dequeues the message (assuming it is running in one of the specified modes) and invokes the desired method. Multiple calls to this method from the same thread cause the corresponding selectors to be queued and performed in the same same order in which the calls were made, assuming the associated run loop modes for each selector are the same. If you specify different modes for each selector, any selectors whose associated mode does not match the current run loop mode are skipped until the run loop subsequently executes in that mode.\n\nYou cannot cancel messages queued using this method. If you want the option of canceling a message on the current thread, you must use either the [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:with:afterDelay:)] or [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:with:afterDelay:inModes:)] method.\n\n### Special Considerations\n\nThis method registers with the runloop of its current context, and depends on that runloop being run on a regular basis to perform correctly. One common context where you might call this method and end up registering with a runloop that is not automatically run on a regular basis is when being invoked by a dispatch queue. If you need this type of functionality when running on a dispatch queue, you should use [doc:\/\/com.apple.documentation\/documentation\/dispatch\/1452876-dispatch_after] and related methods to get the behavior you want.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/ObjectiveC\/NSObject-swift.class\/performSelector(onMainThread:with:waitUntilDone:modes:)\ncrawled: 2025-12-01T16:56:27Z\n---\n\n# performSelector(onMainThread:with:waitUntilDone:modes:)\n\n**Instance Method**\n\nInvokes a method of the receiver on the main thread using the specified modes.\n\n## Declaration\n\n```swift\nfunc performSelector(onMainThread aSelector: Selector, with arg: Any?, waitUntilDone wait: Bool, modes array: [String]?)\n```\n\n## Parameters\n\n- **aSelector**: A [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/DevPedia-CocoaCore\/Selector.html#\/\/apple_ref\/doc\/uid\/TP40008195-CH48] that identifies the method to invoke. The method should not have a significant return value and should take a single argument of type id, or no arguments.\n- **arg**: The argument to pass to the method when it is invoked. Pass `nil` if the method does not take an argument.\n- **wait**: A Boolean that specifies whether the current thread blocks until after the specified selector is performed on the receiver on the main thread. Specify [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/YES] to block this thread; otherwise, specify [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/NO] to have this method return immediately.\n\nIf the current thread is also the main thread, and you pass [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/YES], the message is performed immediately, otherwise the perform is queued to run the next time through the run loop.\n- **array**: An array of strings that identifies the modes in which it is permissible to perform the specified selector. This array must contain at least one string. If you specify `nil` or an empty array for this parameter, this method returns without performing the specified selector. For information about run loop modes, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/Multithreading\/RunLoopManagement\/RunLoopManagement.html#\/\/apple_ref\/doc\/uid\/10000057i-CH16] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/Multithreading\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/10000057i].\n\n## Discussion\n\nYou can use this method to deliver messages to the main thread of your application. The main thread encompasses the application’s main run loop, and is where the `NSApplication` object receives events. The message in this case is a method of the current object that you want to execute on the thread.\n\nThis method queues the message on the run loop of the main thread using the run loop modes specified in the `array` parameter. As part of its normal run loop processing, the main thread dequeues the message (assuming it is running in one of the specified modes) and invokes the desired method. Multiple calls to this method from the same thread cause the corresponding selectors to be queued and performed in the same same order in which the calls were made, assuming the associated run loop modes for each selector are the same. If you specify different modes for each selector, any selectors whose associated mode does not match the current run loop mode are skipped until the run loop subsequently executes in that mode.\n\nYou cannot cancel messages queued using this method. If you want the option of canceling a message on the current thread, you must use either the [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:with:afterDelay:)] or [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:with:afterDelay:inModes:)] method.\n\n### Special Considerations\n\nThis method registers with the runloop of its current context, and depends on that runloop being run on a regular basis to perform correctly. One common context where you might call this method and end up registering with a runloop that is not automatically run on a regular basis is when being invoked by a dispatch queue. If you need this type of functionality when running on a dispatch queue, you should use [doc:\/\/com.apple.documentation\/documentation\/dispatch\/1452876-dispatch_after] and related methods to get the behavior you want.\n\n## Sending Messages\n\n- **perform(_:with:afterDelay:)**: Invokes a method of the receiver on the current thread using the default mode after a delay.\n- **perform(_:with:afterDelay:inModes:)**: Invokes a method of the receiver on the current thread using the specified modes after a delay.\n- **performSelector(onMainThread:with:waitUntilDone:)**: Invokes a method of the receiver on the main thread using the default mode.\n- **perform(_:on:with:waitUntilDone:)**: Invokes a method of the receiver on the specified thread using the default mode.\n- **perform(_:on:with:waitUntilDone:modes:)**: Invokes a method of the receiver on the specified thread using the specified modes.\n- **performSelector(inBackground:with:)**: Invokes a method of the receiver on a new background thread.\n- **cancelPreviousPerformRequests(withTarget:)**: Cancels perform requests previously registered with the [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:with:afterDelay:)] instance method.\n- **cancelPreviousPerformRequests(withTarget:selector:object:)**: Cancels perform requests previously registered with [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:with:afterDelay:)].\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Invokes a method of the receiver on the current thread using the default mode after a delay.",
+          "name" : "perform(_:with:afterDelay:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:with:afterDelay:)"
+        },
+        {
+          "description" : "Invokes a method of the receiver on the current thread using the specified modes after a delay.",
+          "name" : "perform(_:with:afterDelay:inModes:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:with:afterDelay:inModes:)"
+        },
+        {
+          "description" : "Invokes a method of the receiver on the main thread using the default mode.",
+          "name" : "performSelector(onMainThread:with:waitUntilDone:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/NSObject-swift.class\/performSelector(onMainThread:with:waitUntilDone:)"
+        },
+        {
+          "description" : "Invokes a method of the receiver on the specified thread using the default mode.",
+          "name" : "perform(_:on:with:waitUntilDone:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:on:with:waitUntilDone:)"
+        },
+        {
+          "description" : "Invokes a method of the receiver on the specified thread using the specified modes.",
+          "name" : "perform(_:on:with:waitUntilDone:modes:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:on:with:waitUntilDone:modes:)"
+        },
+        {
+          "description" : "Invokes a method of the receiver on a new background thread.",
+          "name" : "performSelector(inBackground:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/NSObject-swift.class\/performSelector(inBackground:with:)"
+        },
+        {
+          "description" : "Cancels perform requests previously registered with the [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:with:afterDelay:)] instance method.",
+          "name" : "cancelPreviousPerformRequests(withTarget:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/NSObject-swift.class\/cancelPreviousPerformRequests(withTarget:)"
+        },
+        {
+          "description" : "Cancels perform requests previously registered with [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/NSObject-swift.class\/perform(_:with:afterDelay:)].",
+          "name" : "cancelPreviousPerformRequests(withTarget:selector:object:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/NSObject-swift.class\/cancelPreviousPerformRequests(withTarget:selector:object:)"
+        }
+      ],
+      "title" : "Sending Messages"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "performSelector(onMainThread:with:waitUntilDone:modes:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/NSObject-swift.class\/performSelector(onMainThread:with:waitUntilDone:modes:)"
+}

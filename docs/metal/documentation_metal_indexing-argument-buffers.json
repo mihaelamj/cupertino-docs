@@ -1,0 +1,89 @@
+{
+  "abstract" : "Assign resource indices within an argument buffer.",
+  "codeExamples" : [
+    {
+      "code" : "struct My_Indexed_AB {\n    texture2d<float> texA [[id(1)]];\n    texture2d<float> texB [[id(3)]];\n};\nstruct My_Aggregate_AB {\n    My_Indexed_AB abX; \/\/ abX = id(0); texA = id(1); texB = id(3)\n    My_Indexed_AB abY; \/\/ abY = id(4); texA = id(5); texB = id(7)\n};",
+      "language" : "metal"
+    },
+    {
+      "code" : "struct MaterialTexture {\n    texture2d<float> tex; \/\/ Assigned to index 0\n    float4 uvScaleOffset; \/\/ Assigned to index 1\n};",
+      "language" : "metal"
+    },
+    {
+      "code" : "struct Material {\n    float4 diffuse;                     \/\/ Assigned to index 0\n    array<texture2d<float>, 3> texSet1; \/\/ Assigned to indices 1-3\n    texture2d<float> texSet2[3];        \/\/ Assigned to indices 4-6\n    MaterialTexture materials[3];       \/\/ Assigned to indices 7-12\n    int constants[4] [[id(20)]];        \/\/ Assigned to indices 20-23\n};",
+      "language" : "metal"
+    },
+    {
+      "code" : "struct Material {\n    MaterialTexture diffuse;          \/\/ Assigned to indices 0-1\n    MaterialTexture normal [[id(4)]]; \/\/ Assigned to indices 4-5\n    MaterialTexture specular;         \/\/ Assigned to indices 6-7\n}",
+      "language" : "metal"
+    },
+    {
+      "code" : "fragment float4 my_fragment(\n    constant texture2d<float> & texturesAB1 [[buffer(0)]],     \/\/ Assigned to generic index 0 and buffer index 0\n    constant texture2d<float> & texturesAB2[10] [[buffer(1)]], \/\/ Assigned to generic indices 0-9 and buffer index 1\n    array<texture2d<float>, 10> texturesArray [[texture(0)]]    \/\/ Assigned to texture indices 0-9\n)\n{...}",
+      "language" : "metal"
+    }
+  ],
+  "contentHash" : "4424eed7cb3e65831d651bc350caef34cbe70c380a92d5c301a572356c494789",
+  "crawledAt" : "2025-12-02T19:56:16Z",
+  "id" : "94595D51-C8EE-4117-877D-B8F4DCDB44E4",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Metal",
+  "overview" : "## Overview\n\nYou can index an argument buffer similarly to buffers, textures, and samplers. However, you index individual argument buffer resources with a generic `[[id(n)]]` attribute instead of the specific type `[[buffer(n)]]`, `[[texture(n)]]`, and `[[sampler(n)]]` attributes.\n\nManually assigned argument buffer resource indices don’t need to be contiguous, but they need to be unique and arranged in an increasing order. The following example shows manual and automatic index assignment:\n\n### Automatically assigned index IDs\n\nIf the `[[id(n)]]` attribute is omitted for any argument buffer resource, an index ID is automatically assigned according to preset rules:\n\n**Structure Members**\n\nIDs are assigned to structure members in order, starting at 0, by adding 1 to the highest ID used by the previous structure member. The following example shows automatically assigned index IDs for structure members:\n\n**Array Elements**\n\nIDs are assigned to array elements in order, starting at 0, by adding 1 to the highest ID used by the previous array elements. The following example shows automatically assigned index IDs for array elements:\n\n**Nested Structs and Arrays**\n\nIf a structure member or array element is itself a structure or array, its own structure members or array elements are assigned indices according to the previous rules. If an ID is provided for a top-level structure or array, this ID becomes the starting index for nested structure members or array elements. The following example shows automatically assigned index IDs for nested structures and arrays:\n\n**Combined Argument Buffer Resources and Regular Resources**\n\nArgument buffer resources are assigned generic indices according to the previous rules. Regular resources are assigned type indices in their respective resource argument tables. The following example shows automatically assigned index IDs for combined argument buffer resources and regular resources:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/metal\/indexing-argument-buffers\ncrawled: 2025-12-02T19:56:16Z\n---\n\n# Indexing argument buffers\n\n**Article**\n\nAssign resource indices within an argument buffer.\n\n## Overview\n\nYou can index an argument buffer similarly to buffers, textures, and samplers. However, you index individual argument buffer resources with a generic `[[id(n)]]` attribute instead of the specific type `[[buffer(n)]]`, `[[texture(n)]]`, and `[[sampler(n)]]` attributes.\n\n\n\nManually assigned argument buffer resource indices don’t need to be contiguous, but they need to be unique and arranged in an increasing order. The following example shows manual and automatic index assignment:\n\n```metal\nstruct My_Indexed_AB {\n    texture2d<float> texA [[id(1)]];\n    texture2d<float> texB [[id(3)]];\n};\nstruct My_Aggregate_AB {\n    My_Indexed_AB abX; \/\/ abX = id(0); texA = id(1); texB = id(3)\n    My_Indexed_AB abY; \/\/ abY = id(4); texA = id(5); texB = id(7)\n};\n```\n\n### Automatically assigned index IDs\n\nIf the `[[id(n)]]` attribute is omitted for any argument buffer resource, an index ID is automatically assigned according to preset rules:\n\n**Structure Members**\n\nIDs are assigned to structure members in order, starting at 0, by adding 1 to the highest ID used by the previous structure member. The following example shows automatically assigned index IDs for structure members:\n\n```metal\nstruct MaterialTexture {\n    texture2d<float> tex; \/\/ Assigned to index 0\n    float4 uvScaleOffset; \/\/ Assigned to index 1\n};\n```\n\n**Array Elements**\n\nIDs are assigned to array elements in order, starting at 0, by adding 1 to the highest ID used by the previous array elements. The following example shows automatically assigned index IDs for array elements:\n\n```metal\nstruct Material {\n    float4 diffuse;                     \/\/ Assigned to index 0\n    array<texture2d<float>, 3> texSet1; \/\/ Assigned to indices 1-3\n    texture2d<float> texSet2[3];        \/\/ Assigned to indices 4-6\n    MaterialTexture materials[3];       \/\/ Assigned to indices 7-12\n    int constants[4] [[id(20)]];        \/\/ Assigned to indices 20-23\n};\n```\n\n**Nested Structs and Arrays**\n\nIf a structure member or array element is itself a structure or array, its own structure members or array elements are assigned indices according to the previous rules. If an ID is provided for a top-level structure or array, this ID becomes the starting index for nested structure members or array elements. The following example shows automatically assigned index IDs for nested structures and arrays:\n\n```metal\nstruct Material {\n    MaterialTexture diffuse;          \/\/ Assigned to indices 0-1\n    MaterialTexture normal [[id(4)]]; \/\/ Assigned to indices 4-5\n    MaterialTexture specular;         \/\/ Assigned to indices 6-7\n}\n```\n\n**Combined Argument Buffer Resources and Regular Resources**\n\nArgument buffer resources are assigned generic indices according to the previous rules. Regular resources are assigned type indices in their respective resource argument tables. The following example shows automatically assigned index IDs for combined argument buffer resources and regular resources:\n\n```metal\nfragment float4 my_fragment(\n    constant texture2d<float> & texturesAB1 [[buffer(0)]],     \/\/ Assigned to generic index 0 and buffer index 0\n    constant texture2d<float> & texturesAB2[10] [[buffer(1)]], \/\/ Assigned to generic indices 0-9 and buffer index 1\n    array<texture2d<float>, 10> texturesArray [[texture(0)]]    \/\/ Assigned to texture indices 0-9\n)\n{...}\n```\n\n## Argument buffers\n\n- **Improving CPU performance by using argument buffers**: Optimize your app’s performance by grouping your resources into argument buffers.\n- **Managing groups of resources with argument buffers**: Create argument buffers to organize related resources.\n- **Tracking the resource residency of argument buffers**: Optimize resource performance within an argument buffer.\n- **Rendering terrain dynamically with argument buffers**: Use argument buffers to render terrain in real time with a GPU-driven pipeline.\n- **Encoding argument buffers on the GPU**: Use a compute pass to encode an argument buffer and access its arguments in a subsequent render pass.\n- **Using argument buffers with resource heaps**: Reduce CPU overhead by using arrays inside argument buffers and combining them with resource heaps.\n- **MTLArgumentDescriptor**: A representation of an argument within an argument buffer.\n- **MTLArgumentEncoder**: An interface you can use to encode argument data into an argument buffer.\n- **MTLAttributeStrideStatic**\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Optimize your app’s performance by grouping your resources into argument buffers.",
+          "name" : "Improving CPU performance by using argument buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/improving-cpu-performance-by-using-argument-buffers"
+        },
+        {
+          "description" : "Create argument buffers to organize related resources.",
+          "name" : "Managing groups of resources with argument buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/managing-groups-of-resources-with-argument-buffers"
+        },
+        {
+          "description" : "Optimize resource performance within an argument buffer.",
+          "name" : "Tracking the resource residency of argument buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/tracking-the-resource-residency-of-argument-buffers"
+        },
+        {
+          "description" : "Use argument buffers to render terrain in real time with a GPU-driven pipeline.",
+          "name" : "Rendering terrain dynamically with argument buffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/rendering-terrain-dynamically-with-argument-buffers"
+        },
+        {
+          "description" : "Use a compute pass to encode an argument buffer and access its arguments in a subsequent render pass.",
+          "name" : "Encoding argument buffers on the GPU",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/encoding-argument-buffers-on-the-gpu"
+        },
+        {
+          "description" : "Reduce CPU overhead by using arrays inside argument buffers and combining them with resource heaps.",
+          "name" : "Using argument buffers with resource heaps",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/using-argument-buffers-with-resource-heaps"
+        },
+        {
+          "description" : "A representation of an argument within an argument buffer.",
+          "name" : "MTLArgumentDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLArgumentDescriptor"
+        },
+        {
+          "description" : "An interface you can use to encode argument data into an argument buffer.",
+          "name" : "MTLArgumentEncoder",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLArgumentEncoder"
+        },
+        {
+          "description" : "",
+          "name" : "MTLAttributeStrideStatic",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLAttributeStrideStatic"
+        }
+      ],
+      "title" : "Argument buffers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Indexing argument buffers",
+  "url" : "https:\/\/developer.apple.com\/documentation\/metal\/indexing-argument-buffers"
+}

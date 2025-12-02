@@ -1,0 +1,212 @@
+{
+  "abstract" : "A structure that converts between URL instances and their textual representations.",
+  "codeExamples" : [
+    {
+      "code" : "let url = URL(string:\"https:\/\/www.example.com:8080\/path\/to\/endpoint?key=value\")!\nlet formatted = url.formatted() \/\/ \"https:\/\/www.example.com\/path\/to\/endpoint\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let url = URL(string:\"https:\/\/www.example.com:8080\/path\/to\/endpoint?key=value\")!\nlet style = URL.FormatStyle(scheme: .never,\n                            user: .never,\n                            password: .never,\n                            host: .always,\n                            port: .never,\n                            path: .always,\n                            query: .never,\n                            fragment: .never)\nlet formatted = style.format(url) \/\/ \"www.example.com\/path\/to\/endpoint\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let url = URL(string:\"https:\/\/www.example.com:8080\/path\/to\/endpoint?key=value\")!\nlet formatted = url.formatted(.url\n    .scheme(.never)\n    .host(.always)\n    .port(.never)\n    .path(.always)\n    .query(.never)) \/\/ \"www.example.com\/path\/to\/endpoint\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let style = URL.FormatStyle(scheme: .always,\n                            user: .never,\n                            password: .never,\n                            host: .always,\n                            port: .always,\n                            path: .always,\n                            query: .always,\n                            fragment: .never)\nlet urlString = \"https:\/\/www.example.com:8080\/path\/to\/endpoint?key=value\"\nlet url = try? style.parseStrategy.parse(urlString)",
+      "language" : "swift"
+    },
+    {
+      "code" : "import RegexBuilder\nlet source = \"7\/31\/2022, 5:15:12 AM  https:\/\/www.example.com\/productList?query=slushie\"\nlet matcher = Regex {\n    One(.dateTime(date: .numeric,\n                  time: .standard,\n                  locale: Locale(identifier: \"en_US\"),\n                  timeZone: TimeZone(identifier: \"PST\")!))\n    OneOrMore(.horizontalWhitespace)\n    Capture {\n        One(.url(scheme: .required,\n                 user: .optional,\n                 password: .optional,\n                 host: .required,\n                 port: .defaultValue(8088),\n                 path: .optional,\n                 query: .optional,\n                 fragment: .optional))\n    }\n}\nguard let match = source.firstMatch(of: matcher) else { return }\nlet url = match.1 \/\/ url = https:\/\/www.example.com:8088\/productList?query=slushie",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Copyable",
+    "Decodable",
+    "Encodable",
+    "Equatable",
+    "FormatStyle",
+    "Hashable",
+    "ParseableFormatStyle",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "d72e732afe53d725ed4e5021b9a5d02208ee138ed42af90f80b7b9c4c0be982a",
+  "crawledAt" : "2025-12-02T18:07:26Z",
+  "declaration" : {
+    "code" : "struct FormatStyle",
+    "language" : "swift"
+  },
+  "id" : "80E5FD54-38CD-4EB4-AF74-2088387D3B6A",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nInstances of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/FormatStyle] create localized, human-readable text from [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL] instances and parse string representations of URLs into instances of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL].\n\n### Formatting URLs\n\nUse the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/formatted()] method to create a string representation of a URL using the default [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/FormatStyle] configuration. As seen in the following example, the default style creates a string with the scheme, host, and path, but not the port or query.\n\nYou can specify a format style by providing an argument to the `format(_:)` method. The following example uses the previous URL, but preserves only the host and path.\n\nInstantiate a style when you want to format multiple URL instances with the same style. For one-time access to a default style, you can use the static accessor [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle\/url] at call points that expect the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/FormatStyle] type, such as the `format(_:)` method. This means you can write the example above as follows:\n\nThis example works by taking the default style provided by [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle\/url], then customizing it with calls to the style modifiers in Customizing style behavior.\n\n### Parsing URLs\n\nYou can use [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/FormatStyle] to parse strings into URL values. To do this, create a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/ParseStrategy] from a format style, then call the strategy’s [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ParseStrategy\/parse(_:)] method.\n\n### Matching regular expressions\n\nAlong with parsing URL values in strings, you can use the regular expression domain-specific language provided by Swift to match and capture URL substrings. The following example scans source input that’s expected to contain a timestamp, some whitespace, and a URL.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/foundation\/url\/formatstyle\ncrawled: 2025-12-02T18:07:26Z\n---\n\n# URL.FormatStyle\n\n**Structure**\n\nA structure that converts between URL instances and their textual representations.\n\n## Declaration\n\n```swift\nstruct FormatStyle\n```\n\n## Overview\n\nInstances of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/FormatStyle] create localized, human-readable text from [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL] instances and parse string representations of URLs into instances of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL].\n\n### Formatting URLs\n\nUse the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/formatted()] method to create a string representation of a URL using the default [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/FormatStyle] configuration. As seen in the following example, the default style creates a string with the scheme, host, and path, but not the port or query.\n\n```swift\nlet url = URL(string:\"https:\/\/www.example.com:8080\/path\/to\/endpoint?key=value\")!\nlet formatted = url.formatted() \/\/ \"https:\/\/www.example.com\/path\/to\/endpoint\"\n```\n\nYou can specify a format style by providing an argument to the `format(_:)` method. The following example uses the previous URL, but preserves only the host and path.\n\n```swift\nlet url = URL(string:\"https:\/\/www.example.com:8080\/path\/to\/endpoint?key=value\")!\nlet style = URL.FormatStyle(scheme: .never,\n                            user: .never,\n                            password: .never,\n                            host: .always,\n                            port: .never,\n                            path: .always,\n                            query: .never,\n                            fragment: .never)\nlet formatted = style.format(url) \/\/ \"www.example.com\/path\/to\/endpoint\"\n```\n\nInstantiate a style when you want to format multiple URL instances with the same style. For one-time access to a default style, you can use the static accessor [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle\/url] at call points that expect the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/FormatStyle] type, such as the `format(_:)` method. This means you can write the example above as follows:\n\n```swift\nlet url = URL(string:\"https:\/\/www.example.com:8080\/path\/to\/endpoint?key=value\")!\nlet formatted = url.formatted(.url\n    .scheme(.never)\n    .host(.always)\n    .port(.never)\n    .path(.always)\n    .query(.never)) \/\/ \"www.example.com\/path\/to\/endpoint\"\n```\n\nThis example works by taking the default style provided by [doc:\/\/com.apple.foundation\/documentation\/Foundation\/FormatStyle\/url], then customizing it with calls to the style modifiers in Customizing style behavior.\n\n### Parsing URLs\n\nYou can use [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/FormatStyle] to parse strings into URL values. To do this, create a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/URL\/ParseStrategy] from a format style, then call the strategy’s [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ParseStrategy\/parse(_:)] method.\n\n```swift\nlet style = URL.FormatStyle(scheme: .always,\n                            user: .never,\n                            password: .never,\n                            host: .always,\n                            port: .always,\n                            path: .always,\n                            query: .always,\n                            fragment: .never)\nlet urlString = \"https:\/\/www.example.com:8080\/path\/to\/endpoint?key=value\"\nlet url = try? style.parseStrategy.parse(urlString)\n```\n\n### Matching regular expressions\n\nAlong with parsing URL values in strings, you can use the regular expression domain-specific language provided by Swift to match and capture URL substrings. The following example scans source input that’s expected to contain a timestamp, some whitespace, and a URL.\n\n```swift\nimport RegexBuilder\nlet source = \"7\/31\/2022, 5:15:12 AM  https:\/\/www.example.com\/productList?query=slushie\"\nlet matcher = Regex {\n    One(.dateTime(date: .numeric,\n                  time: .standard,\n                  locale: Locale(identifier: \"en_US\"),\n                  timeZone: TimeZone(identifier: \"PST\")!))\n    OneOrMore(.horizontalWhitespace)\n    Capture {\n        One(.url(scheme: .required,\n                 user: .optional,\n                 password: .optional,\n                 host: .required,\n                 port: .defaultValue(8088),\n                 path: .optional,\n                 query: .optional,\n                 fragment: .optional))\n    }\n}\nguard let match = source.firstMatch(of: matcher) else { return }\nlet url = match.1 \/\/ url = https:\/\/www.example.com:8088\/productList?query=slushie\n```\n\n## Creating a URL format style\n\n- **init(scheme:user:password:host:port:path:query:fragment:)**: Creates a URL format style with the given display options.\n- **URL.FormatStyle.ComponentDisplayOption**: A type that indicates whether a formatted URL should include a component.\n- **URL.FormatStyle.HostDisplayOption**: A type that indicates whether a formatted URL should include the host component.\n\n## Customizing style behavior\n\n- **scheme(_:)**: Modifies a format style to display a URL’s scheme component in accordance with the provided option.\n- **user(_:)**: Modifies a format style to display a URL’s user component in accordance with the provided option.\n- **password(_:)**: Modifies a format style to display a URL’s password component in accordance with the provided option.\n- **host(_:)**: Modifies a format style to display a URL’s host component in accordance with the provided option.\n- **URL.FormatStyle.HostDisplayOption**: A type that indicates whether a formatted URL should include the host component.\n- **port(_:)**: Modifies a format style to display a URL’s port component in accordance with the provided option.\n- **path(_:)**: Modifies a format style to display a URL’s path component in accordance with the provided option.\n- **query(_:)**: Modifies a format style to display a URL’s query component in accordance with the provided option.\n- **fragment(_:)**: Modifies a format style to display a URL’s fragment component in accordance with the provided option.\n- **URL.FormatStyle.ComponentDisplayOption**: A type that indicates whether a formatted URL should include a component.\n\n## Parsing URLs\n\n- **URL.ParseStrategy**: A parse strategy for creating URLs from formatted strings.\n\n## Enumerations\n\n- **URL.FormatStyle.Component**: An enumeration of the components of a URL, for use in creating format style options that depend on a component’s value.\n\n## Data formatting in Swift\n\n- **Language Introspector**: Converts data into human-readable text using formatters and locales.\n- **FormatStyle**: A type that converts a given data type into a representation in another type, such as a string.\n- **IntegerFormatStyle**: A structure that converts between integer values and their textual representations.\n- **FloatingPointFormatStyle**: A structure that converts between floating-point values and their textual representations.\n- **Decimal.FormatStyle**: A structure that converts between decimal values and their textual representations.\n- **ListFormatStyle**: A type that formats lists of items with a separator and conjunction appropriate for a given locale.\n- **StringStyle**\n- **FormatStyleCapitalizationContext**: The capitalization formatting context used when formatting dates and times.\n- **Format Style Configurations**: Behaviors for traits like numeric precision, rounding, and scale, used for formatting and parsing numeric values.\n\n## Conforms To\n\n- Copyable\n- Decodable\n- Encodable\n- Equatable\n- FormatStyle\n- Hashable\n- ParseableFormatStyle\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a URL format style with the given display options.",
+          "name" : "init(scheme:user:password:host:port:path:query:fragment:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/init(scheme:user:password:host:port:path:query:fragment:)"
+        },
+        {
+          "description" : "A type that indicates whether a formatted URL should include a component.",
+          "name" : "URL.FormatStyle.ComponentDisplayOption",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/ComponentDisplayOption"
+        },
+        {
+          "description" : "A type that indicates whether a formatted URL should include the host component.",
+          "name" : "URL.FormatStyle.HostDisplayOption",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/HostDisplayOption"
+        }
+      ],
+      "title" : "Creating a URL format style"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Modifies a format style to display a URL’s scheme component in accordance with the provided option.",
+          "name" : "scheme(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/scheme(_:)"
+        },
+        {
+          "description" : "Modifies a format style to display a URL’s user component in accordance with the provided option.",
+          "name" : "user(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/user(_:)"
+        },
+        {
+          "description" : "Modifies a format style to display a URL’s password component in accordance with the provided option.",
+          "name" : "password(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/password(_:)"
+        },
+        {
+          "description" : "Modifies a format style to display a URL’s host component in accordance with the provided option.",
+          "name" : "host(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/host(_:)"
+        },
+        {
+          "description" : "A type that indicates whether a formatted URL should include the host component.",
+          "name" : "URL.FormatStyle.HostDisplayOption",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/HostDisplayOption"
+        },
+        {
+          "description" : "Modifies a format style to display a URL’s port component in accordance with the provided option.",
+          "name" : "port(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/port(_:)"
+        },
+        {
+          "description" : "Modifies a format style to display a URL’s path component in accordance with the provided option.",
+          "name" : "path(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/path(_:)"
+        },
+        {
+          "description" : "Modifies a format style to display a URL’s query component in accordance with the provided option.",
+          "name" : "query(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/query(_:)"
+        },
+        {
+          "description" : "Modifies a format style to display a URL’s fragment component in accordance with the provided option.",
+          "name" : "fragment(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/fragment(_:)"
+        },
+        {
+          "description" : "A type that indicates whether a formatted URL should include a component.",
+          "name" : "URL.FormatStyle.ComponentDisplayOption",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/ComponentDisplayOption"
+        }
+      ],
+      "title" : "Customizing style behavior"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A parse strategy for creating URLs from formatted strings.",
+          "name" : "URL.ParseStrategy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/ParseStrategy"
+        }
+      ],
+      "title" : "Parsing URLs"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An enumeration of the components of a URL, for use in creating format style options that depend on a component’s value.",
+          "name" : "URL.FormatStyle.Component",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/URL\/FormatStyle\/Component"
+        }
+      ],
+      "title" : "Enumerations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Converts data into human-readable text using formatters and locales.",
+          "name" : "Language Introspector",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/language-introspector"
+        },
+        {
+          "description" : "A type that converts a given data type into a representation in another type, such as a string.",
+          "name" : "FormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyle"
+        },
+        {
+          "description" : "A structure that converts between integer values and their textual representations.",
+          "name" : "IntegerFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/IntegerFormatStyle"
+        },
+        {
+          "description" : "A structure that converts between floating-point values and their textual representations.",
+          "name" : "FloatingPointFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FloatingPointFormatStyle"
+        },
+        {
+          "description" : "A structure that converts between decimal values and their textual representations.",
+          "name" : "Decimal.FormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Decimal\/FormatStyle"
+        },
+        {
+          "description" : "A type that formats lists of items with a separator and conjunction appropriate for a given locale.",
+          "name" : "ListFormatStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/ListFormatStyle"
+        },
+        {
+          "description" : "",
+          "name" : "StringStyle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/StringStyle"
+        },
+        {
+          "description" : "The capitalization formatting context used when formatting dates and times.",
+          "name" : "FormatStyleCapitalizationContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FormatStyleCapitalizationContext"
+        },
+        {
+          "description" : "Behaviors for traits like numeric precision, rounding, and scale, used for formatting and parsing numeric values.",
+          "name" : "Format Style Configurations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/format-style-configurations"
+        }
+      ],
+      "title" : "Data formatting in Swift"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "URL.FormatStyle",
+  "url" : "https:\/\/developer.apple.com\/documentation\/foundation\/url\/formatstyle"
+}

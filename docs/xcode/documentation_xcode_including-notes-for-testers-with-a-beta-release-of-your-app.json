@@ -1,0 +1,60 @@
+{
+  "abstract" : "Add text files to your Xcode project to provide notes to beta testers about what to test.",
+  "codeExamples" : [
+    {
+      "code" : "#!\/bin\/zsh\n#  ci_post_xcodebuild.sh\n\nif [[ -d \"$CI_APP_STORE_SIGNED_APP_PATH\" ]]; then\n  TESTFLIGHT_DIR_PATH=..\/TestFlight\n  mkdir $TESTFLIGHT_DIR_PATH\n  git fetch --deepen 3 && git log -3 --pretty=format:\"%s\" >! $TESTFLIGHT_DIR_PATH\/WhatToTest.en-US.txt\nfi"
+    }
+  ],
+  "contentHash" : "77d8c341d8a3b84e09eb884f268f894c42f9776960c0e9a2f4d71f8f05ebb183",
+  "crawledAt" : "2025-12-01T09:23:35Z",
+  "id" : "4B97C0F8-29D5-42E6-AB6C-EECC9BFBE10A",
+  "kind" : "article",
+  "overview" : "## Overview\n\nYou can include notes when you distribute a beta version of your app from Xcode Cloud through TestFlight to give testers details about the changes the update includes, and to provide guidance for the areas of your app to test. Use these notes to focus testing on the areas of your app that need attention. The notes appear in the “What to test” field in the TestFlight app. The information you provide can be language- and locale-specific.\n\nFor more information about distributing a beta version of your app, see [doc:\/\/com.apple.Xcode\/documentation\/Xcode\/Creating-a-workflow-that-builds-your-app-for-distribution].\n\n### Create a TestFlight folder\n\nXcode Cloud uses text files that you add to your Xcode project to create the notes for testers. The text files reside in a folder named TestFlight located in the same folder as your Xcode project or workspace.\n\nTo create the TestFlight folder:\n\n### Add text files to the folder to include notes\n\nAdd text files to the TestFlight folder to provide notes to your testers. Provide notes in multiple languages by creating a file per language. For a list of the locales TestFlight supports, see [doc:\/\/com.apple.documentation\/documentation\/AppStoreConnectAPI\/BetaBuildLocalizationCreateRequest\/Data-data.dictionary\/Attributes-data.dictionary]. For general information on language and region codes, see [doc:\/\/com.apple.Xcode\/documentation\/Xcode\/choosing-localization-regions-and-scripts].\n\nTo add the text files to your project:\n\nThe next time Xcode Cloud builds and uploads your app to TestFlight, it automatically finds this file and includes the text in your app’s “What to test” field in TestFlight.\n\n### Provide useful and appropriate content\n\nInclude information that is useful to testers and relevant to the current release, such as the following:\n\n### Write a script to generate content dynamically\n\nYou can use a custom build script to generate the notes during an Xcode Cloud build. The following example provides the last three commit messages from the GIT log as the tester notes:\n\nFor more information, see [doc:\/\/com.apple.Xcode\/documentation\/Xcode\/Writing-Custom-Build-Scripts].",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Xcode\/including-notes-for-testers-with-a-beta-release-of-your-app\ncrawled: 2025-12-01T09:23:35Z\n---\n\n# Including notes for testers with a beta release of your app\n\n**Article**\n\nAdd text files to your Xcode project to provide notes to beta testers about what to test.\n\n## Overview\n\nYou can include notes when you distribute a beta version of your app from Xcode Cloud through TestFlight to give testers details about the changes the update includes, and to provide guidance for the areas of your app to test. Use these notes to focus testing on the areas of your app that need attention. The notes appear in the “What to test” field in the TestFlight app. The information you provide can be language- and locale-specific.\n\nFor more information about distributing a beta version of your app, see [doc:\/\/com.apple.Xcode\/documentation\/Xcode\/Creating-a-workflow-that-builds-your-app-for-distribution].\n\n\n\n### Create a TestFlight folder\n\nXcode Cloud uses text files that you add to your Xcode project to create the notes for testers. The text files reside in a folder named TestFlight located in the same folder as your Xcode project or workspace.\n\nTo create the TestFlight folder:\n\n- Open your project or workspace in Xcode.\n- In the Project navigator, Control-click your project and choose New Group to create the group and its corresponding folder.\n- Name the new group TestFlight.\n\n### Add text files to the folder to include notes\n\nAdd text files to the TestFlight folder to provide notes to your testers. Provide notes in multiple languages by creating a file per language. For a list of the locales TestFlight supports, see [doc:\/\/com.apple.documentation\/documentation\/AppStoreConnectAPI\/BetaBuildLocalizationCreateRequest\/Data-data.dictionary\/Attributes-data.dictionary]. For general information on language and region codes, see [doc:\/\/com.apple.Xcode\/documentation\/Xcode\/choosing-localization-regions-and-scripts].\n\nTo add the text files to your project:\n\n- Add a new Empty file to the TestFlight folder. For instructions, see [doc:\/\/com.apple.Xcode\/documentation\/Xcode\/managing-files-and-folders-in-your-xcode-project].\n- Name the file using the format `WhatToTest.<LOCALE>.txt`. For `LOCALE`, use the language and region code for the content you provide in the file. For example, use `WhatToTest.en-US.txt` for U.S. English.\n- Commit and push the file to your remote repository.\n\nThe next time Xcode Cloud builds and uploads your app to TestFlight, it automatically finds this file and includes the text in your app’s “What to test” field in TestFlight.\n\n### Provide useful and appropriate content\n\nInclude information that is useful to testers and relevant to the current release, such as the following:\n\n- Features you add to your app.\n- Issues you resolve in your code.\n- The commit message for the commit that triggers the build, or the past few commit messages.\n\n\n\n### Write a script to generate content dynamically\n\nYou can use a custom build script to generate the notes during an Xcode Cloud build. The following example provides the last three commit messages from the GIT log as the tester notes:\n\n```\n#!\/bin\/zsh\n#  ci_post_xcodebuild.sh\n\nif [[ -d \"$CI_APP_STORE_SIGNED_APP_PATH\" ]]; then\n  TESTFLIGHT_DIR_PATH=..\/TestFlight\n  mkdir $TESTFLIGHT_DIR_PATH\n  git fetch --deepen 3 && git log -3 --pretty=format:\"%s\" >! $TESTFLIGHT_DIR_PATH\/WhatToTest.en-US.txt\nfi\n```\n\nFor more information, see [doc:\/\/com.apple.Xcode\/documentation\/Xcode\/Writing-Custom-Build-Scripts].\n\n## Setup and maintenance\n\n- **Making dependencies available to Xcode Cloud**: Review dependencies and make them available to Xcode Cloud before you configure your project to use Xcode Cloud.\n- **Configuring Xcode Cloud for your team**: Start using continuous integration and delivery with Xcode Cloud as a team.\n- **Sharing macOS and Xcode versions across Xcode Cloud workflows**: Use custom aliases to share configurations with multiple workflows.\n- **Sharing environment variables across Xcode Cloud workflows**: Apply common configurations to multiple workflows by using shared environment variables.\n- **Building Swift packages and Swift Playgrounds app projects with Xcode Cloud**: Add your Swift package or Swift Playgrounds app project to an Xcode project to build it in Xcode Cloud.\n- **Setting the next build number for Xcode Cloud builds**: Start numbering builds from a custom build number for your existing Mac app to avoid version collisions.\n- **Removing your project from Xcode Cloud**: Remove your project from Xcode Cloud to delete app and workflow data, disconnect your Git repository, and remove the Slack integration.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Review dependencies and make them available to Xcode Cloud before you configure your project to use Xcode Cloud.",
+          "name" : "Making dependencies available to Xcode Cloud",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/Making-Dependencies-Available-to-Xcode-Cloud"
+        },
+        {
+          "description" : "Start using continuous integration and delivery with Xcode Cloud as a team.",
+          "name" : "Configuring Xcode Cloud for your team",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/Configuring-Xcode-Cloud-for-Your-Team"
+        },
+        {
+          "description" : "Use custom aliases to share configurations with multiple workflows.",
+          "name" : "Sharing macOS and Xcode versions across Xcode Cloud workflows",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/Sharing-custom-aliases-across-Xcode-Cloud-workflows"
+        },
+        {
+          "description" : "Apply common configurations to multiple workflows by using shared environment variables.",
+          "name" : "Sharing environment variables across Xcode Cloud workflows",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/Sharing-environment-variables-across-xcode-cloud-workflows"
+        },
+        {
+          "description" : "Add your Swift package or Swift Playgrounds app project to an Xcode project to build it in Xcode Cloud.",
+          "name" : "Building Swift packages and Swift Playgrounds app projects with Xcode Cloud",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/building-swift-packages-or-swift-playground-app-projects-with-xcode-cloud"
+        },
+        {
+          "description" : "Start numbering builds from a custom build number for your existing Mac app to avoid version collisions.",
+          "name" : "Setting the next build number for Xcode Cloud builds",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/Setting-the-Next-Build-Number-for-Xcode-Cloud-Builds"
+        },
+        {
+          "description" : "Remove your project from Xcode Cloud to delete app and workflow data, disconnect your Git repository, and remove the Slack integration.",
+          "name" : "Removing your project from Xcode Cloud",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/Removing-Your-Project-from-Xcode-Cloud"
+        }
+      ],
+      "title" : "Setup and maintenance"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Including notes for testers with a beta release of your app",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Xcode\/including-notes-for-testers-with-a-beta-release-of-your-app"
+}

@@ -1,0 +1,64 @@
+{
+  "abstract" : "Use the `NS_REFINED_FOR_SWIFT` macro to change how an API is imported into Swift.",
+  "codeExamples" : [
+    {
+      "code" : "@interface Color : NSObject\n\n- (void)getRed:(nullable CGFloat *)red\n         green:(nullable CGFloat *)green\n          blue:(nullable CGFloat *)blue\n         alpha:(nullable CGFloat *)alpha;\n\n@end",
+      "language" : "occ"
+    },
+    {
+      "code" : "var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)",
+      "language" : "swift"
+    },
+    {
+      "code" : "@interface Color : NSObject\n\n- (void)getRed:(nullable CGFloat *)red\n         green:(nullable CGFloat *)green\n          blue:(nullable CGFloat *)blue\n         alpha:(nullable CGFloat *)alpha NS_REFINED_FOR_SWIFT;\n\n@end",
+      "language" : "occ"
+    },
+    {
+      "code" : "extension Color {\n    var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {\n        var r: CGFloat = 0.0\n        var g: CGFloat = 0.0\n        var b: CGFloat = 0.0\n        var a: CGFloat = 0.0\n        __getRed(red: &r, green: &g, blue: &b, alpha: &a)\n        return (red: r, green: g, blue: b, alpha: a)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "419f6e494adc3f18c9db6f5675d7e83dd4f56d6e85f10c83e8d482aee67ba4f8",
+  "crawledAt" : "2025-12-02T07:34:44Z",
+  "id" : "059082C3-581A-4068-8C41-C211A7032BC2",
+  "kind" : "article",
+  "module" : "Swift",
+  "overview" : "## Overview\n\nIf you want to expose an Objective-C API to Swift with a different declaration, but a similar underlying implementation, use the `NS_REFINED_FOR_SWIFT` macro. When you import an Objective-C API into Swift, you can adopt Swift-only types such as tuples. You can also reorder, combine, and rename parameters so the API matches other Swift APIs.\n\n### Choose a New Name and Declaration\n\nThe example below shows an Objective-C API that can be expressed more succinctly once it’s imported into Swift:\n\nCalling the `getRed(red:green:blue:alpha:)` method in Swift requires passing four in-out parameters. A reimagined Swift computed property that expresses the same functionality—getting the components of a color—can be written as a four-element tuple:\n\nThe new name is shorter, but still understandable because it uses an industry-standard initialism for color components: RGBA. The property defined by the new declaration is easier to use in Swift.\n\n### Expose the Existing Implementation\n\nApplying the `NS_REFINED_FOR_SWIFT` macro exposes the existing Objective-C API for reuse in your refined API. The existing API is renamed with double underscores (`__`) when it’s imported, to help prevent you from accidentally using the existing API elsewhere.\n\nThe example below adds the `NS_REFINED_FOR_SWIFT` macro to the `getRed(red:green:blue:alpha:)` method:\n\nThe following rules determine how an API’s existing interface is imported:\n\n### Reuse the Existing Implementation\n\nYou reuse an API by using its new name to call it in the implementation of a new API in Swift.\n\nThe implementation of the new `rgba` property reuses the existing `__getRed(red:green:blue:alpha:)` method to ensure that functionality remains the same between Swift and Objective-C:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/improving-objective-c-api-declarations-for-swift\ncrawled: 2025-12-02T07:34:44Z\n---\n\n# Improving Objective-C API Declarations for Swift\n\n**Article**\n\nUse the `NS_REFINED_FOR_SWIFT` macro to change how an API is imported into Swift.\n\n## Overview\n\nIf you want to expose an Objective-C API to Swift with a different declaration, but a similar underlying implementation, use the `NS_REFINED_FOR_SWIFT` macro. When you import an Objective-C API into Swift, you can adopt Swift-only types such as tuples. You can also reorder, combine, and rename parameters so the API matches other Swift APIs.\n\n### Choose a New Name and Declaration\n\nThe example below shows an Objective-C API that can be expressed more succinctly once it’s imported into Swift:\n\n```occ\n@interface Color : NSObject\n\n- (void)getRed:(nullable CGFloat *)red\n         green:(nullable CGFloat *)green\n          blue:(nullable CGFloat *)blue\n         alpha:(nullable CGFloat *)alpha;\n\n@end\n```\n\nCalling the `getRed(red:green:blue:alpha:)` method in Swift requires passing four in-out parameters. A reimagined Swift computed property that expresses the same functionality—getting the components of a color—can be written as a four-element tuple:\n\n```swift\nvar rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)\n```\n\nThe new name is shorter, but still understandable because it uses an industry-standard initialism for color components: RGBA. The property defined by the new declaration is easier to use in Swift.\n\n### Expose the Existing Implementation\n\nApplying the `NS_REFINED_FOR_SWIFT` macro exposes the existing Objective-C API for reuse in your refined API. The existing API is renamed with double underscores (`__`) when it’s imported, to help prevent you from accidentally using the existing API elsewhere.\n\nThe example below adds the `NS_REFINED_FOR_SWIFT` macro to the `getRed(red:green:blue:alpha:)` method:\n\n```occ\n@interface Color : NSObject\n\n- (void)getRed:(nullable CGFloat *)red\n         green:(nullable CGFloat *)green\n          blue:(nullable CGFloat *)blue\n         alpha:(nullable CGFloat *)alpha NS_REFINED_FOR_SWIFT;\n\n@end\n```\n\nThe following rules determine how an API’s existing interface is imported:\n\n- Initializer methods are imported by Swift with double underscores (`__`) prepended to their first argument labels.\n- Object subscripting methods are imported by Swift as methods with double underscores (`__`) prepended to their base names, rather than as a Swift subscript, if either the getter or setter method is marked as `NS_REFINED_FOR_SWIFT`.\n- Other methods are imported with double underscores (`__`) prepended to their base names.\n\n### Reuse the Existing Implementation\n\nYou reuse an API by using its new name to call it in the implementation of a new API in Swift.\n\nThe implementation of the new `rgba` property reuses the existing `__getRed(red:green:blue:alpha:)` method to ensure that functionality remains the same between Swift and Objective-C:\n\n```swift\nextension Color {\n    var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {\n        var r: CGFloat = 0.0\n        var g: CGFloat = 0.0\n        var b: CGFloat = 0.0\n        var a: CGFloat = 0.0\n        __getRed(red: &r, green: &g, blue: &b, alpha: &a)\n        return (red: r, green: g, blue: b, alpha: a)\n    }\n}\n```\n\n## Customizing Objective-C APIs\n\n- **Designating Nullability in Objective-C APIs**: Use nullability annotations or mark regions as annotated to control how Objective-C declarations are imported into Swift.\n- **Renaming Objective-C APIs for Swift**: Use the `NS_SWIFT_NAME` macro to customize API names for Swift.\n- **Grouping Related Objective-C Constants**: Add macros to your Objective-C types to group their values in Swift.\n- **Marking API Availability in Objective-C**: Use a macro to denote the availability of an Objective-C API.\n- **Making Objective-C APIs Unavailable in Swift**: Use the `NS_SWIFT_UNAVAILABLE` macro to prevent an API from being used in Swift.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Use nullability annotations or mark regions as annotated to control how Objective-C declarations are imported into Swift.",
+          "name" : "Designating Nullability in Objective-C APIs",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/designating-nullability-in-objective-c-apis"
+        },
+        {
+          "description" : "Use the `NS_SWIFT_NAME` macro to customize API names for Swift.",
+          "name" : "Renaming Objective-C APIs for Swift",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/renaming-objective-c-apis-for-swift"
+        },
+        {
+          "description" : "Add macros to your Objective-C types to group their values in Swift.",
+          "name" : "Grouping Related Objective-C Constants",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/grouping-related-objective-c-constants"
+        },
+        {
+          "description" : "Use a macro to denote the availability of an Objective-C API.",
+          "name" : "Marking API Availability in Objective-C",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/marking-api-availability-in-objective-c"
+        },
+        {
+          "description" : "Use the `NS_SWIFT_UNAVAILABLE` macro to prevent an API from being used in Swift.",
+          "name" : "Making Objective-C APIs Unavailable in Swift",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/making-objective-c-apis-unavailable-in-swift"
+        }
+      ],
+      "title" : "Customizing Objective-C APIs"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Improving Objective-C API Declarations for Swift",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/improving-objective-c-api-declarations-for-swift"
+}

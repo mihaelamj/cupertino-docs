@@ -1,0 +1,185 @@
+{
+  "abstract" : "Status updates on the object-creation process.",
+  "codeExamples" : [
+    {
+      "code" : "let waiter = Task {\n    do {\n        for try await output in session.outputs {\n            switch output {\n                case .processingComplete:\n                    \/\/ RealityKit has processed all requests.\n                case .requestError(let request, let error):\n                    \/\/ Request encountered an error.\n                case .requestComplete(let request, let result):\n                    \/\/ RealityKit has finished processing a request.\n                case .requestProgress(let request, let fractionComplete):\n                    \/\/ Periodic progress update. Update UI here.\n                case requestProgressInfo(let request, let progressInfo):\n                    \/\/ Periodic progress info update.\n                case .inputComplete:\n                    \/\/ Ingestion of images is complete and processing begins.\n                case .invalidSample(let id, let reason):\n                    \/\/ RealityKit deemed a sample invalid and didn't use it.\n                case .skippedSample(let id):\n                    \/\/ RealityKit was unable to use a provided sample.\n                case .automaticDownsampling:\n                    \/\/ RealityKit downsampled the input images because of\n                    \/\/ resource constraints.\n                case .processingCancelled\n                    \/\/ Processing was canceled.\n                @unknown default:\n                    \/\/ Unrecognized output.\n            }\n        }\n    } catch {\n        print(\"Output: ERROR = \\(String(describing: error))\")\n        \/\/ Handle error.\n    }\n}\n",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "22a0327fe651650204b237c2f2d5f6e19a54cf33e24b82b1bda560a53e62b196",
+  "crawledAt" : "2025-12-02T20:10:56Z",
+  "declaration" : {
+    "code" : "enum Output",
+    "language" : "swift"
+  },
+  "id" : "D4EF7274-D2BF-461F-8FBD-7BE444DDC2C5",
+  "kind" : "enum",
+  "language" : "swift",
+  "module" : "RealityKit",
+  "overview" : "## Overview\n\nRealityKit’s Object Capture is a long-running background task. The session publishes messages status and error messages to [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PhotogrammetrySession\/outputs-swift.property], a Swift [doc:\/\/com.apple.documentation\/documentation\/Swift\/AsyncSequence].\n\nYour app can respond to these updates using a `for`-`await`-`in` loop inside of a `Task`, as this example demonstrates.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\ncrawled: 2025-12-02T20:10:56Z\n---\n\n# PhotogrammetrySession.Output\n\n**Enumeration**\n\nStatus updates on the object-creation process.\n\n## Declaration\n\n```swift\nenum Output\n```\n\n## Overview\n\nRealityKit’s Object Capture is a long-running background task. The session publishes messages status and error messages to [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PhotogrammetrySession\/outputs-swift.property], a Swift [doc:\/\/com.apple.documentation\/documentation\/Swift\/AsyncSequence].\n\nYour app can respond to these updates using a `for`-`await`-`in` loop inside of a `Task`, as this example demonstrates.\n\n```swift\nlet waiter = Task {\n    do {\n        for try await output in session.outputs {\n            switch output {\n                case .processingComplete:\n                    \/\/ RealityKit has processed all requests.\n                case .requestError(let request, let error):\n                    \/\/ Request encountered an error.\n                case .requestComplete(let request, let result):\n                    \/\/ RealityKit has finished processing a request.\n                case .requestProgress(let request, let fractionComplete):\n                    \/\/ Periodic progress update. Update UI here.\n                case requestProgressInfo(let request, let progressInfo):\n                    \/\/ Periodic progress info update.\n                case .inputComplete:\n                    \/\/ Ingestion of images is complete and processing begins.\n                case .invalidSample(let id, let reason):\n                    \/\/ RealityKit deemed a sample invalid and didn't use it.\n                case .skippedSample(let id):\n                    \/\/ RealityKit was unable to use a provided sample.\n                case .automaticDownsampling:\n                    \/\/ RealityKit downsampled the input images because of\n                    \/\/ resource constraints.\n                case .processingCancelled\n                    \/\/ Processing was canceled.\n                @unknown default:\n                    \/\/ Unrecognized output.\n            }\n        }\n    } catch {\n        print(\"Output: ERROR = \\(String(describing: error))\")\n        \/\/ Handle error.\n    }\n}\n\n```\n\n## Monitoring session status\n\n- **PhotogrammetrySession.Output.inputComplete**: The data ingestion portion of the process is complete.\n- **PhotogrammetrySession.Output.processingComplete**: The session completed a request successfully.\n- **PhotogrammetrySession.Output.processingCancelled**: All pending requests are canceled.\n\n## Monitoring request status\n\n- **PhotogrammetrySession.Output.requestProgress(_:fractionComplete:)**: A progress update provided by the session.\n- **PhotogrammetrySession.Output.requestComplete(_:_:)**: The session finished handling all pending requests.\n- **PhotogrammetrySession.Output.requestError(_:_:)**: The session aborted a request due to an error.\n\n## Monitoring data ingestion\n\n- **PhotogrammetrySession.Output.invalidSample(id:reason:)**: A provided sample was invalid.\n- **PhotogrammetrySession.Output.automaticDownsampling**: The session reduced the image size because of memory constraints.\n- **PhotogrammetrySession.Output.skippedSample(id:)**: The type of element used for Object Capture updates. The [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PhotogrammetrySample] with the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PhotogrammetrySample\/id] indicated was not able to be used for reconstruction.\n\n## Describing updates\n\n- **localizedDescription**: Localized string containing any extra information about the message, such as the reason why a sample is invalid.\n\n## Iterating outputs\n\n- **PhotogrammetrySession.Outputs.Element**: The type of element used for Photogrammetry Session updates.\n- **PhotogrammetrySession.Outputs**: An asynchronous sequence of session-related updates.\n\n## Structures\n\n- **PhotogrammetrySession.Output.ProgressInfo**: ProgressInfo includes the estimated remaining time and the progress stage during reconstruction.\n\n## Enumeration Cases\n\n- **PhotogrammetrySession.Output.requestProgressInfo(_:_:)**\n- **PhotogrammetrySession.Output.stitchingIncomplete**: The session reconstruction could not fully stitch all images of the object.\n\n## Enumerations\n\n- **PhotogrammetrySession.Output.ProcessingStage**: Processing stages during reconstruction.\n\n## Monitoring the session\n\n- **activeRequests**: The session’s active request objects.\n- **isProcessing**: The session is actively processing requests.\n- **outputs**: Returns the outputs message stream which can be asynchronously iterated on.\n\n## Conforms To\n\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The data ingestion portion of the process is complete.",
+          "name" : "PhotogrammetrySession.Output.inputComplete",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/inputComplete"
+        },
+        {
+          "description" : "The session completed a request successfully.",
+          "name" : "PhotogrammetrySession.Output.processingComplete",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/processingComplete"
+        },
+        {
+          "description" : "All pending requests are canceled.",
+          "name" : "PhotogrammetrySession.Output.processingCancelled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/processingCancelled"
+        }
+      ],
+      "title" : "Monitoring session status"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A progress update provided by the session.",
+          "name" : "PhotogrammetrySession.Output.requestProgress(_:fractionComplete:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/requestProgress(_:fractionComplete:)"
+        },
+        {
+          "description" : "The session finished handling all pending requests.",
+          "name" : "PhotogrammetrySession.Output.requestComplete(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/requestComplete(_:_:)"
+        },
+        {
+          "description" : "The session aborted a request due to an error.",
+          "name" : "PhotogrammetrySession.Output.requestError(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/requestError(_:_:)"
+        }
+      ],
+      "title" : "Monitoring request status"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A provided sample was invalid.",
+          "name" : "PhotogrammetrySession.Output.invalidSample(id:reason:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/invalidSample(id:reason:)"
+        },
+        {
+          "description" : "The session reduced the image size because of memory constraints.",
+          "name" : "PhotogrammetrySession.Output.automaticDownsampling",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/automaticDownsampling"
+        },
+        {
+          "description" : "The type of element used for Object Capture updates. The [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PhotogrammetrySample] with the [doc:\/\/com.apple.RealityKit\/documentation\/RealityKit\/PhotogrammetrySample\/id] indicated was not able to be used for reconstruction.",
+          "name" : "PhotogrammetrySession.Output.skippedSample(id:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/skippedSample(id:)"
+        }
+      ],
+      "title" : "Monitoring data ingestion"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Localized string containing any extra information about the message, such as the reason why a sample is invalid.",
+          "name" : "localizedDescription",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/localizedDescription"
+        }
+      ],
+      "title" : "Describing updates"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The type of element used for Photogrammetry Session updates.",
+          "name" : "PhotogrammetrySession.Outputs.Element",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Outputs-swift.struct\/Element"
+        },
+        {
+          "description" : "An asynchronous sequence of session-related updates.",
+          "name" : "PhotogrammetrySession.Outputs",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Outputs-swift.struct"
+        }
+      ],
+      "title" : "Iterating outputs"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "ProgressInfo includes the estimated remaining time and the progress stage during reconstruction.",
+          "name" : "PhotogrammetrySession.Output.ProgressInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/ProgressInfo"
+        }
+      ],
+      "title" : "Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "PhotogrammetrySession.Output.requestProgressInfo(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/requestProgressInfo(_:_:)"
+        },
+        {
+          "description" : "The session reconstruction could not fully stitch all images of the object.",
+          "name" : "PhotogrammetrySession.Output.stitchingIncomplete",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/stitchingIncomplete"
+        }
+      ],
+      "title" : "Enumeration Cases"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Processing stages during reconstruction.",
+          "name" : "PhotogrammetrySession.Output.ProcessingStage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output\/ProcessingStage"
+        }
+      ],
+      "title" : "Enumerations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The session’s active request objects.",
+          "name" : "activeRequests",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/activeRequests"
+        },
+        {
+          "description" : "The session is actively processing requests.",
+          "name" : "isProcessing",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/isProcessing"
+        },
+        {
+          "description" : "Returns the outputs message stream which can be asynchronously iterated on.",
+          "name" : "outputs",
+          "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/outputs-swift.property"
+        }
+      ],
+      "title" : "Monitoring the session"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "PhotogrammetrySession.Output",
+  "url" : "https:\/\/developer.apple.com\/documentation\/RealityKit\/PhotogrammetrySession\/Output"
+}

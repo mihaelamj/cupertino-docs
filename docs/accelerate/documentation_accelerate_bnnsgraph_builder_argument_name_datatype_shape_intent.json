@@ -1,0 +1,34 @@
+{
+  "abstract" : "Registers and returns an input or in-out tensor argument to the graph.",
+  "codeExamples" : [
+    {
+      "code" : "       let context = try? BNNSGraph.makeContext ({\n           builder in\n\n           let x = builder.argument(name: \"x\",\n                                    dataType: Float.self,\n                                    shape: [-1])\n           let y = builder.argument(name: \"y\",\n                                    dataType: Float.self,\n                                    shape: [-1])\n\n           let z = x + y\n\n           return [z]\n       })\n\n       var args = context.argumentNames().map {\n           name in\n\n           return context.tensor(argument: name,\n                                 fillKnownDynamicShapes: false)!\n       }\n\n       defer {\n           args.forEach {\n               $0.deallocate()\n           }\n       }\n\n       let n = 8\n\n       context.setBatchSize(n)\n\n       args[context.argumentPosition(argument: \"x\")]\n           .allocate(initializingFrom: [1, 2, 3, 4, 5, 6, 7, 8] as [Float])\n\n       args[context.argumentPosition(argument: \"y\")]\n           .allocate(initializingFrom: [10, 20, 30, 40, 50, 60, 70, 80] as [Float])\n\n       \/\/ Output argument\n       args[0].allocate(as: Float.self, count: n)\n\n       try context.executeFunction(arguments: &args)\n       ```\nOn return, the output tensor contains the values `[11, 22, 33, 44, 55, 66, 77, 88]`."
+    }
+  ],
+  "contentHash" : "3da27d7eb1e2823020a8f6c34963536d694a8b19b9d53041ac572548047acc27",
+  "crawledAt" : "2025-11-30T22:00:21Z",
+  "declaration" : {
+    "code" : "func argument<T>(name: String? = nil, dataType: T.Type, shape: [Int], intent: BNNSGraph.Builder.Intent = .input) -> BNNSGraph.Builder.Tensor<T> where T : BNNSScalar",
+    "language" : "swift"
+  },
+  "id" : "3E9B4C41-95B8-4FBB-B8F5-75CD051F14C8",
+  "kind" : "method",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nThe following code shows how to specify inputs with flexible shapes. The code calls `setBatchSize` before executing the context to specify that the two inputs and the output tensors are 8-element vectors:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraph\/Builder\/argument(name:dataType:shape:intent:)\ncrawled: 2025-11-30T22:00:21Z\n---\n\n# argument(name:dataType:shape:intent:)\n\n**Instance Method**\n\nRegisters and returns an input or in-out tensor argument to the graph.\n\n## Declaration\n\n```swift\nfunc argument<T>(name: String? = nil, dataType: T.Type, shape: [Int], intent: BNNSGraph.Builder.Intent = .input) -> BNNSGraph.Builder.Tensor<T> where T : BNNSScalar\n```\n\n## Parameters\n\n- **name**: The name of the argument.\n- **dataType**: The argument’s data type.\n- **shape**: An array of integers or closed ranges that define the sizes of each dimension of the argument. Pass a negative value to specify a flexible dimension.\n- **intent**: A constant that specifies whether the argument is input, output, or in-out.\n\n## Discussion\n\nThe following code shows how to specify inputs with flexible shapes. The code calls `setBatchSize` before executing the context to specify that the two inputs and the output tensors are 8-element vectors:\n\n```\n       let context = try? BNNSGraph.makeContext ({\n           builder in\n\n           let x = builder.argument(name: \"x\",\n                                    dataType: Float.self,\n                                    shape: [-1])\n           let y = builder.argument(name: \"y\",\n                                    dataType: Float.self,\n                                    shape: [-1])\n\n           let z = x + y\n\n           return [z]\n       })\n\n       var args = context.argumentNames().map {\n           name in\n\n           return context.tensor(argument: name,\n                                 fillKnownDynamicShapes: false)!\n       }\n\n       defer {\n           args.forEach {\n               $0.deallocate()\n           }\n       }\n\n       let n = 8\n\n       context.setBatchSize(n)\n\n       args[context.argumentPosition(argument: \"x\")]\n           .allocate(initializingFrom: [1, 2, 3, 4, 5, 6, 7, 8] as [Float])\n\n       args[context.argumentPosition(argument: \"y\")]\n           .allocate(initializingFrom: [10, 20, 30, 40, 50, 60, 70, 80] as [Float])\n\n       \/\/ Output argument\n       args[0].allocate(as: Float.self, count: n)\n\n       try context.executeFunction(arguments: &args)\n       ```\nOn return, the output tensor contains the values `[11, 22, 33, 44, 55, 66, 77, 88]`.\n```\n\n",
+  "sections" : [
+
+  ],
+  "source" : "appleJSON",
+  "title" : "argument(name:dataType:shape:intent:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGraph\/Builder\/argument(name:dataType:shape:intent:)"
+}
