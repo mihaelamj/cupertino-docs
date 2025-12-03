@@ -1,0 +1,111 @@
+{
+  "abstract" : "Applies a single optimization step to one or more parameters.",
+  "codeExamples" : [
+    {
+      "code" : "var weightsDescriptor: BNNSNDArrayDescriptor = ...\nvar deltaDescriptor: BNNSNDArrayDescriptor = ...\nvar accumulatorOneDescriptor: BNNSNDArrayDescriptor = ...\nvar accumulatorTwoDescriptor: BNNSNDArrayDescriptor = ...\nvar adamFields: BNNSOptimizerAdamFields = ...\n\nwithUnsafeMutablePointer(to: &weightsDescriptor) { weightsDescriptorPtr in\n    withUnsafePointer(to: &deltaDescriptor) { deltaDescriptorPtr in\n        withUnsafeMutablePointer(to: &accumulatorOneDescriptor) { accumulatorOneDescriptorPtr in\n            withUnsafeMutablePointer(to: &accumulatorTwoDescriptor) { accumulatorTwoDescriptorPtr in\n                \n                var paramaters = [ weightsDescriptorPtr ]\n                var gradients = [ deltaDescriptorPtr ]\n                var accumulators = [ Optional(accumulatorOneDescriptorPtr),\n                                     Optional(accumulatorTwoDescriptorPtr) ]\n                \n                let error = withUnsafePointer(to: &adamFields) { adamFieldsPointer in\n                    BNNSOptimizerStep(BNNSOptimizerFunctionAdam,\n                                      adamFieldsPointer, 1,\n                                      &paramaters,\n                                      &gradients,\n                                      &accumulators,\n                                      nil)\n                }\n                \n                if error != 0 {\n                    fatalError(\"BNNSOptimizerStep failed.\")\n                }\n            }\n        }\n    }\n}\n",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "d97b01889e8250a5a40979df469718fd2a8c741e5dfb98f852a206e211e0fc0f",
+  "crawledAt" : "2025-12-03T20:38:47Z",
+  "declaration" : {
+    "code" : "func BNNSOptimizerStep(_ function: BNNSOptimizerFunction, _ OptimizerAlgFields: UnsafeRawPointer, _ number_of_parameters: Int, _ parameters: UnsafeMutablePointer<UnsafeMutablePointer<BNNSNDArrayDescriptor>>, _ gradients: UnsafeMutablePointer<UnsafePointer<BNNSNDArrayDescriptor>>, _ accumulators: UnsafeMutablePointer<UnsafeMutablePointer<BNNSNDArrayDescriptor>?>?, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> Int32",
+    "language" : "swift"
+  },
+  "id" : "831D77B2-5A74-4791-9C81-B7DBF20AB338",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSOptimizerStep(_:_:_:_:_:_:_:)] to update a set of parameters using a supplied optimization algorithm.\n\nFor example, the following shows the code required to update the weights data described by `weightsDescriptor` using an Adam optimizer.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerStep(_:_:_:_:_:_:_:)\ncrawled: 2025-12-03T20:38:47Z\n---\n\n# BNNSOptimizerStep(_:_:_:_:_:_:_:)\n\n**Function**\n\nApplies a single optimization step to one or more parameters.\n\n## Declaration\n\n```swift\nfunc BNNSOptimizerStep(_ function: BNNSOptimizerFunction, _ OptimizerAlgFields: UnsafeRawPointer, _ number_of_parameters: Int, _ parameters: UnsafeMutablePointer<UnsafeMutablePointer<BNNSNDArrayDescriptor>>, _ gradients: UnsafeMutablePointer<UnsafePointer<BNNSNDArrayDescriptor>>, _ accumulators: UnsafeMutablePointer<UnsafeMutablePointer<BNNSNDArrayDescriptor>?>?, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> Int32\n```\n\n## Parameters\n\n- **function**: The optimization algorithm.\n- **OptimizerAlgFields**: A pointer to parameters for optimization function.\n- **number_of_parameters**: The number of parameters the step updates.\n- **parameters**: An array of pointers to parameter descriptors.\n- **gradients**: An array of pointers to gradient descriptors.\n- **accumulators**: An array of pointers to accumulator descriptors.\n- **filter_params**: The filter runtime parameters.\n\n## Discussion\n\nUse [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSOptimizerStep(_:_:_:_:_:_:_:)] to update a set of parameters using a supplied optimization algorithm.\n\n\n\nFor example, the following shows the code required to update the weights data described by `weightsDescriptor` using an Adam optimizer.\n\n```swift\nvar weightsDescriptor: BNNSNDArrayDescriptor = ...\nvar deltaDescriptor: BNNSNDArrayDescriptor = ...\nvar accumulatorOneDescriptor: BNNSNDArrayDescriptor = ...\nvar accumulatorTwoDescriptor: BNNSNDArrayDescriptor = ...\nvar adamFields: BNNSOptimizerAdamFields = ...\n\nwithUnsafeMutablePointer(to: &weightsDescriptor) { weightsDescriptorPtr in\n    withUnsafePointer(to: &deltaDescriptor) { deltaDescriptorPtr in\n        withUnsafeMutablePointer(to: &accumulatorOneDescriptor) { accumulatorOneDescriptorPtr in\n            withUnsafeMutablePointer(to: &accumulatorTwoDescriptor) { accumulatorTwoDescriptorPtr in\n                \n                var paramaters = [ weightsDescriptorPtr ]\n                var gradients = [ deltaDescriptorPtr ]\n                var accumulators = [ Optional(accumulatorOneDescriptorPtr),\n                                     Optional(accumulatorTwoDescriptorPtr) ]\n                \n                let error = withUnsafePointer(to: &adamFields) { adamFieldsPointer in\n                    BNNSOptimizerStep(BNNSOptimizerFunctionAdam,\n                                      adamFieldsPointer, 1,\n                                      &paramaters,\n                                      &gradients,\n                                      &accumulators,\n                                      nil)\n                }\n                \n                if error != 0 {\n                    fatalError(\"BNNSOptimizerStep failed.\")\n                }\n            }\n        }\n    }\n}\n\n```\n\n## Optimizers\n\n- **BNNS.AdamOptimizer**: An optimizer that uses the Adam optimization algorithm.\n- **BNNS.AdamWOptimizer**: An optimizer that uses the AdamW optimization algorithm.\n- **BNNS.RMSPropOptimizer**: An optimizer that uses the root mean square propagation (RMSProp) optimization method.\n- **BNNS.SGDMomentumOptimizer**: An optimizer that uses the stochastic gradient descent (SGD) with the momentum optimization method.\n- **BNNSOptimizer**\n- **BNNSOptimizerRegularizationFunction**: A structure that contains optimizer regularization functions.\n- **BNNSOptimizerAdamFields**: A structure that contains the fields of an Adam optimizer.\n- **BNNSOptimizerAdamWithClippingFields**: A structure that contains the fields of an Adam or AdamW optimizer that optionally clips the gradient by value or by norm.\n- **BNNSOptimizerRMSPropFields**: A structure that contains the fields of a root mean square propagation (RMSProp) optimizer.\n- **BNNSOptimizerRMSPropWithClippingFields**: A structure that contains the fields of a root mean square propagation (RMSProp) optimizer that optionally clips the gradient by value or by norm.\n- **BNNSOptimizerSGDMomentumFields**: A structure that contains the fields of a stochastic gradient descent (SGD) with momentum optimizer.\n- **BNNSOptimizerSGDMomentumWithClippingFields**: A structure that contains the fields of a stochastic gradient descent (SGD) with momentum optimizer that optionally clips the gradient by value or by norm.\n- **BNNSOptimizerSGDMomentumVariant**: Constants that define SGD momentum variants.\n- **BNNSOptimizerFunction**: A structure that contains optimizer functions.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An optimizer that uses the Adam optimization algorithm.",
+          "name" : "BNNS.AdamOptimizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/AdamOptimizer"
+        },
+        {
+          "description" : "An optimizer that uses the AdamW optimization algorithm.",
+          "name" : "BNNS.AdamWOptimizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/AdamWOptimizer"
+        },
+        {
+          "description" : "An optimizer that uses the root mean square propagation (RMSProp) optimization method.",
+          "name" : "BNNS.RMSPropOptimizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/RMSPropOptimizer"
+        },
+        {
+          "description" : "An optimizer that uses the stochastic gradient descent (SGD) with the momentum optimization method.",
+          "name" : "BNNS.SGDMomentumOptimizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/SGDMomentumOptimizer"
+        },
+        {
+          "description" : "",
+          "name" : "BNNSOptimizer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizer"
+        },
+        {
+          "description" : "A structure that contains optimizer regularization functions.",
+          "name" : "BNNSOptimizerRegularizationFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerRegularizationFunction"
+        },
+        {
+          "description" : "A structure that contains the fields of an Adam optimizer.",
+          "name" : "BNNSOptimizerAdamFields",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerAdamFields"
+        },
+        {
+          "description" : "A structure that contains the fields of an Adam or AdamW optimizer that optionally clips the gradient by value or by norm.",
+          "name" : "BNNSOptimizerAdamWithClippingFields",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerAdamWithClippingFields"
+        },
+        {
+          "description" : "A structure that contains the fields of a root mean square propagation (RMSProp) optimizer.",
+          "name" : "BNNSOptimizerRMSPropFields",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerRMSPropFields"
+        },
+        {
+          "description" : "A structure that contains the fields of a root mean square propagation (RMSProp) optimizer that optionally clips the gradient by value or by norm.",
+          "name" : "BNNSOptimizerRMSPropWithClippingFields",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerRMSPropWithClippingFields"
+        },
+        {
+          "description" : "A structure that contains the fields of a stochastic gradient descent (SGD) with momentum optimizer.",
+          "name" : "BNNSOptimizerSGDMomentumFields",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerSGDMomentumFields"
+        },
+        {
+          "description" : "A structure that contains the fields of a stochastic gradient descent (SGD) with momentum optimizer that optionally clips the gradient by value or by norm.",
+          "name" : "BNNSOptimizerSGDMomentumWithClippingFields",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerSGDMomentumWithClippingFields"
+        },
+        {
+          "description" : "Constants that define SGD momentum variants.",
+          "name" : "BNNSOptimizerSGDMomentumVariant",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerSGDMomentumVariant"
+        },
+        {
+          "description" : "A structure that contains optimizer functions.",
+          "name" : "BNNSOptimizerFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerFunction"
+        }
+      ],
+      "title" : "Optimizers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSOptimizerStep(_:_:_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSOptimizerStep(_:_:_:_:_:_:_:)"
+}

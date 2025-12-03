@@ -1,0 +1,60 @@
+{
+  "abstract" : "Calculates the double-precision sliding window sum of a vector.",
+  "codeExamples" : [
+    {
+      "code" : "let input: [Float] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\nvar output = [Float](repeating: .nan,\n                     count: input.count)\n\nlet windowLength = vDSP_Length(3)\nlet outputCount = vDSP_Length(input.count) - windowLength + 1\nlet stride = vDSP_Stride(1)\n\nvDSP_vswsum(input, stride,\n            &output, stride,\n            outputCount,\n            windowLength)\n\n\/\/ Prints \"[6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0, 27.0]\".\nprint(output[0 ..< Int(outputCount)])",
+      "language" : "swift"
+    },
+    {
+      "code" : "let input: [Float] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,\n                      11, 12, 13, 14, 15, 16, 17, 18, 19, 20,\n                      21, 22, 23, 24, 25, 26, 27, 28, 29, 30]\nlet inputPageNumber = 1\n\nlet windowLength = vDSP_Length(3)\nlet outputCount = vDSP_Length(8)\n\nlet count = Int(outputCount + windowLength - 1)\n\nvar output = [Float](repeating: .nan,\n                     count: count)\n\nlet stride = vDSP_Stride(1)\n\ninput.withUnsafeBufferPointer { srcPtr in\n    vDSP_vswsum((srcPtr.baseAddress!.advanced(by: count * inputPageNumber)),\n                stride,\n                &output, stride,\n                outputCount,\n                windowLength)\n}\n\n\/\/ Prints \"[36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0]\"\nprint(output[0 ..< Int(outputCount)])",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "d5fd8bb86e260899204042afa148206b5364ecfe17d2bf08df67eb5800531273",
+  "crawledAt" : "2025-12-02T22:26:16Z",
+  "declaration" : {
+    "code" : "static func slidingWindowSum<U, V>(_ vector: U, usingWindowLength windowLength: Int, result: inout V) where U : AccelerateBuffer, V : AccelerateMutableBuffer, U.Element == Double, V.Element == Double",
+    "language" : "swift"
+  },
+  "id" : "C7125D88-5670-47D3-8201-69E6F910F17C",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to populate an output vector with the consecutive sums of values in a sliding window. The number of elements in the input vector must be one subtracted from the sum of the window length and the number of window positions.\n\nThe number of elements in the output vector must be the same as the number of elements in the input vector. This is because although the function only writes the number of window positions to the output vector, it may require additional elements for intermediate computation.\n\nThe following code shows how to compute the sums of values in a three-element sliding window moved through a ten-element array. The code processes every element in the input array, and the output result contains eight values.\n\nThe figure below illustrates the process the function uses to calculate the result:\n\n\n\nAlternatively, the following code shows how to process input elements to generate a specific number of output elements. Use this technique, for example, to process streaming input data. The code below takes `count` elements from the input collection and returns the sums at eight window positions:\n\nThe figure below illustrates the process the function uses to calculate the result:\n\n",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP\/slidingWindowSum(_:usingWindowLength:result:)-i972\ncrawled: 2025-12-02T22:26:16Z\n---\n\n# slidingWindowSum(_:usingWindowLength:result:)\n\n**Type Method**\n\nCalculates the double-precision sliding window sum of a vector.\n\n## Declaration\n\n```swift\nstatic func slidingWindowSum<U, V>(_ vector: U, usingWindowLength windowLength: Int, result: inout V) where U : AccelerateBuffer, V : AccelerateMutableBuffer, U.Element == Double, V.Element == Double\n```\n\n## Parameters\n\n- **vector**: The input vector.\n- **windowLength**: The length of the window, which must be greater than zero.\n- **result**: The output vector.\n\n## Discussion\n\nUse this function to populate an output vector with the consecutive sums of values in a sliding window. The number of elements in the input vector must be one subtracted from the sum of the window length and the number of window positions.\n\nThe number of elements in the output vector must be the same as the number of elements in the input vector. This is because although the function only writes the number of window positions to the output vector, it may require additional elements for intermediate computation.\n\nThe following code shows how to compute the sums of values in a three-element sliding window moved through a ten-element array. The code processes every element in the input array, and the output result contains eight values.\n\n```swift\nlet input: [Float] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\nvar output = [Float](repeating: .nan,\n                     count: input.count)\n\nlet windowLength = vDSP_Length(3)\nlet outputCount = vDSP_Length(input.count) - windowLength + 1\nlet stride = vDSP_Stride(1)\n\nvDSP_vswsum(input, stride,\n            &output, stride,\n            outputCount,\n            windowLength)\n\n\/\/ Prints \"[6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0, 27.0]\".\nprint(output[0 ..< Int(outputCount)])\n```\n\nThe figure below illustrates the process the function uses to calculate the result:\n\n\n\nAlternatively, the following code shows how to process input elements to generate a specific number of output elements. Use this technique, for example, to process streaming input data. The code below takes `count` elements from the input collection and returns the sums at eight window positions:\n\n```swift\nlet input: [Float] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,\n                      11, 12, 13, 14, 15, 16, 17, 18, 19, 20,\n                      21, 22, 23, 24, 25, 26, 27, 28, 29, 30]\nlet inputPageNumber = 1\n\nlet windowLength = vDSP_Length(3)\nlet outputCount = vDSP_Length(8)\n\nlet count = Int(outputCount + windowLength - 1)\n\nvar output = [Float](repeating: .nan,\n                     count: count)\n\nlet stride = vDSP_Stride(1)\n\ninput.withUnsafeBufferPointer { srcPtr in\n    vDSP_vswsum((srcPtr.baseAddress!.advanced(by: count * inputPageNumber)),\n                stride,\n                &output, stride,\n                outputCount,\n                windowLength)\n}\n\n\/\/ Prints \"[36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0]\"\nprint(output[0 ..< Int(outputCount)])\n```\n\nThe figure below illustrates the process the function uses to calculate the result:\n\n\n\n## Sliding-window summation functions\n\n- **slidingWindowSum(_:usingWindowLength:)**: Returns the double-precision sliding window sum of a vector.\n- **slidingWindowSum(_:usingWindowLength:)**: Returns the single-precision sliding window sum of a vector.\n- **slidingWindowSum(_:usingWindowLength:result:)**: Calculates the single-precision sliding window sum of a vector.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the double-precision sliding window sum of a vector.",
+          "name" : "slidingWindowSum(_:usingWindowLength:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP\/slidingWindowSum(_:usingWindowLength:)-2t1dc"
+        },
+        {
+          "description" : "Returns the single-precision sliding window sum of a vector.",
+          "name" : "slidingWindowSum(_:usingWindowLength:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP\/slidingWindowSum(_:usingWindowLength:)-reb8"
+        },
+        {
+          "description" : "Calculates the single-precision sliding window sum of a vector.",
+          "name" : "slidingWindowSum(_:usingWindowLength:result:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP\/slidingWindowSum(_:usingWindowLength:result:)-5tg0h"
+        }
+      ],
+      "title" : "Sliding-window summation functions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "slidingWindowSum(_:usingWindowLength:result:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vDSP\/slidingWindowSum(_:usingWindowLength:result:)-i972"
+}

@@ -1,0 +1,95 @@
+{
+  "abstract" : "Returns a new loss layer.",
+  "codeExamples" : [
+    {
+      "code" : "let input: [Float]  = [9, 1, 6, 3, 4, 5, 6, 7, 8, 9]\nlet labels: [Float] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]",
+      "language" : "swift"
+    },
+    {
+      "code" : "let n = input.count\n\nvar inDelta = [Float](repeating: .nan, count: n)\nvar output: [Float] = [ .nan ] \/\/ expected loss = (9 - 0)² + (6 - 2)² = 97\n\nlet flags = BNNSNDArrayFlags(0)\n\nlet inputDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                            layout: BNNSDataLayoutVector,\n                                            size: (n, 0, 0, 0, 0, 0, 0, 0),\n                                            stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                            data: nil,\n                                            data_type: .float,\n                                            table_data: nil,\n                                            table_data_type: .float,\n                                            data_scale: 1,\n                                            data_bias: 0)\n\nlet outputDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                             layout: BNNSDataLayoutVector,\n                                             size: (1, 0, 0, 0, 0, 0, 0, 0),\n                                             stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                             data: nil,\n                                             data_type: .float,\n                                             table_data: nil,\n                                             table_data_type: .float,\n                                             data_scale: 1,\n                                             data_bias: 0)\n\nvar lossParams = BNNSLayerParametersLossBase(function: BNNSLossFunctionMeanSquareError,\n                                             i_desc: inputDescriptor,\n                                             o_desc: outputDescriptor,\n                                             reduction: BNNSLossReductionSum)\n\nlet lossLayer = BNNSFilterCreateLayerLoss(&lossParams, nil)\n\ndefer {\n    BNNSFilterDestroy(lossLayer)\n}\n\ninDelta.withUnsafeMutableBufferPointer { inDeltaPtr in\n    \n    var inDeltaDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                                  layout: BNNSDataLayoutVector,\n                                                  size: (n, 0, 0, 0, 0, 0, 0, 0),\n                                                  stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                  data: inDeltaPtr.baseAddress,\n                                                  data_type: .float,\n                                                  table_data: nil,\n                                                  table_data_type: .float,\n                                                  data_scale: 1,\n                                                  data_bias: 0)\n\n    BNNSLossFilterApplyBatch(lossLayer, 1,\n                             input, n,\n                             labels, n,\n                             nil, 0,\n                             &output,\n                             &inDeltaDescriptor, n)\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "1a648c7060fac474dea8fca1e9d67fd35d9ff2b4c4f3c3a7ab61a96a644fe598",
+  "crawledAt" : "2025-12-03T20:37:26Z",
+  "declaration" : {
+    "code" : "func BNNSFilterCreateLayerLoss(_ layer_params: UnsafeRawPointer, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> BNNSFilter?",
+    "language" : "swift"
+  },
+  "id" : "03DF4AF9-8FED-41E4-9C19-90A7C48E3A17",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nYou use a loss layer to compute forward and backward loss.\n\nForward loss can optionally also compute an optional loss gradient. For example, given the following predicted values in `input`, and ground truth values in `labels`:\n\nThe following code computes the loss using [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLossFunctionMeanSquareError], reduced to a single value using [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLossReductionSum]:\n\nOn return, `output` contains `(9 - 0)² + (6 - 2)² = 97`, and `inDelta` contains `[18.0, 0.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]`.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateLayerLoss(_:_:)\ncrawled: 2025-12-03T20:37:26Z\n---\n\n# BNNSFilterCreateLayerLoss(_:_:)\n\n**Function**\n\nReturns a new loss layer.\n\n## Declaration\n\n```swift\nfunc BNNSFilterCreateLayerLoss(_ layer_params: UnsafeRawPointer, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> BNNSFilter?\n```\n\n## Parameters\n\n- **layer_params**: Layer parameters.\n- **filter_params**: The filter runtime parameters.\n\n## Discussion\n\nYou use a loss layer to compute forward and backward loss.\n\nForward loss can optionally also compute an optional loss gradient. For example, given the following predicted values in `input`, and ground truth values in `labels`:\n\n```swift\nlet input: [Float]  = [9, 1, 6, 3, 4, 5, 6, 7, 8, 9]\nlet labels: [Float] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]\n```\n\nThe following code computes the loss using [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLossFunctionMeanSquareError], reduced to a single value using [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLossReductionSum]:\n\n```swift\nlet n = input.count\n\nvar inDelta = [Float](repeating: .nan, count: n)\nvar output: [Float] = [ .nan ] \/\/ expected loss = (9 - 0)² + (6 - 2)² = 97\n\nlet flags = BNNSNDArrayFlags(0)\n\nlet inputDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                            layout: BNNSDataLayoutVector,\n                                            size: (n, 0, 0, 0, 0, 0, 0, 0),\n                                            stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                            data: nil,\n                                            data_type: .float,\n                                            table_data: nil,\n                                            table_data_type: .float,\n                                            data_scale: 1,\n                                            data_bias: 0)\n\nlet outputDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                             layout: BNNSDataLayoutVector,\n                                             size: (1, 0, 0, 0, 0, 0, 0, 0),\n                                             stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                             data: nil,\n                                             data_type: .float,\n                                             table_data: nil,\n                                             table_data_type: .float,\n                                             data_scale: 1,\n                                             data_bias: 0)\n\nvar lossParams = BNNSLayerParametersLossBase(function: BNNSLossFunctionMeanSquareError,\n                                             i_desc: inputDescriptor,\n                                             o_desc: outputDescriptor,\n                                             reduction: BNNSLossReductionSum)\n\nlet lossLayer = BNNSFilterCreateLayerLoss(&lossParams, nil)\n\ndefer {\n    BNNSFilterDestroy(lossLayer)\n}\n\ninDelta.withUnsafeMutableBufferPointer { inDeltaPtr in\n    \n    var inDeltaDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                                  layout: BNNSDataLayoutVector,\n                                                  size: (n, 0, 0, 0, 0, 0, 0, 0),\n                                                  stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                  data: inDeltaPtr.baseAddress,\n                                                  data_type: .float,\n                                                  table_data: nil,\n                                                  table_data_type: .float,\n                                                  data_scale: 1,\n                                                  data_bias: 0)\n\n    BNNSLossFilterApplyBatch(lossLayer, 1,\n                             input, n,\n                             labels, n,\n                             nil, 0,\n                             &output,\n                             &inDeltaDescriptor, n)\n}\n```\n\nOn return, `output` contains `(9 - 0)² + (6 - 2)² = 97`, and `inDelta` contains `[18.0, 0.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]`.\n\n## Loss layers\n\n- **BNNS.LossLayer**: A layer object that wraps a loss filter and manages its deinitialization.\n- **BNNSLossFunction**: Constants that describe loss functions.\n- **BNNSLossReductionFunction**: Constants that describe reduction functions used by a loss layer.\n- **BNNSLayerParametersLossBase**: A structure that contains the parameters of a loss layer.\n- **BNNSLayerParametersLossHuber**: A structure that contains the parameters of a Huber loss layer.\n- **BNNSLayerParametersLossSigmoidCrossEntropy**: A structure that contains the parameters of a sigmoid cross entropy loss layer.\n- **BNNSLayerParametersLossSoftmaxCrossEntropy**: A structure that contains the parameters of a softmax cross entropy loss layer.\n- **BNNSLayerParametersLossYolo**: A structure that contains the parameters of a You Only Look Once (YOLO) loss layer.\n- **BNNSLossFilterApplyBatch(_:_:_:_:_:_:_:_:_:_:_:)**: Applies a loss filter to a set of input objects, writing the result to a set of output objects.\n- **BNNSLossFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:_:)**: Applies a loss filter backward to generate gradients.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A layer object that wraps a loss filter and manages its deinitialization.",
+          "name" : "BNNS.LossLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/LossLayer"
+        },
+        {
+          "description" : "Constants that describe loss functions.",
+          "name" : "BNNSLossFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLossFunction"
+        },
+        {
+          "description" : "Constants that describe reduction functions used by a loss layer.",
+          "name" : "BNNSLossReductionFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLossReductionFunction"
+        },
+        {
+          "description" : "A structure that contains the parameters of a loss layer.",
+          "name" : "BNNSLayerParametersLossBase",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerParametersLossBase"
+        },
+        {
+          "description" : "A structure that contains the parameters of a Huber loss layer.",
+          "name" : "BNNSLayerParametersLossHuber",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerParametersLossHuber"
+        },
+        {
+          "description" : "A structure that contains the parameters of a sigmoid cross entropy loss layer.",
+          "name" : "BNNSLayerParametersLossSigmoidCrossEntropy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerParametersLossSigmoidCrossEntropy"
+        },
+        {
+          "description" : "A structure that contains the parameters of a softmax cross entropy loss layer.",
+          "name" : "BNNSLayerParametersLossSoftmaxCrossEntropy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerParametersLossSoftmaxCrossEntropy"
+        },
+        {
+          "description" : "A structure that contains the parameters of a You Only Look Once (YOLO) loss layer.",
+          "name" : "BNNSLayerParametersLossYolo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerParametersLossYolo"
+        },
+        {
+          "description" : "Applies a loss filter to a set of input objects, writing the result to a set of output objects.",
+          "name" : "BNNSLossFilterApplyBatch(_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLossFilterApplyBatch(_:_:_:_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a loss filter backward to generate gradients.",
+          "name" : "BNNSLossFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLossFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Loss layers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSFilterCreateLayerLoss(_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateLayerLoss(_:_:)"
+}

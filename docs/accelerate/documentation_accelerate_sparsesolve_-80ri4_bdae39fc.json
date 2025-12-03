@@ -1,0 +1,66 @@
+{
+  "abstract" : "Solves the equation *AX = B* for matrices of single-precision values, treating *A* as an operator and using the specified iterative method.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/\/ Create the coefficient matrix _A_.let rowIndices: [Int32] =    [ 0,  1, 1,  2]\nlet columnIndices: [Int32] = [ 2,  0, 2,  1]\nlet aValues: [Float] =       [10, 20, 5, 50]\n\nlet A = SparseConvertFromCoordinate(3, 3,\n                                    4, 1,\n                                    SparseAttributes_t(),\n                                    rowIndices, columnIndices,\n                                    aValues)\nlet preconditioner = SparseCreatePreconditioner(SparsePreconditionerDiagScaling,\n                                                A)\n\ndefer {\n    SparseCleanup(A)\n    SparseCleanup(preconditioner)\n}\n\n\/\/\/ Create the right-hand-side matrix, _B_.\nvar bValues: [Float] = [30, 35, 100,\n                        300, 350, 1000]\n\nvar xValues: [Float] = [0, 0, 0,\n                        0, 0, 0]\n\n\/\/\/ Create the apply operator block.\nfunc applyOperator(accumulate: Bool,\n                   trans: CBLAS_TRANSPOSE,\n                   X: DenseMatrix_Float,\n                   Y: DenseMatrix_Float) {\n    switch(accumulate, trans == CblasTrans) {\n        case (false, false):\n            SparseMultiply(A, X, Y)\n        case (false, true):\n            SparseMultiply(SparseGetTranspose(A), X, Y)\n        case (true, false):\n            SparseMultiplyAdd(A, X, Y)\n        case (true, true):\n            SparseMultiplyAdd(SparseGetTranspose(A), X, Y)\n    }\n}\n\nxValues.withUnsafeMutableBufferPointer { xPtr in\n    bValues.withUnsafeMutableBufferPointer { bPtr in\n        let B = DenseMatrix_Float(rowCount: 3,\n                                  columnCount: 2,\n                                  columnStride: 3,\n                                  attributes: SparseAttributes_t(),\n                                  data: bPtr.baseAddress!)\n        \n        let X = DenseMatrix_Float(rowCount: 3,\n                                  columnCount: 2,\n                                  columnStride: 3,\n                                  attributes: SparseAttributes_t(),\n                                  data: xPtr.baseAddress!)\n        \n        SparseSolve(SparseLSMR(),\n                    applyOperator,\n                    B, X,\n                    preconditioner)\n    }\n}\n",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "41afd1a77758f2403bcd117f21918a9e98942efb486f67c941dbbb2f8e175d29",
+  "crawledAt" : "2025-12-02T23:08:32Z",
+  "declaration" : {
+    "code" : "func SparseSolve(_ method: SparseIterativeMethod, _ ApplyOperator: @escaping (Bool, CBLAS_TRANSPOSE, DenseMatrix_Float, DenseMatrix_Float) -> Void, _ B: DenseMatrix_Float, _ X: DenseMatrix_Float, _ Preconditioner: SparseOpaquePreconditioner_Float) -> SparseIterativeStatus_t",
+    "language" : "swift"
+  },
+  "id" : "F45F51D5-6B15-4C08-B91A-09E5DD8E330E",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Return Value\n\nA [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseIterativeStatus_t] enumeration that represents the status of the iterative solve.\n\n## Discussion\n\nUse this function to solve a system of linear equations using a factored coefficient matrix. Preconditioning the coefficient matrix can reduce the number of iterations the function requires to converge the system. In cases where the matrix *A* isn’t explicitly available or you need control over the multiplication, this function allows you to provide an apply block.\n\nThe following figure shows two systems of equations where the coefficient matrix is sparse:\n\n\n\nThe following code solves this system by applying a diagonal scaling preconditioner and using the least squares minimum residual method:\n\nOn return, x`Values` contains the values `[1.0, 2.0, 3.0, 10.0, 20.0, 30.0]`.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:_:_:_:)-80ri4\ncrawled: 2025-12-02T23:08:32Z\n---\n\n# SparseSolve(_:_:_:_:_:)\n\n**Function**\n\nSolves the equation *AX = B* for matrices of single-precision values, treating *A* as an operator and using the specified iterative method.\n\n## Declaration\n\n```swift\nfunc SparseSolve(_ method: SparseIterativeMethod, _ ApplyOperator: @escaping (Bool, CBLAS_TRANSPOSE, DenseMatrix_Float, DenseMatrix_Float) -> Void, _ B: DenseMatrix_Float, _ X: DenseMatrix_Float, _ Preconditioner: SparseOpaquePreconditioner_Float) -> SparseIterativeStatus_t\n```\n\n## Parameters\n\n- **method**: The iterative method.\n- **ApplyOperator**: The apply operator block to run. The block takes the following parameters:\n\n\n- **B**: The matrix *B*.\n- **X**: The matrix *X*.\n- **Preconditioner**: The preconditioner to apply.\n\n## Return Value\n\nA [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseIterativeStatus_t] enumeration that represents the status of the iterative solve.\n\n## Discussion\n\nUse this function to solve a system of linear equations using a factored coefficient matrix. Preconditioning the coefficient matrix can reduce the number of iterations the function requires to converge the system. In cases where the matrix *A* isn’t explicitly available or you need control over the multiplication, this function allows you to provide an apply block.\n\nThe following figure shows two systems of equations where the coefficient matrix is sparse:\n\n\n\nThe following code solves this system by applying a diagonal scaling preconditioner and using the least squares minimum residual method:\n\n```swift\n\/\/\/ Create the coefficient matrix _A_.let rowIndices: [Int32] =    [ 0,  1, 1,  2]\nlet columnIndices: [Int32] = [ 2,  0, 2,  1]\nlet aValues: [Float] =       [10, 20, 5, 50]\n\nlet A = SparseConvertFromCoordinate(3, 3,\n                                    4, 1,\n                                    SparseAttributes_t(),\n                                    rowIndices, columnIndices,\n                                    aValues)\nlet preconditioner = SparseCreatePreconditioner(SparsePreconditionerDiagScaling,\n                                                A)\n\ndefer {\n    SparseCleanup(A)\n    SparseCleanup(preconditioner)\n}\n\n\/\/\/ Create the right-hand-side matrix, _B_.\nvar bValues: [Float] = [30, 35, 100,\n                        300, 350, 1000]\n\nvar xValues: [Float] = [0, 0, 0,\n                        0, 0, 0]\n\n\/\/\/ Create the apply operator block.\nfunc applyOperator(accumulate: Bool,\n                   trans: CBLAS_TRANSPOSE,\n                   X: DenseMatrix_Float,\n                   Y: DenseMatrix_Float) {\n    switch(accumulate, trans == CblasTrans) {\n        case (false, false):\n            SparseMultiply(A, X, Y)\n        case (false, true):\n            SparseMultiply(SparseGetTranspose(A), X, Y)\n        case (true, false):\n            SparseMultiplyAdd(A, X, Y)\n        case (true, true):\n            SparseMultiplyAdd(SparseGetTranspose(A), X, Y)\n    }\n}\n\nxValues.withUnsafeMutableBufferPointer { xPtr in\n    bValues.withUnsafeMutableBufferPointer { bPtr in\n        let B = DenseMatrix_Float(rowCount: 3,\n                                  columnCount: 2,\n                                  columnStride: 3,\n                                  attributes: SparseAttributes_t(),\n                                  data: bPtr.baseAddress!)\n        \n        let X = DenseMatrix_Float(rowCount: 3,\n                                  columnCount: 2,\n                                  columnStride: 3,\n                                  attributes: SparseAttributes_t(),\n                                  data: xPtr.baseAddress!)\n        \n        SparseSolve(SparseLSMR(),\n                    applyOperator,\n                    B, X,\n                    preconditioner)\n    }\n}\n\n```\n\nOn return, x`Values` contains the values `[1.0, 2.0, 3.0, 10.0, 20.0, 30.0]`.\n\n## Iterative sparse solve functions with preconditioner\n\n- **SparseSolve(_:_:_:_:_:)**: Solves the equation *AX = B* for matrices of double-precision values using the specified iterative method and opaque preconditioner.\n- **SparseSolve(_:_:_:_:_:)**: Solves the equation *AX = B* for matrices of single-precision values using the specified iterative method and opaque preconditioner.\n- **SparseSolve(_:_:_:_:_:)**: Solves the equation *AX = B* for matrices of double-precision values using the specified iterative method and preconditioner type.\n- **SparseSolve(_:_:_:_:_:)**: Solves the equation *AX = B* for matrices of single-precision values using the specified iterative method and preconditioner type.\n- **SparseSolve(_:_:_:_:_:)**: Solves the equation *AX = B* for matrices of double-precision values, treating *A* as an operator and using the specified iterative method.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Solves the equation *AX = B* for matrices of double-precision values using the specified iterative method and opaque preconditioner.",
+          "name" : "SparseSolve(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:_:_:_:)-5yh8m"
+        },
+        {
+          "description" : "Solves the equation *AX = B* for matrices of single-precision values using the specified iterative method and opaque preconditioner.",
+          "name" : "SparseSolve(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:_:_:_:)-7vrh0"
+        },
+        {
+          "description" : "Solves the equation *AX = B* for matrices of double-precision values using the specified iterative method and preconditioner type.",
+          "name" : "SparseSolve(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:_:_:_:)-5d7vf"
+        },
+        {
+          "description" : "Solves the equation *AX = B* for matrices of single-precision values using the specified iterative method and preconditioner type.",
+          "name" : "SparseSolve(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:_:_:_:)-7apig"
+        },
+        {
+          "description" : "Solves the equation *AX = B* for matrices of double-precision values, treating *A* as an operator and using the specified iterative method.",
+          "name" : "SparseSolve(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:_:_:_:)-8nfbc"
+        }
+      ],
+      "title" : "Iterative sparse solve functions with preconditioner"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "SparseSolve(_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:_:_:_:)-80ri4"
+}

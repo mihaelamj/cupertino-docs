@@ -1,0 +1,70 @@
+{
+  "abstract" : "Applies a lookup table to transform an 8-bit planar image.",
+  "codeExamples" : [
+    {
+      "code" : "let count = 256\n\n\/\/ The following code populates the array descriptor with sigmoid\n\/\/ curve values in the range 0...1:\nlet sigmoidSourceValues: [Float] = vDSP.ramp(in: -10 ... 10,\n                                             count: count)\nlet descriptor = BNNSNDArrayDescriptor.allocate(initializingFrom: sigmoidSourceValues,\n                                                shape: .vector(count))\ndefer {\n    descriptor.deallocate()\n}\nlet activationLayer = BNNS.ActivationLayer(function: .sigmoid,\n                                           input: descriptor,\n                                           output: descriptor,\n                                           filterParameters: nil)\ntry? activationLayer!.apply(batchSize: 1,\n                            input: descriptor,\n                            output: descriptor)\n\nlet lookup = descriptor.data!.withMemoryRebound(to: Float.self,\n                                                   capacity: count) {\n    \/\/ Create an `UnsafeMutableBufferPointer` from the descriptor data.\n    var sigmoid = UnsafeMutableBufferPointer(start: $0,\n                                             count: count)\n    \n    \/\/ Scale the sigmoid values from 0...1 to 0...255.\n    vDSP.multiply(255.0,\n                  sigmoid,\n                  result: &sigmoid)\n    \n    \/\/ Create Pixel_8 values from the Float sigmoid values.\n    return vDSP.floatingPointToInteger(sigmoid,\n                                       integerType: Pixel_8.self,\n                                       rounding: .towardNearestInteger)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let destinationBuffer = vImage.PixelBuffer(\n    size: sourceBuffer.size,\n    pixelFormat: vImage.Planar8.self)\n\nsourceBuffer.applyLookup(lookup, destination: destinationBuffer)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "f2b4aff41feaea9746b16c8cb2511f6efc322a2a1731292903eef9af082193ec",
+  "crawledAt" : "2025-12-03T08:25:40Z",
+  "declaration" : {
+    "code" : "func applyLookup(_ lookupTable: [Pixel_8], destination: vImage.PixelBuffer<vImage.Planar8>)",
+    "language" : "swift"
+  },
+  "id" : "2C652DD9-8A3C-4478-B5FA-5994D5E34D66",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nYou can use this function to create custom response curves (that is, the value of an output pixel based on the value of the corresponding input pixel). Changing the shape of the response curve changes the brightness and contrast of an image.\n\nThe following code creates a simple lookup table that’s based on a sigmoid function. This example uses [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNS] to create 256 `Float` values in the range `0...1` that describe a sigmoid curve. The code scales the sigmoid curve values to `0...255` and returns [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/Pixel_8] values that are suitable for use as a lookup table.\n\nThe graph below visualizes the values in the lookup table:\n\n\n\nUse the following code to apply the lookup table to a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/Planar8] source buffer and write the result to a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/Planar8] destination buffer:\n\nThe images below show an example grayscale source image on the left and the transformed result on the right. The operation flattens the response for very dark and very bright areas and increases the contrast in the destination image.\n\n",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyLookup(_:destination:)-5r7bq\ncrawled: 2025-12-03T08:25:40Z\n---\n\n# applyLookup(_:destination:)\n\n**Instance Method**\n\nApplies a lookup table to transform an 8-bit planar image.\n\n## Declaration\n\n```swift\nfunc applyLookup(_ lookupTable: [Pixel_8], destination: vImage.PixelBuffer<vImage.Planar8>)\n```\n\n## Parameters\n\n- **lookupTable**: A lookup table that contains 256 [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/Pixel_8888] ARGB values. The function discards the alpha component.\n- **destination**: The destination pixel buffer.\n\n## Discussion\n\nYou can use this function to create custom response curves (that is, the value of an output pixel based on the value of the corresponding input pixel). Changing the shape of the response curve changes the brightness and contrast of an image.\n\nThe following code creates a simple lookup table that’s based on a sigmoid function. This example uses [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNS] to create 256 `Float` values in the range `0...1` that describe a sigmoid curve. The code scales the sigmoid curve values to `0...255` and returns [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/Pixel_8] values that are suitable for use as a lookup table.\n\n```swift\nlet count = 256\n\n\/\/ The following code populates the array descriptor with sigmoid\n\/\/ curve values in the range 0...1:\nlet sigmoidSourceValues: [Float] = vDSP.ramp(in: -10 ... 10,\n                                             count: count)\nlet descriptor = BNNSNDArrayDescriptor.allocate(initializingFrom: sigmoidSourceValues,\n                                                shape: .vector(count))\ndefer {\n    descriptor.deallocate()\n}\nlet activationLayer = BNNS.ActivationLayer(function: .sigmoid,\n                                           input: descriptor,\n                                           output: descriptor,\n                                           filterParameters: nil)\ntry? activationLayer!.apply(batchSize: 1,\n                            input: descriptor,\n                            output: descriptor)\n\nlet lookup = descriptor.data!.withMemoryRebound(to: Float.self,\n                                                   capacity: count) {\n    \/\/ Create an `UnsafeMutableBufferPointer` from the descriptor data.\n    var sigmoid = UnsafeMutableBufferPointer(start: $0,\n                                             count: count)\n    \n    \/\/ Scale the sigmoid values from 0...1 to 0...255.\n    vDSP.multiply(255.0,\n                  sigmoid,\n                  result: &sigmoid)\n    \n    \/\/ Create Pixel_8 values from the Float sigmoid values.\n    return vDSP.floatingPointToInteger(sigmoid,\n                                       integerType: Pixel_8.self,\n                                       rounding: .towardNearestInteger)\n}\n```\n\nThe graph below visualizes the values in the lookup table:\n\n\n\nUse the following code to apply the lookup table to a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/Planar8] source buffer and write the result to a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/Planar8] destination buffer:\n\n```swift\nlet destinationBuffer = vImage.PixelBuffer(\n    size: sourceBuffer.size,\n    pixelFormat: vImage.Planar8.self)\n\nsourceBuffer.applyLookup(lookup, destination: destinationBuffer)\n```\n\nThe images below show an example grayscale source image on the left and the transformed result on the right. The operation flattens the response for very dark and very bright areas and increases the contrast in the destination image.\n\n\n\n## Transforming with a lookup table\n\n- **applyLookup(_:destination:)**: Applies a lookup table to transform an 8-bit planar image to a 32-bit planar image.\n- **applyLookup(_:destination:)**: Applies a lookup table to transform an 8-bit planar image to a 16-bit planar image.\n- **applyLookup(_:destination:)**: Applies a lookup table to transform an 8-bit planar image to an 8-bit-per-channel, three-channel interleaved image.\n- **applyLookup(_:destination:)**: Applies a lookup table to transform an 8-bit planar image to a 32-bit-per-channel, three-channel interleaved image.\n- **applyLookup(alphaTable:redTable:greenTable:blueTable:destination:)**: Applies a set of four lookup tables to transform an interleaved, four-channel 8-bit image.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Applies a lookup table to transform an 8-bit planar image to a 32-bit planar image.",
+          "name" : "applyLookup(_:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyLookup(_:destination:)-14pjo"
+        },
+        {
+          "description" : "Applies a lookup table to transform an 8-bit planar image to a 16-bit planar image.",
+          "name" : "applyLookup(_:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyLookup(_:destination:)-5oi4o"
+        },
+        {
+          "description" : "Applies a lookup table to transform an 8-bit planar image to an 8-bit-per-channel, three-channel interleaved image.",
+          "name" : "applyLookup(_:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyLookup(_:destination:)-3ruls"
+        },
+        {
+          "description" : "Applies a lookup table to transform an 8-bit planar image to a 32-bit-per-channel, three-channel interleaved image.",
+          "name" : "applyLookup(_:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyLookup(_:destination:)-1tsb5"
+        },
+        {
+          "description" : "Applies a set of four lookup tables to transform an interleaved, four-channel 8-bit image.",
+          "name" : "applyLookup(alphaTable:redTable:greenTable:blueTable:destination:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyLookup(alphaTable:redTable:greenTable:blueTable:destination:)"
+        }
+      ],
+      "title" : "Transforming with a lookup table"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "applyLookup(_:destination:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/applyLookup(_:destination:)-5r7bq"
+}

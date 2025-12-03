@@ -1,0 +1,86 @@
+{
+  "abstract" : "Returns a new fused layer.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ `input`, `output`, and `weights` are single-precision arrays.\n\/\/ `inDescriptor` and `outDescriptor` are the `BNNSNDArrayDescriptor` structures\n\/\/ for the fused layer's input and output.\n\nweights.withUnsafeMutableBytes { weightsPtr in\n    let weightsDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                                  layout: BNNSDataLayoutConvolutionWeightsOIHW,\n                                                  size: (3, 3, 1, 1, 0, 0, 0, 0),\n                                                  stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                  data: weightsPtr.baseAddress,\n                                                  data_type: .float,\n                                                  table_data: nil,\n                                                  table_data_type: .float,\n                                                  data_scale: 0,\n                                                  data_bias: 0)\n    \n    let convolutionParameters = BNNSLayerParametersConvolution(i_desc: inDescriptor,\n                                                               w_desc: weightsDescriptor,\n                                                               o_desc: outDescriptor,\n                                                               bias: BNNSNDArrayDescriptor(),\n                                                               activation: .identity,\n                                                               x_stride: 1, y_stride: 1,\n                                                               x_dilation_stride: 0, y_dilation_stride: 0,\n                                                               x_padding: 0, y_padding: 0,\n                                                               groups: 1,\n                                                               pad: (0, 0, 0, 0))\n    \n    let normalizationParameters = BNNSLayerParametersNormalization(i_desc: outDescriptor,\n                                                                   o_desc: outDescriptor,\n                                                                   beta_desc: inDescriptor,\n                                                                   gamma_desc: inDescriptor,\n                                                                   moving_mean_desc: BNNSNDArrayDescriptor(),\n                                                                   moving_variance_desc: BNNSNDArrayDescriptor(),\n                                                                   momentum: 0,\n                                                                   epsilon: 1,\n                                                                   activation: .identity,\n                                                                   num_groups: 1,\n                                                                   normalization_axis: 0)\n    withUnsafeBytes(of: convolutionParameters) { convolutionPtr in\n        withUnsafeBytes(of: normalizationParameters) { normalizationPtr in\n            \n            var parameters = [convolutionPtr.baseAddress!, normalizationPtr.baseAddress!]\n            let filter = BNNSFilterCreateFusedLayer(2,\n                                                    [BNNSConvolution, BNNSLayerNorm],\n                                                    &parameters,\n                                                    nil)\n            defer {\n                BNNSFilterDestroy(filter)\n            }\n            \n            BNNSFusedFilterApplyBatch(filter, 1,\n                                      input, input.count,\n                                      &output, output.count,\n                                      false)\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "ecb4e41ad3a4b1ebc593040424b7ed09168ee981f333602ae30750b5349e198e",
+  "crawledAt" : "2025-12-02T22:13:55Z",
+  "declaration" : {
+    "code" : "func BNNSFilterCreateFusedLayer(_ number_of_fused_filters: Int, _ filter_type: UnsafePointer<BNNSFilterType>, _ layer_params: UnsafeMutablePointer<UnsafeRawPointer>, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> BNNSFilter?",
+    "language" : "swift"
+  },
+  "id" : "2BBE725D-1914-4E8C-B23B-41CAE3B063F6",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to create an `N` layer fused filter that processes input as: `input → filter0 → filter1 →` … `→ filter N-1 → output`. The first `N - 1` filters must have [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSActivationFunctionIdentity] activation function. For the first `N - 2` filters, each filter’s output descriptor and its subsequent filter’s input descriptor must have the same size, stride, and data type.\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSFilterCreateFusedLayer(_:_:_:_:)] supports two filters. The first filter must be either [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSConvolution] or [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSFullyConnected]. The second filter must be one of [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSBatchNorm], [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSInstanceNorm], [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerNorm], or [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSGroupNorm].\n\nThe following code shows how you pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerParametersConvolution] and [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerParametersNormalization] structures to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSFilterCreateFusedLayer(_:_:_:_:)] to create a fused convolution-layer normalization filter:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/accelerate\/bnnsfiltercreatefusedlayer(_:_:_:_:)\ncrawled: 2025-12-02T22:13:55Z\n---\n\n# BNNSFilterCreateFusedLayer(_:_:_:_:)\n\n**Function**\n\nReturns a new fused layer.\n\n## Declaration\n\n```swift\nfunc BNNSFilterCreateFusedLayer(_ number_of_fused_filters: Int, _ filter_type: UnsafePointer<BNNSFilterType>, _ layer_params: UnsafeMutablePointer<UnsafeRawPointer>, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> BNNSFilter?\n```\n\n## Parameters\n\n- **number_of_fused_filters**: The number of fused filters.\n- **filter_type**: Array of fused filter types.\n- **layer_params**: Array of fused layer parameter pointers.\n- **filter_params**: The filter runtime parameters.\n\n## Discussion\n\nUse this function to create an `N` layer fused filter that processes input as: `input → filter0 → filter1 →` … `→ filter N-1 → output`. The first `N - 1` filters must have [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSActivationFunctionIdentity] activation function. For the first `N - 2` filters, each filter’s output descriptor and its subsequent filter’s input descriptor must have the same size, stride, and data type.\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSFilterCreateFusedLayer(_:_:_:_:)] supports two filters. The first filter must be either [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSConvolution] or [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSFullyConnected]. The second filter must be one of [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSBatchNorm], [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSInstanceNorm], [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerNorm], or [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSGroupNorm].\n\nThe following code shows how you pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerParametersConvolution] and [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSLayerParametersNormalization] structures to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSFilterCreateFusedLayer(_:_:_:_:)] to create a fused convolution-layer normalization filter:\n\n```swift\n\/\/ `input`, `output`, and `weights` are single-precision arrays.\n\/\/ `inDescriptor` and `outDescriptor` are the `BNNSNDArrayDescriptor` structures\n\/\/ for the fused layer's input and output.\n\nweights.withUnsafeMutableBytes { weightsPtr in\n    let weightsDescriptor = BNNSNDArrayDescriptor(flags: flags,\n                                                  layout: BNNSDataLayoutConvolutionWeightsOIHW,\n                                                  size: (3, 3, 1, 1, 0, 0, 0, 0),\n                                                  stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                  data: weightsPtr.baseAddress,\n                                                  data_type: .float,\n                                                  table_data: nil,\n                                                  table_data_type: .float,\n                                                  data_scale: 0,\n                                                  data_bias: 0)\n    \n    let convolutionParameters = BNNSLayerParametersConvolution(i_desc: inDescriptor,\n                                                               w_desc: weightsDescriptor,\n                                                               o_desc: outDescriptor,\n                                                               bias: BNNSNDArrayDescriptor(),\n                                                               activation: .identity,\n                                                               x_stride: 1, y_stride: 1,\n                                                               x_dilation_stride: 0, y_dilation_stride: 0,\n                                                               x_padding: 0, y_padding: 0,\n                                                               groups: 1,\n                                                               pad: (0, 0, 0, 0))\n    \n    let normalizationParameters = BNNSLayerParametersNormalization(i_desc: outDescriptor,\n                                                                   o_desc: outDescriptor,\n                                                                   beta_desc: inDescriptor,\n                                                                   gamma_desc: inDescriptor,\n                                                                   moving_mean_desc: BNNSNDArrayDescriptor(),\n                                                                   moving_variance_desc: BNNSNDArrayDescriptor(),\n                                                                   momentum: 0,\n                                                                   epsilon: 1,\n                                                                   activation: .identity,\n                                                                   num_groups: 1,\n                                                                   normalization_axis: 0)\n    withUnsafeBytes(of: convolutionParameters) { convolutionPtr in\n        withUnsafeBytes(of: normalizationParameters) { normalizationPtr in\n            \n            var parameters = [convolutionPtr.baseAddress!, normalizationPtr.baseAddress!]\n            let filter = BNNSFilterCreateFusedLayer(2,\n                                                    [BNNSConvolution, BNNSLayerNorm],\n                                                    &parameters,\n                                                    nil)\n            defer {\n                BNNSFilterDestroy(filter)\n            }\n            \n            BNNSFusedFilterApplyBatch(filter, 1,\n                                      input, input.count,\n                                      &output, output.count,\n                                      false)\n        }\n    }\n}\n```\n\n## Fused layers\n\n- **FusableLayerParameters**\n- **BNNS.FusedParametersLayer**: A layer object that wraps a fused layer and manages its deinitialization.\n- **BNNS.FusedConvolutionNormalizationLayer**: A layer object that wraps a fused, convolution normalization layer and manages its deinitialization.\n- **BNNS.FusedFullyConnectedNormalizationLayer**: A layer object that wraps a fused, fully connected normalization layer and manages its deinitialization.\n- **BNNSFilterType**: Constants that define the component filters of a fused layer.\n- **BNNSFusedFilterApplyBatch(_:_:_:_:_:_:_:)**: Applies a fused filter to a set of input objects, writing the result to a set of output objects.\n- **BNNSFusedFilterApplyMultiInputBatch(_:_:_:_:_:_:_:_:)**: Applies a multiple-input fused filter to a set of input objects, writing the result to a set of output objects.\n- **BNNSFusedFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:)**: Applies a fused filter backward to generate input gradients.\n- **BNNSFusedFilterApplyBackwardMultiInputBatch(_:_:_:_:_:_:_:_:_:_:_:_:)**: Applies a multiple-input fused filter backward to generate input gradients.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "FusableLayerParameters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/FusableLayerParameters"
+        },
+        {
+          "description" : "A layer object that wraps a fused layer and manages its deinitialization.",
+          "name" : "BNNS.FusedParametersLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/FusedParametersLayer"
+        },
+        {
+          "description" : "A layer object that wraps a fused, convolution normalization layer and manages its deinitialization.",
+          "name" : "BNNS.FusedConvolutionNormalizationLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/FusedConvolutionNormalizationLayer"
+        },
+        {
+          "description" : "A layer object that wraps a fused, fully connected normalization layer and manages its deinitialization.",
+          "name" : "BNNS.FusedFullyConnectedNormalizationLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/FusedFullyConnectedNormalizationLayer"
+        },
+        {
+          "description" : "Constants that define the component filters of a fused layer.",
+          "name" : "BNNSFilterType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterType"
+        },
+        {
+          "description" : "Applies a fused filter to a set of input objects, writing the result to a set of output objects.",
+          "name" : "BNNSFusedFilterApplyBatch(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFusedFilterApplyBatch(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a multiple-input fused filter to a set of input objects, writing the result to a set of output objects.",
+          "name" : "BNNSFusedFilterApplyMultiInputBatch(_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFusedFilterApplyMultiInputBatch(_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a fused filter backward to generate input gradients.",
+          "name" : "BNNSFusedFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFusedFilterApplyBackwardBatch(_:_:_:_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a multiple-input fused filter backward to generate input gradients.",
+          "name" : "BNNSFusedFilterApplyBackwardMultiInputBatch(_:_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFusedFilterApplyBackwardMultiInputBatch(_:_:_:_:_:_:_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Fused layers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSFilterCreateFusedLayer(_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/accelerate\/bnnsfiltercreatefusedlayer(_:_:_:_:)"
+}

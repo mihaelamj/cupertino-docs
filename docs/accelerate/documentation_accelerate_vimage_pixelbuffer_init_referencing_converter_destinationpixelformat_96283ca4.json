@@ -1,0 +1,62 @@
+{
+  "abstract" : "Returns a new pixel buffer that references the specified Core Video pixel buffer and populated converter.",
+  "codeExamples" : [
+    {
+      "code" : "class ContrastStretchImageProcessorKernel: CIImageProcessorKernel {\n    \n    static var cgImageFormat = vImage_CGImageFormat(\n        bitsPerComponent: 8,\n        bitsPerPixel: 32,\n        colorSpace: CGColorSpaceCreateDeviceRGB(),\n        bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),\n        renderingIntent: .defaultIntent)!\n    \n    static let cvImageFormat = vImageCVImageFormat.make(\n        format: .format32BGRA,\n        colorSpace: CGColorSpaceCreateDeviceRGB(),\n        alphaIsOpaqueHint: true)!\n    \n    static let converter = try! vImageConverter.make(sourceFormat: cvImageFormat,\n                                                     destinationFormat: cgImageFormat)\n    \n    override class var outputFormat: CIFormat {\n        return CIFormat.BGRA8\n    }\n    \n    override class func formatForInput(at input: Int32) -> CIFormat {\n        return CIFormat.BGRA8\n    }\n    \n    override class func process(with inputs: [CIImageProcessorInput]?,\n                                arguments: [String: Any]?,\n                                output: CIImageProcessorOutput) throws {\n        \n        guard\n            let input = inputs?.first,\n            let inputPixelBuffer = input.pixelBuffer,\n            let outputPixelBuffer = output.pixelBuffer else {\n                return\n            }\n        \n        CVPixelBufferLockBaseAddress(inputPixelBuffer,\n                                     CVPixelBufferLockFlags.readOnly)\n        CVPixelBufferLockBaseAddress(outputPixelBuffer,\n                                     CVPixelBufferLockFlags(rawValue: 0))\n        \n        defer {\n            CVPixelBufferUnlockBaseAddress(inputPixelBuffer,\n                                           CVPixelBufferLockFlags.readOnly)\n            CVPixelBufferUnlockBaseAddress(outputPixelBuffer,\n                                           CVPixelBufferLockFlags(rawValue: 0))\n        }\n        \n        let source = vImage.PixelBuffer(\n            referencing: inputPixelBuffer,\n            converter: converter,\n            destinationPixelFormat: vImage.Interleaved8x4.self)\n        \n        let destination = vImage.PixelBuffer(\n            referencing: outputPixelBuffer,\n            converter: converter,\n            destinationPixelFormat: vImage.Interleaved8x4.self)\n        \n        source.contrastStretch(destination: destination)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "0e8e31208e58dc0b75039ab5f4f40b8a2601adad5e8c653e0d35e47e59da2631",
+  "crawledAt" : "2025-12-03T08:24:21Z",
+  "declaration" : {
+    "code" : "init(referencing lockedCVPixelBuffer: CVPixelBuffer, converter: vImageConverter, destinationPixelFormat: Format.Type = Format.self)",
+    "language" : "swift"
+  },
+  "id" : "975BB21A-D90B-43D2-8CD6-8B4AE05573AE",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nThe following code shows how to incorporate a vImage pixel buffer into a [doc:\/\/com.apple.documentation\/documentation\/CoreImage\/CIImageProcessorKernel] instance. The code calls [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(referencing:converter:destinationPixelFormat:)] to initialize a source and destination vImage pixel buffers that share data with the processor kernel’s input and output.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(referencing:converter:destinationPixelFormat:)\ncrawled: 2025-12-03T08:24:21Z\n---\n\n# init(referencing:converter:destinationPixelFormat:)\n\n**Initializer**\n\nReturns a new pixel buffer that references the specified Core Video pixel buffer and populated converter.\n\n## Declaration\n\n```swift\ninit(referencing lockedCVPixelBuffer: CVPixelBuffer, converter: vImageConverter, destinationPixelFormat: Format.Type = Format.self)\n```\n\n## Parameters\n\n- **lockedCVPixelBuffer**: The locked Core Video pixel buffer. Use [doc:\/\/com.apple.documentation\/documentation\/CoreVideo\/CVPixelBufferLockBaseAddress(_:_:)] and [doc:\/\/com.apple.documentation\/documentation\/CoreVideo\/CVPixelBufferUnlockBaseAddress(_:_:)] to lock and unlock the pixel buffer.\n- **converter**: The vImage Core Video to Core Graphics any-to-any converter.\n- **destinationPixelFormat**: The pixel format of the initialized buffer.\n\n## Discussion\n\nThe following code shows how to incorporate a vImage pixel buffer into a [doc:\/\/com.apple.documentation\/documentation\/CoreImage\/CIImageProcessorKernel] instance. The code calls [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(referencing:converter:destinationPixelFormat:)] to initialize a source and destination vImage pixel buffers that share data with the processor kernel’s input and output.\n\n```swift\nclass ContrastStretchImageProcessorKernel: CIImageProcessorKernel {\n    \n    static var cgImageFormat = vImage_CGImageFormat(\n        bitsPerComponent: 8,\n        bitsPerPixel: 32,\n        colorSpace: CGColorSpaceCreateDeviceRGB(),\n        bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),\n        renderingIntent: .defaultIntent)!\n    \n    static let cvImageFormat = vImageCVImageFormat.make(\n        format: .format32BGRA,\n        colorSpace: CGColorSpaceCreateDeviceRGB(),\n        alphaIsOpaqueHint: true)!\n    \n    static let converter = try! vImageConverter.make(sourceFormat: cvImageFormat,\n                                                     destinationFormat: cgImageFormat)\n    \n    override class var outputFormat: CIFormat {\n        return CIFormat.BGRA8\n    }\n    \n    override class func formatForInput(at input: Int32) -> CIFormat {\n        return CIFormat.BGRA8\n    }\n    \n    override class func process(with inputs: [CIImageProcessorInput]?,\n                                arguments: [String: Any]?,\n                                output: CIImageProcessorOutput) throws {\n        \n        guard\n            let input = inputs?.first,\n            let inputPixelBuffer = input.pixelBuffer,\n            let outputPixelBuffer = output.pixelBuffer else {\n                return\n            }\n        \n        CVPixelBufferLockBaseAddress(inputPixelBuffer,\n                                     CVPixelBufferLockFlags.readOnly)\n        CVPixelBufferLockBaseAddress(outputPixelBuffer,\n                                     CVPixelBufferLockFlags(rawValue: 0))\n        \n        defer {\n            CVPixelBufferUnlockBaseAddress(inputPixelBuffer,\n                                           CVPixelBufferLockFlags.readOnly)\n            CVPixelBufferUnlockBaseAddress(outputPixelBuffer,\n                                           CVPixelBufferLockFlags(rawValue: 0))\n        }\n        \n        let source = vImage.PixelBuffer(\n            referencing: inputPixelBuffer,\n            converter: converter,\n            destinationPixelFormat: vImage.Interleaved8x4.self)\n        \n        let destination = vImage.PixelBuffer(\n            referencing: outputPixelBuffer,\n            converter: converter,\n            destinationPixelFormat: vImage.Interleaved8x4.self)\n        \n        source.contrastStretch(destination: destination)\n    }\n}\n```\n\n## Related Documentation\n\n- **vImageBuffer_InitForCopyFromCVPixelBuffer(_:_:_:_:)**: Initializes an array of vImage buffers in the order necessary to copy from a Core Video pixel buffer.\n\n## Creating a pixel buffer from a Core Video buffer\n\n- **init(copying:cvImageFormat:cgImageFormat:pixelFormat:)**: Initializes a pixel buffer by copying the data from a Core Video pixel buffer.\n- **init(referencing:planeIndex:overrideSize:pixelFormat:)**: Initializes a pixel buffer by refencing the data from a single plane of a multiplane Core Video pixel buffer.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes an array of vImage buffers in the order necessary to copy from a Core Video pixel buffer.",
+          "name" : "vImageBuffer_InitForCopyFromCVPixelBuffer(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageBuffer_InitForCopyFromCVPixelBuffer(_:_:_:_:)"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a pixel buffer by copying the data from a Core Video pixel buffer.",
+          "name" : "init(copying:cvImageFormat:cgImageFormat:pixelFormat:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(copying:cvImageFormat:cgImageFormat:pixelFormat:)"
+        },
+        {
+          "description" : "Initializes a pixel buffer by refencing the data from a single plane of a multiplane Core Video pixel buffer.",
+          "name" : "init(referencing:planeIndex:overrideSize:pixelFormat:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(referencing:planeIndex:overrideSize:pixelFormat:)"
+        }
+      ],
+      "title" : "Creating a pixel buffer from a Core Video buffer"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "init(referencing:converter:destinationPixelFormat:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImage\/PixelBuffer\/init(referencing:converter:destinationPixelFormat:)"
+}

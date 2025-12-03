@@ -1,0 +1,103 @@
+{
+  "abstract" : "Starts a new scope that can contain a dynamic number of child tasks.",
+  "codeExamples" : [
+    {
+      "code" : "try await withThrowingDiscardingTaskGroup(of: Void.self) { group in\n  group.addTask { \/* slow-task *\/ }\n  \/\/ slow-task executes...\n}\n\/\/ guaranteed that slow-task has completed and the group is empty & destroyed",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ ThrowingTaskGroup, pattern not applicable to ThrowingDiscardingTaskGroup\ntry await withThrowingTaskGroup(of: Void.self) { group in\n  group.addTask { try boom() }\n  try await group.next() \/\/ re-throws \"boom\"\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "try await withThrowingDiscardingTaskGroup { group in\n  group.addTask { try boom(1) }\n  group.addTask { try boom(2, after: .seconds(5)) }\n  group.addTask { try boom(3, after: .seconds(5)) }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "try await withThrowingDiscardingTaskGroup { group in\n  group.addTask {\n    do {\n      try boom(1)\n    } catch is HarmlessError {\n      return\n    }\n  }\n  group.addTask {\n    try boom(2, after: .seconds(5))\n  }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "b73d78f1c07bff8402029ac0b0bf6f75562fcfa0d87ca31ce4cf8d1ee64c7bf1",
+  "crawledAt" : "2025-12-02T21:57:31Z",
+  "declaration" : {
+    "code" : "@backDeployed(before: macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0)\nfunc withThrowingDiscardingTaskGroup<GroupResult>(returning returnType: GroupResult.Type = GroupResult.self, isolation: isolated (any Actor)? = #isolation, body: (inout ThrowingDiscardingTaskGroup<any Error>) async throws -> GroupResult) async throws -> GroupResult",
+    "language" : "swift"
+  },
+  "id" : "8DEE991D-B74F-435B-BCB3-32ED2E29323E",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Swift",
+  "overview" : "## Discussion\n\nUnlike a [doc:\/\/com.apple.Swift\/documentation\/Swift\/ThrowingTaskGroup], the child tasks as well as their results are discarded as soon as the tasks complete. This prevents the discarding task group from accumulating many results waiting to be consumed, and is best applied in situations where the result of a child task is some form of side-effect.\n\nA group *always* waits for all of its child tasks to complete before it returns. Even canceled tasks must run until completion before this function returns. Canceled child tasks cooperatively react to cancellation and attempt to return as early as possible. After this function returns, the task group is always empty.\n\nIt is not possible to explicitly await completion of child-tasks, however the group will automatically await *all* child task completions before returning from this function:\n\nRefer to [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskGroup] documentation for detailed discussion of semantics shared between all task groups.\n\n# Task Group Cancellation\n\nYou can cancel a task group and all of its child tasks by calling the [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskGroup\/cancelAll()] method on the task group, or by canceling the task in which the group is running.\n\nIf you call `addTask(priority:operation:)` to create a new task in a canceled group, that task is immediately canceled after creation. Alternatively, you can call `asyncUnlessCancelled(priority:operation:)`, which doesn’t create the task if the group has already been canceled. Choosing between these two functions lets you control how to react to cancellation within a group: some child tasks need to run regardless of cancellation, but other tasks are better not even being created when you know they can’t produce useful results.\n\n# Error Handling and Implicit Cancellation\n\nSince it is not possible to explicitly await individual task completions, it is also not possible to “re-throw” an error thrown by one of the child tasks using the same pattern as one would in a [doc:\/\/com.apple.Swift\/documentation\/Swift\/ThrowingTaskGroup]:\n\nSince discarding task groups don’t have access to `next()`, this pattern cannot be used. Instead, a *throwing discarding task group implicitly cancels itself whenever any of its child tasks throws*.\n\nThe *first error* thrown inside such task group is then retained and thrown out of the `withThrowingDiscardingTaskGroup` method when it returns.\n\nGenerally, this suits the typical use cases of a discarding task group well, however, if you want to prevent specific errors from canceling the group you can catch them inside the child task’s body like this:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/withThrowingDiscardingTaskGroup(returning:isolation:body:)\ncrawled: 2025-12-02T21:57:31Z\n---\n\n# withThrowingDiscardingTaskGroup(returning:isolation:body:)\n\n**Function**\n\nStarts a new scope that can contain a dynamic number of child tasks.\n\n## Declaration\n\n```swift\n@backDeployed(before: macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0)\nfunc withThrowingDiscardingTaskGroup<GroupResult>(returning returnType: GroupResult.Type = GroupResult.self, isolation: isolated (any Actor)? = #isolation, body: (inout ThrowingDiscardingTaskGroup<any Error>) async throws -> GroupResult) async throws -> GroupResult\n```\n\n## Discussion\n\nUnlike a [doc:\/\/com.apple.Swift\/documentation\/Swift\/ThrowingTaskGroup], the child tasks as well as their results are discarded as soon as the tasks complete. This prevents the discarding task group from accumulating many results waiting to be consumed, and is best applied in situations where the result of a child task is some form of side-effect.\n\nA group *always* waits for all of its child tasks to complete before it returns. Even canceled tasks must run until completion before this function returns. Canceled child tasks cooperatively react to cancellation and attempt to return as early as possible. After this function returns, the task group is always empty.\n\nIt is not possible to explicitly await completion of child-tasks, however the group will automatically await *all* child task completions before returning from this function:\n\n```swift\ntry await withThrowingDiscardingTaskGroup(of: Void.self) { group in\n  group.addTask { \/* slow-task *\/ }\n  \/\/ slow-task executes...\n}\n\/\/ guaranteed that slow-task has completed and the group is empty & destroyed\n```\n\nRefer to [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskGroup] documentation for detailed discussion of semantics shared between all task groups.\n\n# Task Group Cancellation\n\nYou can cancel a task group and all of its child tasks by calling the [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskGroup\/cancelAll()] method on the task group, or by canceling the task in which the group is running.\n\nIf you call `addTask(priority:operation:)` to create a new task in a canceled group, that task is immediately canceled after creation. Alternatively, you can call `asyncUnlessCancelled(priority:operation:)`, which doesn’t create the task if the group has already been canceled. Choosing between these two functions lets you control how to react to cancellation within a group: some child tasks need to run regardless of cancellation, but other tasks are better not even being created when you know they can’t produce useful results.\n\n# Error Handling and Implicit Cancellation\n\nSince it is not possible to explicitly await individual task completions, it is also not possible to “re-throw” an error thrown by one of the child tasks using the same pattern as one would in a [doc:\/\/com.apple.Swift\/documentation\/Swift\/ThrowingTaskGroup]:\n\n```swift\n\/\/ ThrowingTaskGroup, pattern not applicable to ThrowingDiscardingTaskGroup\ntry await withThrowingTaskGroup(of: Void.self) { group in\n  group.addTask { try boom() }\n  try await group.next() \/\/ re-throws \"boom\"\n}\n```\n\nSince discarding task groups don’t have access to `next()`, this pattern cannot be used. Instead, a *throwing discarding task group implicitly cancels itself whenever any of its child tasks throws*.\n\nThe *first error* thrown inside such task group is then retained and thrown out of the `withThrowingDiscardingTaskGroup` method when it returns.\n\n```swift\ntry await withThrowingDiscardingTaskGroup { group in\n  group.addTask { try boom(1) }\n  group.addTask { try boom(2, after: .seconds(5)) }\n  group.addTask { try boom(3, after: .seconds(5)) }\n}\n```\n\nGenerally, this suits the typical use cases of a discarding task group well, however, if you want to prevent specific errors from canceling the group you can catch them inside the child task’s body like this:\n\n```swift\ntry await withThrowingDiscardingTaskGroup { group in\n  group.addTask {\n    do {\n      try boom(1)\n    } catch is HarmlessError {\n      return\n    }\n  }\n  group.addTask {\n    try boom(2, after: .seconds(5))\n  }\n}\n```\n\n## Tasks\n\n- **Task**: A unit of asynchronous work.\n- **TaskGroup**: A group that contains dynamically created child tasks.\n- **withTaskGroup(of:returning:isolation:body:)**: Starts a new scope that can contain a dynamic number of child tasks.\n- **ThrowingTaskGroup**: A group that contains throwing, dynamically created child tasks.\n- **withThrowingTaskGroup(of:returning:isolation:body:)**: Starts a new scope that can contain a dynamic number of throwing child tasks.\n- **TaskPriority**: The priority of a task.\n- **DiscardingTaskGroup**: A discarding group that contains dynamically created child tasks.\n- **withDiscardingTaskGroup(returning:isolation:body:)**: Starts a new scope that can contain a dynamic number of child tasks.\n- **ThrowingDiscardingTaskGroup**: A throwing discarding group that contains dynamically created child tasks.\n- **UnsafeCurrentTask**: An unsafe reference to the current task.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A unit of asynchronous work.",
+          "name" : "Task",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task"
+        },
+        {
+          "description" : "A group that contains dynamically created child tasks.",
+          "name" : "TaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskGroup"
+        },
+        {
+          "description" : "Starts a new scope that can contain a dynamic number of child tasks.",
+          "name" : "withTaskGroup(of:returning:isolation:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withTaskGroup(of:returning:isolation:body:)"
+        },
+        {
+          "description" : "A group that contains throwing, dynamically created child tasks.",
+          "name" : "ThrowingTaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/ThrowingTaskGroup"
+        },
+        {
+          "description" : "Starts a new scope that can contain a dynamic number of throwing child tasks.",
+          "name" : "withThrowingTaskGroup(of:returning:isolation:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withThrowingTaskGroup(of:returning:isolation:body:)"
+        },
+        {
+          "description" : "The priority of a task.",
+          "name" : "TaskPriority",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskPriority"
+        },
+        {
+          "description" : "A discarding group that contains dynamically created child tasks.",
+          "name" : "DiscardingTaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/DiscardingTaskGroup"
+        },
+        {
+          "description" : "Starts a new scope that can contain a dynamic number of child tasks.",
+          "name" : "withDiscardingTaskGroup(returning:isolation:body:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withDiscardingTaskGroup(returning:isolation:body:)"
+        },
+        {
+          "description" : "A throwing discarding group that contains dynamically created child tasks.",
+          "name" : "ThrowingDiscardingTaskGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/ThrowingDiscardingTaskGroup"
+        },
+        {
+          "description" : "An unsafe reference to the current task.",
+          "name" : "UnsafeCurrentTask",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/UnsafeCurrentTask"
+        }
+      ],
+      "title" : "Tasks"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "withThrowingDiscardingTaskGroup(returning:isolation:body:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withThrowingDiscardingTaskGroup(returning:isolation:body:)"
+}

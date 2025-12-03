@@ -1,0 +1,54 @@
+{
+  "abstract" : "Decodes an image synchronously and provides a new one for display in views and animations.",
+  "codeExamples" : [
+    {
+      "code" : "override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {\n    guard let imageCell = cell as? ImageCell else {\n        fatalError(\"Expected `\\(ImageCell.self)` type for reuseIdentifier \\(reuseIdentifier). Check the configuration in Main.storyboard.\")\n    }\n    let item = models[indexPath.item]\n    if let image = preparedImageCache.object(forKey: item.id), imageCell.itemIdentifier == item.id {\n        \/\/ Use a cached prepared image.\n        imageCell.imageView.image = image\n    } else {\n        \/\/ If the data source didn't prefetch the cell, prepare the image on a serial dispatch queue.\n        serialQueue.async { [weak preparedImageCache, placeholderImage] in\n            item.loadAsset()\n            let preparedImage: UIImage = item.image.preparingForDisplay() ?? placeholderImage\n            preparedImageCache?.setObject(preparedImage, forKey: item.id)\n            DispatchQueue.main.async {\n                if imageCell.itemIdentifier == item.id {\n                    imageCell.imageView.image = preparedImage\n                }\n            }\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "b9014e5c0cf3d633bc5cd0a8687b799e6cc08849e6aa847c692b06ec86b9412f",
+  "crawledAt" : "2025-12-03T04:29:47Z",
+  "declaration" : {
+    "code" : "func preparingForDisplay() -> UIImage?",
+    "language" : "swift"
+  },
+  "id" : "67C6589B-5FDC-4C86-B0CA-007425A3C44F",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "UIKit",
+  "overview" : "## Return Value\n\nA new version of the image object for display. If the system can’t decode the image, this method returns `nil`.\n\n## Discussion\n\nThe Animation Hitches instrument measures system performance for multiple stages of preparing views for display. It can show you the exact cause of an animation hitch, which appears to the user as an interruption or jump in an animation that should be smooth. If Animation Hitches indicates that decoding an image takes too long and causes hitches, use this method to move the decoding work to the background. For more information on using Instruments, see [https:\/\/help.apple.com\/instruments\/mac\/current\/].\n\nAvoid using this method on the main thread unless you previously started preparing an image with [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIImage\/prepareForDisplay(completionHandler:)]. If you’re decoding many images, such as with a collection view, calling this method from a concurrent queue can degrade performance by demanding too many system threads. Use a serial queue instead.\n\nThis method returns a new image object for efficient display by an image view. Assign the image object created by this method to the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIImageView\/image] property of the image view. If [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIImageView] can render the image without decoding, this method returns a valid image without further processing. If the system can’t decode the image, such as an image created from a [doc:\/\/com.apple.documentation\/documentation\/CoreImage\/CIImage], the method returns `nil`.\n\nUIKit doesn’t associate the prepared image with the original, or with any related variants from an asset catalog. If your app environment dynamically changes display traits, listen for changes in the trait environment and prepare new images when the environment changes.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/UIKit\/UIImage\/preparingForDisplay()\ncrawled: 2025-12-03T04:29:47Z\n---\n\n# preparingForDisplay()\n\n**Instance Method**\n\nDecodes an image synchronously and provides a new one for display in views and animations.\n\n## Declaration\n\n```swift\nfunc preparingForDisplay() -> UIImage?\n```\n\n## Return Value\n\nA new version of the image object for display. If the system can’t decode the image, this method returns `nil`.\n\n## Discussion\n\nThe Animation Hitches instrument measures system performance for multiple stages of preparing views for display. It can show you the exact cause of an animation hitch, which appears to the user as an interruption or jump in an animation that should be smooth. If Animation Hitches indicates that decoding an image takes too long and causes hitches, use this method to move the decoding work to the background. For more information on using Instruments, see [https:\/\/help.apple.com\/instruments\/mac\/current\/].\n\nAvoid using this method on the main thread unless you previously started preparing an image with [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIImage\/prepareForDisplay(completionHandler:)]. If you’re decoding many images, such as with a collection view, calling this method from a concurrent queue can degrade performance by demanding too many system threads. Use a serial queue instead.\n\nThis method returns a new image object for efficient display by an image view. Assign the image object created by this method to the [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIImageView\/image] property of the image view. If [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIImageView] can render the image without decoding, this method returns a valid image without further processing. If the system can’t decode the image, such as an image created from a [doc:\/\/com.apple.documentation\/documentation\/CoreImage\/CIImage], the method returns `nil`.\n\nUIKit doesn’t associate the prepared image with the original, or with any related variants from an asset catalog. If your app environment dynamically changes display traits, listen for changes in the trait environment and prepare new images when the environment changes.\n\n```swift\noverride func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {\n    guard let imageCell = cell as? ImageCell else {\n        fatalError(\"Expected `\\(ImageCell.self)` type for reuseIdentifier \\(reuseIdentifier). Check the configuration in Main.storyboard.\")\n    }\n    let item = models[indexPath.item]\n    if let image = preparedImageCache.object(forKey: item.id), imageCell.itemIdentifier == item.id {\n        \/\/ Use a cached prepared image.\n        imageCell.imageView.image = image\n    } else {\n        \/\/ If the data source didn't prefetch the cell, prepare the image on a serial dispatch queue.\n        serialQueue.async { [weak preparedImageCache, placeholderImage] in\n            item.loadAsset()\n            let preparedImage: UIImage = item.image.preparingForDisplay() ?? placeholderImage\n            preparedImageCache?.setObject(preparedImage, forKey: item.id)\n            DispatchQueue.main.async {\n                if imageCell.itemIdentifier == item.id {\n                    imageCell.imageView.image = preparedImage\n                }\n            }\n        }\n    }\n}\n```\n\n## Loading images for display\n\n- **prepareForDisplay(completionHandler:)**: Decodes an image asynchronously and provides a new one for display in views and animations.\n- **preparingThumbnail(of:)**: Returns a new thumbnail image at the specified size.\n- **prepareThumbnail(of:completionHandler:)**: Creates a thumbnail image at the specified size asynchronously on a background thread.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Decodes an image asynchronously and provides a new one for display in views and animations.",
+          "name" : "prepareForDisplay(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIImage\/prepareForDisplay(completionHandler:)"
+        },
+        {
+          "description" : "Returns a new thumbnail image at the specified size.",
+          "name" : "preparingThumbnail(of:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIImage\/preparingThumbnail(of:)"
+        },
+        {
+          "description" : "Creates a thumbnail image at the specified size asynchronously on a background thread.",
+          "name" : "prepareThumbnail(of:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIImage\/prepareThumbnail(of:completionHandler:)"
+        }
+      ],
+      "title" : "Loading images for display"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "preparingForDisplay()",
+  "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIImage\/preparingForDisplay()"
+}

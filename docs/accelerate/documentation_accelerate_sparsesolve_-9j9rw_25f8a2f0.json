@@ -1,0 +1,46 @@
+{
+  "abstract" : "Solves the system *AX = B* using the supplied double-precision factorization of *A*, in place.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/\/ Create the coefficient matrix _A_.\nlet rowIndices: [Int32] =    [ 0,  1, 1,  2]\nlet columnIndices: [Int32] = [ 2,  0, 2,  1]\nlet aValues: [Double] =      [10, 20, 5, 50]\n\nlet A = SparseConvertFromCoordinate(3, 3,\n                                    4, 1,\n                                    SparseAttributes_t(),\n                                    rowIndices, columnIndices,\n                                    aValues)\n\n\/\/\/ Factorize _A_.\nlet factorization = SparseFactor(SparseFactorizationQR, A)\n\ndefer {\n    SparseCleanup(A)\n    SparseCleanup(factorization)\n}\n\n\/\/\/ Create the right-hand-side matrix, _B_.\nvar bValues: [Double] = [30, 35, 100,\n                         300, 350, 1000]\n\n\/\/\/ Solve the system.\nbValues.withUnsafeMutableBufferPointer { bPtr in\n    let XB = DenseMatrix_Double(rowCount: 3,\n                                columnCount: 2,\n                                columnStride: 3,\n                                attributes: SparseAttributes_t(),\n                                data: bPtr.baseAddress!)\n    \n    SparseSolve(factorization, XB)\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "64d9833bb42f2774a39d066c8c7b0747dcd5516819122e86454d06fb7d58cfa1",
+  "crawledAt" : "2025-12-02T23:07:18Z",
+  "declaration" : {
+    "code" : "func SparseSolve(_ Factored: SparseOpaqueFactorization_Double, _ XB: DenseMatrix_Double)",
+    "language" : "swift"
+  },
+  "id" : "90A4DE4D-A5AC-42B7-AA9C-7ED49883A6F9",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to solve a system of linear equations using a factored coefficient matrix. The following figure shows two systems of equations where the coefficient matrix is sparse:\n\n\n\nThe following code solves this system with a QR factorization of the coefficient matrix:\n\nOn return, `bValues` contains the values `[1.0, 2.0, 3.0, 10.0, 20.0, 30.0]`.\n\nIf the factorization is *A = QR*, the function returns the solution of minimum norm *‖ x ‖₂* for underdetermined systems.\n\nIf the factorization is *A = QR*, the function returns the least squares solution *minₓ ‖ AX - B ‖₂* for overdetermined systems.\n\nIf the factorization is [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseFactorizationCholeskyAtA], the factorization is of *AᵀA*, and the solution that returns is for the system *AᵀAX = B*.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:)-9j9rw\ncrawled: 2025-12-02T23:07:18Z\n---\n\n# SparseSolve(_:_:)\n\n**Function**\n\nSolves the system *AX = B* using the supplied double-precision factorization of *A*, in place.\n\n## Declaration\n\n```swift\nfunc SparseSolve(_ Factored: SparseOpaqueFactorization_Double, _ XB: DenseMatrix_Double)\n```\n\n## Parameters\n\n- **Factored**: The factorization of *A*.\n- **XB**: On entry, the right-hand-side, *B*. On return, the solution vectors *X*. If *A* has dimension *m x n*, *XB* must have dimension *k x nrhs*, where *k = max(m,n)* and *nrhs* is the number of right-hand-sides to find solutions for.\n\n## Discussion\n\nUse this function to solve a system of linear equations using a factored coefficient matrix. The following figure shows two systems of equations where the coefficient matrix is sparse:\n\n\n\nThe following code solves this system with a QR factorization of the coefficient matrix:\n\n```swift\n\/\/\/ Create the coefficient matrix _A_.\nlet rowIndices: [Int32] =    [ 0,  1, 1,  2]\nlet columnIndices: [Int32] = [ 2,  0, 2,  1]\nlet aValues: [Double] =      [10, 20, 5, 50]\n\nlet A = SparseConvertFromCoordinate(3, 3,\n                                    4, 1,\n                                    SparseAttributes_t(),\n                                    rowIndices, columnIndices,\n                                    aValues)\n\n\/\/\/ Factorize _A_.\nlet factorization = SparseFactor(SparseFactorizationQR, A)\n\ndefer {\n    SparseCleanup(A)\n    SparseCleanup(factorization)\n}\n\n\/\/\/ Create the right-hand-side matrix, _B_.\nvar bValues: [Double] = [30, 35, 100,\n                         300, 350, 1000]\n\n\/\/\/ Solve the system.\nbValues.withUnsafeMutableBufferPointer { bPtr in\n    let XB = DenseMatrix_Double(rowCount: 3,\n                                columnCount: 2,\n                                columnStride: 3,\n                                attributes: SparseAttributes_t(),\n                                data: bPtr.baseAddress!)\n    \n    SparseSolve(factorization, XB)\n}\n```\n\nOn return, `bValues` contains the values `[1.0, 2.0, 3.0, 10.0, 20.0, 30.0]`.\n\nIf the factorization is *A = QR*, the function returns the solution of minimum norm *‖ x ‖₂* for underdetermined systems.\n\nIf the factorization is *A = QR*, the function returns the least squares solution *minₓ ‖ AX - B ‖₂* for overdetermined systems.\n\nIf the factorization is [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseFactorizationCholeskyAtA], the factorization is of *AᵀA*, and the solution that returns is for the system *AᵀAX = B*.\n\n## In-place direct solving functions\n\n- **SparseSolve(_:_:)**: Solves the system *AX = B* using the supplied single-precision factorization of *A*, in place.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Solves the system *AX = B* using the supplied single-precision factorization of *A*, in place.",
+          "name" : "SparseSolve(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:)-1jp0k"
+        }
+      ],
+      "title" : "In-place direct solving functions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "SparseSolve(_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:)-9j9rw"
+}

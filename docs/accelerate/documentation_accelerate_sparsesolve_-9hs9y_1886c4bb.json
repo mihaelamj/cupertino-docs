@@ -1,0 +1,46 @@
+{
+  "abstract" : "Solves the system *Ax = b* using the supplied single-precision factorization of *A*, in place and without any internal memory allocations.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/\/ Create the coefficient matrix _A_.\nlet rowIndices: [Int32] =    [ 0,  1, 1,  2]\nlet columnIndices: [Int32] = [ 2,  0, 2,  1]\nlet aValues: [Float] =       [10, 20, 5, 50]\n\nlet A = SparseConvertFromCoordinate(3, 3,\n                                    4, 1,\n                                    SparseAttributes_t(),\n                                    rowIndices, columnIndices,\n                                    aValues)\n\n\/\/\/ Factorize _A_.\nlet factorization = SparseFactor(SparseFactorizationQR, A)\n\ndefer {\n    SparseCleanup(A)\n    SparseCleanup(factorization)\n}\n\n\/\/\/ Create the right-hand-side vector, _b_.\nvar bValues: [Float] = [30, 35, 100]\n\n\/\/\/ Create the workspace.\nlet byteCount = factorization.solveWorkspaceRequiredStatic +\n                    factorization.solveWorkspaceRequiredPerRHS\nlet workspace = UnsafeMutableRawPointer.allocate(\n    byteCount: byteCount,\n    alignment: MemoryLayout<Double>.alignment)\ndefer {\n    workspace.deallocate()\n}\n\n\/\/\/ Solve the system.\nbValues.withUnsafeMutableBufferPointer { bPtr in\n    let xb = DenseVector_Float(count: 3,\n                               data: bPtr.baseAddress!)\n    \n    SparseSolve(factorization, xb, workspace)\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "d57f352faeba1f6ce867bc8980a5d4be9d9708393cb0ac730182aadac1367bde",
+  "crawledAt" : "2025-12-02T23:07:39Z",
+  "declaration" : {
+    "code" : "func SparseSolve(_ Factored: SparseOpaqueFactorization_Float, _ xb: DenseVector_Float, _ workspace: UnsafeMutableRawPointer)",
+    "language" : "swift"
+  },
+  "id" : "89EF7CC9-39C4-44F9-BA80-C52814694C56",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to solve a system of linear equations using a factored coefficient matrix. In cases where your code calls the function frequently, create and manage the workspace that the Sparse Solvers library uses and reuse it across function calls. Reusing a workspace prevents the Sparse Solvers library from allocating the temporary storage with each call.\n\nThe following figure shows two systems of equations where the coefficient matrix is sparse:\n\n\n\nThe following code solves this system with a QR factorization of the coefficient matrix:\n\nOn return, `bValues` contains the values `[1.0, 2.0, 3.0]`.\n\nIf the factorization is *A = QR*, the function returns the solution of minimum norm *‖ x ‖₂* for underdetermined systems.\n\nIf the factorization is *A = QR*, the function returns the least squares solution *minₓ ‖ AX - B ‖₂* for overdetermined systems.\n\nIf the factorization is [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseFactorizationCholeskyAtA], the factorization is of *AᵀA*, and the solution that returns is for the system *AᵀAX = B*.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:_:)-9hs9y\ncrawled: 2025-12-02T23:07:39Z\n---\n\n# SparseSolve(_:_:_:)\n\n**Function**\n\nSolves the system *Ax = b* using the supplied single-precision factorization of *A*, in place and without any internal memory allocations.\n\n## Declaration\n\n```swift\nfunc SparseSolve(_ Factored: SparseOpaqueFactorization_Float, _ xb: DenseVector_Float, _ workspace: UnsafeMutableRawPointer)\n```\n\n## Parameters\n\n- **Factored**: The factored matrix to solve.\n- **xb**: On input, the vector *b*. On return, the function overwrites with the vector *x*. If *A* has dimension *m x n*, this parameter must have length *k*, where *k = max(m,n)*.\n- **workspace**: The scratch space of size [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseOpaqueFactorization_Float\/solveWorkspaceRequiredStatic] `+ nrhs *` [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseOpaqueFactorization_Float\/solveWorkspaceRequiredPerRHS].\n\n## Discussion\n\nUse this function to solve a system of linear equations using a factored coefficient matrix. In cases where your code calls the function frequently, create and manage the workspace that the Sparse Solvers library uses and reuse it across function calls. Reusing a workspace prevents the Sparse Solvers library from allocating the temporary storage with each call.\n\nThe following figure shows two systems of equations where the coefficient matrix is sparse:\n\n\n\nThe following code solves this system with a QR factorization of the coefficient matrix:\n\n```swift\n\/\/\/ Create the coefficient matrix _A_.\nlet rowIndices: [Int32] =    [ 0,  1, 1,  2]\nlet columnIndices: [Int32] = [ 2,  0, 2,  1]\nlet aValues: [Float] =       [10, 20, 5, 50]\n\nlet A = SparseConvertFromCoordinate(3, 3,\n                                    4, 1,\n                                    SparseAttributes_t(),\n                                    rowIndices, columnIndices,\n                                    aValues)\n\n\/\/\/ Factorize _A_.\nlet factorization = SparseFactor(SparseFactorizationQR, A)\n\ndefer {\n    SparseCleanup(A)\n    SparseCleanup(factorization)\n}\n\n\/\/\/ Create the right-hand-side vector, _b_.\nvar bValues: [Float] = [30, 35, 100]\n\n\/\/\/ Create the workspace.\nlet byteCount = factorization.solveWorkspaceRequiredStatic +\n                    factorization.solveWorkspaceRequiredPerRHS\nlet workspace = UnsafeMutableRawPointer.allocate(\n    byteCount: byteCount,\n    alignment: MemoryLayout<Double>.alignment)\ndefer {\n    workspace.deallocate()\n}\n\n\/\/\/ Solve the system.\nbValues.withUnsafeMutableBufferPointer { bPtr in\n    let xb = DenseVector_Float(count: 3,\n                               data: bPtr.baseAddress!)\n    \n    SparseSolve(factorization, xb, workspace)\n}\n```\n\nOn return, `bValues` contains the values `[1.0, 2.0, 3.0]`.\n\nIf the factorization is *A = QR*, the function returns the solution of minimum norm *‖ x ‖₂* for underdetermined systems.\n\nIf the factorization is *A = QR*, the function returns the least squares solution *minₓ ‖ AX - B ‖₂* for overdetermined systems.\n\nIf the factorization is [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/SparseFactorizationCholeskyAtA], the factorization is of *AᵀA*, and the solution that returns is for the system *AᵀAX = B*.\n\n## In-place direct solving functions with user-defined workspace\n\n- **SparseSolve(_:_:_:)**: Solves the system *Ax = b* using the supplied double-precision factorization of *A*, in place and without any internal memory allocations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Solves the system *Ax = b* using the supplied double-precision factorization of *A*, in place and without any internal memory allocations.",
+          "name" : "SparseSolve(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:_:)-14nj"
+        }
+      ],
+      "title" : "In-place direct solving functions with user-defined workspace"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "SparseSolve(_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/SparseSolve(_:_:_:)-9hs9y"
+}

@@ -1,0 +1,59 @@
+{
+  "abstract" : "Applies a perspective warp to an 8-bit planar image.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "d2b4bbd7ca72f834b2000c55cd52e835ffa20cc5aa610a19ae15dc1addf143d8",
+  "crawledAt" : "2025-12-03T21:15:41Z",
+  "declaration" : {
+    "code" : "func vImagePerspectiveWarp_Planar8(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ tempBuffer: UnsafeMutableRawPointer!, _ transform: UnsafePointer<vImage_PerpsectiveTransform>, _ interpolation: vImage_WarpInterpolation, _ backColor: Pixel_8, _ flags: vImage_Flags) -> vImage_Error",
+    "language" : "swift"
+  },
+  "id" : "077FDDA2-52B7-40B6-99F8-8E3F2096BD60",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, a negative value indicates one of the error codes that [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants] describes, and a positive value indicates the required size for the temporary buffer.\n\n## Discussion\n\nThis function doesn’t work in place, that is, the source and destination buffers need to point to different underlying memory.\n\n### Optimize performance with temporary buffers\n\nThis function uses a multiple-pass algorithm that saves intermediate pixel values between passes. In some cases, the destination buffer may not be large enough to store that intermediate data, so the operation requires additional storage.\n\nPass `nil` to the `tempBuffer` parameter to have vImage create and manage this temporary storage for you.\n\nIn cases where your code calls the function frequently (for example, when processing video), create and manage this temporary buffer yourself and reuse it across function calls. Reusing a buffer avoids vImage allocating the temporary storage with each call.\n\nTo use your own temporary buffer, first call the function with the same values for all other parameters that you intend to use for subsequent calls. In addition, pass the `kvImageGetTempBufferSize` flag. The `kvImageGetTempBufferSize` instructs the function not to perform any processing, and to return a positive value that represents the minimum size, in bytes, of the temporary buffer. A negative return value represents an error.\n\nAfter you allocate the memory for the temporary buffer, pass that to the `tempBuffer` parameter for subsequent calls to the function, and don’t pass the `kvImageGetTempBufferSize` flag.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImagePerspectiveWarp_Planar8(_:_:_:_:_:_:_:)\ncrawled: 2025-12-03T21:15:41Z\n---\n\n# vImagePerspectiveWarp_Planar8(_:_:_:_:_:_:_:)\n\n**Function**\n\nApplies a perspective warp to an 8-bit planar image.\n\n## Declaration\n\n```swift\nfunc vImagePerspectiveWarp_Planar8(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ tempBuffer: UnsafeMutableRawPointer!, _ transform: UnsafePointer<vImage_PerpsectiveTransform>, _ interpolation: vImage_WarpInterpolation, _ backColor: Pixel_8, _ flags: vImage_Flags) -> vImage_Error\n```\n\n## Parameters\n\n- **src**: A pointer to a vImage buffer structure that contains the source image.\n- **dest**: A pointer to the destination vImage buffer structure. You’re responsible for filling out the `height`, `width`, and `rowBytes` fields of this structure and for allocating a data buffer of the appropriate size. On return, the data buffer this structure points to contains the destination image data. When you no longer need the data buffer, deallocate the memory to prevent memory leaks.\n- **tempBuffer**: A pointer to workspace memory the function uses as it operates on an image. Pass `nil` to instruct the function to allocate, use, and then free its own temporary buffer.\n- **transform**: The [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_PerpsectiveTransform] structure that the operation applies to the source buffer.\n- **interpolation**: The `vImage_WarpInterpolation` enumeration that specifies the interpolation mode.\n- **backColor**: The background color. If you set the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageBackgroundColorFill] flag, pass a pixel value.\n- **flags**: The options to use when performing the operation. If your code implements its own tiling or its own multithreading, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageDoNotTile].\n\nTo instruct the function to return the minimum size of the workspace memory, set the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageGetTempBufferSize] flag.\n\nTo specify how vImage handles pixel locations beyond the edge of the source image, set one of the following flags: [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageBackgroundColorFill] or [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageEdgeExtend].\n\n## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, a negative value indicates one of the error codes that [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants] describes, and a positive value indicates the required size for the temporary buffer.\n\n## Discussion\n\nThis function doesn’t work in place, that is, the source and destination buffers need to point to different underlying memory.\n\n### Optimize performance with temporary buffers\n\nThis function uses a multiple-pass algorithm that saves intermediate pixel values between passes. In some cases, the destination buffer may not be large enough to store that intermediate data, so the operation requires additional storage.\n\nPass `nil` to the `tempBuffer` parameter to have vImage create and manage this temporary storage for you.\n\nIn cases where your code calls the function frequently (for example, when processing video), create and manage this temporary buffer yourself and reuse it across function calls. Reusing a buffer avoids vImage allocating the temporary storage with each call.\n\nTo use your own temporary buffer, first call the function with the same values for all other parameters that you intend to use for subsequent calls. In addition, pass the `kvImageGetTempBufferSize` flag. The `kvImageGetTempBufferSize` instructs the function not to perform any processing, and to return a positive value that represents the minimum size, in bytes, of the temporary buffer. A negative return value represents an error.\n\nAfter you allocate the memory for the temporary buffer, pass that to the `tempBuffer` parameter for subsequent calls to the function, and don’t pass the `kvImageGetTempBufferSize` flag.\n\n## Related Documentation\n\n- **Transforming an image in three dimensions**: Create and use a projective transformation to apply a perspective warp to an image.\n\n## Warping planar buffers\n\n- **vImagePerspectiveWarp_Planar16F(_:_:_:_:_:_:_:)**: Applies a perspective warp to a floating-point 16-bit planar image.\n- **vImagePerspectiveWarp_Planar16U(_:_:_:_:_:_:_:)**: Applies a perspective warp to a unsigned 16-bit planar image.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create and use a projective transformation to apply a perspective warp to an image.",
+          "name" : "Transforming an image in three dimensions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/transforming-an-image-in-three-dimensions"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Applies a perspective warp to a floating-point 16-bit planar image.",
+          "name" : "vImagePerspectiveWarp_Planar16F(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImagePerspectiveWarp_Planar16F(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Applies a perspective warp to a unsigned 16-bit planar image.",
+          "name" : "vImagePerspectiveWarp_Planar16U(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImagePerspectiveWarp_Planar16U(_:_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Warping planar buffers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vImagePerspectiveWarp_Planar8(_:_:_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImagePerspectiveWarp_Planar8(_:_:_:_:_:_:_:)"
+}

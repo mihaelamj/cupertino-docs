@@ -1,18 +1,43 @@
 {
-  "abstract" : "Macro that introduces a [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskLocal] binding.",
+  "abstract" : "Wrapper type that defines a task-local value key.",
   "codeExamples" : [
-
+    {
+      "code" : "enum Example {\n    @TaskLocal\n    static var traceID: TraceID?\n}\n\n\/\/ Global task local properties are supported since Swift 6.0:\n@TaskLocal\nvar contextualNumber: Int = 12",
+      "language" : "swift"
+    },
+    {
+      "code" : "enum Example { \n    @TaskLocal\n    static var traceID: TraceID = TraceID.default\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "guard let traceID = Example.traceID else {\n  print(\"no trace id\")\n  return\n}\nprint(traceID)",
+      "language" : "swift"
+    },
+    {
+      "code" : "func enter() {\n    Example.$traceID.withValue(\"1234\") {\n        read() \/\/ always \"1234\", regardless if enter() was called from inside a task or not:\n    }    \n}\n\nfunc read() -> String {\n    if let value = Self.traceID {\n        \"\\(value)\" \n    } else { \n        \"<no value>\"\n    }\n}\n\n\/\/ 1) Call `enter` from non-Task code\n\/\/    e.g. synchronous main() or non-Task thread (e.g. a plain pthread)\nenter()\n\n\/\/ 2) Call 'enter' from Task\nTask { \n    enter()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "enum Example {\n    @TaskLocal\n    static var traceID: TraceID?\n}\n\nfunc read() -> String {\n    if let value = Self.traceID {\n        \"\\(value)\" \n    } else { \n        \"<no value>\"\n    }\n}\n\nawait Example.$traceID.withValue(1234) { \/\/ bind the value\n  print(\"traceID: \\(Example.traceID)\") \/\/ traceID: 1234\n  read() \/\/ traceID: 1234\n\n  async let id = read() \/\/ async let child task, traceID: 1234\n\n  await withTaskGroup(of: String.self) { group in \n      group.addTask { read() } \/\/ task group child task, traceID: 1234\n      return await group.next()!\n  }\n\n  Task { \/\/ unstructured tasks do inherit task locals by copying\n    read() \/\/ traceID: 1234\n  }\n\n  Task.detached { \/\/ detached tasks do not inherit task-local values\n    read() \/\/ traceID: nil\n  }\n}",
+      "language" : "swift"
+    }
   ],
-  "contentHash" : "f5e92c100fb2242aa9dd970d5e0a91443332a999d05b7c8b822bc81fda2dce94",
-  "crawledAt" : "2025-12-01T21:57:33Z",
+  "conformsTo" : [
+    "CustomStringConvertible",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "c22680d76542eee980aa6aa7ddee00a83555e2890bdbd35d88eba6a867c4cd06",
+  "crawledAt" : "2025-12-03T07:58:07Z",
   "declaration" : {
-    "code" : "@attached(accessor) @attached(peer, names: prefixed(`$`)) macro TaskLocal()",
+    "code" : "final class TaskLocal<Value> where Value : Sendable",
     "language" : "swift"
   },
-  "id" : "A2A43D1C-4520-4276-A312-CBACD8F1998A",
-  "kind" : "macro",
+  "id" : "DE3DCB15-1278-4942-AA4A-CFF6A54A2B3F",
+  "kind" : "class",
+  "language" : "swift",
   "module" : "Swift",
-  "overview" : "## Overview\n\nFor information about task-local bindings, see [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskLocal].",
+  "overview" : "## Overview\n\nA task-local value is a value that can be bound and read in the context of a [doc:\/\/com.apple.Swift\/documentation\/Swift\/Task]. It is implicitly carried with the task, and is accessible by any child tasks it creates (such as TaskGroup or `async let` created tasks).\n\n### Task-local declarations\n\nTask locals must be declared as static properties or global properties, like this:\n\n### Default values\n\nReading a task local value when no value was bound to it results in returning its default value. For a task local declared as optional (such as e.g. `TraceID?`), this defaults to nil, however a different default value may be defined at declaration site of the task local, like this:\n\nThe default value is returned whenever the task-local is read from a context which either: has no task available to read the value from (e.g. a synchronous function, called without any asynchronous function in its call stack), or no value was bound within the scope of the current task or any of its parent tasks.\n\n### Reading task-local values\n\nReading task local values is simple and looks the same as-if reading a normal static property:\n\nIt is possible to perform task-local value reads from either asynchronous or synchronous functions.\n\n### Binding task-local values\n\nTask local values cannot be `set` directly and must instead be bound using the scoped `$traceID.withValue() { ... }` operation. The value is only bound for the duration of that scope, and is available to any child tasks which are created within that scope.\n\nDetached tasks do not inherit task-local values, however tasks created using the `Task { ... }` initializer do inherit task-locals by copying them to the new asynchronous task, even though it is an un-structured task.\n\n### Using task local values outside of tasks\n\nIt is possible to bind and read task local values outside of tasks.\n\nThis comes in handy within synchronous functions which are not guaranteed to be called from within a task. When binding a task-local value from outside of a task, the runtime will set a thread-local in which the same storage mechanism as used within tasks will be used. This means that you can reliably bind and read task local values without having to worry about the specific calling context, e.g.:\n\nIn either cases listed above, the binding and reading of the task-local value works as expected.\n\n### Examples",
   "platforms" : [
     "iOS",
     "iPadOS",
@@ -22,21 +47,74 @@
     "visionOS",
     "watchOS"
   ],
-  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal()\ncrawled: 2025-12-01T21:57:33Z\n---\n\n# TaskLocal()\n\n**Macro**\n\nMacro that introduces a [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskLocal] binding.\n\n## Declaration\n\n```swift\n@attached(accessor) @attached(peer, names: prefixed(`$`)) macro TaskLocal()\n```\n\n## Overview\n\nFor information about task-local bindings, see [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskLocal].\n\n\n\n## Task-Local Storage\n\n- **TaskLocal**: Wrapper type that defines a task-local value key.\n\n",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal\ncrawled: 2025-12-03T07:58:07Z\n---\n\n# TaskLocal\n\n**Class**\n\nWrapper type that defines a task-local value key.\n\n## Declaration\n\n```swift\nfinal class TaskLocal<Value> where Value : Sendable\n```\n\n## Overview\n\nA task-local value is a value that can be bound and read in the context of a [doc:\/\/com.apple.Swift\/documentation\/Swift\/Task]. It is implicitly carried with the task, and is accessible by any child tasks it creates (such as TaskGroup or `async let` created tasks).\n\n### Task-local declarations\n\nTask locals must be declared as static properties or global properties, like this:\n\n```swift\nenum Example {\n    @TaskLocal\n    static var traceID: TraceID?\n}\n\n\/\/ Global task local properties are supported since Swift 6.0:\n@TaskLocal\nvar contextualNumber: Int = 12\n```\n\n### Default values\n\nReading a task local value when no value was bound to it results in returning its default value. For a task local declared as optional (such as e.g. `TraceID?`), this defaults to nil, however a different default value may be defined at declaration site of the task local, like this:\n\n```swift\nenum Example { \n    @TaskLocal\n    static var traceID: TraceID = TraceID.default\n}\n```\n\nThe default value is returned whenever the task-local is read from a context which either: has no task available to read the value from (e.g. a synchronous function, called without any asynchronous function in its call stack), or no value was bound within the scope of the current task or any of its parent tasks.\n\n### Reading task-local values\n\nReading task local values is simple and looks the same as-if reading a normal static property:\n\n```swift\nguard let traceID = Example.traceID else {\n  print(\"no trace id\")\n  return\n}\nprint(traceID)\n```\n\nIt is possible to perform task-local value reads from either asynchronous or synchronous functions.\n\n### Binding task-local values\n\nTask local values cannot be `set` directly and must instead be bound using the scoped `$traceID.withValue() { ... }` operation. The value is only bound for the duration of that scope, and is available to any child tasks which are created within that scope.\n\nDetached tasks do not inherit task-local values, however tasks created using the `Task { ... }` initializer do inherit task-locals by copying them to the new asynchronous task, even though it is an un-structured task.\n\n### Using task local values outside of tasks\n\nIt is possible to bind and read task local values outside of tasks.\n\nThis comes in handy within synchronous functions which are not guaranteed to be called from within a task. When binding a task-local value from outside of a task, the runtime will set a thread-local in which the same storage mechanism as used within tasks will be used. This means that you can reliably bind and read task local values without having to worry about the specific calling context, e.g.:\n\n```swift\nfunc enter() {\n    Example.$traceID.withValue(\"1234\") {\n        read() \/\/ always \"1234\", regardless if enter() was called from inside a task or not:\n    }    \n}\n\nfunc read() -> String {\n    if let value = Self.traceID {\n        \"\\(value)\" \n    } else { \n        \"<no value>\"\n    }\n}\n\n\/\/ 1) Call `enter` from non-Task code\n\/\/    e.g. synchronous main() or non-Task thread (e.g. a plain pthread)\nenter()\n\n\/\/ 2) Call 'enter' from Task\nTask { \n    enter()\n}\n```\n\nIn either cases listed above, the binding and reading of the task-local value works as expected.\n\n### Examples\n\n```swift\nenum Example {\n    @TaskLocal\n    static var traceID: TraceID?\n}\n\nfunc read() -> String {\n    if let value = Self.traceID {\n        \"\\(value)\" \n    } else { \n        \"<no value>\"\n    }\n}\n\nawait Example.$traceID.withValue(1234) { \/\/ bind the value\n  print(\"traceID: \\(Example.traceID)\") \/\/ traceID: 1234\n  read() \/\/ traceID: 1234\n\n  async let id = read() \/\/ async let child task, traceID: 1234\n\n  await withTaskGroup(of: String.self) { group in \n      group.addTask { read() } \/\/ task group child task, traceID: 1234\n      return await group.next()!\n  }\n\n  Task { \/\/ unstructured tasks do inherit task locals by copying\n    read() \/\/ traceID: 1234\n  }\n\n  Task.detached { \/\/ detached tasks do not inherit task-local values\n    read() \/\/ traceID: nil\n  }\n}\n```\n\n\n\n## Initializers\n\n- **init(wrappedValue:)**\n\n## Instance Properties\n\n- **description**: A textual representation of this instance.\n- **projectedValue**\n- **wrappedValue**\n\n## Instance Methods\n\n- **get()**: Gets the value currently bound to this task-local from the current task.\n- **withValue(_:operation:file:line:)**: Binds the task-local to the specific value for the duration of the synchronous operation.\n- **withValue(_:operation:isolation:file:line:)**: Binds the task-local to the specific value for the duration of the asynchronous operation.\n\n## Task-Local Storage\n\n- **TaskLocal()**: Macro that introduces a [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskLocal] binding.\n\n## Conforms To\n\n- CustomStringConvertible\n- Sendable\n- SendableMetatype\n\n",
   "sections" : [
     {
       "content" : "",
       "items" : [
         {
-          "description" : "Wrapper type that defines a task-local value key.",
-          "name" : "TaskLocal",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal"
+          "description" : "",
+          "name" : "init(wrappedValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal\/init(wrappedValue:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A textual representation of this instance.",
+          "name" : "description",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal\/description"
+        },
+        {
+          "description" : "",
+          "name" : "projectedValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal\/projectedValue"
+        },
+        {
+          "description" : "",
+          "name" : "wrappedValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal\/wrappedValue"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Gets the value currently bound to this task-local from the current task.",
+          "name" : "get()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal\/get()"
+        },
+        {
+          "description" : "Binds the task-local to the specific value for the duration of the synchronous operation.",
+          "name" : "withValue(_:operation:file:line:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal\/withValue(_:operation:file:line:)"
+        },
+        {
+          "description" : "Binds the task-local to the specific value for the duration of the asynchronous operation.",
+          "name" : "withValue(_:operation:isolation:file:line:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal\/withValue(_:operation:isolation:file:line:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Macro that introduces a [doc:\/\/com.apple.Swift\/documentation\/Swift\/TaskLocal] binding.",
+          "name" : "TaskLocal()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal()"
         }
       ],
       "title" : "Task-Local Storage"
     }
   ],
   "source" : "appleJSON",
-  "title" : "TaskLocal()",
-  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal()"
+  "title" : "TaskLocal",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/TaskLocal"
 }

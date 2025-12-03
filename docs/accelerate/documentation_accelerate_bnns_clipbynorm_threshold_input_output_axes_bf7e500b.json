@@ -1,0 +1,116 @@
+{
+  "abstract" : "Clips the input tensor to a Euclidean norm and writes the result to the output tensor.",
+  "codeExamples" : [
+    {
+      "code" : "static func clipToNorm() {\n    let inputValues: [Float] = [1, 2, 3,\n                                4, 5, 6,\n                                7, 8, 9]\n    \n    let input = BNNSNDArrayDescriptor.allocate(\n        initializingFrom: inputValues,\n        shape: .matrixRowMajor(3, 3))\n    let output = BNNSNDArrayDescriptor.allocateUninitialized(\n        scalarType: Float.self,\n        shape: input.shape)\n    \n    try? BNNS.clipByNorm(threshold: 10,\n                        input: input,\n                        output: output,\n                        axes: [1])\n    \n    \/\/ Prints `[1.0, 2.0, 3.0,\n    \/\/          4.0, 5.0, 6.0,\n    \/\/          5.0257072, 5.743665, 6.461623]`\n    print(output.makeArray(of: Float.self)!)\n\n    input.deallocate()\n    output.deallocate()\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "0e216f46a8233316f645de2f35a6e93f881e37009d62eed25b11850249486439",
+  "crawledAt" : "2025-12-02T22:16:07Z",
+  "declaration" : {
+    "code" : "static func clipByNorm(threshold: Float, input: BNNSNDArrayDescriptor, output: BNNSNDArrayDescriptor, axes: [Int]? = nil) throws",
+    "language" : "swift"
+  },
+  "id" : "C4C7AEB0-FF1B-40C8-8D5D-0B1A9C7D7E93",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse this function to clip the values in an input tensor to a maximum Euclidean norm. The Euclidean norm is the square root of the sum of squares of the two tensors.\n\nThe function supports clipping across the entire tensor or by the norms of a dimension.\n\nThe following code clips the values on axis `1` to a Euclidean norm of `10`. The Euclidean norms of `[1, 2, 3]` and `[4, 5, 6]` are both less than `10` and function returns them unchanged. However, the Euclidean norm of `[7, 8, 9]` is greater than `10` and the function returns them scaled accordingly.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/accelerate\/bnns\/clipbynorm(threshold:input:output:axes:)\ncrawled: 2025-12-02T22:16:07Z\n---\n\n# clipByNorm(threshold:input:output:axes:)\n\n**Type Method**\n\nClips the input tensor to a Euclidean norm and writes the result to the output tensor.\n\n## Declaration\n\n```swift\nstatic func clipByNorm(threshold: Float, input: BNNSNDArrayDescriptor, output: BNNSNDArrayDescriptor, axes: [Int]? = nil) throws\n```\n\n## Parameters\n\n- **threshold**: The maximum Euclidean norm to clip the gradient to.\n- **input**: The descriptor of the input.\n- **output**: The descriptor of the output.\n- **axes**: The dimensions that the function uses to compute the Euclidean norm. Set to `0` to specify that the function computes the norm over all dimensions.\n\n## Discussion\n\nUse this function to clip the values in an input tensor to a maximum Euclidean norm. The Euclidean norm is the square root of the sum of squares of the two tensors.\n\nThe function supports clipping across the entire tensor or by the norms of a dimension.\n\nThe following code clips the values on axis `1` to a Euclidean norm of `10`. The Euclidean norms of `[1, 2, 3]` and `[4, 5, 6]` are both less than `10` and function returns them unchanged. However, the Euclidean norm of `[7, 8, 9]` is greater than `10` and the function returns them scaled accordingly.\n\n```swift\nstatic func clipToNorm() {\n    let inputValues: [Float] = [1, 2, 3,\n                                4, 5, 6,\n                                7, 8, 9]\n    \n    let input = BNNSNDArrayDescriptor.allocate(\n        initializingFrom: inputValues,\n        shape: .matrixRowMajor(3, 3))\n    let output = BNNSNDArrayDescriptor.allocateUninitialized(\n        scalarType: Float.self,\n        shape: input.shape)\n    \n    try? BNNS.clipByNorm(threshold: 10,\n                        input: input,\n                        output: output,\n                        axes: [1])\n    \n    \/\/ Prints `[1.0, 2.0, 3.0,\n    \/\/          4.0, 5.0, 6.0,\n    \/\/          5.0257072, 5.743665, 6.461623]`\n    print(output.makeArray(of: Float.self)!)\n\n    input.deallocate()\n    output.deallocate()\n}\n```\n\n## Utility functions\n\n- **copy(_:to:filterParameters:)**: Copies the contents of an n-dimensional array descriptor to another descriptor of the same shape.\n- **transpose(input:output:firstTransposeAxis:secondTransposeAxis:filterParameters:)**: Transposes a tensor by swapping two of its dimensions.\n- **BNNSCopy(_:_:_:)**: Copies the contents of an n-dimensional array descriptor to another of the same shape.\n- **BNNSTranspose(_:_:_:_:_:)**: Transposes a tensor by swapping two of its dimensions.\n- **BNNSGetPointer(_:_:)**: Returns an n-dimensional array descriptor that contains a reference to a filter-data member.\n- **BNNSPointerSpecifier**: Constants that specify which pointer the BNNS get filter function returns.\n- **BNNS.GramLayer**: A layer object that wraps a Gram matrix filter and manages its deinitialization.\n- **BNNSLayerParametersGram**: A set of parameters that define a Gram matrix layer.\n- **BNNSFilterCreateLayerGram(_:_:)**: Returns a new Gram matrix layer.\n- **clip(to:input:output:)**: Clips the input tensor to a closed range and writes the result to the output tensor.\n- **clipByGlobalNorm(threshold:inputs:outputs:globalNorm:)**: Clips the input tensors to a global Euclidean norm and writes the result to the output tensors.\n- **BNNSClipByValue(_:_:_:_:)**: Clips a tensor’s values to the specified minimum and maximum values.\n- **BNNSClipByNorm(_:_:_:_:)**: Clips a tensor’s values to a maximum Euclidean norm.\n- **BNNSClipByGlobalNorm(_:_:_:_:_:)**: Clips a tensor’s values to a maximum global Euclidean norm.\n- **copyBandPart(_:to:lowerBandCount:upperBandCount:filterParameters:)**: Copies the specified subdiagonals and superdiagonals of a matrix, and sets other elements to zero.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Copies the contents of an n-dimensional array descriptor to another descriptor of the same shape.",
+          "name" : "copy(_:to:filterParameters:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/copy(_:to:filterParameters:)"
+        },
+        {
+          "description" : "Transposes a tensor by swapping two of its dimensions.",
+          "name" : "transpose(input:output:firstTransposeAxis:secondTransposeAxis:filterParameters:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/transpose(input:output:firstTransposeAxis:secondTransposeAxis:filterParameters:)"
+        },
+        {
+          "description" : "Copies the contents of an n-dimensional array descriptor to another of the same shape.",
+          "name" : "BNNSCopy(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSCopy(_:_:_:)"
+        },
+        {
+          "description" : "Transposes a tensor by swapping two of its dimensions.",
+          "name" : "BNNSTranspose(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSTranspose(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Returns an n-dimensional array descriptor that contains a reference to a filter-data member.",
+          "name" : "BNNSGetPointer(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSGetPointer(_:_:)"
+        },
+        {
+          "description" : "Constants that specify which pointer the BNNS get filter function returns.",
+          "name" : "BNNSPointerSpecifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSPointerSpecifier"
+        },
+        {
+          "description" : "A layer object that wraps a Gram matrix filter and manages its deinitialization.",
+          "name" : "BNNS.GramLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/GramLayer"
+        },
+        {
+          "description" : "A set of parameters that define a Gram matrix layer.",
+          "name" : "BNNSLayerParametersGram",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerParametersGram"
+        },
+        {
+          "description" : "Returns a new Gram matrix layer.",
+          "name" : "BNNSFilterCreateLayerGram(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateLayerGram(_:_:)"
+        },
+        {
+          "description" : "Clips the input tensor to a closed range and writes the result to the output tensor.",
+          "name" : "clip(to:input:output:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/clip(to:input:output:)"
+        },
+        {
+          "description" : "Clips the input tensors to a global Euclidean norm and writes the result to the output tensors.",
+          "name" : "clipByGlobalNorm(threshold:inputs:outputs:globalNorm:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/clipByGlobalNorm(threshold:inputs:outputs:globalNorm:)"
+        },
+        {
+          "description" : "Clips a tensor’s values to the specified minimum and maximum values.",
+          "name" : "BNNSClipByValue(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSClipByValue(_:_:_:_:)"
+        },
+        {
+          "description" : "Clips a tensor’s values to a maximum Euclidean norm.",
+          "name" : "BNNSClipByNorm(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSClipByNorm(_:_:_:_:)"
+        },
+        {
+          "description" : "Clips a tensor’s values to a maximum global Euclidean norm.",
+          "name" : "BNNSClipByGlobalNorm(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSClipByGlobalNorm(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Copies the specified subdiagonals and superdiagonals of a matrix, and sets other elements to zero.",
+          "name" : "copyBandPart(_:to:lowerBandCount:upperBandCount:filterParameters:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/copyBandPart(_:to:lowerBandCount:upperBandCount:filterParameters:)"
+        }
+      ],
+      "title" : "Utility functions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "clipByNorm(threshold:input:output:axes:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/accelerate\/bnns\/clipbynorm(threshold:input:output:axes:)"
+}

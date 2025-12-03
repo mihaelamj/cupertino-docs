@@ -1,0 +1,71 @@
+{
+  "abstract" : "Execute an operation with a cancellation handler that’s immediately invoked if the current task is canceled.",
+  "codeExamples" : [
+    {
+      "code" : "await withTaskCancellationHandler {\n  var sum = 0\n  while condition {\n    sum += 1\n  }\n  return sum\n} onCancel: {\n  \/\/ This onCancel closure might execute concurrently with the operation.\n  condition.cancel()\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "d2a40a92d9c59fb9570af307ef073f55d6567c30c10b57ef73a943067a84fb72",
+  "crawledAt" : "2025-12-02T21:55:42Z",
+  "declaration" : {
+    "code" : "@backDeployed(before: macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0)\nfunc withTaskCancellationHandler<T>(operation: () async throws -> T, onCancel handler: () -> Void, isolation: isolated (any Actor)? = #isolation) async rethrows -> T",
+    "language" : "swift"
+  },
+  "id" : "F08D4115-54E6-4659-8ECD-23CC90370BCA",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Swift",
+  "overview" : "## Discussion\n\nThis differs from the operation cooperatively checking for cancellation and reacting to it in that the cancellation handler is *always* and *immediately* invoked when the task is canceled. For example, even if the operation is running code that never checks for cancellation, a cancellation handler still runs and provides a chance to run some cleanup code:\n\n### Execution order and semantics\n\nThe `operation` closure is always invoked, even when the `withTaskCancellationHandler(operation:onCancel:)` method is called from a task that was already canceled.\n\nWhen `withTaskCancellationHandler(operation:onCancel:)` is used in a task that has already been canceled, the cancellation handler will be executed immediately before the `operation` closure gets to execute.\n\nThis allows the cancellation handler to set some external “canceled” flag that the operation may be *atomically* checking for in order to avoid performing any actual work once the operation gets to run.\n\nThe `operation` closure executes on the calling execution context, and doesn’t suspend or change execution context unless code contained within the closure does so. In other words, the potential suspension point of the `withTaskCancellationHandler(operation:onCancel:)` never suspends by itself before executing the operation.\n\nIf cancellation occurs while the operation is running, the cancellation handler executes *concurrently* with the operation.\n\n### Cancellation handlers and locks\n\nCancellation handlers which acquire locks must take care to avoid deadlock. The cancellation handler may be invoked while holding internal locks associated with the task or other tasks.  Other operations on the task, such as resuming a continuation, may acquire these same internal locks. Therefore, if a cancellation handler must acquire a lock, other code should not cancel tasks or resume continuations while holding that lock.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/withTaskCancellationHandler(operation:onCancel:isolation:)\ncrawled: 2025-12-02T21:55:42Z\n---\n\n# withTaskCancellationHandler(operation:onCancel:isolation:)\n\n**Function**\n\nExecute an operation with a cancellation handler that’s immediately invoked if the current task is canceled.\n\n## Declaration\n\n```swift\n@backDeployed(before: macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0)\nfunc withTaskCancellationHandler<T>(operation: () async throws -> T, onCancel handler: () -> Void, isolation: isolated (any Actor)? = #isolation) async rethrows -> T\n```\n\n## Discussion\n\nThis differs from the operation cooperatively checking for cancellation and reacting to it in that the cancellation handler is *always* and *immediately* invoked when the task is canceled. For example, even if the operation is running code that never checks for cancellation, a cancellation handler still runs and provides a chance to run some cleanup code:\n\n```swift\nawait withTaskCancellationHandler {\n  var sum = 0\n  while condition {\n    sum += 1\n  }\n  return sum\n} onCancel: {\n  \/\/ This onCancel closure might execute concurrently with the operation.\n  condition.cancel()\n}\n```\n\n### Execution order and semantics\n\nThe `operation` closure is always invoked, even when the `withTaskCancellationHandler(operation:onCancel:)` method is called from a task that was already canceled.\n\nWhen `withTaskCancellationHandler(operation:onCancel:)` is used in a task that has already been canceled, the cancellation handler will be executed immediately before the `operation` closure gets to execute.\n\nThis allows the cancellation handler to set some external “canceled” flag that the operation may be *atomically* checking for in order to avoid performing any actual work once the operation gets to run.\n\nThe `operation` closure executes on the calling execution context, and doesn’t suspend or change execution context unless code contained within the closure does so. In other words, the potential suspension point of the `withTaskCancellationHandler(operation:onCancel:)` never suspends by itself before executing the operation.\n\nIf cancellation occurs while the operation is running, the cancellation handler executes *concurrently* with the operation.\n\n### Cancellation handlers and locks\n\nCancellation handlers which acquire locks must take care to avoid deadlock. The cancellation handler may be invoked while holding internal locks associated with the task or other tasks.  Other operations on the task, such as resuming a continuation, may acquire these same internal locks. Therefore, if a cancellation handler must acquire a lock, other code should not cancel tasks or resume continuations while holding that lock.\n\n## Canceling Tasks\n\n- **CancellationError**: An error that indicates a task was canceled.\n- **cancel()**: Cancels this task.\n- **isCancelled**: A Boolean value that indicates whether the task should stop executing.\n- **isCancelled**: A Boolean value that indicates whether the task should stop executing.\n- **checkCancellation()**: Throws an error if the task was canceled.\n- **withTaskCancellationHandler(handler:operation:)**\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An error that indicates a task was canceled.",
+          "name" : "CancellationError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/CancellationError"
+        },
+        {
+          "description" : "Cancels this task.",
+          "name" : "cancel()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/cancel()"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the task should stop executing.",
+          "name" : "isCancelled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/isCancelled-swift.property"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the task should stop executing.",
+          "name" : "isCancelled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/isCancelled-swift.type.property"
+        },
+        {
+          "description" : "Throws an error if the task was canceled.",
+          "name" : "checkCancellation()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/Task\/checkCancellation()"
+        },
+        {
+          "description" : "",
+          "name" : "withTaskCancellationHandler(handler:operation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withTaskCancellationHandler(handler:operation:)"
+        }
+      ],
+      "title" : "Canceling Tasks"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "withTaskCancellationHandler(operation:onCancel:isolation:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/withTaskCancellationHandler(operation:onCancel:isolation:)"
+}

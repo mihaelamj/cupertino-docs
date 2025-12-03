@@ -1,0 +1,56 @@
+{
+  "abstract" : "Overwrites the channels of a floating-point 32-bit-per-channel, 4-channel interleaved buffer with the corresponding pixels of a planar buffer.",
+  "codeExamples" : [
+    {
+      "code" : "let pixelBuffer = vImage.PixelBuffer<vImage.InterleavedFx4>(\n    pixelValues: [10, 20, 30, 40,\n                  50, 60, 70, 80],\n    size: .init(width: 1, height: 2))\n\nlet newSource = vImage.PixelBuffer<vImage.PlanarF>(\n    pixelValues: [101,\n                  105],\n    size: .init(width: 1, height: 2))\n\npixelBuffer.withUnsafePointerToVImageBuffer { buf in\n    newSource.withUnsafePointerToVImageBuffer { new in\n        _ = vImageOverwriteChannels_ARGBFFFF(new,\n                                             buf,\n                                             buf,\n                                             0x8,\n                                             vImage_Flags(kvImageNoFlags))\n    }\n}\n\n\/\/ Prints:\n\/\/      \"[101.0, 20.0, 30.0, 40.0,\n\/\/        105.0, 60.0, 70.0, 80.0]\"\nprint(pixelBuffer.array)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "7d4a8d4733d810980923af0c4ee4a856786d1f0fc9b777288279a4951c4138f6",
+  "crawledAt" : "2025-12-03T21:16:54Z",
+  "declaration" : {
+    "code" : "func vImageOverwriteChannels_ARGBFFFF(_ newSrc: UnsafePointer<vImage_Buffer>, _ origSrc: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ copyMask: UInt8, _ flags: vImage_Flags) -> vImage_Error",
+    "language" : "swift"
+  },
+  "id" : "FACC2FE6-5CE7-4B55-B90A-6E6699567B31",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nThe following code overwrites channel `0` of the source pixels in `pixelBuffer` with the corresponding source pixels from `newSource`:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageOverwriteChannels_ARGBFFFF(_:_:_:_:_:)\ncrawled: 2025-12-03T21:16:54Z\n---\n\n# vImageOverwriteChannels_ARGBFFFF(_:_:_:_:_:)\n\n**Function**\n\nOverwrites the channels of a floating-point 32-bit-per-channel, 4-channel interleaved buffer with the corresponding pixels of a planar buffer.\n\n## Declaration\n\n```swift\nfunc vImageOverwriteChannels_ARGBFFFF(_ newSrc: UnsafePointer<vImage_Buffer>, _ origSrc: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ copyMask: UInt8, _ flags: vImage_Flags) -> vImage_Error\n```\n\n## Parameters\n\n- **newSrc**: The source vImage buffer that provides the new channel values.\n- **origSrc**: The source vImage buffer that provides the original pixel values.\n- **dest**: A pointer to the destination vImage buffer structure. You’re responsible for filling out the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer\/height], [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer\/width], and [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_Buffer\/rowBytes] fields of this structure, and for allocating a data buffer of the appropriate size. On return, the data buffer this structure points to contains the destination image data. When you no longer need the data buffer, deallocate the memory to prevent memory leaks.\n- **copyMask**: A bitmask that specifies the channel or channels that the function overwrites with the corresponding channel in the `newSrc` parameter. The value `0x8` represents channel `0`, the value `0x4` represents channel `1`, the value `0x2` represents channel `2`, and the value `0x1` represents channel `3`.\n- **flags**: The options to use when performing the operation. If your code implements its own tiling or its own multithreading, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageDoNotTile]; otherwise, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoFlags].\n\n## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nThe following code overwrites channel `0` of the source pixels in `pixelBuffer` with the corresponding source pixels from `newSource`:\n\n```swift\nlet pixelBuffer = vImage.PixelBuffer<vImage.InterleavedFx4>(\n    pixelValues: [10, 20, 30, 40,\n                  50, 60, 70, 80],\n    size: .init(width: 1, height: 2))\n\nlet newSource = vImage.PixelBuffer<vImage.PlanarF>(\n    pixelValues: [101,\n                  105],\n    size: .init(width: 1, height: 2))\n\npixelBuffer.withUnsafePointerToVImageBuffer { buf in\n    newSource.withUnsafePointerToVImageBuffer { new in\n        _ = vImageOverwriteChannels_ARGBFFFF(new,\n                                             buf,\n                                             buf,\n                                             0x8,\n                                             vImage_Flags(kvImageNoFlags))\n    }\n}\n\n\/\/ Prints:\n\/\/      \"[101.0, 20.0, 30.0, 40.0,\n\/\/        105.0, 60.0, 70.0, 80.0]\"\nprint(pixelBuffer.array)\n```\n\n## Overwriting with another buffer\n\n- **vImageSelectChannels_ARGB8888(_:_:_:_:_:)**: Overwrites the channels of an 8-bit-per-channel, 4-channel interleaved buffer with the specified channels of the corresponding pixels of a second buffer.\n- **vImageSelectChannels_ARGBFFFF(_:_:_:_:_:)**: Overwrites the channels of a floating-point 32-bit-per-channel, 4-channel interleaved buffer with the specified channels of the corresponding pixels of a second buffer.\n- **vImageOverwriteChannels_ARGB8888(_:_:_:_:_:)**: Overwrites the channels of an 8-bit-per-channel, 4-channel interleaved buffer with the corresponding pixels of a planar buffer.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Overwrites the channels of an 8-bit-per-channel, 4-channel interleaved buffer with the specified channels of the corresponding pixels of a second buffer.",
+          "name" : "vImageSelectChannels_ARGB8888(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageSelectChannels_ARGB8888(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Overwrites the channels of a floating-point 32-bit-per-channel, 4-channel interleaved buffer with the specified channels of the corresponding pixels of a second buffer.",
+          "name" : "vImageSelectChannels_ARGBFFFF(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageSelectChannels_ARGBFFFF(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Overwrites the channels of an 8-bit-per-channel, 4-channel interleaved buffer with the corresponding pixels of a planar buffer.",
+          "name" : "vImageOverwriteChannels_ARGB8888(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageOverwriteChannels_ARGB8888(_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Overwriting with another buffer"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vImageOverwriteChannels_ARGBFFFF(_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageOverwriteChannels_ARGBFFFF(_:_:_:_:_:)"
+}

@@ -1,0 +1,56 @@
+{
+  "abstract" : "Multiplies each pixel in an interleaved four-channel, 8-bit source image by a matrix to produce a planar 8-bit destination image.",
+  "codeExamples" : [
+    {
+      "code" : "let size = vImage.Size(width: 3, height: 1)\n\nlet source = vImage.PixelBuffer<vImage.Interleaved8x4>(\n    pixelValues: [0, 255, 0, 0,  \/\/ red\n                  0, 0, 255, 0,  \/\/ green\n                  0, 0, 0, 255], \/\/ blue\n    size: size)\n\nlet destination = vImage.PixelBuffer<vImage.Planar8>(\n    size: size)\n\nlet divisor: Int32 = 0x1000\nlet fDivisor = Float(divisor)\n\nlet redCoefficient: Float = 0.2126\nlet greenCoefficient: Float = 0.7152\nlet blueCoefficient: Float = 0.0722\n\nlet matrix = [\n    0,\n    Int16(redCoefficient * fDivisor),\n    Int16(greenCoefficient * fDivisor),\n    Int16(blueCoefficient * fDivisor)\n]\n\nsource.withUnsafePointerToVImageBuffer { src in\n    destination.withUnsafePointerToVImageBuffer { dest in\n        \n        _ = vImageMatrixMultiply_ARGB8888ToPlanar8(\n            src,\n            dest,\n            matrix,\n            divisor,\n            nil,\n            0,\n            vImage_Flags(kvImageNoFlags))\n    }\n}\n\n\/\/ Prints \"[0.21176471, 0.7137255, 0.07058824]\".\nprint(destination.array.map { Float($0) \/ 255 })",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "7a370e8485878096ebf1a7fb803d2e64bd6eba2dbbe342fc0be2e0064bb132ff",
+  "crawledAt" : "2025-12-03T21:14:43Z",
+  "declaration" : {
+    "code" : "func vImageMatrixMultiply_ARGB8888ToPlanar8(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ matrix: UnsafePointer<Int16>, _ divisor: Int32, _ pre_bias: UnsafePointer<Int16>!, _ post_bias: Int32, _ flags: vImage_Flags) -> vImage_Error",
+    "language" : "swift"
+  },
+  "id" : "68B06C6E-FF35-4515-BDFB-681B3886CE7C",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nThis function treats the four-channel source pixels as a four-element vector, and multiplies each source pixel by the matrix. The operation is equivalent to computing the dot product of the source pixel and the matrix.\n\nThe following code shows a four-channel interleaved buffer multiplied by a four-element column matrix to produce a planar destination image. The values in the matrix represent the Rec. 709 luminance coefficients that convert the color source pixels to a grayscale destination image. The source buffer contains a red pixel, a green pixel, and a blue pixel.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageMatrixMultiply_ARGB8888ToPlanar8(_:_:_:_:_:_:_:)\ncrawled: 2025-12-03T21:14:43Z\n---\n\n# vImageMatrixMultiply_ARGB8888ToPlanar8(_:_:_:_:_:_:_:)\n\n**Function**\n\nMultiplies each pixel in an interleaved four-channel, 8-bit source image by a matrix to produce a planar 8-bit destination image.\n\n## Declaration\n\n```swift\nfunc vImageMatrixMultiply_ARGB8888ToPlanar8(_ src: UnsafePointer<vImage_Buffer>, _ dest: UnsafePointer<vImage_Buffer>, _ matrix: UnsafePointer<Int16>, _ divisor: Int32, _ pre_bias: UnsafePointer<Int16>!, _ post_bias: Int32, _ flags: vImage_Flags) -> vImage_Error\n```\n\n## Parameters\n\n- **src**: The source vImage buffer.\n- **dest**: A pointer to the destination vImage buffer structure. You’re responsible for filling out the `height`, `width`, and `rowBytes` fields of this structure, and for allocating a data buffer of the appropriate size. On return, the data buffer this structure points to contains the destination image data. When you no longer need the data buffer, deallocate the memory to prevent memory leaks.\n- **matrix**: An array of values that contains the four elements in the column-matrix.\n- **divisor**: A value that the function divides the matrix multiplication result by after adding postbias.\n- **pre_bias**: An array that contains four bias values. The function adds the corresponding bias value to each source value before the matrix multiplication step. Pass `nil` to specify zero prebias.\n- **post_bias**: The postbias value. The function adds the bias value to the destination value after the matrix multiplication step.\n- **flags**: The options to use when performing the operation. If your code implements its own tiling or its own multithreading, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageDoNotTile]; otherwise, pass [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoFlags].\n\n## Return Value\n\n[doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/kvImageNoError]; otherwise, one of the error codes in [doc:\/\/com.apple.documentation\/documentation\/Accelerate\/data-types-and-constants].\n\n## Discussion\n\nThis function treats the four-channel source pixels as a four-element vector, and multiplies each source pixel by the matrix. The operation is equivalent to computing the dot product of the source pixel and the matrix.\n\nThe following code shows a four-channel interleaved buffer multiplied by a four-element column matrix to produce a planar destination image. The values in the matrix represent the Rec. 709 luminance coefficients that convert the color source pixels to a grayscale destination image. The source buffer contains a red pixel, a green pixel, and a blue pixel.\n\n```swift\nlet size = vImage.Size(width: 3, height: 1)\n\nlet source = vImage.PixelBuffer<vImage.Interleaved8x4>(\n    pixelValues: [0, 255, 0, 0,  \/\/ red\n                  0, 0, 255, 0,  \/\/ green\n                  0, 0, 0, 255], \/\/ blue\n    size: size)\n\nlet destination = vImage.PixelBuffer<vImage.Planar8>(\n    size: size)\n\nlet divisor: Int32 = 0x1000\nlet fDivisor = Float(divisor)\n\nlet redCoefficient: Float = 0.2126\nlet greenCoefficient: Float = 0.7152\nlet blueCoefficient: Float = 0.0722\n\nlet matrix = [\n    0,\n    Int16(redCoefficient * fDivisor),\n    Int16(greenCoefficient * fDivisor),\n    Int16(blueCoefficient * fDivisor)\n]\n\nsource.withUnsafePointerToVImageBuffer { src in\n    destination.withUnsafePointerToVImageBuffer { dest in\n        \n        _ = vImageMatrixMultiply_ARGB8888ToPlanar8(\n            src,\n            dest,\n            matrix,\n            divisor,\n            nil,\n            0,\n            vImage_Flags(kvImageNoFlags))\n    }\n}\n\n\/\/ Prints \"[0.21176471, 0.7137255, 0.07058824]\".\nprint(destination.array.map { Float($0) \/ 255 })\n```\n\n## Multiplying interleaved pixels by a matrix\n\n- **vImageMatrixMultiply_ARGB8888(_:_:_:_:_:_:_:)**: Multiplies each pixel in an interleaved four-channel, 8-bit source image by a matrix to produce an interleaved four-channel, 8-bit destination image.\n- **vImageMatrixMultiply_ARGBFFFF(_:_:_:_:_:_:)**: Multiplies each pixel in an interleaved four-channel, 32-bit source image by a matrix to produce an interleaved four-channel, 32-bit destination image.\n- **vImageMatrixMultiply_ARGBFFFFToPlanarF(_:_:_:_:_:_:)**: Multiplies each pixel in an interleaved four-channel, 32-bit source image by a matrix to produce a planar 32-bit destination image.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Multiplies each pixel in an interleaved four-channel, 8-bit source image by a matrix to produce an interleaved four-channel, 8-bit destination image.",
+          "name" : "vImageMatrixMultiply_ARGB8888(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageMatrixMultiply_ARGB8888(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Multiplies each pixel in an interleaved four-channel, 32-bit source image by a matrix to produce an interleaved four-channel, 32-bit destination image.",
+          "name" : "vImageMatrixMultiply_ARGBFFFF(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageMatrixMultiply_ARGBFFFF(_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Multiplies each pixel in an interleaved four-channel, 32-bit source image by a matrix to produce a planar 32-bit destination image.",
+          "name" : "vImageMatrixMultiply_ARGBFFFFToPlanarF(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageMatrixMultiply_ARGBFFFFToPlanarF(_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Multiplying interleaved pixels by a matrix"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vImageMatrixMultiply_ARGB8888ToPlanar8(_:_:_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageMatrixMultiply_ARGB8888ToPlanar8(_:_:_:_:_:_:_:)"
+}

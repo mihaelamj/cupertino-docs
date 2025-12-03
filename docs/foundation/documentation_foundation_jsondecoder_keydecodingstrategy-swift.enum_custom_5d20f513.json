@@ -1,0 +1,40 @@
+{
+  "abstract" : "A key decoding strategy defined by the closure you supply.",
+  "codeExamples" : [
+    {
+      "code" : "struct A: Codable {\n    var value: Int\n    var b: B\n    \n    struct B: Codable {\n        var value: Int\n        var c: C\n        \n        struct C: Codable {\n            var value: Int\n        }\n    }\n}\n\nlet json = \"\"\"\n{\n    \"a.value\": 1,\n    \"b\": {\n        \"a.b.value\": 2,\n        \"c\": {\n            \"a.b.c.value\": 3\n        }\n    }\n}\n\"\"\".data(using: .utf8)!\n\nlet decoder = JSONDecoder()\n\n\/\/\/ An implementation of CodingKey that's useful for combining and transforming keys as strings.\nstruct AnyKey: CodingKey {\n    var stringValue: String\n    var intValue: Int?\n    \n    init?(stringValue: String) {\n        self.stringValue = stringValue\n        self.intValue = nil\n    }\n    \n    init?(intValue: Int) {\n        self.stringValue = String(intValue)\n        self.intValue = intValue\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Customize each key to remove any preceding, dot-syntax paths.\ndecoder.keyDecodingStrategy = .custom { keys in\n    let lastComponent = keys.last!.stringValue.split(separator: \".\").last!\n    return AnyKey(stringValue: String(lastComponent))!\n}\n\nlet a = try decoder.decode(A.self, from: json)\n\nprint(a.b.c.value) \/\/ Prints \"3\"",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "24d6930bbd3e4c15dea527fd8b092a7ae43d242dc24c636b2dd191aca081b8d7",
+  "crawledAt" : "2025-12-03T08:30:30Z",
+  "declaration" : {
+    "code" : "@preconcurrency case custom(([any CodingKey]) -> any CodingKey)",
+    "language" : "swift"
+  },
+  "id" : "95EBA7AA-0FA8-4A68-9C87-029F65C16984",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Discussion\n\nThe value associated with this case is a closure you use to map names of keys from the decoded JSON object to the names of your type’s coding keys. During decoding, the closure executes once for each key in the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Decodable] value. When called, the closure receives an array of [doc:\/\/com.apple.documentation\/documentation\/Swift\/CodingKey] instances representing the sequence of keys needed to reach the value the decoder is currently decoding.\n\nThe example below shows how to decode the properties of the nested `A`, `B`, and `C` structures with custom logic that you specify in the closure value associated with the custom case.\n\nIn the next example you use the `AnyKey` structure defined above to customize the decoding of the `A`, `B`, and `C` structures.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/JSONDecoder\/KeyDecodingStrategy-swift.enum\/custom(_:)\ncrawled: 2025-12-03T08:30:30Z\n---\n\n# JSONDecoder.KeyDecodingStrategy.custom(_:)\n\n**Case**\n\nA key decoding strategy defined by the closure you supply.\n\n## Declaration\n\n```swift\n@preconcurrency case custom(([any CodingKey]) -> any CodingKey)\n```\n\n## Parameters\n\n- **codingPath**: A closure that receives as a parameter an array of CodingKey instances representing the sequence of keys needed to reach the value the decoder is currently decoding.\n\n## Discussion\n\nThe value associated with this case is a closure you use to map names of keys from the decoded JSON object to the names of your type’s coding keys. During decoding, the closure executes once for each key in the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Decodable] value. When called, the closure receives an array of [doc:\/\/com.apple.documentation\/documentation\/Swift\/CodingKey] instances representing the sequence of keys needed to reach the value the decoder is currently decoding.\n\nThe example below shows how to decode the properties of the nested `A`, `B`, and `C` structures with custom logic that you specify in the closure value associated with the custom case.\n\n```swift\nstruct A: Codable {\n    var value: Int\n    var b: B\n    \n    struct B: Codable {\n        var value: Int\n        var c: C\n        \n        struct C: Codable {\n            var value: Int\n        }\n    }\n}\n\nlet json = \"\"\"\n{\n    \"a.value\": 1,\n    \"b\": {\n        \"a.b.value\": 2,\n        \"c\": {\n            \"a.b.c.value\": 3\n        }\n    }\n}\n\"\"\".data(using: .utf8)!\n\nlet decoder = JSONDecoder()\n\n\/\/\/ An implementation of CodingKey that's useful for combining and transforming keys as strings.\nstruct AnyKey: CodingKey {\n    var stringValue: String\n    var intValue: Int?\n    \n    init?(stringValue: String) {\n        self.stringValue = stringValue\n        self.intValue = nil\n    }\n    \n    init?(intValue: Int) {\n        self.stringValue = String(intValue)\n        self.intValue = intValue\n    }\n}\n```\n\nIn the next example you use the `AnyKey` structure defined above to customize the decoding of the `A`, `B`, and `C` structures.\n\n```swift\n\/\/ Customize each key to remove any preceding, dot-syntax paths.\ndecoder.keyDecodingStrategy = .custom { keys in\n    let lastComponent = keys.last!.stringValue.split(separator: \".\").last!\n    return AnyKey(stringValue: String(lastComponent))!\n}\n\nlet a = try decoder.decode(A.self, from: json)\n\nprint(a.b.c.value) \/\/ Prints \"3\"\n```\n\n",
+  "sections" : [
+
+  ],
+  "source" : "appleJSON",
+  "title" : "JSONDecoder.KeyDecodingStrategy.custom(_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/JSONDecoder\/KeyDecodingStrategy-swift.enum\/custom(_:)"
+}

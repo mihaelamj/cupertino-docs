@@ -1,0 +1,60 @@
+{
+  "abstract" : "Creates an anchored object query that matches any of the query descriptors you provided.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Create the data types.\nlet stepCountType = HKQuantityType(.stepCount)\nlet pushCountType = HKQuantityType(.pushCount)\n\n\/\/ Specify the desired sample types.\nlet stepDescriptor = HKQueryDescriptor(sampleType: stepCountType, predicate: nil)\nlet pushDescriptor = HKQueryDescriptor(sampleType: pushCountType, predicate: nil)\n\n\/\/ Create a handler to process results from the query.\nlet handler: (HKAnchoredObjectQuery,\n              [HKSample]?,\n              [HKDeletedObject]?,\n              HKQueryAnchor?,\n              Error?) -> Void = { (query, samples, deleted, newAnchor, error) in\n    \n    if let error = error {\n        \/\/ Handle errors here.\n    }\n    \n    DispatchQueue.main.async {\n        \/\/ Update the anchor.\n        anchor = newAnchor\n        \n        \/\/ Process the samples and deleted objects here.\n    }\n}\n\n\/\/ Create the query.\nlet anchorQuery = HKAnchoredObjectQuery(queryDescriptors: [stepDescriptor, pushDescriptor],\n                                        anchor: anchor,\n                                        limit: HKObjectQueryNoLimit,\n                                        resultsHandler: handler)\n\n\/\/ To continue monitoring the HealthKit store in the background, set the\n\/\/ update handler.\nanchorQuery.updateHandler = handler\n\n\/\/ Run the query.\nstore.execute(anchorQuery)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "0e1f3decc768f9e0ce42d76327c2c5362c1168e7477bf95f9ef7a9a59e8c7167",
+  "crawledAt" : "2025-12-03T08:13:17Z",
+  "declaration" : {
+    "code" : "init(queryDescriptors: [HKQueryDescriptor], anchor: HKQueryAnchor?, limit: Int, resultsHandler handler: @escaping (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, (any Error)?) -> Void)",
+    "language" : "swift"
+  },
+  "id" : "9D271671-CB40-4D8B-AB85-97BD0153C703",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "HealthKit",
+  "overview" : "## Discussion\n\nUse this initializer to create an anchored object query for data that matches any of the [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKQueryDescriptor] objects. Each descriptor can specify a different data type.\n\nAfter instantiating the query, call the [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore] class’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/execute(_:)] method to run it. Queries run on an anonymous background queue. As soon as the query is complete, the system executes the results handler on the background queue, returning samples that match any of the descriptors. You typically dispatch these results to the main queue to update the user interface.\n\nThe first time you call this method, pass `nil` as the `anchor` parameter. This method returns all matching objects currently in the HealthKit store. Additionally, save the returned anchor object and pass it to the next query.\n\nAnchor queries can also act as long-running queries. If you assign an update handler before executing the query, the query continues to monitor the HealthKit store after gathering the initial results. The system calls the update handler on a background queue whenever a matching sample is saved to or deleted from the HealthKit store. To cancel this query, call the store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/stop(_:)] method.\n\nFor example, the following code gathers and returns all step count and push count samples currently in the HeathKit store. It then continues to monitor the store and calls the handler again after any relevant changes.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/HealthKit\/HKAnchoredObjectQuery\/init(queryDescriptors:anchor:limit:resultsHandler:)\ncrawled: 2025-12-03T08:13:17Z\n---\n\n# init(queryDescriptors:anchor:limit:resultsHandler:)\n\n**Initializer**\n\nCreates an anchored object query that matches any of the query descriptors you provided.\n\n## Declaration\n\n```swift\ninit(queryDescriptors: [HKQueryDescriptor], anchor: HKQueryAnchor?, limit: Int, resultsHandler handler: @escaping (HKAnchoredObjectQuery, [HKSample]?, [HKDeletedObject]?, HKQueryAnchor?, (any Error)?) -> Void)\n```\n\n## Parameters\n\n- **queryDescriptors**: An array of descriptors that specify the types of samples that the query returns.\n- **anchor**: The anchor that the previous anchored object query returned. The anchor object corresponds to the last object that the previous anchored object query returned. The new query returns only samples and deleted objects that are newer than that object.\n\nPass `nil` to receive all the matching samples and recently deleted objects currently in the HealthKit store.\n- **limit**: The maximum number of samples that the query returned. If you want to return all matching samples, use [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKObjectQueryNoLimit].\n- **handler**: A block that the HealthKit store calls after gathering the initial results. This block takes the following parameters:\n\n\n\n## Discussion\n\nUse this initializer to create an anchored object query for data that matches any of the [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKQueryDescriptor] objects. Each descriptor can specify a different data type.\n\nAfter instantiating the query, call the [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore] class’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/execute(_:)] method to run it. Queries run on an anonymous background queue. As soon as the query is complete, the system executes the results handler on the background queue, returning samples that match any of the descriptors. You typically dispatch these results to the main queue to update the user interface.\n\nThe first time you call this method, pass `nil` as the `anchor` parameter. This method returns all matching objects currently in the HealthKit store. Additionally, save the returned anchor object and pass it to the next query.\n\nAnchor queries can also act as long-running queries. If you assign an update handler before executing the query, the query continues to monitor the HealthKit store after gathering the initial results. The system calls the update handler on a background queue whenever a matching sample is saved to or deleted from the HealthKit store. To cancel this query, call the store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/stop(_:)] method.\n\nFor example, the following code gathers and returns all step count and push count samples currently in the HeathKit store. It then continues to monitor the store and calls the handler again after any relevant changes.\n\n```swift\n\/\/ Create the data types.\nlet stepCountType = HKQuantityType(.stepCount)\nlet pushCountType = HKQuantityType(.pushCount)\n\n\/\/ Specify the desired sample types.\nlet stepDescriptor = HKQueryDescriptor(sampleType: stepCountType, predicate: nil)\nlet pushDescriptor = HKQueryDescriptor(sampleType: pushCountType, predicate: nil)\n\n\/\/ Create a handler to process results from the query.\nlet handler: (HKAnchoredObjectQuery,\n              [HKSample]?,\n              [HKDeletedObject]?,\n              HKQueryAnchor?,\n              Error?) -> Void = { (query, samples, deleted, newAnchor, error) in\n    \n    if let error = error {\n        \/\/ Handle errors here.\n    }\n    \n    DispatchQueue.main.async {\n        \/\/ Update the anchor.\n        anchor = newAnchor\n        \n        \/\/ Process the samples and deleted objects here.\n    }\n}\n\n\/\/ Create the query.\nlet anchorQuery = HKAnchoredObjectQuery(queryDescriptors: [stepDescriptor, pushDescriptor],\n                                        anchor: anchor,\n                                        limit: HKObjectQueryNoLimit,\n                                        resultsHandler: handler)\n\n\/\/ To continue monitoring the HealthKit store in the background, set the\n\/\/ update handler.\nanchorQuery.updateHandler = handler\n\n\/\/ Run the query.\nstore.execute(anchorQuery)\n```\n\n## Creating Anchored Object Queries\n\n- **Executing Anchored Object Queries**: Create and run an anchored object query.\n- **init(type:predicate:anchor:limit:resultsHandler:)**: Initializes a new anchored object query.\n- **HKObjectQueryNoLimit**: A value indicating that the query returns all the matching samples in the HealthKit store.\n- **init(type:predicate:anchor:limit:completionHandler:)**: Initializes a new anchored object query.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create and run an anchored object query.",
+          "name" : "Executing Anchored Object Queries",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/executing-anchored-object-queries"
+        },
+        {
+          "description" : "Initializes a new anchored object query.",
+          "name" : "init(type:predicate:anchor:limit:resultsHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKAnchoredObjectQuery\/init(type:predicate:anchor:limit:resultsHandler:)"
+        },
+        {
+          "description" : "A value indicating that the query returns all the matching samples in the HealthKit store.",
+          "name" : "HKObjectQueryNoLimit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKObjectQueryNoLimit"
+        },
+        {
+          "description" : "Initializes a new anchored object query.",
+          "name" : "init(type:predicate:anchor:limit:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKAnchoredObjectQuery\/init(type:predicate:anchor:limit:completionHandler:)"
+        }
+      ],
+      "title" : "Creating Anchored Object Queries"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "init(queryDescriptors:anchor:limit:resultsHandler:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKAnchoredObjectQuery\/init(queryDescriptors:anchor:limit:resultsHandler:)"
+}

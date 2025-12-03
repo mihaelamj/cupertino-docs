@@ -1,0 +1,78 @@
+{
+  "abstract" : "Creates an any-to-any converter that uses a color conversion information object to convert from one image format to another.",
+  "codeExamples" : [
+    {
+      "code" : "guard\n    let sourceColorSpace = CGColorSpace(name: CGColorSpace.linearSRGB),\n    let destinationColorSpace = CGColorSpace(name: CGColorSpace.sRGB),\n    let conversionInfo = CGColorConversionInfo(src: sourceColorSpace,\n                                               dst: destinationColorSpace)\nelse {\n    return\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "var cgImageFormat = vImage_CGImageFormat(bitsPerComponent: 8,\n                                         bitsPerPixel: 8 * 3,\n                                         colorSpace: nil,\n                                         bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),\n                                         version: 0,\n                                         decode: nil,\n                                         renderingIntent: .defaultIntent)",
+      "language" : "swift"
+    },
+    {
+      "code" : "guard\n    let converter = vImageConverter_CreateWithCGColorConversionInfo(conversionInfo,\n                                                                    &cgImageFormat,\n                                                                    &cgImageFormat,\n                                                                    [0],\n                                                                    vImage_Flags(kvImageNoFlags),\n                                                                    nil),\n    var sourceBuffer = try? vImage_Buffer(cgImage: sourceCGImage,\n                                          format: cgImageFormat),\n    var destinationBuffer = try? vImage_Buffer(width: Int(image.size.width),\n                                               height: Int(image.size.height),\n                                               bitsPerPixel: cgImageFormat.bitsPerPixel) else {\n    return\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "vImageConvert_AnyToAny(converter.takeRetainedValue(),\n                       &sourceBuffer, &destinationBuffer,\n                       nil,\n                       vImage_Flags(kvImageNoFlags))",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "df3bdcb112a424735168c6eb6005f871d9648a6562dfa7a8d6a4d1236f9ad6af",
+  "crawledAt" : "2025-12-02T22:57:50Z",
+  "declaration" : {
+    "code" : "func vImageConverter_CreateWithCGColorConversionInfo(_ colorConversionInfoRef: CGColorConversionInfo, _ sFormat: UnsafePointer<vImage_CGImageFormat>, _ dFormat: UnsafePointer<vImage_CGImageFormat>, _ bg: UnsafePointer<CGFloat>!, _ flags: vImage_Flags, _ error: UnsafeMutablePointer<vImage_Error>!) -> Unmanaged<vImageConverter>!",
+    "language" : "swift"
+  },
+  "id" : "1EA76A51-0F6B-4F7F-A14D-C6C8F1116091",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter_CreateWithCGColorConversionInfo(_:_:_:_:_:_:)] to create a converter suitable for use with [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConvert_AnyToAny(_:_:_:_:_:)], which uses [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGColorConversionInfo] for color conversion. [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGColorConversionInfo] provides greater control on the color-space conversion than, for example, using a converter returned by [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter_CreateWithCGImageFormat(_:_:_:_:_:)].\n\n### Convert Linear Color Space to sRGB\n\nYou can use [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter_CreateWithCGColorConversionInfo(_:_:_:_:_:_:)] to convert an image with a linear response curve to sRGB. Many vImage operations provide optimal results when working on images with a linear response curve, this approach is ideal for converting between linear and sRGB.\n\nBegin by creating the source and destination color spaces, and the [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGColorConversionInfo] instance:\n\nCreate a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure, without a color space, that specifies the pixel memory requirement, number of channels, and alpha information:\n\nCreate the converter and buffers:\n\nPass the converter and the two buffers to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConvert_AnyToAny(_:_:_:_:_:)] to perform the conversion:\n\nThe following image shows the source image, on the left, and the contents of `destinationBuffer`, on the right, after conversion:\n\n",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConverter_CreateWithCGColorConversionInfo(_:_:_:_:_:_:)\ncrawled: 2025-12-02T22:57:50Z\n---\n\n# vImageConverter_CreateWithCGColorConversionInfo(_:_:_:_:_:_:)\n\n**Function**\n\nCreates an any-to-any converter that uses a color conversion information object to convert from one image format to another.\n\n## Declaration\n\n```swift\nfunc vImageConverter_CreateWithCGColorConversionInfo(_ colorConversionInfoRef: CGColorConversionInfo, _ sFormat: UnsafePointer<vImage_CGImageFormat>, _ dFormat: UnsafePointer<vImage_CGImageFormat>, _ bg: UnsafePointer<CGFloat>!, _ flags: vImage_Flags, _ error: UnsafeMutablePointer<vImage_Error>!) -> Unmanaged<vImageConverter>!\n```\n\n## Parameters\n\n- **colorConversionInfoRef**: The object that describes how to convert between color spaces.\n- **sFormat**: A pointer to a populated [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] that describes the image format of the source image.\n- **dFormat**: A pointer to a populated [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] that describes the image format of the destination image.\n- **bg**: An array of single-precision values, in the range 0 to 1, that specifies the background color when required.\n- **flags**: The options to use when performing this operation.\n- **error**: An optional `inout` value that receives an error code.\n\n## Discussion\n\nUse [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter_CreateWithCGColorConversionInfo(_:_:_:_:_:_:)] to create a converter suitable for use with [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConvert_AnyToAny(_:_:_:_:_:)], which uses [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGColorConversionInfo] for color conversion. [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGColorConversionInfo] provides greater control on the color-space conversion than, for example, using a converter returned by [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter_CreateWithCGImageFormat(_:_:_:_:_:)].\n\n### Convert Linear Color Space to sRGB\n\nYou can use [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConverter_CreateWithCGColorConversionInfo(_:_:_:_:_:_:)] to convert an image with a linear response curve to sRGB. Many vImage operations provide optimal results when working on images with a linear response curve, this approach is ideal for converting between linear and sRGB.\n\nBegin by creating the source and destination color spaces, and the [doc:\/\/com.apple.documentation\/documentation\/CoreGraphics\/CGColorConversionInfo] instance:\n\n```swift\nguard\n    let sourceColorSpace = CGColorSpace(name: CGColorSpace.linearSRGB),\n    let destinationColorSpace = CGColorSpace(name: CGColorSpace.sRGB),\n    let conversionInfo = CGColorConversionInfo(src: sourceColorSpace,\n                                               dst: destinationColorSpace)\nelse {\n    return\n}\n```\n\nCreate a [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImage_CGImageFormat] structure, without a color space, that specifies the pixel memory requirement, number of channels, and alpha information:\n\n```swift\nvar cgImageFormat = vImage_CGImageFormat(bitsPerComponent: 8,\n                                         bitsPerPixel: 8 * 3,\n                                         colorSpace: nil,\n                                         bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),\n                                         version: 0,\n                                         decode: nil,\n                                         renderingIntent: .defaultIntent)\n```\n\nCreate the converter and buffers:\n\n```swift\nguard\n    let converter = vImageConverter_CreateWithCGColorConversionInfo(conversionInfo,\n                                                                    &cgImageFormat,\n                                                                    &cgImageFormat,\n                                                                    [0],\n                                                                    vImage_Flags(kvImageNoFlags),\n                                                                    nil),\n    var sourceBuffer = try? vImage_Buffer(cgImage: sourceCGImage,\n                                          format: cgImageFormat),\n    var destinationBuffer = try? vImage_Buffer(width: Int(image.size.width),\n                                               height: Int(image.size.height),\n                                               bitsPerPixel: cgImageFormat.bitsPerPixel) else {\n    return\n}\n```\n\nPass the converter and the two buffers to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/vImageConvert_AnyToAny(_:_:_:_:_:)] to perform the conversion:\n\n```swift\nvImageConvert_AnyToAny(converter.takeRetainedValue(),\n                       &sourceBuffer, &destinationBuffer,\n                       nil,\n                       vImage_Flags(kvImageNoFlags))\n```\n\nThe following image shows the source image, on the left, and the contents of `destinationBuffer`, on the right, after conversion:\n\n\n\n## Creating a converter\n\n- **vImageConverter**: A description of a conversion from one image format to another.\n- **vImageConverter_CreateWithCGImageFormat(_:_:_:_:_:)**: Creates a vImage converter that converts from one vImage Core Graphics image format to another.\n- **vImageConverter_CreateForCGToCVImageFormat(_:_:_:_:_:)**: Creates a vImage converter that converts a Core Graphics-formatted image to a Core Video-formatted image.\n- **vImageConverter_CreateForCVToCGImageFormat(_:_:_:_:_:)**: Creates a vImage converter that converts a Core Video-formatted image to a Core Graphics-formatted image.\n- **vImageConverter_CreateWithColorSyncCodeFragment(_:_:_:_:_:_:)**: Creates a vImage converter to convert from one vImage Core Graphics image format to another, using custom ColorSync transform.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A description of a conversion from one image format to another.",
+          "name" : "vImageConverter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConverter"
+        },
+        {
+          "description" : "Creates a vImage converter that converts from one vImage Core Graphics image format to another.",
+          "name" : "vImageConverter_CreateWithCGImageFormat(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConverter_CreateWithCGImageFormat(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Creates a vImage converter that converts a Core Graphics-formatted image to a Core Video-formatted image.",
+          "name" : "vImageConverter_CreateForCGToCVImageFormat(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConverter_CreateForCGToCVImageFormat(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Creates a vImage converter that converts a Core Video-formatted image to a Core Graphics-formatted image.",
+          "name" : "vImageConverter_CreateForCVToCGImageFormat(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConverter_CreateForCVToCGImageFormat(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Creates a vImage converter to convert from one vImage Core Graphics image format to another, using custom ColorSync transform.",
+          "name" : "vImageConverter_CreateWithColorSyncCodeFragment(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConverter_CreateWithColorSyncCodeFragment(_:_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Creating a converter"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "vImageConverter_CreateWithCGColorConversionInfo(_:_:_:_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/vImageConverter_CreateWithCGColorConversionInfo(_:_:_:_:_:_:)"
+}

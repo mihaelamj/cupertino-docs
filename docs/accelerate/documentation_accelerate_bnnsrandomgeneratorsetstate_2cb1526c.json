@@ -1,0 +1,101 @@
+{
+  "abstract" : "Sets the state of a random number generator.",
+  "codeExamples" : [
+    {
+      "code" : "let data = UnsafeMutableBufferPointer<Int16>.allocate(capacity: 8)\nvar descriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                       layout: BNNSDataLayoutVector,\n                                       size: (10, 0, 0, 0, 0, 0, 0, 0),\n                                       stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                       data: data.baseAddress!,\n                                       data_type: BNNSDataType.int16,\n                                       table_data: nil,\n                                       table_data_type: BNNSDataType.int16,\n                                       data_scale: 1, data_bias: 0)\n\nguard let randomNumberGenerator = BNNSCreateRandomGenerator(BNNSRandomGeneratorMethodAES_CTR,\n                                                            nil) else {\n    return\n}\n\n\/\/ Allocate memory to store state.\nlet stateSize = BNNSRandomGeneratorStateSize(randomNumberGenerator)\nlet state = UnsafeMutableRawPointer.allocate(byteCount: stateSize,\n                                             alignment: 0)\n\n\/\/ Store the random number generator's state.\nBNNSRandomGeneratorGetState(randomNumberGenerator,\n                            stateSize,\n                            state)\n\nBNNSRandomFillUniformInt(randomNumberGenerator,\n                         &descriptor,\n                         -10,\n                         10)\n\nlet a = Array(data)\n\nBNNSRandomFillUniformInt(randomNumberGenerator,\n                         &descriptor,\n                         -10,\n                         10)\n\nlet b = Array(data)\n\n\/\/ Set the random number generator's state to its initial state.\nBNNSRandomGeneratorSetState(randomNumberGenerator,\n                            stateSize,\n                            state)\n\nBNNSRandomFillUniformInt(randomNumberGenerator,\n                         &descriptor,\n                         -10,\n                         10)\n\nlet c = Array(data)\n\nprint(a.elementsEqual(c)) \/\/ prints \"true\"\n\ndata.deallocate()\nstate.deallocate()\nBNNSDestroyRandomGenerator(randomNumberGenerator)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "7499cb6d1d626f565d74c007dea49809657ee2a955fa4836c0506972d5bb6bcc",
+  "crawledAt" : "2025-12-03T20:38:12Z",
+  "declaration" : {
+    "code" : "func BNNSRandomGeneratorSetState(_ generator: BNNSRandomGenerator?, _ state_size: Int, _ state: UnsafeMutableRawPointer) -> Int32",
+    "language" : "swift"
+  },
+  "id" : "0309CC29-9592-4B1A-BE95-B9897B5DB725",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSRandomGeneratorGetState(_:_:_:)] and [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSRandomGeneratorSetState(_:_:_:)] functions to capture and restore a random number generator’s state.\n\nThe following code creates a random number generator and captures its initial state. The code calls [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSRandomFillUniformInt(_:_:_:_:)] twice and copies the random values into the arrays `a` and `b`. The [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSRandomGeneratorSetState(_:_:_:)] function restores the generator to its initial state, and the final call to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSRandomFillUniformInt(_:_:_:_:)] populates the descriptor so that the values in arrays `a` and `c` are equal.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSRandomGeneratorSetState(_:_:_:)\ncrawled: 2025-12-03T20:38:12Z\n---\n\n# BNNSRandomGeneratorSetState(_:_:_:)\n\n**Function**\n\nSets the state of a random number generator.\n\n## Declaration\n\n```swift\nfunc BNNSRandomGeneratorSetState(_ generator: BNNSRandomGenerator?, _ state_size: Int, _ state: UnsafeMutableRawPointer) -> Int32\n```\n\n## Parameters\n\n- **generator**: The random number generator.\n- **state_size**: The size of the state buffer, in bytes.\n- **state**: A pointer to the state.\n\n## Discussion\n\nUse the [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSRandomGeneratorGetState(_:_:_:)] and [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSRandomGeneratorSetState(_:_:_:)] functions to capture and restore a random number generator’s state.\n\nThe following code creates a random number generator and captures its initial state. The code calls [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSRandomFillUniformInt(_:_:_:_:)] twice and copies the random values into the arrays `a` and `b`. The [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSRandomGeneratorSetState(_:_:_:)] function restores the generator to its initial state, and the final call to [doc:\/\/com.apple.accelerate\/documentation\/Accelerate\/BNNSRandomFillUniformInt(_:_:_:_:)] populates the descriptor so that the values in arrays `a` and `c` are equal.\n\n```swift\nlet data = UnsafeMutableBufferPointer<Int16>.allocate(capacity: 8)\nvar descriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                       layout: BNNSDataLayoutVector,\n                                       size: (10, 0, 0, 0, 0, 0, 0, 0),\n                                       stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                       data: data.baseAddress!,\n                                       data_type: BNNSDataType.int16,\n                                       table_data: nil,\n                                       table_data_type: BNNSDataType.int16,\n                                       data_scale: 1, data_bias: 0)\n\nguard let randomNumberGenerator = BNNSCreateRandomGenerator(BNNSRandomGeneratorMethodAES_CTR,\n                                                            nil) else {\n    return\n}\n\n\/\/ Allocate memory to store state.\nlet stateSize = BNNSRandomGeneratorStateSize(randomNumberGenerator)\nlet state = UnsafeMutableRawPointer.allocate(byteCount: stateSize,\n                                             alignment: 0)\n\n\/\/ Store the random number generator's state.\nBNNSRandomGeneratorGetState(randomNumberGenerator,\n                            stateSize,\n                            state)\n\nBNNSRandomFillUniformInt(randomNumberGenerator,\n                         &descriptor,\n                         -10,\n                         10)\n\nlet a = Array(data)\n\nBNNSRandomFillUniformInt(randomNumberGenerator,\n                         &descriptor,\n                         -10,\n                         10)\n\nlet b = Array(data)\n\n\/\/ Set the random number generator's state to its initial state.\nBNNSRandomGeneratorSetState(randomNumberGenerator,\n                            stateSize,\n                            state)\n\nBNNSRandomFillUniformInt(randomNumberGenerator,\n                         &descriptor,\n                         -10,\n                         10)\n\nlet c = Array(data)\n\nprint(a.elementsEqual(c)) \/\/ prints \"true\"\n\ndata.deallocate()\nstate.deallocate()\nBNNSDestroyRandomGenerator(randomNumberGenerator)\n```\n\n## Random number generation\n\n- **BNNS.RandomGenerator**: A random number generator.\n- **BNNSCreateRandomGenerator(_:_:)**: Returns a new random number generator using an internally generated random seed.\n- **BNNSCreateRandomGeneratorWithSeed(_:_:_:)**: Returns a new random number generator using the specified seed.\n- **BNNSRandomGeneratorMethod**: Constants that describe random number generation methods.\n- **BNNSRandomGenerator**: A pointer to a random number generator object.\n- **BNNSRandomFillUniformInt(_:_:_:_:)**: Fills the specified tensor with random integer values from the continuous uniform distribution within a range.\n- **BNNSRandomFillUniformFloat(_:_:_:_:)**: Fills the specified tensor with random floating-point values from the continuous uniform distribution within a range.\n- **BNNSRandomFillNormalFloat(_:_:_:_:)**: Fills the specified tensor with random floating-point values mapped to a normal distribution.\n- **BNNSRandomFillCategoricalFloat(_:_:_:_:)**: Fills the specified tensor with random values from the categorical distributions with the given event probabilities.\n- **BNNSRandomGeneratorStateSize(_:)**: Returns the state size, in bytes, of a random number generator.\n- **BNNSRandomGeneratorGetState(_:_:_:)**: Returns the state of a random number generator.\n- **BNNSDestroyRandomGenerator(_:)**: Destroys a random number generator.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A random number generator.",
+          "name" : "BNNS.RandomGenerator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/RandomGenerator"
+        },
+        {
+          "description" : "Returns a new random number generator using an internally generated random seed.",
+          "name" : "BNNSCreateRandomGenerator(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSCreateRandomGenerator(_:_:)"
+        },
+        {
+          "description" : "Returns a new random number generator using the specified seed.",
+          "name" : "BNNSCreateRandomGeneratorWithSeed(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSCreateRandomGeneratorWithSeed(_:_:_:)"
+        },
+        {
+          "description" : "Constants that describe random number generation methods.",
+          "name" : "BNNSRandomGeneratorMethod",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSRandomGeneratorMethod"
+        },
+        {
+          "description" : "A pointer to a random number generator object.",
+          "name" : "BNNSRandomGenerator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSRandomGenerator"
+        },
+        {
+          "description" : "Fills the specified tensor with random integer values from the continuous uniform distribution within a range.",
+          "name" : "BNNSRandomFillUniformInt(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSRandomFillUniformInt(_:_:_:_:)"
+        },
+        {
+          "description" : "Fills the specified tensor with random floating-point values from the continuous uniform distribution within a range.",
+          "name" : "BNNSRandomFillUniformFloat(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSRandomFillUniformFloat(_:_:_:_:)"
+        },
+        {
+          "description" : "Fills the specified tensor with random floating-point values mapped to a normal distribution.",
+          "name" : "BNNSRandomFillNormalFloat(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSRandomFillNormalFloat(_:_:_:_:)"
+        },
+        {
+          "description" : "Fills the specified tensor with random values from the categorical distributions with the given event probabilities.",
+          "name" : "BNNSRandomFillCategoricalFloat(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSRandomFillCategoricalFloat(_:_:_:_:)"
+        },
+        {
+          "description" : "Returns the state size, in bytes, of a random number generator.",
+          "name" : "BNNSRandomGeneratorStateSize(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSRandomGeneratorStateSize(_:)"
+        },
+        {
+          "description" : "Returns the state of a random number generator.",
+          "name" : "BNNSRandomGeneratorGetState(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSRandomGeneratorGetState(_:_:_:)"
+        },
+        {
+          "description" : "Destroys a random number generator.",
+          "name" : "BNNSDestroyRandomGenerator(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSDestroyRandomGenerator(_:)"
+        }
+      ],
+      "title" : "Random number generation"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSRandomGeneratorSetState(_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSRandomGeneratorSetState(_:_:_:)"
+}

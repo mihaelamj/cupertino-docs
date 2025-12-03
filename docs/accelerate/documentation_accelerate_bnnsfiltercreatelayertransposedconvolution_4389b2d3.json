@@ -1,0 +1,70 @@
+{
+  "abstract" : "Returns a new transposed convolution layer.",
+  "codeExamples" : [
+    {
+      "code" : "let input = [Float](repeating: 1, count: 2 * 2)\n\nvar kernel = [Float](repeating: 1, count: 3 * 3)\n\nvar output = [Float](repeating: 0, count: 4 * 4)\n\nkernel.withUnsafeMutableBufferPointer { kernelPtr in\n    \n    let inDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                             layout: BNNSDataLayoutImageCHW,\n                                             size: (2, 2, 1, 0, 0, 0, 0, 0),\n                                             stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                             data: nil,\n                                             data_type: .float,\n                                             table_data: nil,\n                                             table_data_type: .float,\n                                             data_scale: 1,\n                                             data_bias: 0)\n    \n    let weightsDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                  layout: BNNSDataLayoutConvolutionWeightsOIHW,\n                                                  size: (3, 3, 1, 1, 0, 0, 0, 0),\n                                                  stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                  data: kernelPtr.baseAddress,\n                                                  data_type: .float,\n                                                  table_data: nil,\n                                                  table_data_type: .float,\n                                                  data_scale: 1,\n                                                  data_bias: 0)\n    \n    let outDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                              layout: BNNSDataLayoutImageCHW,\n                                              size: (4, 4, 1, 0, 0, 0, 0, 0),\n                                              stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                              data: nil,\n                                              data_type: .float,\n                                              table_data: nil,\n                                              table_data_type: .float,\n                                              data_scale: 1,\n                                              data_bias: 0)\n    \n    var parameters = BNNSLayerParametersConvolution(i_desc: inDescriptor,\n                                                    w_desc: weightsDescriptor,\n                                                    o_desc: outDescriptor,\n                                                    bias: BNNSNDArrayDescriptor(),\n                                                    activation: .identity,\n                                                    x_stride: 1, y_stride: 1,\n                                                    x_dilation_stride: 0, y_dilation_stride: 0,\n                                                    x_padding: 0, y_padding: 0,\n                                                    groups: 1,\n                                                    pad: (0, 0, 0, 0))\n\n    let filter = BNNSFilterCreateLayerTransposedConvolution(&parameters,\n                                                            nil)\n    defer {\n        BNNSFilterDestroy(filter)\n    }\n    \n    BNNSFilterApply(filter,\n                    input,\n                    &output)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "[ 1.0, 2.0, 2.0, 1.0, \n  2.0, 4.0, 4.0, 2.0, \n  2.0, 4.0, 4.0, 2.0, \n  1.0, 2.0, 2.0, 1.0 ]",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "9bf6f7fdfc19e494efbe178a8f58c190d7d98b7f7b9fdfe188ab1b86cb7944e7",
+  "crawledAt" : "2025-12-03T20:36:03Z",
+  "declaration" : {
+    "code" : "func BNNSFilterCreateLayerTransposedConvolution(_ layer_params: UnsafePointer<BNNSLayerParametersConvolution>, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> BNNSFilter?",
+    "language" : "swift"
+  },
+  "id" : "7063CEB7-156E-46A5-BF7A-C82AE7A5E7B0",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Accelerate",
+  "overview" : "## Discussion\n\nUse transposed convolution to upsample a tensor by performing an operation that’s effectively the inverse of a convolution.\n\nThe following figure illustrates the process of transposed convolution. The operation multiplies each element in the input by the kernel to produce the corresponding values in the output. The final output, pictured at the bottom of the figure, is the sum of the products:\n\n\n\nUse the following code to perform the illustrated transposed convolution:\n\nOn return, `output` contains the following values:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateLayerTransposedConvolution(_:_:)\ncrawled: 2025-12-03T20:36:03Z\n---\n\n# BNNSFilterCreateLayerTransposedConvolution(_:_:)\n\n**Function**\n\nReturns a new transposed convolution layer.\n\n## Declaration\n\n```swift\nfunc BNNSFilterCreateLayerTransposedConvolution(_ layer_params: UnsafePointer<BNNSLayerParametersConvolution>, _ filter_params: UnsafePointer<BNNSFilterParameters>?) -> BNNSFilter?\n```\n\n## Parameters\n\n- **layer_params**: Layer parameters.\n- **filter_params**: The filter runtime parameters.\n\n## Discussion\n\nUse transposed convolution to upsample a tensor by performing an operation that’s effectively the inverse of a convolution.\n\nThe following figure illustrates the process of transposed convolution. The operation multiplies each element in the input by the kernel to produce the corresponding values in the output. The final output, pictured at the bottom of the figure, is the sum of the products:\n\n\n\nUse the following code to perform the illustrated transposed convolution:\n\n```swift\nlet input = [Float](repeating: 1, count: 2 * 2)\n\nvar kernel = [Float](repeating: 1, count: 3 * 3)\n\nvar output = [Float](repeating: 0, count: 4 * 4)\n\nkernel.withUnsafeMutableBufferPointer { kernelPtr in\n    \n    let inDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                             layout: BNNSDataLayoutImageCHW,\n                                             size: (2, 2, 1, 0, 0, 0, 0, 0),\n                                             stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                             data: nil,\n                                             data_type: .float,\n                                             table_data: nil,\n                                             table_data_type: .float,\n                                             data_scale: 1,\n                                             data_bias: 0)\n    \n    let weightsDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                                  layout: BNNSDataLayoutConvolutionWeightsOIHW,\n                                                  size: (3, 3, 1, 1, 0, 0, 0, 0),\n                                                  stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                                  data: kernelPtr.baseAddress,\n                                                  data_type: .float,\n                                                  table_data: nil,\n                                                  table_data_type: .float,\n                                                  data_scale: 1,\n                                                  data_bias: 0)\n    \n    let outDescriptor = BNNSNDArrayDescriptor(flags: BNNSNDArrayFlags(0),\n                                              layout: BNNSDataLayoutImageCHW,\n                                              size: (4, 4, 1, 0, 0, 0, 0, 0),\n                                              stride: (0, 0, 0, 0, 0, 0, 0, 0),\n                                              data: nil,\n                                              data_type: .float,\n                                              table_data: nil,\n                                              table_data_type: .float,\n                                              data_scale: 1,\n                                              data_bias: 0)\n    \n    var parameters = BNNSLayerParametersConvolution(i_desc: inDescriptor,\n                                                    w_desc: weightsDescriptor,\n                                                    o_desc: outDescriptor,\n                                                    bias: BNNSNDArrayDescriptor(),\n                                                    activation: .identity,\n                                                    x_stride: 1, y_stride: 1,\n                                                    x_dilation_stride: 0, y_dilation_stride: 0,\n                                                    x_padding: 0, y_padding: 0,\n                                                    groups: 1,\n                                                    pad: (0, 0, 0, 0))\n\n    let filter = BNNSFilterCreateLayerTransposedConvolution(&parameters,\n                                                            nil)\n    defer {\n        BNNSFilterDestroy(filter)\n    }\n    \n    BNNSFilterApply(filter,\n                    input,\n                    &output)\n}\n```\n\nOn return, `output` contains the following values:\n\n```swift\n[ 1.0, 2.0, 2.0, 1.0, \n  2.0, 4.0, 4.0, 2.0, \n  2.0, 4.0, 4.0, 2.0, \n  1.0, 2.0, 2.0, 1.0 ]\n```\n\n## Convolution layers\n\n- **BNNSConvolutionLayerParameters**: A structure containing convolution parameters.\n- **BNNSFilterCreateConvolutionLayer(_:_:_:_:)**: Returns a convolution filter, initialized with input, output, layer, and filter parameters.\n- **BNNS.ConvolutionLayer**: A layer object that wraps a convolution filter and manages its deinitialization.\n- **BNNSLayerParametersConvolution**: A structure that contains the parameters of a convolution layer.\n- **BNNSFilterCreateLayerConvolution(_:_:)**: Returns a new convolution layer.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A structure containing convolution parameters.",
+          "name" : "BNNSConvolutionLayerParameters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSConvolutionLayerParameters"
+        },
+        {
+          "description" : "Returns a convolution filter, initialized with input, output, layer, and filter parameters.",
+          "name" : "BNNSFilterCreateConvolutionLayer(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateConvolutionLayer(_:_:_:_:)"
+        },
+        {
+          "description" : "A layer object that wraps a convolution filter and manages its deinitialization.",
+          "name" : "BNNS.ConvolutionLayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNS\/ConvolutionLayer"
+        },
+        {
+          "description" : "A structure that contains the parameters of a convolution layer.",
+          "name" : "BNNSLayerParametersConvolution",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSLayerParametersConvolution"
+        },
+        {
+          "description" : "Returns a new convolution layer.",
+          "name" : "BNNSFilterCreateLayerConvolution(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateLayerConvolution(_:_:)"
+        }
+      ],
+      "title" : "Convolution layers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BNNSFilterCreateLayerTransposedConvolution(_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Accelerate\/BNNSFilterCreateLayerTransposedConvolution(_:_:)"
+}
