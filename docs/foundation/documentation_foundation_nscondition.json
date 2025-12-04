@@ -1,0 +1,134 @@
+{
+  "abstract" : "A condition variable whose semantics follow those used for POSIX-style conditions.",
+  "codeExamples" : [
+    {
+      "code" : "lock the condition\nwhile (!(boolean_predicate)) {\n    wait on condition\n}\ndo protected work\n(optionally, signal or broadcast the condition again or change a predicate value)\nunlock the condition",
+      "language" : "objc"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSLocking",
+    "NSObjectProtocol",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "d845ac9497f29f497257b5460259fb4c5c46e30a94febfa488361b55aabe9fc5",
+  "crawledAt" : "2025-12-04T17:56:23Z",
+  "declaration" : {
+    "code" : "class NSCondition",
+    "language" : "swift"
+  },
+  "id" : "35C16180-C84F-438D-9AA5-70FB80EB53CF",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nA condition object acts as both a lock and a checkpoint in a given thread. The lock protects your code while it tests the condition and performs the task triggered by the condition. The checkpoint behavior requires that the condition be true before the thread proceeds with its task. While the condition is not true, the thread blocks. It remains blocked until another thread signals the condition object.\n\nThe semantics for using an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSCondition] object are as follows:\n\nThe pseudocode for performing the preceding steps would therefore look something like the following:\n\nWhenever you use a condition object, the first step is to lock the condition. Locking the condition ensures that your predicate and task code are protected from interference by other threads using the same condition. Once you have completed your task, you can set other predicates or signal other conditions based on the needs of your code. You should always set predicates and signal conditions while holding the condition object’s lock.\n\nWhen a thread waits on a condition, the condition object unlocks its lock and blocks the thread. When the condition is signaled, the system wakes up the thread. The condition object then reacquires its lock before returning from the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSCondition\/wait()] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSCondition\/wait(until:)] method. Thus, from the point of view of the thread, it is as if it always held the lock.\n\nA boolean predicate is an important part of the semantics of using conditions because of the way signaling works. Signaling a condition does not guarantee that the condition itself is true. There are timing issues involved in signaling that may cause false signals to appear. Using a predicate ensures that these spurious signals do not cause you to perform work before it is safe to do so. The predicate itself is simply a flag or other variable in your code that you test in order to acquire a Boolean result.\n\nFor more information on how to use conditions, see Using POSIX Thread Locks in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/Multithreading\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/10000057i].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/NSCondition\ncrawled: 2025-12-04T17:56:23Z\n---\n\n# NSCondition\n\n**Class**\n\nA condition variable whose semantics follow those used for POSIX-style conditions.\n\n## Declaration\n\n```swift\nclass NSCondition\n```\n\n## Overview\n\nA condition object acts as both a lock and a checkpoint in a given thread. The lock protects your code while it tests the condition and performs the task triggered by the condition. The checkpoint behavior requires that the condition be true before the thread proceeds with its task. While the condition is not true, the thread blocks. It remains blocked until another thread signals the condition object.\n\nThe semantics for using an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSCondition] object are as follows:\n\n1. Lock the condition object.\n2. Test a boolean predicate. (This predicate is a boolean flag or other variable in your code that indicates whether it is safe to perform the task protected by the condition.)\n3. If the boolean predicate is false, call the condition object’s [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSCondition\/wait()] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSCondition\/wait(until:)] method to block the thread. Upon returning from these methods, go to step 2 to retest your boolean predicate. (Continue waiting and retesting the predicate until it is true.)\n4. If the boolean predicate is true, perform the task.\n5. Optionally update any predicates (or signal any conditions) affected by your task.\n6. When your task is done, unlock the condition object.\n\nThe pseudocode for performing the preceding steps would therefore look something like the following:\n\n```objc\nlock the condition\nwhile (!(boolean_predicate)) {\n    wait on condition\n}\ndo protected work\n(optionally, signal or broadcast the condition again or change a predicate value)\nunlock the condition\n```\n\nWhenever you use a condition object, the first step is to lock the condition. Locking the condition ensures that your predicate and task code are protected from interference by other threads using the same condition. Once you have completed your task, you can set other predicates or signal other conditions based on the needs of your code. You should always set predicates and signal conditions while holding the condition object’s lock.\n\nWhen a thread waits on a condition, the condition object unlocks its lock and blocks the thread. When the condition is signaled, the system wakes up the thread. The condition object then reacquires its lock before returning from the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSCondition\/wait()] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSCondition\/wait(until:)] method. Thus, from the point of view of the thread, it is as if it always held the lock.\n\nA boolean predicate is an important part of the semantics of using conditions because of the way signaling works. Signaling a condition does not guarantee that the condition itself is true. There are timing issues involved in signaling that may cause false signals to appear. Using a predicate ensures that these spurious signals do not cause you to perform work before it is safe to do so. The predicate itself is simply a flag or other variable in your code that you test in order to acquire a Boolean result.\n\nFor more information on how to use conditions, see Using POSIX Thread Locks in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/Multithreading\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/10000057i].\n\n## Waiting for the Lock\n\n- **wait()**: Blocks the current thread until the condition is signaled.\n- **wait(until:)**: Blocks the current thread until the condition is signaled or the specified time limit is reached.\n\n## Signaling Waiting Threads\n\n- **signal()**: Signals the condition, waking up one thread waiting on it.\n- **broadcast()**: Signals the condition, waking up all threads waiting on it.\n\n## Identifying the Condition\n\n- **name**: The name of the condition.\n\n## Threads and Locking\n\n- **Thread**: A thread of execution.\n- **NSLocking**: The elementary methods adopted by classes that define lock objects.\n- **NSLock**: An object that coordinates the operation of multiple threads of execution within the same application.\n- **NSRecursiveLock**: A lock that may be acquired multiple times by the same thread without causing a deadlock.\n- **NSDistributedLock**: A lock that multiple applications on multiple hosts can use to restrict access to some shared resource, such as a file.\n- **NSConditionLock**: A lock that can be associated with specific, user-defined conditions.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSLocking\n- NSObjectProtocol\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Blocks the current thread until the condition is signaled.",
+          "name" : "wait()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSCondition\/wait()"
+        },
+        {
+          "description" : "Blocks the current thread until the condition is signaled or the specified time limit is reached.",
+          "name" : "wait(until:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSCondition\/wait(until:)"
+        }
+      ],
+      "title" : "Waiting for the Lock"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Signals the condition, waking up one thread waiting on it.",
+          "name" : "signal()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSCondition\/signal()"
+        },
+        {
+          "description" : "Signals the condition, waking up all threads waiting on it.",
+          "name" : "broadcast()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSCondition\/broadcast()"
+        }
+      ],
+      "title" : "Signaling Waiting Threads"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The name of the condition.",
+          "name" : "name",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSCondition\/name"
+        }
+      ],
+      "title" : "Identifying the Condition"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A thread of execution.",
+          "name" : "Thread",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Thread"
+        },
+        {
+          "description" : "The elementary methods adopted by classes that define lock objects.",
+          "name" : "NSLocking",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSLocking"
+        },
+        {
+          "description" : "An object that coordinates the operation of multiple threads of execution within the same application.",
+          "name" : "NSLock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSLock"
+        },
+        {
+          "description" : "A lock that may be acquired multiple times by the same thread without causing a deadlock.",
+          "name" : "NSRecursiveLock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSRecursiveLock"
+        },
+        {
+          "description" : "A lock that multiple applications on multiple hosts can use to restrict access to some shared resource, such as a file.",
+          "name" : "NSDistributedLock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSDistributedLock"
+        },
+        {
+          "description" : "A lock that can be associated with specific, user-defined conditions.",
+          "name" : "NSConditionLock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSConditionLock"
+        }
+      ],
+      "title" : "Threads and Locking"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSCondition",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSCondition"
+}

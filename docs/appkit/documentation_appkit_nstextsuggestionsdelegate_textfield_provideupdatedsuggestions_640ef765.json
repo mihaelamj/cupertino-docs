@@ -1,0 +1,32 @@
+{
+  "abstract" : "Called when the text field’s text (or tokens) have changed and when the text field is going to display a new list of suggestion items.",
+  "codeExamples" : [
+    {
+      "code" : "func textField(\n    _ textField: NSTextField,\n    provideUpdatedSuggestions responseHandler: @escaping ((ItemResponse) -> Void)\n) {\n    \/\/ 1. Get the results (filter).\n    let searchString = textField.stringValue\n    let matchedLocations = self.favoriteLocations.filter({\n        $0.matches(searchString: searchString)\n    }).prefix(5)\n\n    \/\/ 2. Create item representations for the results.\n    let items = matchedLocations.map({\n        Item(representedValue: $0, title: $0.title)\n    })\n\n    \/\/ 3. Provide them back to the text field in a titled section.\n    let response = ItemResponse(itemSections: [\n        ItemSection(\n            title: NSLocalizedString(\"Favorites\", comment: …),\n            items: items\n        ),\n    ])\n    responseHandler(response)\n}"
+    },
+    {
+      "code" : "func textField(\n    _ textField: NSTextField,\n    provideUpdatedSuggestions responseHandler: @escaping ((ItemResponse) -> Void)\n) {\n    \/\/ …\n\n    var response = ItemResponse(…)\n    response.phase = .intermediate\n    responseHandler(response)\n\n    Task {\n        let suggestedLocations = await LocationSuggestionsProvider.shared.suggestedLocations(for: searchString)\n\n        response.itemSections.append(ItemSection(\n            title: NSLocalizedString(\"Suggested Locations\", comment: …),\n            items: suggestedLocations.map({\n                Item(representedValue: $0, title: $0.title)\n            })\n        ))\n        response.phase = .final\n        responseHandler(response)\n    }\n}"
+    }
+  ],
+  "contentHash" : "4f874d73b4b9d27f810272b00c10d357a24486f772b16e8e2215e3748abf849c",
+  "crawledAt" : "2025-12-04T20:01:54Z",
+  "declaration" : {
+    "code" : "@MainActor func textField(_ textField: NSTextField, provideUpdatedSuggestions responseHandler: @escaping (Self.ItemResponse) -> Void)",
+    "language" : "swift"
+  },
+  "id" : "07DFC5FA-82EB-427F-923B-8507ED5655BD",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "AppKit",
+  "overview" : "## Discussion\n\nRead the contents of `textField` to determine what suggestions to provide. For example:\n\nIf some of the suggestions are time-consuming to compute, or need to be fetched from an asynchronous\/remote source, call `responseHandler` an additional time when that data has been fetched and processed.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AppKit\/NSTextSuggestionsDelegate\/textField(_:provideUpdatedSuggestions:)\ncrawled: 2025-12-04T20:01:54Z\n---\n\n# textField(_:provideUpdatedSuggestions:)\n\n**Instance Method**\n\nCalled when the text field’s text (or tokens) have changed and when the text field is going to display a new list of suggestion items.\n\n## Declaration\n\n```swift\n@MainActor func textField(_ textField: NSTextField, provideUpdatedSuggestions responseHandler: @escaping (Self.ItemResponse) -> Void)\n```\n\n## Parameters\n\n- **textField**: The text field requesting updated suggestions.\n- **responseHandler**: A closure to call with an item response when results have been gathered and are ready to display.\n\n## Discussion\n\nRead the contents of `textField` to determine what suggestions to provide. For example:\n\n```\nfunc textField(\n    _ textField: NSTextField,\n    provideUpdatedSuggestions responseHandler: @escaping ((ItemResponse) -> Void)\n) {\n    \/\/ 1. Get the results (filter).\n    let searchString = textField.stringValue\n    let matchedLocations = self.favoriteLocations.filter({\n        $0.matches(searchString: searchString)\n    }).prefix(5)\n\n    \/\/ 2. Create item representations for the results.\n    let items = matchedLocations.map({\n        Item(representedValue: $0, title: $0.title)\n    })\n\n    \/\/ 3. Provide them back to the text field in a titled section.\n    let response = ItemResponse(itemSections: [\n        ItemSection(\n            title: NSLocalizedString(\"Favorites\", comment: …),\n            items: items\n        ),\n    ])\n    responseHandler(response)\n}\n```\n\nIf some of the suggestions are time-consuming to compute, or need to be fetched from an asynchronous\/remote source, call `responseHandler` an additional time when that data has been fetched and processed.\n\n```\nfunc textField(\n    _ textField: NSTextField,\n    provideUpdatedSuggestions responseHandler: @escaping ((ItemResponse) -> Void)\n) {\n    \/\/ …\n\n    var response = ItemResponse(…)\n    response.phase = .intermediate\n    responseHandler(response)\n\n    Task {\n        let suggestedLocations = await LocationSuggestionsProvider.shared.suggestedLocations(for: searchString)\n\n        response.itemSections.append(ItemSection(\n            title: NSLocalizedString(\"Suggested Locations\", comment: …),\n            items: suggestedLocations.map({\n                Item(representedValue: $0, title: $0.title)\n            })\n        ))\n        response.phase = .final\n        responseHandler(response)\n    }\n}\n```\n\n\n\n\n\n",
+  "sections" : [
+
+  ],
+  "source" : "appleJSON",
+  "title" : "textField(_:provideUpdatedSuggestions:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSTextSuggestionsDelegate\/textField(_:provideUpdatedSuggestions:)"
+}

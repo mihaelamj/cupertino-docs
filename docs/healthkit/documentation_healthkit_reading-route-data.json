@@ -1,0 +1,72 @@
+{
+  "abstract" : "Access the user’s route for a workout.",
+  "codeExamples" : [
+    {
+      "code" : "let runningObjectQuery = HKQuery.predicateForObjects(from: myWorkout)\n\nlet routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: runningObjectQuery, anchor: nil, limit: HKObjectQueryNoLimit) { (query, samples, deletedObjects, anchor, error) in\n    \n    guard error == nil else {\n        \/\/ Handle any errors here.\n        fatalError(\"The initial query failed.\")\n    }\n    \n    \/\/ Process the initial route data here.\n}\n\nrouteQuery.updateHandler = { (query, samples, deleted, anchor, error) in\n    \n    guard error == nil else {\n        \/\/ Handle any errors here.\n        fatalError(\"The update failed.\")\n    }\n    \n    \/\/ Process updates or additions here.\n}\n\nstore.execute(routeQuery)",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Create the route query.\nlet query = HKWorkoutRouteQuery(route: myRoute) { (query, locationsOrNil, done, errorOrNil) in\n    \n    \/\/ This block may be called multiple times.\n    \n    if let error = errorOrNil {\n        \/\/ Handle any errors here.\n        return\n    }\n    \n    guard let locations = locationsOrNil else {\n        fatalError(\"*** Invalid State: This can only fail if there was an error. ***\")\n    }\n    \n    \/\/ Do something with this batch of location data.\n        \n    if done {\n        \/\/ The query returned all the location data associated with the route.\n        \/\/ Do something with the complete data set.\n    }\n    \n    \/\/ You can stop the query by calling:\n    \/\/ store.stop(query)\n    \n}\nstore.execute(query)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "d42ddbe2008aa81eaf9e1329570aaabfbc4e1394ace9d9e6ef466978209ed24f",
+  "crawledAt" : "2025-12-04T19:06:28Z",
+  "id" : "856A3D6F-E4B5-4B93-91B9-C96F016193DE",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "HealthKit",
+  "overview" : "## Overview\n\nYour app can read the route associated with any workout in HealthKit (for example, the path that the user took while walking, running, or cycling). However, the size and nature of route data presents two challenges:\n\nUnlike most HealthKit data, apps can add or update route data over time. For example, an app must save a workout before associating route data with it. This means there is a brief period when the workout exists in the HealthKit store, but it doesn’t yet have a route sample associated with it.\n\nAdditionally, apps often post-process the route data. For example, an app may generate and save the initial route sample on Apple Watch, but then perform additional smoothing on iPhone or a remote server. After the smoothing completes, the app updates the route sample using a sync identifier, replacing the original sample with the new, updated version.\n\nAs a result, a query that just returns the current route sample for a given workout may return an outdated copy of the route, or may not return anything at all. To guarantee that your app receives the most up-to-date route sample, use an anchored object query to both get the current route, and to track any additions or updates.\n\nAfter you have the route sample, you still need to make a second query to access the underlying location data. For performance reasons, the system returns the locations asynchronously in batches. As each new batch of location data arrives, your app can process the locations and, for example, plot the locations on a map or analyze and visualize the data.\n\n### Get the Route Sample Object\n\nTo guarantee that your app receives the most up-to-date route information, use an anchored object query to access the route and track any updates.\n\nThe query’s update handler receives any additions or changes to the route data. This lets your app process the most up-to-date version of the route, as soon as it becomes available.\n\n### Access a Route Sample’s Location Data\n\nAfter receiving an [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKWorkoutRoute] sample, you can access its location data using an [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKWorkoutRouteQuery]. Because a route sample can contain thousands of locations, you may not receive all of the location data at once. Instead, the system returns the location data in small batches.\n\nTo process the locations associated with a route:\n\n[doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKWorkoutRoute] saves a subset of [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation] properties including:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/HealthKit\/reading-route-data\ncrawled: 2025-12-04T19:06:28Z\n---\n\n# Reading route data\n\n**Article**\n\nAccess the user’s route for a workout.\n\n## Overview\n\nYour app can read the route associated with any workout in HealthKit (for example, the path that the user took while walking, running, or cycling). However, the size and nature of route data presents two challenges:\n\n- Route samples aren’t static.\n- After you have the route sample, you still need to perform a second query to access the underlying location data.\n\nUnlike most HealthKit data, apps can add or update route data over time. For example, an app must save a workout before associating route data with it. This means there is a brief period when the workout exists in the HealthKit store, but it doesn’t yet have a route sample associated with it.\n\nAdditionally, apps often post-process the route data. For example, an app may generate and save the initial route sample on Apple Watch, but then perform additional smoothing on iPhone or a remote server. After the smoothing completes, the app updates the route sample using a sync identifier, replacing the original sample with the new, updated version.\n\nAs a result, a query that just returns the current route sample for a given workout may return an outdated copy of the route, or may not return anything at all. To guarantee that your app receives the most up-to-date route sample, use an anchored object query to both get the current route, and to track any additions or updates.\n\nAfter you have the route sample, you still need to make a second query to access the underlying location data. For performance reasons, the system returns the locations asynchronously in batches. As each new batch of location data arrives, your app can process the locations and, for example, plot the locations on a map or analyze and visualize the data.\n\n### Get the Route Sample Object\n\nTo guarantee that your app receives the most up-to-date route information, use an anchored object query to access the route and track any updates.\n\n```swift\nlet runningObjectQuery = HKQuery.predicateForObjects(from: myWorkout)\n\nlet routeQuery = HKAnchoredObjectQuery(type: HKSeriesType.workoutRoute(), predicate: runningObjectQuery, anchor: nil, limit: HKObjectQueryNoLimit) { (query, samples, deletedObjects, anchor, error) in\n    \n    guard error == nil else {\n        \/\/ Handle any errors here.\n        fatalError(\"The initial query failed.\")\n    }\n    \n    \/\/ Process the initial route data here.\n}\n\nrouteQuery.updateHandler = { (query, samples, deleted, anchor, error) in\n    \n    guard error == nil else {\n        \/\/ Handle any errors here.\n        fatalError(\"The update failed.\")\n    }\n    \n    \/\/ Process updates or additions here.\n}\n\nstore.execute(routeQuery)\n```\n\nThe query’s update handler receives any additions or changes to the route data. This lets your app process the most up-to-date version of the route, as soon as it becomes available.\n\n### Access a Route Sample’s Location Data\n\nAfter receiving an [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKWorkoutRoute] sample, you can access its location data using an [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKWorkoutRouteQuery]. Because a route sample can contain thousands of locations, you may not receive all of the location data at once. Instead, the system returns the location data in small batches.\n\nTo process the locations associated with a route:\n\n1. **Create a query object.** Provide a block to receive the locations.\n2. **Run the query.** Call the HealthKit store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/execute(_:)] method to run the query.\n3. **Receive the route data.** Your block receives one or more batches of location data. When the block’s done parameter is [doc:\/\/com.apple.documentation\/documentation\/Swift\/true], you have received all the data.\n4. **Optionally:** Call the HealthKit store’s [doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKHealthStore\/stop(_:)] method to stop the query from receiving additional data.\n\n```swift\n\/\/ Create the route query.\nlet query = HKWorkoutRouteQuery(route: myRoute) { (query, locationsOrNil, done, errorOrNil) in\n    \n    \/\/ This block may be called multiple times.\n    \n    if let error = errorOrNil {\n        \/\/ Handle any errors here.\n        return\n    }\n    \n    guard let locations = locationsOrNil else {\n        fatalError(\"*** Invalid State: This can only fail if there was an error. ***\")\n    }\n    \n    \/\/ Do something with this batch of location data.\n        \n    if done {\n        \/\/ The query returned all the location data associated with the route.\n        \/\/ Do something with the complete data set.\n    }\n    \n    \/\/ You can stop the query by calling:\n    \/\/ store.stop(query)\n    \n}\nstore.execute(query)\n```\n\n[doc:\/\/com.apple.healthkit\/documentation\/HealthKit\/HKWorkoutRoute] saves a subset of [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation] properties including:\n\n- [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation\/timestamp]\n- [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation\/coordinate]\n- [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation\/altitude]\n- [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation\/speed]\n- [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation\/course]\n- [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation\/horizontalAccuracy]\n- [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation\/verticalAccuracy]\n- [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation\/speedAccuracy]\n- [doc:\/\/com.apple.documentation\/documentation\/CoreLocation\/CLLocation\/courseAccuracy]\n\n\n\n## Route data\n\n- **Creating a workout route**: Record the user’s route during a workout.\n- **HKWorkoutRouteBuilder**: A builder object that incrementally constructs a workout route.\n- **HKWorkoutRoute**: A sample that contains a workout’s route data.\n- **HKWorkoutRouteQueryDescriptor**: A query interface that reads the location data stored in a workout route using Swift concurrency.\n- **HKWorkoutRouteQuery**: A query to access the location data stored in a workout route.\n- **HKWorkoutRouteTypeIdentifier**: A series sample containing location data that defines the route the user took during a workout.\n- **HKSeriesBuilder**: An abstract base class for building series samples.\n- **HKSeriesSample**: An abstract base class that defines samples that contain a series of items.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Record the user’s route during a workout.",
+          "name" : "Creating a workout route",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/creating-a-workout-route"
+        },
+        {
+          "description" : "A builder object that incrementally constructs a workout route.",
+          "name" : "HKWorkoutRouteBuilder",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKWorkoutRouteBuilder"
+        },
+        {
+          "description" : "A sample that contains a workout’s route data.",
+          "name" : "HKWorkoutRoute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKWorkoutRoute"
+        },
+        {
+          "description" : "A query interface that reads the location data stored in a workout route using Swift concurrency.",
+          "name" : "HKWorkoutRouteQueryDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKWorkoutRouteQueryDescriptor"
+        },
+        {
+          "description" : "A query to access the location data stored in a workout route.",
+          "name" : "HKWorkoutRouteQuery",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKWorkoutRouteQuery"
+        },
+        {
+          "description" : "A series sample containing location data that defines the route the user took during a workout.",
+          "name" : "HKWorkoutRouteTypeIdentifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKWorkoutRouteTypeIdentifier"
+        },
+        {
+          "description" : "An abstract base class for building series samples.",
+          "name" : "HKSeriesBuilder",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKSeriesBuilder"
+        },
+        {
+          "description" : "An abstract base class that defines samples that contain a series of items.",
+          "name" : "HKSeriesSample",
+          "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/HKSeriesSample"
+        }
+      ],
+      "title" : "Route data"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Reading route data",
+  "url" : "https:\/\/developer.apple.com\/documentation\/HealthKit\/reading-route-data"
+}

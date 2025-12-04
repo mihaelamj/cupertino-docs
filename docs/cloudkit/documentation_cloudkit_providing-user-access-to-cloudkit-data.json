@@ -1,0 +1,57 @@
+{
+  "abstract" : "Provide users access to the data your app stores on their behalf.",
+  "codeExamples" : [
+    {
+      "code" : "let defaultContainer = CKContainer.default()\nlet documents = CKContainer(identifier: \"iCloud.com.example.myexampleapp.documents\")\nlet settings = CKContainer(identifier: \"iCloud.com.example.myexampleapp.settings\")\n\nlet containerRecordTypes: [CKContainer: [String]] = [\n    defaultContainer: [\"log\", \"verboseLog\"],\n    documents: [\"textDocument\", \"spreadsheet\"],\n    settings: [\"preference\", \"profile\"]\n]\n\nlet containers = Array(containerRecordTypes.keys)",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Utility function to display records.\n\/\/ Customize it to display records appropriately\n\/\/ according to your app's unique record types.\nfunc printRecords(_ records: [CKRecord]) {\n    for record in records {\n        for key in record.allKeys() {\n            let value = record[key]\n            print(key + \" = \" + (value?.description ?? \"\") + \")\")\n        }\n    }\n}\n\nfor container in containers {\n    \/\/ User data should be stored in the private database.\n    let database = container.privateCloudDatabase\n    \n    database.fetchAllRecordZones { zones, error in\n        guard let zones = zones, error == nil else {\n            print(error!)\n            return\n        }\n        \n        \/\/ The true predicate represents a query for all records.\n        let alwaysTrue = NSPredicate(value: true)\n        for zone in zones {\n            for recordType in containerRecordTypes[container] ?? [] {\n                let query = CKQuery(recordType: recordType, predicate: alwaysTrue)\n                database.perform(query, inZoneWith: zone.zoneID) { records, error in\n                    guard let records = records, error == nil else {\n                        print(\"An error occurred fetching these records.\")\n                        return\n                    }\n                    \n                    printRecords(records)\n                }\n            }\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "a5caf253735e481b3557ff6dd47c4407625d2ee78683271b413a6d13a6eb4ee0",
+  "crawledAt" : "2025-12-04T20:44:36Z",
+  "id" : "59D73D9B-62B1-474C-9218-52666F4E7508",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "CloudKit",
+  "overview" : "## Overview\n\nUser data in CloudKit belongs to the user. For this reason, apps that integrate with CloudKit need to provide users with a way to view and export their data.\n\n### Identify Containers and Record Types\n\nTo be sure that you’re querying all of the data that your app stores, cross-reference the list of containers your app has access to in Xcode, and assemble a list of those containers’ identifiers.\n\nThe CloudKit Dashboard lists the different record types you define for each container in your app. Assemble a list of these types and make sure that each type has a queryable index on its `recordName` field.\n\n### Associate Record Types with Containers\n\nAssociate the record types with the container they appear in. The example below uses a dictionary to represent the relationship between containers and the record types they contain:\n\n### Find and List All Records\n\nStore user data in a container’s private database. Use the containers in the example above to find all record zones in the private database for each container that your app uses.\n\nThe example below shows how to iterate over the containers, record zones, and records. It also shows how to list the fields for each record, which you use to show the data in those records:\n\nUse each field’s keys and values to give users an accessible report of the data your app stores in CloudKit.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CloudKit\/providing-user-access-to-cloudkit-data\ncrawled: 2025-12-04T20:44:36Z\n---\n\n# Providing User Access to CloudKit Data\n\n**Article**\n\nProvide users access to the data your app stores on their behalf.\n\n## Overview\n\nUser data in CloudKit belongs to the user. For this reason, apps that integrate with CloudKit need to provide users with a way to view and export their data.\n\n### Identify Containers and Record Types\n\nTo be sure that you’re querying all of the data that your app stores, cross-reference the list of containers your app has access to in Xcode, and assemble a list of those containers’ identifiers.\n\nThe CloudKit Dashboard lists the different record types you define for each container in your app. Assemble a list of these types and make sure that each type has a queryable index on its `recordName` field.\n\n### Associate Record Types with Containers\n\nAssociate the record types with the container they appear in. The example below uses a dictionary to represent the relationship between containers and the record types they contain:\n\n```swift\nlet defaultContainer = CKContainer.default()\nlet documents = CKContainer(identifier: \"iCloud.com.example.myexampleapp.documents\")\nlet settings = CKContainer(identifier: \"iCloud.com.example.myexampleapp.settings\")\n\nlet containerRecordTypes: [CKContainer: [String]] = [\n    defaultContainer: [\"log\", \"verboseLog\"],\n    documents: [\"textDocument\", \"spreadsheet\"],\n    settings: [\"preference\", \"profile\"]\n]\n\nlet containers = Array(containerRecordTypes.keys)\n```\n\n### Find and List All Records\n\nStore user data in a container’s private database. Use the containers in the example above to find all record zones in the private database for each container that your app uses.\n\nThe example below shows how to iterate over the containers, record zones, and records. It also shows how to list the fields for each record, which you use to show the data in those records:\n\n```swift\n\/\/ Utility function to display records.\n\/\/ Customize it to display records appropriately\n\/\/ according to your app's unique record types.\nfunc printRecords(_ records: [CKRecord]) {\n    for record in records {\n        for key in record.allKeys() {\n            let value = record[key]\n            print(key + \" = \" + (value?.description ?? \"\") + \")\")\n        }\n    }\n}\n\nfor container in containers {\n    \/\/ User data should be stored in the private database.\n    let database = container.privateCloudDatabase\n    \n    database.fetchAllRecordZones { zones, error in\n        guard let zones = zones, error == nil else {\n            print(error!)\n            return\n        }\n        \n        \/\/ The true predicate represents a query for all records.\n        let alwaysTrue = NSPredicate(value: true)\n        for zone in zones {\n            for recordType in containerRecordTypes[container] ?? [] {\n                let query = CKQuery(recordType: recordType, predicate: alwaysTrue)\n                database.perform(query, inZoneWith: zone.zoneID) { records, error in\n                    guard let records = records, error == nil else {\n                        print(\"An error occurred fetching these records.\")\n                        return\n                    }\n                    \n                    printRecords(records)\n                }\n            }\n        }\n    }\n}\n```\n\nUse each field’s keys and values to give users an accessible report of the data your app stores in CloudKit.\n\n\n\n## Privacy\n\n- **Encrypting User Data**: Deploy industry-standard security technologies using CloudKit encryption.\n- **Changing Access Controls on User Data**: Restrict access to or remove restrictions from a user’s data at their request.\n- **CKFetchWebAuthTokenOperation**: An operation that creates an authentication token for use with CloudKit web services.\n- **Responding to Requests to Delete Data**: Provide options for users to delete their CloudKit data from your app.\n- **Identifying an App’s Containers**: Use Xcode’s Project navigator to find the identifiers of active CloudKit containers.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Deploy industry-standard security technologies using CloudKit encryption.",
+          "name" : "Encrypting User Data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/encrypting-user-data"
+        },
+        {
+          "description" : "Restrict access to or remove restrictions from a user’s data at their request.",
+          "name" : "Changing Access Controls on User Data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/changing-access-controls-on-user-data"
+        },
+        {
+          "description" : "An operation that creates an authentication token for use with CloudKit web services.",
+          "name" : "CKFetchWebAuthTokenOperation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchWebAuthTokenOperation"
+        },
+        {
+          "description" : "Provide options for users to delete their CloudKit data from your app.",
+          "name" : "Responding to Requests to Delete Data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/responding-to-requests-to-delete-data"
+        },
+        {
+          "description" : "Use Xcode’s Project navigator to find the identifiers of active CloudKit containers.",
+          "name" : "Identifying an App’s Containers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/identifying-an-app-s-containers"
+        }
+      ],
+      "title" : "Privacy"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Providing User Access to CloudKit Data",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/providing-user-access-to-cloudkit-data"
+}

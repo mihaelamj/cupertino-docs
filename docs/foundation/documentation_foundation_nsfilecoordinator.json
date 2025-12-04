@@ -1,0 +1,186 @@
+{
+  "abstract" : "An object that coordinates the reading and writing of files and directories among file presenters.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "37315a8cfbd838ac86a47af46679bbe9b805f66eb2af67b53e20b15d415ae8ed",
+  "crawledAt" : "2025-12-04T17:55:33Z",
+  "declaration" : {
+    "code" : "class NSFileCoordinator",
+    "language" : "swift"
+  },
+  "id" : "3D828C46-0115-4905-B377-1FF6C05DD45A",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nThe [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator] class coordinates the reading and writing of files and directories among multiple processes and objects in the same process. You use instances of this class as is to read from, write to, modify the attributes of, change the location of, or delete a file or directory, but before your code to perform those actions executes, the file coordinator lets registered file presenter objects perform any tasks that they might require to ensure their own integrity. For example, if you want to change the location of a file, other objects interested in that file need to know where you intend to move it so that they can update their references.\n\nObjects that adopt the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter] protocol must register themselves with the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator] class to be notified of any pending changes. They do this by calling the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/addFilePresenter(_:)] class method. A file presenter must balance calls to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/addFilePresenter(_:)] with a call to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/removeFilePresenter(_:)] before being released, even in a garbage-collected application. The file presenter class maintains a list of active file presenter objects in the current application and uses that list, plus the file coordinator classes in other processes, to deliver notifications to all of the objects interested in a particular item.\n\nInstances of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator] are meant to be used on a per-file-operation basis, where a file operation is something like opening and reading the contents of a file or moving a batch of files and directories to a new location. There is no benefit to keeping a file coordinator object past the length of the planned operation. In fact, because file coordinators retain file presenter objects, keeping one around could prevent the file presenter objects from being released in a timely manner.\n\nFor information about implementing a file presenter object to receive file-related notifications, see [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter].\n\n### File Presenters and iOS\n\nIf your app or extension enters the background with an active file presenter, it may be terminated by the system in order to prevent deadlock on that file. To prevent this situation, call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/removeFilePresenter(_:)] to remove the file presenter in the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/applicationDidEnterBackground(_:)] method or in response to a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/didEnterBackgroundNotification] notification. Call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/addFilePresenter(_:)] to add the file presenter again in the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/applicationWillEnterForeground(_:)] method or in response to a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/willEnterForegroundNotification] notification.\n\n### File Coordinators and iOS\n\nA coordinated read or write will automatically begin a background task when granted, similar to one created with the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/beginBackgroundTask(expirationHandler:)] method. This helps ensure that your app or extension has sufficient time to finish the read or write operation if it’s suspended, without creating a deadlock on access to that file by other processes. If a process is suspended while waiting for a coordinated read or write to be granted, the request is canceled, and an `NSError` object with the code [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSUserCancelledError-swift.var] is produced. If the background task expires, the process is terminated.\n\n### Threading Considerations\n\nEach file coordinator object you create should be used on a single thread only. If you need to coordinate file operations across multiple objects in different threads, each object should create its own file coordinator.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\ncrawled: 2025-12-04T17:55:33Z\n---\n\n# NSFileCoordinator\n\n**Class**\n\nAn object that coordinates the reading and writing of files and directories among file presenters.\n\n## Declaration\n\n```swift\nclass NSFileCoordinator\n```\n\n## Overview\n\nThe [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator] class coordinates the reading and writing of files and directories among multiple processes and objects in the same process. You use instances of this class as is to read from, write to, modify the attributes of, change the location of, or delete a file or directory, but before your code to perform those actions executes, the file coordinator lets registered file presenter objects perform any tasks that they might require to ensure their own integrity. For example, if you want to change the location of a file, other objects interested in that file need to know where you intend to move it so that they can update their references.\n\nObjects that adopt the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter] protocol must register themselves with the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator] class to be notified of any pending changes. They do this by calling the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/addFilePresenter(_:)] class method. A file presenter must balance calls to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/addFilePresenter(_:)] with a call to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/removeFilePresenter(_:)] before being released, even in a garbage-collected application. The file presenter class maintains a list of active file presenter objects in the current application and uses that list, plus the file coordinator classes in other processes, to deliver notifications to all of the objects interested in a particular item.\n\nInstances of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator] are meant to be used on a per-file-operation basis, where a file operation is something like opening and reading the contents of a file or moving a batch of files and directories to a new location. There is no benefit to keeping a file coordinator object past the length of the planned operation. In fact, because file coordinators retain file presenter objects, keeping one around could prevent the file presenter objects from being released in a timely manner.\n\nFor information about implementing a file presenter object to receive file-related notifications, see [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter].\n\n### File Presenters and iOS\n\nIf your app or extension enters the background with an active file presenter, it may be terminated by the system in order to prevent deadlock on that file. To prevent this situation, call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/removeFilePresenter(_:)] to remove the file presenter in the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/applicationDidEnterBackground(_:)] method or in response to a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/didEnterBackgroundNotification] notification. Call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/addFilePresenter(_:)] to add the file presenter again in the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/applicationWillEnterForeground(_:)] method or in response to a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/willEnterForegroundNotification] notification.\n\n\n\n### File Coordinators and iOS\n\nA coordinated read or write will automatically begin a background task when granted, similar to one created with the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/beginBackgroundTask(expirationHandler:)] method. This helps ensure that your app or extension has sufficient time to finish the read or write operation if it’s suspended, without creating a deadlock on access to that file by other processes. If a process is suspended while waiting for a coordinated read or write to be granted, the request is canceled, and an `NSError` object with the code [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSUserCancelledError-swift.var] is produced. If the background task expires, the process is terminated.\n\n\n\n### Threading Considerations\n\nEach file coordinator object you create should be used on a single thread only. If you need to coordinate file operations across multiple objects in different threads, each object should create its own file coordinator.\n\n## Initializing a File Coordinator\n\n- **init(filePresenter:)**: Initializes and returns a file coordinator object using the specified file presenter.\n\n## Managing File Presenters\n\n- **addFilePresenter(_:)**: Registers the specified file presenter object so that it can receive notifications.\n- **removeFilePresenter(_:)**: Unregisters the specified file presenter object.\n- **filePresenters**: Returns an array containing the currently registered file presenter objects.\n- **purposeIdentifier**: A string that uniquely identifies the file access that was performed by this file coordinator.\n\n## Coordinating File Operations Asynchronously\n\n- **coordinate(with:queue:byAccessor:)**: Performs a number of coordinated-read or -write operations asynchronously.\n\n## Coordinating File Operations Synchronously\n\n- **coordinate(readingItemAt:options:error:byAccessor:)**: Initiates a read operation on a single file or directory using the specified options.\n- **coordinate(writingItemAt:options:error:byAccessor:)**: Initiates a write operation on a single file or directory using the specified options.\n- **coordinate(readingItemAt:options:writingItemAt:options:error:byAccessor:)**: Initiates a read operation that contains a follow-up write operation.\n- **coordinate(writingItemAt:options:writingItemAt:options:error:byAccessor:)**: Initiates a write operation that involves a secondary write operation.\n- **prepare(forReadingItemsAt:options:writingItemsAt:options:error:byAccessor:)**: Prepare to read or write from multiple files in a single batch operation.\n- **item(at:willMoveTo:)**: Announces that your app is moving a file to a new URL.\n- **item(at:didMoveTo:)**: Notifies relevant file presenters that the location of a file or directory changed.\n- **cancel()**: Cancels any active file coordination calls.\n\n## Constants\n\n- **NSFileCoordinator.ReadingOptions**: Options to use when reading the contents or attributes of a file or directory.\n- **NSFileCoordinator.WritingOptions**: Options to use when changing the contents or attributes of a file or directory.\n\n## Ubiquity Change Notifications\n\n- **item(at:didChangeUbiquityAttributes:)**: Tells observing file providers that the item’s ubiquity attributes have changed.\n\n## Coordinated file access\n\n- **NSFilePresenter**: The interface a file coordinator uses to inform an object presenting a file about changes to that file made elsewhere in the system.\n- **NSFileAccessIntent**: The details of a coordinated-read or coordinated-write operation.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes and returns a file coordinator object using the specified file presenter.",
+          "name" : "init(filePresenter:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/init(filePresenter:)"
+        }
+      ],
+      "title" : "Initializing a File Coordinator"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Registers the specified file presenter object so that it can receive notifications.",
+          "name" : "addFilePresenter(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/addFilePresenter(_:)"
+        },
+        {
+          "description" : "Unregisters the specified file presenter object.",
+          "name" : "removeFilePresenter(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/removeFilePresenter(_:)"
+        },
+        {
+          "description" : "Returns an array containing the currently registered file presenter objects.",
+          "name" : "filePresenters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/filePresenters"
+        },
+        {
+          "description" : "A string that uniquely identifies the file access that was performed by this file coordinator.",
+          "name" : "purposeIdentifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/purposeIdentifier"
+        }
+      ],
+      "title" : "Managing File Presenters"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Performs a number of coordinated-read or -write operations asynchronously.",
+          "name" : "coordinate(with:queue:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/coordinate(with:queue:byAccessor:)"
+        }
+      ],
+      "title" : "Coordinating File Operations Asynchronously"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initiates a read operation on a single file or directory using the specified options.",
+          "name" : "coordinate(readingItemAt:options:error:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/coordinate(readingItemAt:options:error:byAccessor:)"
+        },
+        {
+          "description" : "Initiates a write operation on a single file or directory using the specified options.",
+          "name" : "coordinate(writingItemAt:options:error:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/coordinate(writingItemAt:options:error:byAccessor:)"
+        },
+        {
+          "description" : "Initiates a read operation that contains a follow-up write operation.",
+          "name" : "coordinate(readingItemAt:options:writingItemAt:options:error:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/coordinate(readingItemAt:options:writingItemAt:options:error:byAccessor:)"
+        },
+        {
+          "description" : "Initiates a write operation that involves a secondary write operation.",
+          "name" : "coordinate(writingItemAt:options:writingItemAt:options:error:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/coordinate(writingItemAt:options:writingItemAt:options:error:byAccessor:)"
+        },
+        {
+          "description" : "Prepare to read or write from multiple files in a single batch operation.",
+          "name" : "prepare(forReadingItemsAt:options:writingItemsAt:options:error:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/prepare(forReadingItemsAt:options:writingItemsAt:options:error:byAccessor:)"
+        },
+        {
+          "description" : "Announces that your app is moving a file to a new URL.",
+          "name" : "item(at:willMoveTo:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/item(at:willMoveTo:)"
+        },
+        {
+          "description" : "Notifies relevant file presenters that the location of a file or directory changed.",
+          "name" : "item(at:didMoveTo:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/item(at:didMoveTo:)"
+        },
+        {
+          "description" : "Cancels any active file coordination calls.",
+          "name" : "cancel()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/cancel()"
+        }
+      ],
+      "title" : "Coordinating File Operations Synchronously"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Options to use when reading the contents or attributes of a file or directory.",
+          "name" : "NSFileCoordinator.ReadingOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/ReadingOptions"
+        },
+        {
+          "description" : "Options to use when changing the contents or attributes of a file or directory.",
+          "name" : "NSFileCoordinator.WritingOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/WritingOptions"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells observing file providers that the item’s ubiquity attributes have changed.",
+          "name" : "item(at:didChangeUbiquityAttributes:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/item(at:didChangeUbiquityAttributes:)"
+        }
+      ],
+      "title" : "Ubiquity Change Notifications"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The interface a file coordinator uses to inform an object presenting a file about changes to that file made elsewhere in the system.",
+          "name" : "NSFilePresenter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter"
+        },
+        {
+          "description" : "The details of a coordinated-read or coordinated-write operation.",
+          "name" : "NSFileAccessIntent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileAccessIntent"
+        }
+      ],
+      "title" : "Coordinated file access"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSFileCoordinator",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator"
+}

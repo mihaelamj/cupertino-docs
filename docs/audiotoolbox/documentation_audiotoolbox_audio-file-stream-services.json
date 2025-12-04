@@ -1,0 +1,250 @@
+{
+  "abstract" : "Parse streamed audio files as the data arrives on the user’s computer.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "5f7f4d863ba984f0cfac4637732b7759e4f803b5252c347a6b8d9e0f39def52d",
+  "crawledAt" : "2025-12-04T21:04:26Z",
+  "id" : "09333535-869E-430B-9420-4E46B60198AC",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Audio Toolbox",
+  "overview" : "## Overview\n\nAudio File Stream Services provides the interface for parsing streamed audio files—in which only a limited window of data is available at a time.\n\nAudio file streams, by nature, are not random access. When you request data from a stream, earlier data might no longer be accessible and later data might not yet be available. In addition, the data you obtain (and then provide to a parser) might include partial packets. To parse streamed audio data, then, a parser must remember data from partially satisfied requests, and must be able to wait for the remainder of that data. In other words, a parser must be able to suspend parsing as needed and then resume where it left off.\n\nTo use a parser, you pass data from a streamed audio file, as you acquire it, to the parser. When the parser has a complete packet of audio data or a complete property, it invokes a callback function. Your callbacks then process the parsed data—such as by playing it or writing it to disk.\n\nHere, in outline form, is a typical usage pattern for an audio file stream parser:\n\nAudio File Stream Services supports the following audio data types:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AudioToolbox\/audio-file-stream-services\ncrawled: 2025-12-04T21:04:26Z\n---\n\n# Audio File Stream Services\n\n**API Collection**\n\nParse streamed audio files as the data arrives on the user’s computer.\n\n## Overview\n\nAudio File Stream Services provides the interface for parsing streamed audio files—in which only a limited window of data is available at a time.\n\nAudio file streams, by nature, are not random access. When you request data from a stream, earlier data might no longer be accessible and later data might not yet be available. In addition, the data you obtain (and then provide to a parser) might include partial packets. To parse streamed audio data, then, a parser must remember data from partially satisfied requests, and must be able to wait for the remainder of that data. In other words, a parser must be able to suspend parsing as needed and then resume where it left off.\n\nTo use a parser, you pass data from a streamed audio file, as you acquire it, to the parser. When the parser has a complete packet of audio data or a complete property, it invokes a callback function. Your callbacks then process the parsed data—such as by playing it or writing it to disk.\n\nHere, in outline form, is a typical usage pattern for an audio file stream parser:\n\n1. Create a new audio file stream parser by calling the [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AudioFileStreamOpen(_:_:_:_:_:)] function. Pass pointers to your callback functions for audio data and metadata ([doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AudioFileStream_PacketsProc] and [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AudioFileStream_PropertyListenerProc]). The [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AudioFileStreamOpen(_:_:_:_:_:)] function gives you a reference to the new parser.\n2. Acquire some streamed data. Call the [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AudioFileStreamParseBytes(_:_:_:_:)] function when you have data to pass to the parser. Send the data to the parser sequentially and, if possible, without gaps.\n3. When the parser acquires a usable buffer of audio data, it invokes your audio data callback. Your callback can then play the data, write it to a file, or otherwise process it.\n4. When the parser acquires metadata, it invokes your property callback—which in turn can obtain the property value by calling the [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AudioFileStreamGetPropertyInfo(_:_:_:_:)] and [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AudioFileStreamGetProperty(_:_:_:_:)] functions.\n5. When finished parsing a stream, call the [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AudioFileStreamClose(_:)] function to close and deallocate the parser.\n\nAudio File Stream Services supports the following audio data types:\n\n- AIFF\n- AIFC\n- WAVE\n- CAF\n- NeXT\n- ADTS\n- MPEG Audio Layer 3\n- AAC\n\n## Opening Audio File Streams\n\n- **AudioFileStreamOpen(_:_:_:_:_:)**: Creates and opens a new audio file stream parser.\n\n## Supplying Data to the Parser\n\n- **AudioFileStreamParseBytes(_:_:_:_:)**: Passes audio file stream data to the parser.\n\n## Seeking Packets in the Data Stream\n\n- **AudioFileStreamSeek(_:_:_:_:)**: Provides a byte offset for a specified packet in the data stream.\n\n## Working with Data Stream Property Information\n\n- **AudioFileStreamGetPropertyInfo(_:_:_:_:)**: Retrieves information about a property value.\n- **AudioFileStreamGetProperty(_:_:_:_:)**: Retrieves the value of the specified property.\n- **AudioFileStreamSetProperty(_:_:_:_:)**: Sets the value of the specified property.\n\n## Closing an Audio File Stream\n\n- **AudioFileStreamClose(_:)**: Closes and deallocates the specified audio file stream parser.\n\n## Callbacks\n\n- **AudioFileStream_PropertyListenerProc**: Invoked by an audio file stream parser when it finds a property value in the audio file stream.\n- **AudioFileStream_PacketsProc**: Invoked by an audio file stream parser when it finds audio data in the audio file stream.\n\n## Data Types\n\n- **AudioFileStreamPropertyID**: Uniquely identifies an audio file stream property.\n- **AudioFileStreamID**: Defines an opaque data type that represents an audio file stream parser.\n\n## Enumerations\n\n- **Audio File Stream Errors**\n- **Audio File Types**\n\n## Constants\n\n- **Audio File Stream Flags**: Flags set by the property listener callback and the [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AudioFileStreamParseBytes(_:_:_:_:)] function.\n- **Audio File Stream Properties**: Audio file stream properties contain information that you can use to help interpret the audio data in a stream.\n\n## Result Codes\n\n- **Audio File Errors**\n- **kAudioFileStreamError_UnsupportedFileType**: The specified file type is not supported.\n- **kAudioFileStreamError_UnsupportedDataFormat**: The data format is not supported by the specified file type.\n- **kAudioFileStreamError_UnsupportedProperty**: The property is not supported.\n- **kAudioFileStreamError_BadPropertySize**: The size of the buffer you provided for property data was not correct.\n- **kAudioFileStreamError_NotOptimized**: It is not possible to produce output packets because the streamed audio file’s packet table or other defining information is not present or appears after the audio data.\n- **kAudioFileStreamError_InvalidPacketOffset**: A packet offset was less than `0`, or past the end of the file, or a corrupt packet size was read when building the packet table.\n- **kAudioFileStreamError_InvalidFile**: The file is malformed, not a valid instance of an audio file of its type, or not recognized as an audio file.\n- **kAudioFileStreamError_ValueUnknown**: The property value is not present in this file before the audio data.\n- **kAudioFileStreamError_DataUnavailable**: The amount of data provided to the parser was insufficient to produce any result.\n- **kAudioFileStreamError_IllegalOperation**: An illegal operation was attempted.\n- **kAudioFileStreamError_UnspecifiedError**: An unspecified error has occurred.\n- **kAudioFileStreamError_DiscontinuityCantRecover**: A discontinuity has occurred in the audio data, and Audio File Stream Services cannot recover.\n\n## Audio Files and Formats\n\n- **Audio Format Services**: Access information about audio formats and codecs.\n- **Audio File Services**: Read or write a variety of audio data to or from disk or a memory buffer.\n- **Extended Audio File Services**: Read and write compressed files and linear PCM audio files using a simplified interface.\n- **Audio File Components**: Get information about audio file formats, and about files containing audio data.\n- **Core Audio File Format**: Parse the structure of Core Audio files.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates and opens a new audio file stream parser.",
+          "name" : "AudioFileStreamOpen(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStreamOpen(_:_:_:_:_:)"
+        }
+      ],
+      "title" : "Opening Audio File Streams"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Passes audio file stream data to the parser.",
+          "name" : "AudioFileStreamParseBytes(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStreamParseBytes(_:_:_:_:)"
+        }
+      ],
+      "title" : "Supplying Data to the Parser"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Provides a byte offset for a specified packet in the data stream.",
+          "name" : "AudioFileStreamSeek(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStreamSeek(_:_:_:_:)"
+        }
+      ],
+      "title" : "Seeking Packets in the Data Stream"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Retrieves information about a property value.",
+          "name" : "AudioFileStreamGetPropertyInfo(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStreamGetPropertyInfo(_:_:_:_:)"
+        },
+        {
+          "description" : "Retrieves the value of the specified property.",
+          "name" : "AudioFileStreamGetProperty(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStreamGetProperty(_:_:_:_:)"
+        },
+        {
+          "description" : "Sets the value of the specified property.",
+          "name" : "AudioFileStreamSetProperty(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStreamSetProperty(_:_:_:_:)"
+        }
+      ],
+      "title" : "Working with Data Stream Property Information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Closes and deallocates the specified audio file stream parser.",
+          "name" : "AudioFileStreamClose(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStreamClose(_:)"
+        }
+      ],
+      "title" : "Closing an Audio File Stream"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Invoked by an audio file stream parser when it finds a property value in the audio file stream.",
+          "name" : "AudioFileStream_PropertyListenerProc",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStream_PropertyListenerProc"
+        },
+        {
+          "description" : "Invoked by an audio file stream parser when it finds audio data in the audio file stream.",
+          "name" : "AudioFileStream_PacketsProc",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStream_PacketsProc"
+        }
+      ],
+      "title" : "Callbacks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Uniquely identifies an audio file stream property.",
+          "name" : "AudioFileStreamPropertyID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStreamPropertyID"
+        },
+        {
+          "description" : "Defines an opaque data type that represents an audio file stream parser.",
+          "name" : "AudioFileStreamID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/AudioFileStreamID"
+        }
+      ],
+      "title" : "Data Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Audio File Stream Errors",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/1391572-audio-file-stream-errors"
+        },
+        {
+          "description" : "",
+          "name" : "Audio File Types",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/1576497-audio-file-types"
+        }
+      ],
+      "title" : "Enumerations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Flags set by the property listener callback and the [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AudioFileStreamParseBytes(_:_:_:_:)] function.",
+          "name" : "Audio File Stream Flags",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/audio-file-stream-flags"
+        },
+        {
+          "description" : "Audio file stream properties contain information that you can use to help interpret the audio data in a stream.",
+          "name" : "Audio File Stream Properties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/1391506-audio-file-stream-properties"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Audio File Errors",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/1576500-audio-file-errors"
+        },
+        {
+          "description" : "The specified file type is not supported.",
+          "name" : "kAudioFileStreamError_UnsupportedFileType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_UnsupportedFileType"
+        },
+        {
+          "description" : "The data format is not supported by the specified file type.",
+          "name" : "kAudioFileStreamError_UnsupportedDataFormat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_UnsupportedDataFormat"
+        },
+        {
+          "description" : "The property is not supported.",
+          "name" : "kAudioFileStreamError_UnsupportedProperty",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_UnsupportedProperty"
+        },
+        {
+          "description" : "The size of the buffer you provided for property data was not correct.",
+          "name" : "kAudioFileStreamError_BadPropertySize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_BadPropertySize"
+        },
+        {
+          "description" : "It is not possible to produce output packets because the streamed audio file’s packet table or other defining information is not present or appears after the audio data.",
+          "name" : "kAudioFileStreamError_NotOptimized",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_NotOptimized"
+        },
+        {
+          "description" : "A packet offset was less than `0`, or past the end of the file, or a corrupt packet size was read when building the packet table.",
+          "name" : "kAudioFileStreamError_InvalidPacketOffset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_InvalidPacketOffset"
+        },
+        {
+          "description" : "The file is malformed, not a valid instance of an audio file of its type, or not recognized as an audio file.",
+          "name" : "kAudioFileStreamError_InvalidFile",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_InvalidFile"
+        },
+        {
+          "description" : "The property value is not present in this file before the audio data.",
+          "name" : "kAudioFileStreamError_ValueUnknown",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_ValueUnknown"
+        },
+        {
+          "description" : "The amount of data provided to the parser was insufficient to produce any result.",
+          "name" : "kAudioFileStreamError_DataUnavailable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_DataUnavailable"
+        },
+        {
+          "description" : "An illegal operation was attempted.",
+          "name" : "kAudioFileStreamError_IllegalOperation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_IllegalOperation"
+        },
+        {
+          "description" : "An unspecified error has occurred.",
+          "name" : "kAudioFileStreamError_UnspecifiedError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_UnspecifiedError"
+        },
+        {
+          "description" : "A discontinuity has occurred in the audio data, and Audio File Stream Services cannot recover.",
+          "name" : "kAudioFileStreamError_DiscontinuityCantRecover",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/kAudioFileStreamError_DiscontinuityCantRecover"
+        }
+      ],
+      "title" : "Result Codes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Access information about audio formats and codecs.",
+          "name" : "Audio Format Services",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/audio-format-services"
+        },
+        {
+          "description" : "Read or write a variety of audio data to or from disk or a memory buffer.",
+          "name" : "Audio File Services",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/audio-file-services"
+        },
+        {
+          "description" : "Read and write compressed files and linear PCM audio files using a simplified interface.",
+          "name" : "Extended Audio File Services",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/extended-audio-file-services"
+        },
+        {
+          "description" : "Get information about audio file formats, and about files containing audio data.",
+          "name" : "Audio File Components",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/audio-file-components"
+        },
+        {
+          "description" : "Parse the structure of Core Audio files.",
+          "name" : "Core Audio File Format",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/core-audio-file-format"
+        }
+      ],
+      "title" : "Audio Files and Formats"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Audio File Stream Services",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/audio-file-stream-services"
+}

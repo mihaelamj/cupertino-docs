@@ -1,0 +1,128 @@
+{
+  "abstract" : "An operation that creates an authentication token for use with CloudKit web services.",
+  "codeExamples" : [
+    {
+      "code" : "func fetchWebAuthToken(for apiToken: String, \n    completion: @escaping (Result<String, Error>) -> Void) {\n    \n    \/\/ Create the operation using the API token\n    \/\/ that the caller provides to the method.\n    let operation = CKFetchWebAuthTokenOperation(apiToken: apiToken)\n    \n    \/\/ If the operation fails, return the error to the caller.\n    \/\/ Otherwise, return the fetched authentication token.\n    operation.fetchWebAuthTokenCompletionBlock = { webToken, error in\n        if let error = error {\n            completion(.failure(error))\n        } else {\n            completion(.success(webToken!))\n        }\n    }\n    \n    \/\/ Set an appropriate QoS and add the operation to the\n    \/\/ private database's queue to execute it.\n    operation.qualityOfService = .utility\n    CKContainer.default().privateCloudDatabase.add(operation)\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol",
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "8bae0584a4c56ada544fc3ba699e6f8e74dbdd5539806bb7d459c9bfa23739b2",
+  "crawledAt" : "2025-12-04T20:44:37Z",
+  "declaration" : {
+    "code" : "class CKFetchWebAuthTokenOperation",
+    "language" : "swift"
+  },
+  "id" : "DB3DFD62-3EDC-459A-8BCB-CFA09462F893",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "CloudKit",
+  "overview" : "## Overview\n\nCloudKit web services provides an HTTP interface to fetch, create, update, and delete records, zones, and subscriptions. Each request you send requires an API token, which you configure in [https:\/\/icloud.developer.apple.com]. You must create an API token for each container in each environment.\n\nIf you want to send a request to an endpoint that requires an authenticated user, use this operation to fetch an authentication token. Append the authentication token, along with the API token, to the endpoint’s URL. That request then acts on behalf of the current user. Authentication tokens are short-lived and expire after a single use.\n\nFor an example of using a web authentication token with a CloudKit web service, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/changing-access-controls-on-user-data].\n\nThis operation executes the handlers you provide on an internal queue it manages. Your handlers must be capable of executing on a background queue. Tasks that need access to the main queue must redirect as appropriate.\n\nThe operation calls [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchWebAuthTokenOperation\/fetchWebAuthTokenCompletionBlock] after it executes to provide the fetched token. Use the completion handler to perform housekeeping tasks for the operation. It should also manage any failures, whether due to an error or an explicit cancellation.\n\nCloudKit operations have a default QoS of [doc:\/\/com.apple.documentation\/documentation\/Foundation\/QualityOfService\/default]. Operations with this service level are discretionary. The system schedules their execution at an optimal time according to battery level and network conditions, among other factors. Use the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Operation\/qualityOfService] property to set a more appropriate QoS for the operation.\n\nThe following example shows how to create the operation, configure its callbacks, and execute it in the user’s private database:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchWebAuthTokenOperation\ncrawled: 2025-12-04T20:44:37Z\n---\n\n# CKFetchWebAuthTokenOperation\n\n**Class**\n\nAn operation that creates an authentication token for use with CloudKit web services.\n\n## Declaration\n\n```swift\nclass CKFetchWebAuthTokenOperation\n```\n\n## Overview\n\nCloudKit web services provides an HTTP interface to fetch, create, update, and delete records, zones, and subscriptions. Each request you send requires an API token, which you configure in [https:\/\/icloud.developer.apple.com]. You must create an API token for each container in each environment.\n\nIf you want to send a request to an endpoint that requires an authenticated user, use this operation to fetch an authentication token. Append the authentication token, along with the API token, to the endpoint’s URL. That request then acts on behalf of the current user. Authentication tokens are short-lived and expire after a single use.\n\nFor an example of using a web authentication token with a CloudKit web service, see [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/changing-access-controls-on-user-data].\n\nThis operation executes the handlers you provide on an internal queue it manages. Your handlers must be capable of executing on a background queue. Tasks that need access to the main queue must redirect as appropriate.\n\nThe operation calls [doc:\/\/com.apple.cloudkit\/documentation\/CloudKit\/CKFetchWebAuthTokenOperation\/fetchWebAuthTokenCompletionBlock] after it executes to provide the fetched token. Use the completion handler to perform housekeeping tasks for the operation. It should also manage any failures, whether due to an error or an explicit cancellation.\n\n\n\nCloudKit operations have a default QoS of [doc:\/\/com.apple.documentation\/documentation\/Foundation\/QualityOfService\/default]. Operations with this service level are discretionary. The system schedules their execution at an optimal time according to battery level and network conditions, among other factors. Use the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Operation\/qualityOfService] property to set a more appropriate QoS for the operation.\n\nThe following example shows how to create the operation, configure its callbacks, and execute it in the user’s private database:\n\n```swift\nfunc fetchWebAuthToken(for apiToken: String, \n    completion: @escaping (Result<String, Error>) -> Void) {\n    \n    \/\/ Create the operation using the API token\n    \/\/ that the caller provides to the method.\n    let operation = CKFetchWebAuthTokenOperation(apiToken: apiToken)\n    \n    \/\/ If the operation fails, return the error to the caller.\n    \/\/ Otherwise, return the fetched authentication token.\n    operation.fetchWebAuthTokenCompletionBlock = { webToken, error in\n        if let error = error {\n            completion(.failure(error))\n        } else {\n            completion(.success(webToken!))\n        }\n    }\n    \n    \/\/ Set an appropriate QoS and add the operation to the\n    \/\/ private database's queue to execute it.\n    operation.qualityOfService = .utility\n    CKContainer.default().privateCloudDatabase.add(operation)\n}\n```\n\n## Creating a Fetch Token Operation\n\n- **init(apiToken:)**: Creates a fetch operation for the specified API token.\n- **init()**: Creates an empty fetch operation.\n\n## Managing the Operation’s Configuration\n\n- **apiToken**: The API token that allows access to an app’s container.\n- **fetchWebAuthTokenCompletionBlock**: The block to execute when the operation finishes.\n\n## Instance Properties\n\n- **fetchWebAuthTokenResultBlock**\n\n## Privacy\n\n- **Encrypting User Data**: Deploy industry-standard security technologies using CloudKit encryption.\n- **Providing User Access to CloudKit Data**: Provide users access to the data your app stores on their behalf.\n- **Changing Access Controls on User Data**: Restrict access to or remove restrictions from a user’s data at their request.\n- **Responding to Requests to Delete Data**: Provide options for users to delete their CloudKit data from your app.\n- **Identifying an App’s Containers**: Use Xcode’s Project navigator to find the identifiers of active CloudKit containers.\n\n## Inherits From\n\n- CKDatabaseOperation\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a fetch operation for the specified API token.",
+          "name" : "init(apiToken:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchWebAuthTokenOperation\/init(apiToken:)"
+        },
+        {
+          "description" : "Creates an empty fetch operation.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchWebAuthTokenOperation\/init()"
+        }
+      ],
+      "title" : "Creating a Fetch Token Operation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The API token that allows access to an app’s container.",
+          "name" : "apiToken",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchWebAuthTokenOperation\/apiToken"
+        },
+        {
+          "description" : "The block to execute when the operation finishes.",
+          "name" : "fetchWebAuthTokenCompletionBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchWebAuthTokenOperation\/fetchWebAuthTokenCompletionBlock"
+        }
+      ],
+      "title" : "Managing the Operation’s Configuration"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "fetchWebAuthTokenResultBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchWebAuthTokenOperation\/fetchWebAuthTokenResultBlock"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Deploy industry-standard security technologies using CloudKit encryption.",
+          "name" : "Encrypting User Data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/encrypting-user-data"
+        },
+        {
+          "description" : "Provide users access to the data your app stores on their behalf.",
+          "name" : "Providing User Access to CloudKit Data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/providing-user-access-to-cloudkit-data"
+        },
+        {
+          "description" : "Restrict access to or remove restrictions from a user’s data at their request.",
+          "name" : "Changing Access Controls on User Data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/changing-access-controls-on-user-data"
+        },
+        {
+          "description" : "Provide options for users to delete their CloudKit data from your app.",
+          "name" : "Responding to Requests to Delete Data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/responding-to-requests-to-delete-data"
+        },
+        {
+          "description" : "Use Xcode’s Project navigator to find the identifiers of active CloudKit containers.",
+          "name" : "Identifying an App’s Containers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/identifying-an-app-s-containers"
+        }
+      ],
+      "title" : "Privacy"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "CKDatabaseOperation"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "CKFetchWebAuthTokenOperation",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CloudKit\/CKFetchWebAuthTokenOperation"
+}

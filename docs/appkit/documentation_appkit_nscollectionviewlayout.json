@@ -1,0 +1,339 @@
+{
+  "abstract" : "An abstract base class that you subclass and use to generate layout information for a collection view.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCoding",
+    "NSObjectProtocol",
+    "Sendable"
+  ],
+  "contentHash" : "ab5c78313d7e2711053a25e52be60743776b00f53b731c62896d91f4de8fb798",
+  "crawledAt" : "2025-12-04T12:25:43Z",
+  "declaration" : {
+    "code" : "@MainActor class NSCollectionViewLayout",
+    "language" : "swift"
+  },
+  "id" : "4DFF47A1-D916-4F3B-B4A0-7DE7AAB578FD",
+  "inheritedBy" : [
+    "NSCollectionViewCompositionalLayout",
+    "NSCollectionViewFlowLayout",
+    "NSCollectionViewGridLayout",
+    "NSCollectionViewTransitionLayout"
+  ],
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "AppKit",
+  "overview" : "## Overview\n\nThe job of a layout object is to perform the calculations needed to determine the placement and appearance of items, supplementary views, and other content in the collection view. The layout object does not apply the layout attributes it generates to the views in your interface. Instead, it passes those layout attributes to the collection view, which then creates the needed views and applies the layout attributes to them.\n\nYou do not create instances of this class directly. Instead, you create instances of one of its subclasses and associate that object with your collection view either programmatically (using the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionView\/collectionViewLayout] property) or at design time in Interface Builder. Changing the layout object of a collection view forces an immediate update of the layout information.\n\nCollection views support many different types of elements, most of which are visual and all of which require layout attributes:\n\nEach concrete layout object defines a specific organization for the contained elements and provides the appropriate layout attributes. The placement and appearance of items is determined entirely by the layout object. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewFlowLayout] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewGridLayout] subclasses define variants of a grid-based layout, but you can create custom layouts that arrange elements in different ways. For example, you might define a layout class that arranges items in a circle or define a class that groups items into stacks that resemble a pile of photos on a table.\n\n### Subclassing Notes\n\nLayout objects provide information about the position and visual state of elements in the collection view. When defining an `NSCollectionViewLayout` subclass, first have an idea for how items in your layout will appear onscreen. Layouts should provide a well-defined organization for their elements and should not morph between different organizations. If you want your collection view to change how it organizes elements, define separate layout objects for each organization and switch between them at runtime.\n\nRemember that a layout object does not directly create the views for which it provides layout information. Creation of the views is handled by the collection view, which creates them with the help of its data source object. The layout object only assists the collection view by providing information about the position and appearance of the views that the collection view creates.\n\nYour `NSCollectionViewLayout` subclass should be mostly self contained and should not rely on the collection view. Layout objects can retrieve the number of sections and items from the collection view, but you should not design layout objects that require knowledge of the data being displayed. The separation of the layout information from the displayed data offers flexibility and makes it easier to reuse layout objects.\n\n#### Methods to Override\n\nWhen defining a custom layout class, always override the following methods and properties:\n\nThese methods provide the fundamental layout information that the collection view needs to configure the items and other views that it displays. Layout objects need to implement only the methods associated with the types of elements they support. So if your layout object does not include decoration views, you do not need to implement the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForDecorationView(ofKind:at:)] method or any other methods relating to decoration views.\n\nIn addition to the preceding methods, it is recommended that you implement several other methods in your custom layout objects. The insertion or deletion of items usually involves animations to move those items into position. Providing initial or final layout attributes makes your layout more engaging by improving the animations associated with the insertion or deletion of items. Other methods provide additional support for layout-related behaviors.\n\n#### Understanding the Layout Process\n\nAlthough the collection view drives the layout process, layout objects do all the work of calculating the layout information used during that process. The layout object acts as a semi-passive utility object, computing the location of elements and returning layout attributes only when asked to do so. Layout occurs when the collection view is first displayed and reoccurs whenever all or part of the layout is marked as invalid.\n\nDuring the layout process, the collection view calls several methods of your layout object to gather information. In particular, it calls three very important methods, whose implementations drive the core layout behavior.\n\nThe [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/prepare()] method is your chance to perform the main calculations associated with the layout process. Use this method to generate an initial list of layout attributes for your content. For example, use this method to calculate the frame rectangles of all elements in the collection view. Performing all of these calculations up front and caching the resulting data is often simpler than trying to compute attributes for individual items later.\n\nIn addition to the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForElements(in:)] method, the collection view may call other methods to retrieve layout attributes for specific items. By performing your calculations in advance, your implementations of those methods should be able to return cached information without having to recompute that information first. The only time your layout object needs to recompute its layout information is when your app invalidates the layout. For example, you might invalidate the layout when the user inserts or deletes items.\n\n#### Adding Decoration Views to Your Layout\n\nLayouts can use decoration views to create a specific visual appearance for the collection view’s content. Decoration views are fully configured visual elements that the layout object provides. When defining your own custom layout objects, you might use decoration views to provide a dynamic background or add visual styling in and around the items of the collection view. The layout object defines what decoration views are needed and registers an appropriate class or nib file for each view using the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/register(_:forDecorationViewOfKind:)-44qmc] or [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/register(_:forDecorationViewOfKind:)-7z7uf] method.\n\nTo create a decoration view, return an appropriate layout attributes object from your layout object’s  [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForElements(in:)] method. When the collection view receives attributes for a decoration view, it creates that view using the class or nib file that your layout object registered. Because the collection view creates them, decoration views must be fully configured at registration time. You cannot add content to a decoration view or change its configuration later.\n\n#### Optimizing Layout Performance Using Invalidation Contexts\n\nWhen designing custom layouts, you can improve performance by updating only the portions of your layout that actually changed. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/invalidateLayout()] method forces the collection view to throw away all of its layout information and recompute it, which is inefficient if most of the layout has not changed. A better way to update your layout is using the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/invalidateLayout(with:)] method, which uses the provided context object to invalidate only the parts of the layout that changed.\n\nSupport for invalidation contexts must be built into the implementation of your layout object. At a minimum, you must override the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/invalidateLayout(with:)] method and use it to mark the parts of your layout that changed. You might do this by setting flags or throwing away cached layout attributes for the changed elements. Your [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/invalidateLayout(with:)] method should also call `super` so that the collection view can initiate the layout update process at a future time.\n\nIf your layout object supports more fine-grained invalidation than the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayoutInvalidationContext] class provides, you can subclass and add your invalidation information there. If you define a custom context class, override the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/invalidationContextClass] property in your layout object so that the collection view knows which class to instantiate. Similarly, other parts of your app should create instances of your custom context class and use them to invalidate the layout.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\ncrawled: 2025-12-04T12:25:43Z\n---\n\n# NSCollectionViewLayout\n\n**Class**\n\nAn abstract base class that you subclass and use to generate layout information for a collection view.\n\n## Declaration\n\n```swift\n@MainActor class NSCollectionViewLayout\n```\n\n## Overview\n\nThe job of a layout object is to perform the calculations needed to determine the placement and appearance of items, supplementary views, and other content in the collection view. The layout object does not apply the layout attributes it generates to the views in your interface. Instead, it passes those layout attributes to the collection view, which then creates the needed views and applies the layout attributes to them.\n\nYou do not create instances of this class directly. Instead, you create instances of one of its subclasses and associate that object with your collection view either programmatically (using the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionView\/collectionViewLayout] property) or at design time in Interface Builder. Changing the layout object of a collection view forces an immediate update of the layout information.\n\nCollection views support many different types of elements, most of which are visual and all of which require layout attributes:\n\n- *Items* are the main elements managed by the layout. Each item represents a single piece of data in the collection view. A collection view can have a single group of items or it can divide the items into multiple sections.\n- *Supplementary views* are optional views associated with a specific section. The layout object defines the placement and use of supplementary views. For example, grid and flow layouts use supplementary views to implement headers and footers for each section. Supplementary views cannot be selected by the user.\n- *Decoration views* are visual adornments used to implement themes or to present visual content that is unrelated to the data being managed by the collection view. Decoration views are optional and the layout object defines their use and placement.\n- *Inter-item gaps* supply a drop target for dragged content. Gaps do not have a direct visual representation, but they do have layout attributes, which the collection view uses for hit testing. The layout object provides attributes for inter-item gaps only when asked to do so.\n\nEach concrete layout object defines a specific organization for the contained elements and provides the appropriate layout attributes. The placement and appearance of items is determined entirely by the layout object. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewFlowLayout] and [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewGridLayout] subclasses define variants of a grid-based layout, but you can create custom layouts that arrange elements in different ways. For example, you might define a layout class that arranges items in a circle or define a class that groups items into stacks that resemble a pile of photos on a table.\n\n### Subclassing Notes\n\nLayout objects provide information about the position and visual state of elements in the collection view. When defining an `NSCollectionViewLayout` subclass, first have an idea for how items in your layout will appear onscreen. Layouts should provide a well-defined organization for their elements and should not morph between different organizations. If you want your collection view to change how it organizes elements, define separate layout objects for each organization and switch between them at runtime.\n\nRemember that a layout object does not directly create the views for which it provides layout information. Creation of the views is handled by the collection view, which creates them with the help of its data source object. The layout object only assists the collection view by providing information about the position and appearance of the views that the collection view creates.\n\nYour `NSCollectionViewLayout` subclass should be mostly self contained and should not rely on the collection view. Layout objects can retrieve the number of sections and items from the collection view, but you should not design layout objects that require knowledge of the data being displayed. The separation of the layout information from the displayed data offers flexibility and makes it easier to reuse layout objects.\n\n#### Methods to Override\n\nWhen defining a custom layout class, always override the following methods and properties:\n\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/prepare()]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/collectionViewContentSize]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForElements(in:)]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForItem(at:)]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForSupplementaryView(ofKind:at:)] (if your layout supports supplementary views)\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForDecorationView(ofKind:at:)] (if your layout supports decoration views)\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/shouldInvalidateLayout(forBoundsChange:)]\n\nThese methods provide the fundamental layout information that the collection view needs to configure the items and other views that it displays. Layout objects need to implement only the methods associated with the types of elements they support. So if your layout object does not include decoration views, you do not need to implement the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForDecorationView(ofKind:at:)] method or any other methods relating to decoration views.\n\nIn addition to the preceding methods, it is recommended that you implement several other methods in your custom layout objects. The insertion or deletion of items usually involves animations to move those items into position. Providing initial or final layout attributes makes your layout more engaging by improving the animations associated with the insertion or deletion of items. Other methods provide additional support for layout-related behaviors.\n\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/initialLayoutAttributesForAppearingItem(at:)]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/initialLayoutAttributesForAppearingSupplementaryElement(ofKind:at:)]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/initialLayoutAttributesForAppearingDecorationElement(ofKind:at:)]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/finalLayoutAttributesForDisappearingItem(at:)]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/finalLayoutAttributesForDisappearingSupplementaryElement(ofKind:at:)]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/finalLayoutAttributesForDisappearingDecorationElement(ofKind:at:)]\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForDropTarget(at:)] (if your layout supports dropping content between items\n- [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForInterItemGap(before:)] (if your layout supports dropping content in gaps between elements)\n\n#### Understanding the Layout Process\n\nAlthough the collection view drives the layout process, layout objects do all the work of calculating the layout information used during that process. The layout object acts as a semi-passive utility object, computing the location of elements and returning layout attributes only when asked to do so. Layout occurs when the collection view is first displayed and reoccurs whenever all or part of the layout is marked as invalid.\n\nDuring the layout process, the collection view calls several methods of your layout object to gather information. In particular, it calls three very important methods, whose implementations drive the core layout behavior.\n\n- Use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/prepare()] method to perform your initial layout calculations. These calculations provide the basis for everything the layout object does later.\n- Use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/collectionViewContentSize] method to return the smallest rectangle that completely encloses all of the elements in the collection view. Use the calculations from your [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/prepare()] method to specify this rectangle.\n- Use the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForElements(in:)] method to return the layout attributes for all elements in the specified rectangle. The collection view typically requests only the subset of visible elements, but may include elements that are just offscreen.\n\nThe [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/prepare()] method is your chance to perform the main calculations associated with the layout process. Use this method to generate an initial list of layout attributes for your content. For example, use this method to calculate the frame rectangles of all elements in the collection view. Performing all of these calculations up front and caching the resulting data is often simpler than trying to compute attributes for individual items later.\n\nIn addition to the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForElements(in:)] method, the collection view may call other methods to retrieve layout attributes for specific items. By performing your calculations in advance, your implementations of those methods should be able to return cached information without having to recompute that information first. The only time your layout object needs to recompute its layout information is when your app invalidates the layout. For example, you might invalidate the layout when the user inserts or deletes items.\n\n#### Adding Decoration Views to Your Layout\n\nLayouts can use decoration views to create a specific visual appearance for the collection view’s content. Decoration views are fully configured visual elements that the layout object provides. When defining your own custom layout objects, you might use decoration views to provide a dynamic background or add visual styling in and around the items of the collection view. The layout object defines what decoration views are needed and registers an appropriate class or nib file for each view using the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/register(_:forDecorationViewOfKind:)-44qmc] or [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/register(_:forDecorationViewOfKind:)-7z7uf] method.\n\nTo create a decoration view, return an appropriate layout attributes object from your layout object’s  [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForElements(in:)] method. When the collection view receives attributes for a decoration view, it creates that view using the class or nib file that your layout object registered. Because the collection view creates them, decoration views must be fully configured at registration time. You cannot add content to a decoration view or change its configuration later.\n\n#### Optimizing Layout Performance Using Invalidation Contexts\n\nWhen designing custom layouts, you can improve performance by updating only the portions of your layout that actually changed. The [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/invalidateLayout()] method forces the collection view to throw away all of its layout information and recompute it, which is inefficient if most of the layout has not changed. A better way to update your layout is using the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/invalidateLayout(with:)] method, which uses the provided context object to invalidate only the parts of the layout that changed.\n\nSupport for invalidation contexts must be built into the implementation of your layout object. At a minimum, you must override the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/invalidateLayout(with:)] method and use it to mark the parts of your layout that changed. You might do this by setting flags or throwing away cached layout attributes for the changed elements. Your [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/invalidateLayout(with:)] method should also call `super` so that the collection view can initiate the layout update process at a future time.\n\nIf your layout object supports more fine-grained invalidation than the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayoutInvalidationContext] class provides, you can subclass and add your invalidation information there. If you define a custom context class, override the [doc:\/\/com.apple.appkit\/documentation\/AppKit\/NSCollectionViewLayout\/invalidationContextClass] property in your layout object so that the collection view knows which class to instantiate. Similarly, other parts of your app should create instances of your custom context class and use them to invalidate the layout.\n\n## Getting the Collection View\n\n- **collectionView**: The collection view object currently using this layout.\n\n## Providing Layout Information\n\n- **layoutAttributesClass**: Returns the class to use for layout attribute objects\n- **prepare()**: Prepares the layout object to begin laying out content.\n- **collectionViewContentSize**: The width and height of the collection view’s contents.\n- **layoutAttributesForElements(in:)**: Returns the layout attribute objects for all items and views in the specified rectangle.\n- **layoutAttributesForItem(at:)**: Returns the layout attributes for the item at the specified index path.\n- **layoutAttributesForSupplementaryView(ofKind:at:)**: Returns the layout attributes of the supplementary view at the specified location in your layout.\n- **layoutAttributesForDecorationView(ofKind:at:)**: Returns the layout attributes of the decoration view at the specified location in your layout.\n- **layoutAttributesForDropTarget(at:)**: Returns layout attributes for the drop target at the specified point.\n- **layoutAttributesForInterItemGap(before:)**: Returns layout attributes for the inter-item gap at the specified location in your layout.\n- **targetContentOffset(forProposedContentOffset:)**: Returns the offset value to use after an animated layout update or change.\n- **targetContentOffset(forProposedContentOffset:withScrollingVelocity:)**: Returns the offset value to use for the collection view’s content at the end of scrolling.\n\n## Responding to Collection View Updates\n\n- **prepare(forCollectionViewUpdates:)**: Performs needed tasks before items are inserted, deleted, or moved within the collection view.\n- **finalizeCollectionViewUpdates()**: Performs needed steps after items are inserted, deleted, or moved within a collection view.\n- **indexPathsToInsertForSupplementaryView(ofKind:)**: Returns the index paths for any supplementary views that the layout object wants to add to the collection view.\n- **indexPathsToInsertForDecorationView(ofKind:)**: Returns the index paths for any decoration views that the layout object wants to add to the collection view.\n- **initialLayoutAttributesForAppearingItem(at:)**: Returns the starting layout information for an item being inserted into the collection view.\n- **initialLayoutAttributesForAppearingSupplementaryElement(ofKind:at:)**: Returns the starting layout information for a supplementary view being added to the collection view.\n- **initialLayoutAttributesForAppearingDecorationElement(ofKind:at:)**: Returns the starting layout information for a decoration view being added to the collection view.\n- **indexPathsToDeleteForSupplementaryView(ofKind:)**: Returns the index paths for any supplementary views that the layout object wants to remove from the collection view.\n- **indexPathsToDeleteForDecorationView(ofKind:)**: Returns index paths for any decoration views that the layout object wants to remove from the collection view.\n- **finalLayoutAttributesForDisappearingItem(at:)**: Returns the ending layout information for an item being removed from the collection view.\n- **finalLayoutAttributesForDisappearingSupplementaryElement(ofKind:at:)**: Returns the ending layout information for a supplementary view being removed from the collection view.\n- **finalLayoutAttributesForDisappearingDecorationElement(ofKind:at:)**: Returns the ending layout information for a decoration view being removed from the collection view.\n\n## Invalidating the Layout\n\n- **invalidateLayout()**: Invalidates all layout information and triggers a layout update.\n- **invalidateLayout(with:)**: Invalidates specific parts of the layout using the specified context object.\n- **invalidationContextClass**: Returns the class to use when creating an invalidation context object for the layout.\n- **shouldInvalidateLayout(forBoundsChange:)**: Returns a Boolean indicating whether a bounds change triggers a layout update.\n- **shouldInvalidateLayout(forPreferredLayoutAttributes:withOriginalAttributes:)**: Returns a Boolean indicating whether changes to a cell’s layout attributes trigger a larger layout update.\n- **invalidationContext(forBoundsChange:)**: Returns an invalidation context object that defines the portions of the layout that need to be updated.\n- **invalidationContext(forPreferredLayoutAttributes:withOriginalAttributes:)**: Returns an invalidation context object that defines the portions of the layout that need to be updated.\n\n## Coordinating Animated Changes\n\n- **prepare(forAnimatedBoundsChange:)**: Prepares the layout object for animated changes to the collection view’s bounds or for the insertion or deletion of items.\n- **finalizeAnimatedBoundsChange()**: Cleans up after any animated changes to the collection view’s bounds or after the insertion or deletion of items.\n\n## Registering Decoration Views\n\n- **register(_:forDecorationViewOfKind:)**: Registers a class to use when creating the layout’s decoration views.\n- **register(_:forDecorationViewOfKind:)**: Registers a nib file to use when creating the layout’s decoration views.\n\n## Transitioning Between Layouts\n\n- **prepareForTransition(from:)**: Prepares the layout object to be installed in the collection view.\n- **prepareForTransition(to:)**: Prepares the layout object to be uninstalled from the collection view.\n- **finalizeLayoutTransition()**: Performs any final steps related to a layout transition before the transition animations actually occur.\n\n## Layouts\n\n- **Implementing modern collection views**: Bring compositional layouts to your app and simplify updating your user interface with diffable data sources.\n- **NSCollectionViewFlowLayout**: A layout that organizes items into a flexible and configurable arrangement.\n- **NSCollectionViewDelegateFlowLayout**: A set of methods that a delegate implements to provide layout information to a flow layout object in a collection view.\n- **NSCollectionViewGridLayout**: A layout that displays a single section of items in a row and column grid.\n- **NSCollectionViewTransitionLayout**: An object that implements custom behaviors when changing from one layout to another in a collection view.\n- **NSCollectionViewLayoutAttributes**: An object that contains layout-related attributes for an element in a collection view.\n- **NSCollectionViewCompositionalLayout**: A layout object that lets you combine items in highly adaptive and flexible visual arrangements.\n- **NSCollectionViewCompositionalLayoutConfiguration**: An object that defines scroll direction, section spacing, and headers or footers for the layout.\n- **NSCollectionViewCompositionalLayoutSectionProvider**: A closure that creates and returns each of the layout’s sections.\n- **NSCollectionLayoutSectionOrthogonalScrollingBehavior**: The scrolling behavior of the layout’s sections in relation to the main layout axis.\n\n## Inherits From\n\n- NSObject\n\n## Inherited By\n\n- NSCollectionViewCompositionalLayout\n- NSCollectionViewFlowLayout\n- NSCollectionViewGridLayout\n- NSCollectionViewTransitionLayout\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCoding\n- NSObjectProtocol\n- Sendable\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The collection view object currently using this layout.",
+          "name" : "collectionView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/collectionView"
+        }
+      ],
+      "title" : "Getting the Collection View"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the class to use for layout attribute objects",
+          "name" : "layoutAttributesClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesClass"
+        },
+        {
+          "description" : "Prepares the layout object to begin laying out content.",
+          "name" : "prepare()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/prepare()"
+        },
+        {
+          "description" : "The width and height of the collection view’s contents.",
+          "name" : "collectionViewContentSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/collectionViewContentSize"
+        },
+        {
+          "description" : "Returns the layout attribute objects for all items and views in the specified rectangle.",
+          "name" : "layoutAttributesForElements(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForElements(in:)"
+        },
+        {
+          "description" : "Returns the layout attributes for the item at the specified index path.",
+          "name" : "layoutAttributesForItem(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForItem(at:)"
+        },
+        {
+          "description" : "Returns the layout attributes of the supplementary view at the specified location in your layout.",
+          "name" : "layoutAttributesForSupplementaryView(ofKind:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForSupplementaryView(ofKind:at:)"
+        },
+        {
+          "description" : "Returns the layout attributes of the decoration view at the specified location in your layout.",
+          "name" : "layoutAttributesForDecorationView(ofKind:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForDecorationView(ofKind:at:)"
+        },
+        {
+          "description" : "Returns layout attributes for the drop target at the specified point.",
+          "name" : "layoutAttributesForDropTarget(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForDropTarget(at:)"
+        },
+        {
+          "description" : "Returns layout attributes for the inter-item gap at the specified location in your layout.",
+          "name" : "layoutAttributesForInterItemGap(before:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/layoutAttributesForInterItemGap(before:)"
+        },
+        {
+          "description" : "Returns the offset value to use after an animated layout update or change.",
+          "name" : "targetContentOffset(forProposedContentOffset:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/targetContentOffset(forProposedContentOffset:)"
+        },
+        {
+          "description" : "Returns the offset value to use for the collection view’s content at the end of scrolling.",
+          "name" : "targetContentOffset(forProposedContentOffset:withScrollingVelocity:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/targetContentOffset(forProposedContentOffset:withScrollingVelocity:)"
+        }
+      ],
+      "title" : "Providing Layout Information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Performs needed tasks before items are inserted, deleted, or moved within the collection view.",
+          "name" : "prepare(forCollectionViewUpdates:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/prepare(forCollectionViewUpdates:)"
+        },
+        {
+          "description" : "Performs needed steps after items are inserted, deleted, or moved within a collection view.",
+          "name" : "finalizeCollectionViewUpdates()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/finalizeCollectionViewUpdates()"
+        },
+        {
+          "description" : "Returns the index paths for any supplementary views that the layout object wants to add to the collection view.",
+          "name" : "indexPathsToInsertForSupplementaryView(ofKind:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/indexPathsToInsertForSupplementaryView(ofKind:)"
+        },
+        {
+          "description" : "Returns the index paths for any decoration views that the layout object wants to add to the collection view.",
+          "name" : "indexPathsToInsertForDecorationView(ofKind:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/indexPathsToInsertForDecorationView(ofKind:)"
+        },
+        {
+          "description" : "Returns the starting layout information for an item being inserted into the collection view.",
+          "name" : "initialLayoutAttributesForAppearingItem(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/initialLayoutAttributesForAppearingItem(at:)"
+        },
+        {
+          "description" : "Returns the starting layout information for a supplementary view being added to the collection view.",
+          "name" : "initialLayoutAttributesForAppearingSupplementaryElement(ofKind:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/initialLayoutAttributesForAppearingSupplementaryElement(ofKind:at:)"
+        },
+        {
+          "description" : "Returns the starting layout information for a decoration view being added to the collection view.",
+          "name" : "initialLayoutAttributesForAppearingDecorationElement(ofKind:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/initialLayoutAttributesForAppearingDecorationElement(ofKind:at:)"
+        },
+        {
+          "description" : "Returns the index paths for any supplementary views that the layout object wants to remove from the collection view.",
+          "name" : "indexPathsToDeleteForSupplementaryView(ofKind:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/indexPathsToDeleteForSupplementaryView(ofKind:)"
+        },
+        {
+          "description" : "Returns index paths for any decoration views that the layout object wants to remove from the collection view.",
+          "name" : "indexPathsToDeleteForDecorationView(ofKind:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/indexPathsToDeleteForDecorationView(ofKind:)"
+        },
+        {
+          "description" : "Returns the ending layout information for an item being removed from the collection view.",
+          "name" : "finalLayoutAttributesForDisappearingItem(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/finalLayoutAttributesForDisappearingItem(at:)"
+        },
+        {
+          "description" : "Returns the ending layout information for a supplementary view being removed from the collection view.",
+          "name" : "finalLayoutAttributesForDisappearingSupplementaryElement(ofKind:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/finalLayoutAttributesForDisappearingSupplementaryElement(ofKind:at:)"
+        },
+        {
+          "description" : "Returns the ending layout information for a decoration view being removed from the collection view.",
+          "name" : "finalLayoutAttributesForDisappearingDecorationElement(ofKind:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/finalLayoutAttributesForDisappearingDecorationElement(ofKind:at:)"
+        }
+      ],
+      "title" : "Responding to Collection View Updates"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Invalidates all layout information and triggers a layout update.",
+          "name" : "invalidateLayout()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/invalidateLayout()"
+        },
+        {
+          "description" : "Invalidates specific parts of the layout using the specified context object.",
+          "name" : "invalidateLayout(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/invalidateLayout(with:)"
+        },
+        {
+          "description" : "Returns the class to use when creating an invalidation context object for the layout.",
+          "name" : "invalidationContextClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/invalidationContextClass"
+        },
+        {
+          "description" : "Returns a Boolean indicating whether a bounds change triggers a layout update.",
+          "name" : "shouldInvalidateLayout(forBoundsChange:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/shouldInvalidateLayout(forBoundsChange:)"
+        },
+        {
+          "description" : "Returns a Boolean indicating whether changes to a cell’s layout attributes trigger a larger layout update.",
+          "name" : "shouldInvalidateLayout(forPreferredLayoutAttributes:withOriginalAttributes:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/shouldInvalidateLayout(forPreferredLayoutAttributes:withOriginalAttributes:)"
+        },
+        {
+          "description" : "Returns an invalidation context object that defines the portions of the layout that need to be updated.",
+          "name" : "invalidationContext(forBoundsChange:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/invalidationContext(forBoundsChange:)"
+        },
+        {
+          "description" : "Returns an invalidation context object that defines the portions of the layout that need to be updated.",
+          "name" : "invalidationContext(forPreferredLayoutAttributes:withOriginalAttributes:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/invalidationContext(forPreferredLayoutAttributes:withOriginalAttributes:)"
+        }
+      ],
+      "title" : "Invalidating the Layout"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Prepares the layout object for animated changes to the collection view’s bounds or for the insertion or deletion of items.",
+          "name" : "prepare(forAnimatedBoundsChange:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/prepare(forAnimatedBoundsChange:)"
+        },
+        {
+          "description" : "Cleans up after any animated changes to the collection view’s bounds or after the insertion or deletion of items.",
+          "name" : "finalizeAnimatedBoundsChange()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/finalizeAnimatedBoundsChange()"
+        }
+      ],
+      "title" : "Coordinating Animated Changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Registers a class to use when creating the layout’s decoration views.",
+          "name" : "register(_:forDecorationViewOfKind:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/register(_:forDecorationViewOfKind:)-44qmc"
+        },
+        {
+          "description" : "Registers a nib file to use when creating the layout’s decoration views.",
+          "name" : "register(_:forDecorationViewOfKind:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/register(_:forDecorationViewOfKind:)-7z7uf"
+        }
+      ],
+      "title" : "Registering Decoration Views"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Prepares the layout object to be installed in the collection view.",
+          "name" : "prepareForTransition(from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/prepareForTransition(from:)"
+        },
+        {
+          "description" : "Prepares the layout object to be uninstalled from the collection view.",
+          "name" : "prepareForTransition(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/prepareForTransition(to:)"
+        },
+        {
+          "description" : "Performs any final steps related to a layout transition before the transition animations actually occur.",
+          "name" : "finalizeLayoutTransition()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout\/finalizeLayoutTransition()"
+        }
+      ],
+      "title" : "Transitioning Between Layouts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Bring compositional layouts to your app and simplify updating your user interface with diffable data sources.",
+          "name" : "Implementing modern collection views",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/implementing-modern-collection-views"
+        },
+        {
+          "description" : "A layout that organizes items into a flexible and configurable arrangement.",
+          "name" : "NSCollectionViewFlowLayout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewFlowLayout"
+        },
+        {
+          "description" : "A set of methods that a delegate implements to provide layout information to a flow layout object in a collection view.",
+          "name" : "NSCollectionViewDelegateFlowLayout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewDelegateFlowLayout"
+        },
+        {
+          "description" : "A layout that displays a single section of items in a row and column grid.",
+          "name" : "NSCollectionViewGridLayout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewGridLayout"
+        },
+        {
+          "description" : "An object that implements custom behaviors when changing from one layout to another in a collection view.",
+          "name" : "NSCollectionViewTransitionLayout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewTransitionLayout"
+        },
+        {
+          "description" : "An object that contains layout-related attributes for an element in a collection view.",
+          "name" : "NSCollectionViewLayoutAttributes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayoutAttributes"
+        },
+        {
+          "description" : "A layout object that lets you combine items in highly adaptive and flexible visual arrangements.",
+          "name" : "NSCollectionViewCompositionalLayout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewCompositionalLayout"
+        },
+        {
+          "description" : "An object that defines scroll direction, section spacing, and headers or footers for the layout.",
+          "name" : "NSCollectionViewCompositionalLayoutConfiguration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewCompositionalLayoutConfiguration"
+        },
+        {
+          "description" : "A closure that creates and returns each of the layout’s sections.",
+          "name" : "NSCollectionViewCompositionalLayoutSectionProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewCompositionalLayoutSectionProvider"
+        },
+        {
+          "description" : "The scrolling behavior of the layout’s sections in relation to the main layout axis.",
+          "name" : "NSCollectionLayoutSectionOrthogonalScrollingBehavior",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionLayoutSectionOrthogonalScrollingBehavior"
+        }
+      ],
+      "title" : "Layouts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSCollectionViewLayout",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AppKit\/NSCollectionViewLayout"
+}

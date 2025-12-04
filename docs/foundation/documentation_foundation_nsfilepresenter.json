@@ -1,0 +1,209 @@
+{
+  "abstract" : "The interface a file coordinator uses to inform an object presenting a file about changes to that file made elsewhere in the system.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "e69f68f92e3d14e8888c0a628c460858976e35be6590e4b38267437dd0296ca0",
+  "crawledAt" : "2025-12-04T17:55:31Z",
+  "declaration" : {
+    "code" : "protocol NSFilePresenter : NSObjectProtocol",
+    "language" : "swift"
+  },
+  "id" : "0A1ED38B-7256-49A1-B5B8-B7B27F99BC1D",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nObjects that allow the user to view or edit the content of files or directories should adopt the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter] protocol. You use file presenters in conjunction with an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator] object to coordinate access to a file or directory among the objects of your application and between your application and other processes. When changes to an item occur, the system notifies objects that adopt this protocol and gives them a chance to respond appropriately.\n\nUse the methods of this protocol to respond to actions about to be taken on the presented file or directory. When another object or process uses a file coordinator to begin reading or writing a file or directory, the file coordinator notifies all presented objects interested in the item first. It notifies the presenter objects by invoking one of the methods defined by this protocol on that object. The actual invocation of that method occurs on the operation queue in the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter\/presentedItemOperationQueue] property. Your file presenter must provide this queue. If your queue supports the concurrent execution of operations, the methods of your presenter object must be thread-safe and able to run in multiple queues simultaneously.\n\nYou can use file presenters to coordinate access to a file or directory among your application’s objects. If another process uses a file coordinator for the same file or directory, your presenter objects are similarly notified whenever the other process makes its changes. Your presenter objects are not notified about changes made directly using low-level read and write calls to the file. Only changes that go through a file coordinator result in notifications.\n\nFor information about how to use file presenters with a file coordinator object, see [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator].\n\n### File Presenters and iOS\n\nIf your app enters the background with an active file presenter, any other processes that perform a coordinated read or write on the presented file can deadlock. To prevent this situation, call the coordinator’s [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/removeFilePresenter(_:)] type method to remove the file presenter in the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/applicationDidEnterBackground(_:)] method or in response to a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/didEnterBackgroundNotification] notification. Call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/addFilePresenter(_:)] to add the file presenter again in the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/applicationWillEnterForeground(_:)] method or in response to a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/willEnterForegroundNotification] notification.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\ncrawled: 2025-12-04T17:55:31Z\n---\n\n# NSFilePresenter\n\n**Protocol**\n\nThe interface a file coordinator uses to inform an object presenting a file about changes to that file made elsewhere in the system.\n\n## Declaration\n\n```swift\nprotocol NSFilePresenter : NSObjectProtocol\n```\n\n## Overview\n\nObjects that allow the user to view or edit the content of files or directories should adopt the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter] protocol. You use file presenters in conjunction with an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator] object to coordinate access to a file or directory among the objects of your application and between your application and other processes. When changes to an item occur, the system notifies objects that adopt this protocol and gives them a chance to respond appropriately.\n\nUse the methods of this protocol to respond to actions about to be taken on the presented file or directory. When another object or process uses a file coordinator to begin reading or writing a file or directory, the file coordinator notifies all presented objects interested in the item first. It notifies the presenter objects by invoking one of the methods defined by this protocol on that object. The actual invocation of that method occurs on the operation queue in the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter\/presentedItemOperationQueue] property. Your file presenter must provide this queue. If your queue supports the concurrent execution of operations, the methods of your presenter object must be thread-safe and able to run in multiple queues simultaneously.\n\nYou can use file presenters to coordinate access to a file or directory among your application’s objects. If another process uses a file coordinator for the same file or directory, your presenter objects are similarly notified whenever the other process makes its changes. Your presenter objects are not notified about changes made directly using low-level read and write calls to the file. Only changes that go through a file coordinator result in notifications.\n\nFor information about how to use file presenters with a file coordinator object, see [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator].\n\n### File Presenters and iOS\n\nIf your app enters the background with an active file presenter, any other processes that perform a coordinated read or write on the presented file can deadlock. To prevent this situation, call the coordinator’s [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/removeFilePresenter(_:)] type method to remove the file presenter in the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/applicationDidEnterBackground(_:)] method or in response to a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/didEnterBackgroundNotification] notification. Call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/addFilePresenter(_:)] to add the file presenter again in the [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplicationDelegate\/applicationWillEnterForeground(_:)] method or in response to a [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIApplication\/willEnterForegroundNotification] notification.\n\n\n\n## Accessing File Presenter Attributes\n\n- **presentedItemURL**: The URL of the presented file or directory.\n- **presentedItemOperationQueue**: The operation queue in which to execute presenter-related messages.\n- **primaryPresentedItemURL**: The URL of a secondary item’s primary presented file or directory.\n\n## Relinquishing Managed Files\n\n- **relinquishPresentedItem(toReader:)**: Notifies your object that another object or process wants to read the presented file or directory.\n- **relinquishPresentedItem(toWriter:)**: Notifies your object that another object or process wants to write to the presented file or directory.\n\n## Handling Changes to Files\n\n- **savePresentedItemChanges(completionHandler:)**: Tells your object to save any unsaved changes for the presented item.\n- **accommodatePresentedItemDeletion(completionHandler:)**: Tells your object that its presented item is about to be deleted.\n- **presentedItemDidMove(to:)**: Tells your object that the presented item moved or was renamed.\n- **presentedItemDidChange()**: Tells your object that the presented item’s contents or attributes changed.\n\n## Responding to Version Changes\n\n- **presentedItemDidGain(_:)**: Tells the delegate that a new version of the file or file package was added.\n- **presentedItemDidLose(_:)**: Tells the delegate that a version of the file or file package was removed.\n- **presentedItemDidResolveConflict(_:)**: Tells the delegate that some other entity resolved a version conflict for the presenter’s file or file package.\n- **presentedSubitem(at:didGain:)**: Tells the delegate that the item inside the presented directory gained a new version.\n- **presentedSubitem(at:didLose:)**: Tells the delegate that the item inside the presented directory lost an existing version.\n- **presentedSubitem(at:didResolve:)**: Tells the delegate that the item inside the presented directory had a version conflict resolved by an outside entity.\n\n## Handling Changes to a Presented Directory\n\n- **accommodatePresentedSubitemDeletion(at:completionHandler:)**: Tells the delegate that some entity wants to delete an item that is inside of a presented directory.\n- **presentedSubitemDidAppear(at:)**: Tells the delegate that an item was added to the presented directory.\n- **presentedSubitem(at:didMoveTo:)**: Tells the delegate that an item in the presented directory moved to a new location.\n- **presentedSubitemDidChange(at:)**: Tells the delegate that the contents or attributes of the specified item changed.\n\n## Ubiquity Change Notifications\n\n- **observedPresentedItemUbiquityAttributes**: A list of ubiquity attributes used to generate and send notifications whenever an attribute in the list changes.\n- **presentedItemDidChangeUbiquityAttributes(_:)**: Tells your object that the file or file package’s ubiquity attributes have changed.\n\n## Instance Methods\n\n- **accommodatePresentedItemEviction(completionHandler:)**\n\n## Coordinated file access\n\n- **NSFileAccessIntent**: The details of a coordinated-read or coordinated-write operation.\n- **NSFileCoordinator**: An object that coordinates the reading and writing of files and directories among file presenters.\n\n## Inherits From\n\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The URL of the presented file or directory.",
+          "name" : "presentedItemURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedItemURL"
+        },
+        {
+          "description" : "The operation queue in which to execute presenter-related messages.",
+          "name" : "presentedItemOperationQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedItemOperationQueue"
+        },
+        {
+          "description" : "The URL of a secondary item’s primary presented file or directory.",
+          "name" : "primaryPresentedItemURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/primaryPresentedItemURL"
+        }
+      ],
+      "title" : "Accessing File Presenter Attributes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Notifies your object that another object or process wants to read the presented file or directory.",
+          "name" : "relinquishPresentedItem(toReader:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/relinquishPresentedItem(toReader:)"
+        },
+        {
+          "description" : "Notifies your object that another object or process wants to write to the presented file or directory.",
+          "name" : "relinquishPresentedItem(toWriter:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/relinquishPresentedItem(toWriter:)"
+        }
+      ],
+      "title" : "Relinquishing Managed Files"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells your object to save any unsaved changes for the presented item.",
+          "name" : "savePresentedItemChanges(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/savePresentedItemChanges(completionHandler:)"
+        },
+        {
+          "description" : "Tells your object that its presented item is about to be deleted.",
+          "name" : "accommodatePresentedItemDeletion(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/accommodatePresentedItemDeletion(completionHandler:)"
+        },
+        {
+          "description" : "Tells your object that the presented item moved or was renamed.",
+          "name" : "presentedItemDidMove(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedItemDidMove(to:)"
+        },
+        {
+          "description" : "Tells your object that the presented item’s contents or attributes changed.",
+          "name" : "presentedItemDidChange()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedItemDidChange()"
+        }
+      ],
+      "title" : "Handling Changes to Files"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells the delegate that a new version of the file or file package was added.",
+          "name" : "presentedItemDidGain(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedItemDidGain(_:)"
+        },
+        {
+          "description" : "Tells the delegate that a version of the file or file package was removed.",
+          "name" : "presentedItemDidLose(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedItemDidLose(_:)"
+        },
+        {
+          "description" : "Tells the delegate that some other entity resolved a version conflict for the presenter’s file or file package.",
+          "name" : "presentedItemDidResolveConflict(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedItemDidResolveConflict(_:)"
+        },
+        {
+          "description" : "Tells the delegate that the item inside the presented directory gained a new version.",
+          "name" : "presentedSubitem(at:didGain:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedSubitem(at:didGain:)"
+        },
+        {
+          "description" : "Tells the delegate that the item inside the presented directory lost an existing version.",
+          "name" : "presentedSubitem(at:didLose:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedSubitem(at:didLose:)"
+        },
+        {
+          "description" : "Tells the delegate that the item inside the presented directory had a version conflict resolved by an outside entity.",
+          "name" : "presentedSubitem(at:didResolve:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedSubitem(at:didResolve:)"
+        }
+      ],
+      "title" : "Responding to Version Changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells the delegate that some entity wants to delete an item that is inside of a presented directory.",
+          "name" : "accommodatePresentedSubitemDeletion(at:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/accommodatePresentedSubitemDeletion(at:completionHandler:)"
+        },
+        {
+          "description" : "Tells the delegate that an item was added to the presented directory.",
+          "name" : "presentedSubitemDidAppear(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedSubitemDidAppear(at:)"
+        },
+        {
+          "description" : "Tells the delegate that an item in the presented directory moved to a new location.",
+          "name" : "presentedSubitem(at:didMoveTo:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedSubitem(at:didMoveTo:)"
+        },
+        {
+          "description" : "Tells the delegate that the contents or attributes of the specified item changed.",
+          "name" : "presentedSubitemDidChange(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedSubitemDidChange(at:)"
+        }
+      ],
+      "title" : "Handling Changes to a Presented Directory"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A list of ubiquity attributes used to generate and send notifications whenever an attribute in the list changes.",
+          "name" : "observedPresentedItemUbiquityAttributes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/observedPresentedItemUbiquityAttributes"
+        },
+        {
+          "description" : "Tells your object that the file or file package’s ubiquity attributes have changed.",
+          "name" : "presentedItemDidChangeUbiquityAttributes(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/presentedItemDidChangeUbiquityAttributes(_:)"
+        }
+      ],
+      "title" : "Ubiquity Change Notifications"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "accommodatePresentedItemEviction(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter\/accommodatePresentedItemEviction(completionHandler:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The details of a coordinated-read or coordinated-write operation.",
+          "name" : "NSFileAccessIntent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileAccessIntent"
+        },
+        {
+          "description" : "An object that coordinates the reading and writing of files and directories among file presenters.",
+          "name" : "NSFileCoordinator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator"
+        }
+      ],
+      "title" : "Coordinated file access"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObjectProtocol"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSFilePresenter",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFilePresenter"
+}

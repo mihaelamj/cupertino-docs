@@ -1,0 +1,181 @@
+{
+  "abstract" : "A timer that fires after a certain time interval has elapsed, sending a specified message to a target object.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "f5f6ae0e1cfb60b5d4463633f27930750ce1b690cd59b3edd299175f0e4c4b41",
+  "crawledAt" : "2025-12-04T17:53:44Z",
+  "declaration" : {
+    "code" : "class Timer",
+    "language" : "swift"
+  },
+  "id" : "AAC89AD8-8AB7-4E64-9296-EDB626C1F7CE",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nTimers work in conjunction with run loops. Run loops maintain strong references to their timers, so you don’t have to maintain your own strong reference to a timer after you have added it to a run loop.\n\nTo use a timer effectively, you should be aware of how run loops operate. See [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/Multithreading\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/10000057i] for more information.\n\nA timer is not a real-time mechanism. If a timer’s firing time occurs during a long run loop callout or while the run loop is in a mode that isn’t monitoring the timer, the timer doesn’t fire until the next time the run loop checks the timer. Therefore, the actual time at which a timer fires can be significantly later. See also [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer#Timer-Tolerance].\n\n[doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer] is toll-free bridged with its Core Foundation counterpart, [doc:\/\/com.apple.documentation\/documentation\/CoreFoundation\/CFRunLoopTimer].  See [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/CocoaEncyclopedia\/Toll-FreeBridgin\/Toll-FreeBridgin.html#\/\/apple_ref\/doc\/uid\/TP40010810-CH2] for more information.\n\n### Comparing Repeating and Nonrepeating Timers\n\nYou specify whether a timer is repeating or nonrepeating at creation time. A nonrepeating timer fires once and then invalidates itself automatically, thereby preventing the timer from firing again. By contrast, a repeating timer fires and then reschedules itself on the same run loop.  A repeating timer always schedules itself based on the scheduled firing time, as opposed to the actual firing time. For example, if a timer is scheduled to fire at a particular time and every 5 seconds after that, the scheduled firing time will always fall on the original 5-second time intervals, even if the actual firing time gets delayed. If the firing time is delayed so far that it passes one or more of the scheduled firing times, the timer is fired only once for that time period; the timer is then rescheduled, after firing, for the next scheduled firing time in the future.\n\n### Timer Tolerance\n\nIn iOS 7 and later and macOS 10.9 and later, you can specify a tolerance for a timer ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/tolerance]). This flexibility in when a timer fires improves the system’s ability to optimize for increased power savings and responsiveness. The timer may fire at any time between its scheduled fire date and the scheduled fire date plus the tolerance. The timer doesn’t fire before the scheduled fire date. For repeating timers, the next fire date is calculated from the original fire date regardless of tolerance applied at individual fire times, to avoid drift. The default value is zero, which means no additional tolerance is applied. The system reserves the right to apply a small amount of tolerance to certain timers regardless of the value of the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/tolerance] property.\n\nAs the user of the timer, you can determine the appropriate tolerance for a timer. A general rule, set the tolerance to at least 10% of the interval, for a repeating timer. Even a small amount of tolerance has significant positive impact on the power usage of your application. The system may enforce a maximum value for the tolerance.\n\n### Scheduling Timers in Run Loops\n\nYou can register a timer in only one run loop at a time, although it can be added to multiple run loop modes within that run loop. There are three ways to create a timer:\n\nOnce scheduled on a run loop, the timer fires at the specified interval until it is invalidated. A nonrepeating timer invalidates itself immediately after it fires. However, for a repeating timer, you must invalidate the timer object yourself by calling its [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/invalidate()] method. Calling this method requests the removal of the timer from the current run loop; as a result, you should always call the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/invalidate()] method from the same thread on which the timer was installed. Invalidating the timer immediately disables it so that it no longer affects the run loop. The run loop then removes the timer (and the strong reference it had to the timer), either just before the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/invalidate()] method returns or at some later point. Once invalidated, timer objects cannot be reused.\n\nAfter a repeating timer fires, it schedules the next firing for the nearest future date that is an integer multiple of the timer interval after the last scheduled fire date, within the specified [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/tolerance]. If the time taken to call out to perform a selector or invocation is longer than the specified interval, the timer schedules only the next firing; that is, the timer doesn’t attempt to compensate for any missed firings that would have occurred while calling the specified selector or invocation.\n\n### Subclassing Notes\n\nDo not subclass [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\ncrawled: 2025-12-04T17:53:44Z\n---\n\n# Timer\n\n**Class**\n\nA timer that fires after a certain time interval has elapsed, sending a specified message to a target object.\n\n## Declaration\n\n```swift\nclass Timer\n```\n\n## Overview\n\nTimers work in conjunction with run loops. Run loops maintain strong references to their timers, so you don’t have to maintain your own strong reference to a timer after you have added it to a run loop.\n\nTo use a timer effectively, you should be aware of how run loops operate. See [https:\/\/developer.apple.com\/library\/archive\/documentation\/Cocoa\/Conceptual\/Multithreading\/Introduction\/Introduction.html#\/\/apple_ref\/doc\/uid\/10000057i] for more information.\n\nA timer is not a real-time mechanism. If a timer’s firing time occurs during a long run loop callout or while the run loop is in a mode that isn’t monitoring the timer, the timer doesn’t fire until the next time the run loop checks the timer. Therefore, the actual time at which a timer fires can be significantly later. See also [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer#Timer-Tolerance].\n\n[doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer] is toll-free bridged with its Core Foundation counterpart, [doc:\/\/com.apple.documentation\/documentation\/CoreFoundation\/CFRunLoopTimer].  See [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/CocoaEncyclopedia\/Toll-FreeBridgin\/Toll-FreeBridgin.html#\/\/apple_ref\/doc\/uid\/TP40010810-CH2] for more information.\n\n### Comparing Repeating and Nonrepeating Timers\n\nYou specify whether a timer is repeating or nonrepeating at creation time. A nonrepeating timer fires once and then invalidates itself automatically, thereby preventing the timer from firing again. By contrast, a repeating timer fires and then reschedules itself on the same run loop.  A repeating timer always schedules itself based on the scheduled firing time, as opposed to the actual firing time. For example, if a timer is scheduled to fire at a particular time and every 5 seconds after that, the scheduled firing time will always fall on the original 5-second time intervals, even if the actual firing time gets delayed. If the firing time is delayed so far that it passes one or more of the scheduled firing times, the timer is fired only once for that time period; the timer is then rescheduled, after firing, for the next scheduled firing time in the future.\n\n### Timer Tolerance\n\nIn iOS 7 and later and macOS 10.9 and later, you can specify a tolerance for a timer ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/tolerance]). This flexibility in when a timer fires improves the system’s ability to optimize for increased power savings and responsiveness. The timer may fire at any time between its scheduled fire date and the scheduled fire date plus the tolerance. The timer doesn’t fire before the scheduled fire date. For repeating timers, the next fire date is calculated from the original fire date regardless of tolerance applied at individual fire times, to avoid drift. The default value is zero, which means no additional tolerance is applied. The system reserves the right to apply a small amount of tolerance to certain timers regardless of the value of the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/tolerance] property.\n\nAs the user of the timer, you can determine the appropriate tolerance for a timer. A general rule, set the tolerance to at least 10% of the interval, for a repeating timer. Even a small amount of tolerance has significant positive impact on the power usage of your application. The system may enforce a maximum value for the tolerance.\n\n### Scheduling Timers in Run Loops\n\nYou can register a timer in only one run loop at a time, although it can be added to multiple run loop modes within that run loop. There are three ways to create a timer:\n\n- Use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/scheduledTimer(timeInterval:invocation:repeats:)] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/scheduledTimer(timeInterval:target:selector:userInfo:repeats:)] class method to create the timer and schedule it on the current run loop in the default mode.\n- Use the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/init(timeInterval:invocation:repeats:)] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/init(timeInterval:target:selector:userInfo:repeats:)] class method to create the timer object without scheduling it on a run loop. (After creating it, you must add the timer to a run loop manually by calling the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/RunLoop\/add(_:forMode:)-392ag] method of the corresponding [doc:\/\/com.apple.foundation\/documentation\/Foundation\/RunLoop] object.)\n- Allocate the timer and initialize it using the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/init(fireAt:interval:target:selector:userInfo:repeats:)] method. (After creating it, you must add the timer to a run loop manually by calling the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/RunLoop\/add(_:forMode:)-392ag] method of the corresponding [doc:\/\/com.apple.foundation\/documentation\/Foundation\/RunLoop] object.)\n\nOnce scheduled on a run loop, the timer fires at the specified interval until it is invalidated. A nonrepeating timer invalidates itself immediately after it fires. However, for a repeating timer, you must invalidate the timer object yourself by calling its [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/invalidate()] method. Calling this method requests the removal of the timer from the current run loop; as a result, you should always call the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/invalidate()] method from the same thread on which the timer was installed. Invalidating the timer immediately disables it so that it no longer affects the run loop. The run loop then removes the timer (and the strong reference it had to the timer), either just before the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/invalidate()] method returns or at some later point. Once invalidated, timer objects cannot be reused.\n\nAfter a repeating timer fires, it schedules the next firing for the nearest future date that is an integer multiple of the timer interval after the last scheduled fire date, within the specified [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer\/tolerance]. If the time taken to call out to perform a selector or invocation is longer than the specified interval, the timer schedules only the next firing; that is, the timer doesn’t attempt to compensate for any missed firings that would have occurred while calling the specified selector or invocation.\n\n### Subclassing Notes\n\nDo not subclass [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer].\n\n## Creating a Timer\n\n- **scheduledTimer(withTimeInterval:repeats:block:)**: Creates a timer and schedules it on the current run loop in the default mode.\n- **scheduledTimer(timeInterval:target:selector:userInfo:repeats:)**: Creates a timer and schedules it on the current run loop in the default mode.\n- **scheduledTimer(timeInterval:invocation:repeats:)**: Creates a new timer and schedules it on the current run loop in the default mode.\n- **init(timeInterval:repeats:block:)**: Initializes a timer object with the specified time interval and block.\n- **init(timeInterval:target:selector:userInfo:repeats:)**: Initializes a timer object with the specified object and selector.\n- **init(timeInterval:invocation:repeats:)**: Initializes a timer object with the specified invocation object.\n- **init(fire:interval:repeats:block:)**: Initializes a timer for the specified date and time interval with the specified block.\n- **init(fireAt:interval:target:selector:userInfo:repeats:)**: Initializes a timer using the specified object and selector.\n\n## Firing a Timer\n\n- **fire()**: Causes the timer’s message to be sent to its target.\n\n## Stopping a Timer\n\n- **invalidate()**: Stops the timer from ever firing again and requests its removal from its run loop.\n\n## Retrieving Timer Information\n\n- **isValid**: A Boolean value that indicates whether the timer is currently valid.\n- **fireDate**: The date at which the timer will fire.\n- **timeInterval**: The timer’s time interval, in seconds.\n- **userInfo**: The receiver’s `userInfo` object.\n\n## Configuring Firing Tolerance\n\n- **tolerance**: The amount of time after the scheduled fire date that the timer may fire.\n\n## Firing Messages as a Combine Publisher\n\n- **publish(every:tolerance:on:in:options:)**: Returns a publisher that repeatedly emits the current date on the given interval.\n- **Timer.TimerPublisher**: A publisher that repeatedly emits the current date on a given interval.\n\n## Run Loop Scheduling\n\n- **RunLoop**: The programmatic interface to objects that manage input sources.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a timer and schedules it on the current run loop in the default mode.",
+          "name" : "scheduledTimer(withTimeInterval:repeats:block:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/scheduledTimer(withTimeInterval:repeats:block:)"
+        },
+        {
+          "description" : "Creates a timer and schedules it on the current run loop in the default mode.",
+          "name" : "scheduledTimer(timeInterval:target:selector:userInfo:repeats:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/scheduledTimer(timeInterval:target:selector:userInfo:repeats:)"
+        },
+        {
+          "description" : "Creates a new timer and schedules it on the current run loop in the default mode.",
+          "name" : "scheduledTimer(timeInterval:invocation:repeats:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/scheduledTimer(timeInterval:invocation:repeats:)"
+        },
+        {
+          "description" : "Initializes a timer object with the specified time interval and block.",
+          "name" : "init(timeInterval:repeats:block:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/init(timeInterval:repeats:block:)"
+        },
+        {
+          "description" : "Initializes a timer object with the specified object and selector.",
+          "name" : "init(timeInterval:target:selector:userInfo:repeats:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/init(timeInterval:target:selector:userInfo:repeats:)"
+        },
+        {
+          "description" : "Initializes a timer object with the specified invocation object.",
+          "name" : "init(timeInterval:invocation:repeats:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/init(timeInterval:invocation:repeats:)"
+        },
+        {
+          "description" : "Initializes a timer for the specified date and time interval with the specified block.",
+          "name" : "init(fire:interval:repeats:block:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/init(fire:interval:repeats:block:)"
+        },
+        {
+          "description" : "Initializes a timer using the specified object and selector.",
+          "name" : "init(fireAt:interval:target:selector:userInfo:repeats:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/init(fireAt:interval:target:selector:userInfo:repeats:)"
+        }
+      ],
+      "title" : "Creating a Timer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Causes the timer’s message to be sent to its target.",
+          "name" : "fire()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/fire()"
+        }
+      ],
+      "title" : "Firing a Timer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Stops the timer from ever firing again and requests its removal from its run loop.",
+          "name" : "invalidate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/invalidate()"
+        }
+      ],
+      "title" : "Stopping a Timer"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the timer is currently valid.",
+          "name" : "isValid",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/isValid"
+        },
+        {
+          "description" : "The date at which the timer will fire.",
+          "name" : "fireDate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/fireDate"
+        },
+        {
+          "description" : "The timer’s time interval, in seconds.",
+          "name" : "timeInterval",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/timeInterval"
+        },
+        {
+          "description" : "The receiver’s `userInfo` object.",
+          "name" : "userInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/userInfo"
+        }
+      ],
+      "title" : "Retrieving Timer Information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The amount of time after the scheduled fire date that the timer may fire.",
+          "name" : "tolerance",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/tolerance"
+        }
+      ],
+      "title" : "Configuring Firing Tolerance"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a publisher that repeatedly emits the current date on the given interval.",
+          "name" : "publish(every:tolerance:on:in:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/publish(every:tolerance:on:in:options:)"
+        },
+        {
+          "description" : "A publisher that repeatedly emits the current date on a given interval.",
+          "name" : "Timer.TimerPublisher",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer\/TimerPublisher"
+        }
+      ],
+      "title" : "Firing Messages as a Combine Publisher"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The programmatic interface to objects that manage input sources.",
+          "name" : "RunLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/RunLoop"
+        }
+      ],
+      "title" : "Run Loop Scheduling"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Timer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/Timer"
+}

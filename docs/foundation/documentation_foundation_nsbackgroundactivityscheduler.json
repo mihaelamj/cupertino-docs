@@ -1,0 +1,144 @@
+{
+  "abstract" : "A task scheduler suitable for low priority operations that can run in the background.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "c37b10d4ecfa859dec0eb82751c239a6a97a7bd2067ebe5a1b9234d883f7a3f6",
+  "crawledAt" : "2025-12-04T17:53:46Z",
+  "declaration" : {
+    "code" : "class NSBackgroundActivityScheduler",
+    "language" : "swift"
+  },
+  "id" : "C2FD92B9-F5E7-40E3-9737-1096D7044D5E",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nUse an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler] object to schedule an arbitrary maintenance or background task. It’s similar to an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer] object, in that it lets you schedule a repeating or non-repeating task. However, [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler] gives the system flexibility to determine the most efficient time to execute based on energy usage, thermal conditions, and CPU use.\n\nFor example, use an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler] object to schedule:\n\nFor information about performing non-deferrable tasks efficiently, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/Performance\/Conceptual\/power_efficiency_guidelines_osx\/SchedulingBackgroundActivity.html#\/\/apple_ref\/doc\/uid\/TP40013929-CH32-SW10] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Performance\/Conceptual\/power_efficiency_guidelines_osx\/index.html#\/\/apple_ref\/doc\/uid\/TP40013929].\n\n### Create a Scheduler\n\nTo initialize a scheduler, call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/init(identifier:)] for `NSBackgroundActivityScheduler`, and pass it a unique identifier string in reverse DNS notation (`nil` and zero-length strings are not allowed) that remains constant across launches of your application.\n\n### Configure Scheduler Properties\n\nConfigure the scheduler with any of the following scheduling properties:\n\nThe next three code examples demonstrate different scheduling scenarios.\n\nScheduling an activity to fire in the next 10 minutes\n\nScheduling an activity to fire between 15 and 45 minutes from now\n\nScheduling an activity to fire once each hour\n\n### Schedule Activity with scheduleWithBlock:\n\nWhen you’re ready to schedule the activity, call `scheduleWithBlock:` and provide a block of code to execute when the scheduler runs, as shown in the following example. The block will be called on a serial background queue appropriate for the level of quality of service specified. The system automatically uses the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ProcessInfo\/beginActivity(options:reason:)] method (of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ProcessInfo]) while invoking the block, choosing appropriate options based on the specified quality of service.\n\nWhen your block is called, it’s passed a completion handler as an argument. Configure the block to invoke this handler, passing it a result of type [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/Result] to indicate whether the activity finished ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/Result\/finished]) or should be deferred ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/Result\/deferred]) and rescheduled for a later time. Failure to invoke the completion handler results in the activity not being rescheduled. For work that will be deferred and rescheduled, the block may optionally adjust scheduler properties, such as [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/interval] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/tolerance], before calling the completion handler.\n\nScheduling background activity\n\n### Detect Whether to Defer Activity\n\nIt’s conceivable that while a lengthy activity is running, conditions may change, resulting in the activity now requiring deferral. For example, perhaps the user has unplugged the Mac and it’s now running on battery power. Your activity can call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/shouldDefer] to determine whether this has occurred. A value of [doc:\/\/com.apple.documentation\/documentation\/Swift\/true] indicates that the block should finish what it’s currently doing and invoke its completion handler with a value of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/Result\/deferred]. See the following example.\n\nDetecting deferred background activity\n\n### Stop Activity\n\nCall [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/invalidate()] to stop scheduling an activity, as shown in the following example.\n\nStopping background activity",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\ncrawled: 2025-12-04T17:53:46Z\n---\n\n# NSBackgroundActivityScheduler\n\n**Class**\n\nA task scheduler suitable for low priority operations that can run in the background.\n\n## Declaration\n\n```swift\nclass NSBackgroundActivityScheduler\n```\n\n## Overview\n\nUse an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler] object to schedule an arbitrary maintenance or background task. It’s similar to an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/Timer] object, in that it lets you schedule a repeating or non-repeating task. However, [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler] gives the system flexibility to determine the most efficient time to execute based on energy usage, thermal conditions, and CPU use.\n\nFor example, use an [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler] object to schedule:\n\n- Automatic saves\n- Backups\n- Data maintenance\n- Periodic content fetches\n- Installation of updates\n- Activities occurring in intervals of 10 minutes or more\n- Any other deferrable task\n\nFor information about performing non-deferrable tasks efficiently, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/Performance\/Conceptual\/power_efficiency_guidelines_osx\/SchedulingBackgroundActivity.html#\/\/apple_ref\/doc\/uid\/TP40013929-CH32-SW10] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Performance\/Conceptual\/power_efficiency_guidelines_osx\/index.html#\/\/apple_ref\/doc\/uid\/TP40013929].\n\n\n\n### Create a Scheduler\n\nTo initialize a scheduler, call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/init(identifier:)] for `NSBackgroundActivityScheduler`, and pass it a unique identifier string in reverse DNS notation (`nil` and zero-length strings are not allowed) that remains constant across launches of your application.\n\n\n\n\n\n### Configure Scheduler Properties\n\nConfigure the scheduler with any of the following scheduling properties:\n\n- [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/repeats]—If set to [doc:\/\/com.apple.documentation\/documentation\/Swift\/true], the activity is rescheduled at the specified interval after finishing.\n- [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/interval]—For repeating schedulers, the average interval between invocations of the activity. For nonrepeating schedulers, `interval` is the suggested interval of time between scheduling the activity and the invocation of the activity.\n- [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/tolerance]—The amount of time before or after the nominal fire date when the activity should be invoked. The nominal fire date is calculated by using the interval combined with the previous fire date or the time when the activity is started. These two properties create a window in time, during which the activity may be scheduled. The system will more aggressively schedule the activity as it nears the end of the grace period after the nominal fire date. The default value is half the interval.\n- [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/qualityOfService]—The default value is `NSQualityOfServiceBackground`. If you upgrade the quality of service above this level, the system schedules the activity more aggressively. The default value is the recommended value for most activities. For information on quality of service, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/Performance\/Conceptual\/power_efficiency_guidelines_osx\/PrioritizeWorkAtTheTaskLevel.html#\/\/apple_ref\/doc\/uid\/TP40013929-CH35] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/Performance\/Conceptual\/power_efficiency_guidelines_osx\/index.html#\/\/apple_ref\/doc\/uid\/TP40013929].\n\nThe next three code examples demonstrate different scheduling scenarios.\n\nScheduling an activity to fire in the next 10 minutes\n\n\n\nScheduling an activity to fire between 15 and 45 minutes from now\n\n\n\nScheduling an activity to fire once each hour\n\n\n\n### Schedule Activity with scheduleWithBlock:\n\nWhen you’re ready to schedule the activity, call `scheduleWithBlock:` and provide a block of code to execute when the scheduler runs, as shown in the following example. The block will be called on a serial background queue appropriate for the level of quality of service specified. The system automatically uses the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ProcessInfo\/beginActivity(options:reason:)] method (of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/ProcessInfo]) while invoking the block, choosing appropriate options based on the specified quality of service.\n\nWhen your block is called, it’s passed a completion handler as an argument. Configure the block to invoke this handler, passing it a result of type [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/Result] to indicate whether the activity finished ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/Result\/finished]) or should be deferred ([doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/Result\/deferred]) and rescheduled for a later time. Failure to invoke the completion handler results in the activity not being rescheduled. For work that will be deferred and rescheduled, the block may optionally adjust scheduler properties, such as [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/interval] or [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/tolerance], before calling the completion handler.\n\nScheduling background activity\n\n\n\n### Detect Whether to Defer Activity\n\nIt’s conceivable that while a lengthy activity is running, conditions may change, resulting in the activity now requiring deferral. For example, perhaps the user has unplugged the Mac and it’s now running on battery power. Your activity can call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/shouldDefer] to determine whether this has occurred. A value of [doc:\/\/com.apple.documentation\/documentation\/Swift\/true] indicates that the block should finish what it’s currently doing and invoke its completion handler with a value of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/Result\/deferred]. See the following example.\n\nDetecting deferred background activity\n\n\n\n### Stop Activity\n\nCall [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSBackgroundActivityScheduler\/invalidate()] to stop scheduling an activity, as shown in the following example.\n\nStopping background activity\n\n\n\n\n\n## Background Scheduler Attributes\n\n- **identifier**: A unique reverse DNS notation string, such as `com.example.MyApp.updatecheck`, that identifies the activity.\n- **repeats**: A Boolean value indicating whether the activity should be rescheduled after it completes.\n- **interval**: An integer providing a suggested interval between scheduling and invoking the activity.\n- **qualityOfService**: A value of type `NSQualityOfService`, which controls how aggressively the system schedules the activity.\n- **shouldDefer**: A Boolean value indicating whether your app should stop performing background activity and resume at a more optimal time.\n- **tolerance**: A value of type [doc:\/\/com.apple.foundation\/documentation\/Foundation\/TimeInterval], which specifies a range of time during which the background activity may occur.\n\n## Initializing Schedulers\n\n- **init(identifier:)**: Initializes a background activity scheduler object with a specified unique identifier.\n\n## Scheduling Activity\n\n- **schedule(_:)**: Begins scheduling the background activity.\n- **NSBackgroundActivityScheduler.CompletionHandler**\n\n## Stopping Scheduled Activity\n\n- **invalidate()**: Prevents the background activity from being scheduled again.\n\n## Constants\n\n- **NSBackgroundActivityScheduler.Result**: These constants indicate whether background activity has been completed successfully or whether additional processing should be deferred until a more optimal time.\n- **QualityOfService**: Constants that indicate the nature and importance of work to the system.\n\n## System Interaction\n\n- **ProcessInfo**: A collection of information about the current process.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A unique reverse DNS notation string, such as `com.example.MyApp.updatecheck`, that identifies the activity.",
+          "name" : "identifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/identifier"
+        },
+        {
+          "description" : "A Boolean value indicating whether the activity should be rescheduled after it completes.",
+          "name" : "repeats",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/repeats"
+        },
+        {
+          "description" : "An integer providing a suggested interval between scheduling and invoking the activity.",
+          "name" : "interval",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/interval"
+        },
+        {
+          "description" : "A value of type `NSQualityOfService`, which controls how aggressively the system schedules the activity.",
+          "name" : "qualityOfService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/qualityOfService"
+        },
+        {
+          "description" : "A Boolean value indicating whether your app should stop performing background activity and resume at a more optimal time.",
+          "name" : "shouldDefer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/shouldDefer"
+        },
+        {
+          "description" : "A value of type [doc:\/\/com.apple.foundation\/documentation\/Foundation\/TimeInterval], which specifies a range of time during which the background activity may occur.",
+          "name" : "tolerance",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/tolerance"
+        }
+      ],
+      "title" : "Background Scheduler Attributes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a background activity scheduler object with a specified unique identifier.",
+          "name" : "init(identifier:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/init(identifier:)"
+        }
+      ],
+      "title" : "Initializing Schedulers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Begins scheduling the background activity.",
+          "name" : "schedule(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/schedule(_:)"
+        },
+        {
+          "description" : "",
+          "name" : "NSBackgroundActivityScheduler.CompletionHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/CompletionHandler"
+        }
+      ],
+      "title" : "Scheduling Activity"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Prevents the background activity from being scheduled again.",
+          "name" : "invalidate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/invalidate()"
+        }
+      ],
+      "title" : "Stopping Scheduled Activity"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "These constants indicate whether background activity has been completed successfully or whether additional processing should be deferred until a more optimal time.",
+          "name" : "NSBackgroundActivityScheduler.Result",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler\/Result"
+        },
+        {
+          "description" : "Constants that indicate the nature and importance of work to the system.",
+          "name" : "QualityOfService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/QualityOfService"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A collection of information about the current process.",
+          "name" : "ProcessInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/ProcessInfo"
+        }
+      ],
+      "title" : "System Interaction"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSBackgroundActivityScheduler",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSBackgroundActivityScheduler"
+}

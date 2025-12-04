@@ -1,0 +1,51 @@
+{
+  "abstract" : "Declare the render quality of your textures to enable high-quality rendering.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Layer capabilities.\nstruct MyConfiguration: CompositorLayerConfiguration {\n    func makeConfiguration(capabilities: LayerRenderer.Capabilities,\n                           configuration: inout LayerRenderer.Configuration) {\n        let defaultQuality = capabilities.defaultRenderQuality\n\n        \/\/ Configure other aspects of LayerRenderer.\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Layer configuration.\nstruct MyConfiguration: CompositorLayerConfiguration {\n    func makeConfiguration(capabilities: LayerRenderer.Capabilities,\n                           configuration: inout LayerRenderer.Configuration) {\n        \/\/ Configure other aspects of LayerRenderer.\n\n        if configuration.isFoveationEnabled {\n            configuration.maxRenderQuality = LayerRenderer.RenderQuality(0.8)\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension Renderer {\n    func adjustRenderQuality(for scene: MyScene) {\n        guard layerRenderer.configuration.isFoveationEnabled else {\n            return\n        }\n        layerRenderer.renderQuality = scene.renderQuality\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "56e55a29f73562f932d36fbb66de96048b3d707a6d981ccc76839fc274444227",
+  "crawledAt" : "2025-12-04T19:23:02Z",
+  "id" : "4C39F9C2-01BF-40B7-85D9-373C95BA1D70",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Compositor Services",
+  "overview" : "## Overview\n\nWhen rendering with Metal in visionOS, you need to define the render quality that best fits your app’s content. Text and other UI elements require less graphics power and benefit from higher resolution. Complex 3D scenes that require more graphic power can benefit from rendering at a lower resolution with more compute power available for every pixel. This API allows you to dynamically change the quality based on what your application is rendering.\n\n### Identify the default render quality\n\nThe [doc:\/\/com.apple.compositorservices\/documentation\/CompositorServices\/LayerRenderer\/Capabilities\/defaultRenderQuality] property provides the default render quality. This value can vary on a system-by-system basis making it important to query the specific system value rather than expecting a constant value. Use the default render quality in your calculation of the maximum and preferred render quality when adopting higher-fidelity textures.\n\n### Set the maximum render quality\n\nSet a maximum render quality for your app as the first step in adopting higher-fidelity textures. This sets the upper limit for your rendering assertion. Adjust the quality of your displayed content within the range you set. Set the [doc:\/\/com.apple.compositorservices\/documentation\/CompositorServices\/LayerRenderer\/Configuration-swift.struct\/maxRenderQuality] to the minium value for your content to avoid overusing computation resources.\n\nThe following code sample sets a maximum render quality of `0.8` in the [doc:\/\/com.apple.compositorservices\/documentation\/CompositorServices\/LayerRenderer\/Configuration-swift.struct]. Modifying the render quality only makes sense in the presence of foveation, so the sample performs a check for [doc:\/\/com.apple.compositorservices\/documentation\/CompositorServices\/LayerRenderer\/Configuration-swift.struct\/isFoveationEnabled] first.\n\n### Set the desired render quality for a scene\n\nSimilarly, you can set the desired render quality with the [doc:\/\/com.apple.compositorservices\/documentation\/CompositorServices\/LayerRenderer\/renderQuality-swift.property] property. When loading a scene, set the desired render quality appropriate for that scene. The final visual product doesn’t immediately reflect the updated render quality. The system smooths the transition to the desired quality.\n\nFor more information, see WWDC25 session 294 [https:\/\/developer.apple.com\/videos\/play\/wwdc2025\/294].",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CompositorServices\/defining-layer-renderer-quality\ncrawled: 2025-12-04T19:23:02Z\n---\n\n# Defining layer renderer quality\n\n**Article**\n\nDeclare the render quality of your textures to enable high-quality rendering.\n\n## Overview\n\nWhen rendering with Metal in visionOS, you need to define the render quality that best fits your app’s content. Text and other UI elements require less graphics power and benefit from higher resolution. Complex 3D scenes that require more graphic power can benefit from rendering at a lower resolution with more compute power available for every pixel. This API allows you to dynamically change the quality based on what your application is rendering.\n\n\n\n### Identify the default render quality\n\nThe [doc:\/\/com.apple.compositorservices\/documentation\/CompositorServices\/LayerRenderer\/Capabilities\/defaultRenderQuality] property provides the default render quality. This value can vary on a system-by-system basis making it important to query the specific system value rather than expecting a constant value. Use the default render quality in your calculation of the maximum and preferred render quality when adopting higher-fidelity textures.\n\n```swift\n\/\/ Layer capabilities.\nstruct MyConfiguration: CompositorLayerConfiguration {\n    func makeConfiguration(capabilities: LayerRenderer.Capabilities,\n                           configuration: inout LayerRenderer.Configuration) {\n        let defaultQuality = capabilities.defaultRenderQuality\n\n        \/\/ Configure other aspects of LayerRenderer.\n    }\n}\n```\n\n### Set the maximum render quality\n\nSet a maximum render quality for your app as the first step in adopting higher-fidelity textures. This sets the upper limit for your rendering assertion. Adjust the quality of your displayed content within the range you set. Set the [doc:\/\/com.apple.compositorservices\/documentation\/CompositorServices\/LayerRenderer\/Configuration-swift.struct\/maxRenderQuality] to the minium value for your content to avoid overusing computation resources.\n\nThe following code sample sets a maximum render quality of `0.8` in the [doc:\/\/com.apple.compositorservices\/documentation\/CompositorServices\/LayerRenderer\/Configuration-swift.struct]. Modifying the render quality only makes sense in the presence of foveation, so the sample performs a check for [doc:\/\/com.apple.compositorservices\/documentation\/CompositorServices\/LayerRenderer\/Configuration-swift.struct\/isFoveationEnabled] first.\n\n```swift\n\/\/ Layer configuration.\nstruct MyConfiguration: CompositorLayerConfiguration {\n    func makeConfiguration(capabilities: LayerRenderer.Capabilities,\n                           configuration: inout LayerRenderer.Configuration) {\n        \/\/ Configure other aspects of LayerRenderer.\n\n        if configuration.isFoveationEnabled {\n            configuration.maxRenderQuality = LayerRenderer.RenderQuality(0.8)\n        }\n    }\n}\n```\n\n### Set the desired render quality for a scene\n\nSimilarly, you can set the desired render quality with the [doc:\/\/com.apple.compositorservices\/documentation\/CompositorServices\/LayerRenderer\/renderQuality-swift.property] property. When loading a scene, set the desired render quality appropriate for that scene. The final visual product doesn’t immediately reflect the updated render quality. The system smooths the transition to the desired quality.\n\n```swift\nextension Renderer {\n    func adjustRenderQuality(for scene: MyScene) {\n        guard layerRenderer.configuration.isFoveationEnabled else {\n            return\n        }\n        layerRenderer.renderQuality = scene.renderQuality\n    }\n}\n```\n\nFor more information, see WWDC25 session 294 [https:\/\/developer.apple.com\/videos\/play\/wwdc2025\/294].\n\n## Defining quality level\n\n- **renderQuality**: Get the render quality to be used by the drawables.\n- **defaultRenderQuality**: The default render quality used on this platform.\n- **maxRenderQuality**: The max render quality the layer can use when drawing to the drawables.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Get the render quality to be used by the drawables.",
+          "name" : "renderQuality",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CompositorServices\/LayerRenderer\/renderQuality-swift.property"
+        },
+        {
+          "description" : "The default render quality used on this platform.",
+          "name" : "defaultRenderQuality",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CompositorServices\/LayerRenderer\/Capabilities\/defaultRenderQuality"
+        },
+        {
+          "description" : "The max render quality the layer can use when drawing to the drawables.",
+          "name" : "maxRenderQuality",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CompositorServices\/LayerRenderer\/Configuration-swift.struct\/maxRenderQuality"
+        }
+      ],
+      "title" : "Defining quality level"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Defining layer renderer quality",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CompositorServices\/defining-layer-renderer-quality"
+}
