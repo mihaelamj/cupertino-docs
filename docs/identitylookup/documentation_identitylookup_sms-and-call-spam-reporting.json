@@ -1,0 +1,120 @@
+{
+  "abstract" : "Create an app extension that lets users report unwanted SMS messages and calls as junk.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "06446d1de91a3c3d802a43415f40cbf6b17bc2dd1ee68c4f9e40c4a867fc7c6a",
+  "crawledAt" : "2025-12-05T12:31:33Z",
+  "id" : "0577B801-3F28-4995-8D05-D65EFFD6FF85",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "SMS and Call Reporting",
+  "overview" : "## Overview\n\nTo report SMS messages and calls as spam, the user must enable an Unwanted Communication Reporting extension, called an SMS\/Call Reporting extension in the Settings app (see Settings > Phone > SMS\/Call Reporting). The user can only enable one Unwanted Communication Reporting extension at a time.\n\nIn order to report calls, the user swipes left on an item in the Recents list and selects Report. For SMS messages, they press the Report Messages button when it appears in the Messages transcript. Users can also select messages by long-pressing a message and selecting additional messages, then selecting Report Messages.\n\nWhen the user reports an SMS message or call, the system launches your Unwanted Communication Reporting extension. Your extension gathers additional information from the user, before deciding whether to report or block the number, as shown in the figure below.\n\n\n\nSpecifically, the system:\n\nUse your [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController] subclass to gather data from the user. Override the [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController\/prepare(for:)] method to configure your controller.\n\n### Cancel or Complete the Report\n\nThe system provides a Cancel and a Done button for the controller. By default, the system disables the Done button. As soon as the user has entered all the information you require, enable the Done button by setting the view controller’s [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionContext\/isReadyForClassificationResponse] property to [doc:\/\/com.apple.documentation\/documentation\/Swift\/true].\n\nIf the user presses the Cancel button, the system dismisses your view controller, as shown in the figure below.\n\n\n\nIf the user presses Done, the system calls your view controller’s [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController\/classificationResponse(for:)] method, passing in an [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationRequest] object (see the figure below).\n\n\n\nOverride the [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController\/classificationResponse(for:)] method to return a [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationResponse] based on the data the user has entered and information about the SMS message or call from the request object.\n\n### Choose a Response\n\nThe system takes different actions based on the response. For [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationAction\/none], the system dismisses your view controller, but doesn’t take any other action, as shown in the figure below.\n\n\n\nFor [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationAction\/reportNotJunk] or [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationAction\/reportJunk], the system generates a report based on your response’s [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationResponse\/action] and [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationResponse\/userInfo] properties and then posts it to a network endpoint or sends it using an SMS message, depending on the keys specified in your extension’s `Info.plist` file.\n\nTo send a response over the network connection, you must add an associated domain to your extension. For general instructions, see [doc:\/\/com.apple.documentation\/documentation\/Xcode\/supporting-associated-domains]. Note that you must use `classificationreport` instead of `webcredentials` when specifying the domains. You must also specify the network endpoint’s address using the `ILClassificationExtensionNetworkReportDestination` key in your extension’s `Info.plist` file.\n\nTo send your response using SMS, specify a fully qualified destination telephony number using the `ILClassificationExtensionSMSReportDestination` key in your extension’s `Info.plist` file. When your app uses this report path, the system displays the SMS message to give the user the opportunity to send or cancel the message.\n\nWhen the report step is complete, the system dismisses your view controller and any view controllers related to it (see the figure below).\n\n\n\nFor [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationAction\/reportJunkAndBlockSender], the system responds just like in the [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationAction\/reportJunk] action. However, after the report step, the system presents an alert letting the user know the number will be blocked. Finally, the system blocks the SMS or call number, and dismisses your view controller as shown in the figure below.\n\n\n\nBlocked numbers are added to the device’s Blocked Contact list. Users can manage this list in the Settings app.\n\nFinally, to protect user privacy, the system always deletes your extension’s container after your extension terminates. For more information, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/FileManagement\/Conceptual\/FileSystemProgrammingGuide\/FileSystemOverview\/FileSystemOverview.html#\/\/apple_ref\/doc\/uid\/TP40010672-CH2-SW12].",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/identitylookup\/sms-and-call-spam-reporting\ncrawled: 2025-12-05T12:31:33Z\n---\n\n# SMS and Call Spam Reporting\n\n**API Collection**\n\nCreate an app extension that lets users report unwanted SMS messages and calls as junk.\n\n## Overview\n\nTo report SMS messages and calls as spam, the user must enable an Unwanted Communication Reporting extension, called an SMS\/Call Reporting extension in the Settings app (see Settings > Phone > SMS\/Call Reporting). The user can only enable one Unwanted Communication Reporting extension at a time.\n\nIn order to report calls, the user swipes left on an item in the Recents list and selects Report. For SMS messages, they press the Report Messages button when it appears in the Messages transcript. Users can also select messages by long-pressing a message and selecting additional messages, then selecting Report Messages.\n\nWhen the user reports an SMS message or call, the system launches your Unwanted Communication Reporting extension. Your extension gathers additional information from the user, before deciding whether to report or block the number, as shown in the figure below.\n\n\n\nSpecifically, the system:\n\n1. Instantiates your extension’s [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController] subclass.\n2. Calls your controller’s [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController\/prepare(for:)] method and presents the controller to the user.\n\nUse your [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController] subclass to gather data from the user. Override the [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController\/prepare(for:)] method to configure your controller.\n\n### Cancel or Complete the Report\n\nThe system provides a Cancel and a Done button for the controller. By default, the system disables the Done button. As soon as the user has entered all the information you require, enable the Done button by setting the view controller’s [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionContext\/isReadyForClassificationResponse] property to [doc:\/\/com.apple.documentation\/documentation\/Swift\/true].\n\nIf the user presses the Cancel button, the system dismisses your view controller, as shown in the figure below.\n\n\n\nIf the user presses Done, the system calls your view controller’s [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController\/classificationResponse(for:)] method, passing in an [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationRequest] object (see the figure below).\n\n\n\nOverride the [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController\/classificationResponse(for:)] method to return a [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationResponse] based on the data the user has entered and information about the SMS message or call from the request object.\n\n### Choose a Response\n\nThe system takes different actions based on the response. For [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationAction\/none], the system dismisses your view controller, but doesn’t take any other action, as shown in the figure below.\n\n\n\nFor [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationAction\/reportNotJunk] or [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationAction\/reportJunk], the system generates a report based on your response’s [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationResponse\/action] and [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationResponse\/userInfo] properties and then posts it to a network endpoint or sends it using an SMS message, depending on the keys specified in your extension’s `Info.plist` file.\n\nTo send a response over the network connection, you must add an associated domain to your extension. For general instructions, see [doc:\/\/com.apple.documentation\/documentation\/Xcode\/supporting-associated-domains]. Note that you must use `classificationreport` instead of `webcredentials` when specifying the domains. You must also specify the network endpoint’s address using the `ILClassificationExtensionNetworkReportDestination` key in your extension’s `Info.plist` file.\n\nTo send your response using SMS, specify a fully qualified destination telephony number using the `ILClassificationExtensionSMSReportDestination` key in your extension’s `Info.plist` file. When your app uses this report path, the system displays the SMS message to give the user the opportunity to send or cancel the message.\n\nWhen the report step is complete, the system dismisses your view controller and any view controllers related to it (see the figure below).\n\n\n\nFor [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationAction\/reportJunkAndBlockSender], the system responds just like in the [doc:\/\/com.apple.identitylookup\/documentation\/IdentityLookup\/ILClassificationAction\/reportJunk] action. However, after the report step, the system presents an alert letting the user know the number will be blocked. Finally, the system blocks the SMS or call number, and dismisses your view controller as shown in the figure below.\n\n\n\nBlocked numbers are added to the device’s Blocked Contact list. Users can manage this list in the Settings app.\n\nFinally, to protect user privacy, the system always deletes your extension’s container after your extension terminates. For more information, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/FileManagement\/Conceptual\/FileSystemProgrammingGuide\/FileSystemOverview\/FileSystemOverview.html#\/\/apple_ref\/doc\/uid\/TP40010672-CH2-SW12].\n\n## App Extension\n\n- **ILClassificationUIExtensionViewController**: The superclass for an Unwanted Communication Reporting extension’s principal view controller.\n\n## Communications\n\n- **ILCommunication**: An abstract superclass representing a message or call to the user.\n- **ILMessageCommunication**: A concrete subclass representing a SMS message.\n- **ILCallCommunication**: A concrete subclass representing a  phone call.\n\n## Requests\n\n- **ILClassificationRequest**: The abstract superclass for classification requests.\n- **ILMessageClassificationRequest**: A classification request for SMS messages.\n- **ILCallClassificationRequest**: A classification request for phone calls.\n\n## Responses\n\n- **ILClassificationResponse**: A response object that tells the system how to handle the reported communications.\n- **ILClassificationAction**: The actions the system can take in response to the reported communication.\n\n## Queries\n\n- **ILMessageFilterCapabilitiesQueryRequest**: A request to query a Message Filter extension about sharing its sub-category capabilities.\n- **ILMessageFilterCapabilitiesQueryHandling**: A set of methods implemented by a Message Filter app extension to handle capabilities query requests.\n\n## Responses\n\n- **ILMessageFilterCapabilitiesQueryResponse**: A response to a message filter capabilities query request.\n- **ILMessageFilterSubAction**: Responds to a received message with a filter subaction.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The superclass for an Unwanted Communication Reporting extension’s principal view controller.",
+          "name" : "ILClassificationUIExtensionViewController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookupUI\/ILClassificationUIExtensionViewController"
+        }
+      ],
+      "title" : "App Extension"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An abstract superclass representing a message or call to the user.",
+          "name" : "ILCommunication",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILCommunication"
+        },
+        {
+          "description" : "A concrete subclass representing a SMS message.",
+          "name" : "ILMessageCommunication",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILMessageCommunication"
+        },
+        {
+          "description" : "A concrete subclass representing a  phone call.",
+          "name" : "ILCallCommunication",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILCallCommunication"
+        }
+      ],
+      "title" : "Communications"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The abstract superclass for classification requests.",
+          "name" : "ILClassificationRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILClassificationRequest"
+        },
+        {
+          "description" : "A classification request for SMS messages.",
+          "name" : "ILMessageClassificationRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILMessageClassificationRequest"
+        },
+        {
+          "description" : "A classification request for phone calls.",
+          "name" : "ILCallClassificationRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILCallClassificationRequest"
+        }
+      ],
+      "title" : "Requests"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A response object that tells the system how to handle the reported communications.",
+          "name" : "ILClassificationResponse",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILClassificationResponse"
+        },
+        {
+          "description" : "The actions the system can take in response to the reported communication.",
+          "name" : "ILClassificationAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILClassificationAction"
+        }
+      ],
+      "title" : "Responses"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A request to query a Message Filter extension about sharing its sub-category capabilities.",
+          "name" : "ILMessageFilterCapabilitiesQueryRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILMessageFilterCapabilitiesQueryRequest"
+        },
+        {
+          "description" : "A set of methods implemented by a Message Filter app extension to handle capabilities query requests.",
+          "name" : "ILMessageFilterCapabilitiesQueryHandling",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILMessageFilterCapabilitiesQueryHandling"
+        }
+      ],
+      "title" : "Queries"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A response to a message filter capabilities query request.",
+          "name" : "ILMessageFilterCapabilitiesQueryResponse",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILMessageFilterCapabilitiesQueryResponse"
+        },
+        {
+          "description" : "Responds to a received message with a filter subaction.",
+          "name" : "ILMessageFilterSubAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/IdentityLookup\/ILMessageFilterSubAction"
+        }
+      ],
+      "title" : "Responses"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "SMS and Call Spam Reporting",
+  "url" : "https:\/\/developer.apple.com\/documentation\/identitylookup\/sms-and-call-spam-reporting"
+}

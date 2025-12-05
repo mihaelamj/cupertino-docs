@@ -1,0 +1,354 @@
+{
+  "abstract" : "An object that manages a graph of audio nodes, controls playback, and configures real-time rendering constraints.",
+  "codeExamples" : [
+    {
+      "code" : "let audioFile = \/* An AVAudioFile instance that points to file that's open for reading. *\/\nlet audioEngine = AVAudioEngine()\nlet playerNode = AVAudioPlayerNode()\n\n\/\/ Attach the player node to the audio engine.\naudioEngine.attach(playerNode)\n\n\/\/ Connect the player node to the output node.\naudioEngine.connect(playerNode, \n                    to: audioEngine.outputNode, \n                    format: audioFile.processingFormat)",
+      "language" : "swift"
+    },
+    {
+      "code" : "playerNode.scheduleFile(audioFile, \n                        at: nil, \n                        completionCallbackType: .dataPlayedBack) { _ in\n    \/* Handle any work that's necessary after playback. *\/\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "do {\n    try audioEngine.start()\n    playerNode.play()\n} catch {\n    \/* Handle the error. *\/\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "playerNode.stop()\naudioEngine.stop()",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "8e2903f36f1a46ad656fbec28846bd16528c26465fa7943421fa037118c7669f",
+  "crawledAt" : "2025-12-05T08:47:53Z",
+  "declaration" : {
+    "code" : "class AVAudioEngine",
+    "language" : "swift"
+  },
+  "id" : "60393D6A-45CC-4920-94FE-61E6CBDE65E7",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "AVFAudio",
+  "overview" : "## Overview\n\nAn audio engine object contains a group of [doc:\/\/com.apple.avfaudio\/documentation\/AVFAudio\/AVAudioNode] instances that you attach to form an audio processing chain.\n\n\n\nYou can connect, disconnect, and remove audio nodes during runtime with minor limitations. Removing an audio node that has differing channel counts, or that’s a mixer, can break the graph. Reconnect audio nodes only when they’re upstream of a mixer.\n\nBy default, Audio Engine renders to a connected audio device in real time. You can configure the engine to operate in manual rendering mode when you need to render at, or faster than, real time. In that mode, the engine disconnects from audio devices and your app drives the rendering.\n\n### Create an Engine for Audio File Playback\n\nTo play an audio file, you create an [doc:\/\/com.apple.avfaudio\/documentation\/AVFAudio\/AVAudioFile] with a file that’s open for reading. Create an audio engine object and an [doc:\/\/com.apple.avfaudio\/documentation\/AVFAudio\/AVAudioPlayerNode] instance, and then attach the player node to the engine. Next, connect the player node to the audio engine’s output node. The engine performs audio output through an output node, which is a singleton that the engine creates the first time you access it.\n\nThen schedule the audio file for full playback. The callback notifies your app when playback completes.\n\nBefore you play the audio, start the engine.\n\nWhen you’re done, stop the player and the engine.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\ncrawled: 2025-12-05T08:47:53Z\n---\n\n# AVAudioEngine\n\n**Class**\n\nAn object that manages a graph of audio nodes, controls playback, and configures real-time rendering constraints.\n\n## Declaration\n\n```swift\nclass AVAudioEngine\n```\n\n## Overview\n\nAn audio engine object contains a group of [doc:\/\/com.apple.avfaudio\/documentation\/AVFAudio\/AVAudioNode] instances that you attach to form an audio processing chain.\n\n\n\nYou can connect, disconnect, and remove audio nodes during runtime with minor limitations. Removing an audio node that has differing channel counts, or that’s a mixer, can break the graph. Reconnect audio nodes only when they’re upstream of a mixer.\n\nBy default, Audio Engine renders to a connected audio device in real time. You can configure the engine to operate in manual rendering mode when you need to render at, or faster than, real time. In that mode, the engine disconnects from audio devices and your app drives the rendering.\n\n### Create an Engine for Audio File Playback\n\nTo play an audio file, you create an [doc:\/\/com.apple.avfaudio\/documentation\/AVFAudio\/AVAudioFile] with a file that’s open for reading. Create an audio engine object and an [doc:\/\/com.apple.avfaudio\/documentation\/AVFAudio\/AVAudioPlayerNode] instance, and then attach the player node to the engine. Next, connect the player node to the audio engine’s output node. The engine performs audio output through an output node, which is a singleton that the engine creates the first time you access it.\n\n```swift\nlet audioFile = \/* An AVAudioFile instance that points to file that's open for reading. *\/\nlet audioEngine = AVAudioEngine()\nlet playerNode = AVAudioPlayerNode()\n\n\/\/ Attach the player node to the audio engine.\naudioEngine.attach(playerNode)\n\n\/\/ Connect the player node to the output node.\naudioEngine.connect(playerNode, \n                    to: audioEngine.outputNode, \n                    format: audioFile.processingFormat)\n```\n\nThen schedule the audio file for full playback. The callback notifies your app when playback completes.\n\n```swift\nplayerNode.scheduleFile(audioFile, \n                        at: nil, \n                        completionCallbackType: .dataPlayedBack) { _ in\n    \/* Handle any work that's necessary after playback. *\/\n}\n```\n\nBefore you play the audio, start the engine.\n\n```swift\ndo {\n    try audioEngine.start()\n    playerNode.play()\n} catch {\n    \/* Handle the error. *\/\n}\n```\n\nWhen you’re done, stop the player and the engine.\n\n```swift\nplayerNode.stop()\naudioEngine.stop()\n```\n\n## Creating an Audio Engine\n\n- **init()**: Creates an audio engine instance for rendering in real time.\n\n## Attaching and Detaching Audio Nodes\n\n- **attach(_:)**: Attaches an audio node to the audio engine.\n- **detach(_:)**: Detaches an audio node from the audio engine.\n- **attachedNodes**: A read-only set that contains the nodes you attach to the audio engine.\n\n## Getting the Input, Output, and Main Mixer Nodes\n\n- **inputNode**: The audio engine’s singleton input audio node.\n- **outputNode**: The audio engine’s singleton output audio node.\n- **mainMixerNode**: The audio engine’s optional singleton main mixer node.\n\n## Connecting and Disconnecting Audio Nodes\n\n- **connect(_:to:format:)**: Establishes a connection between two nodes.\n- **connect(_:to:fromBus:toBus:format:)**: Establishes a connection between two nodes, specifying the input and output busses.\n- **disconnectNodeInput(_:)**: Removes all input connections of the node.\n- **disconnectNodeInput(_:bus:)**: Removes the input connection of a node on the specified bus.\n- **disconnectNodeOutput(_:)**: Removes all output connections of a node.\n- **disconnectNodeOutput(_:bus:)**: Removes the output connection of a node on the specified bus.\n\n## Managing MIDI Nodes\n\n- **connectMIDI(_:to:format:eventListBlock:)**: Establishes a MIDI connection between two nodes.\n- **connectMIDI(_:to:format:eventListBlock:)**: Establishes a MIDI connection between a source node and multiple destination nodes.\n- **disconnectMIDI(_:from:)**: Removes a MIDI connection between two nodes.\n- **disconnectMIDI(_:from:)**: Removes a MIDI connection between one source node and multiple destination nodes.\n- **disconnectMIDIInput(_:)**: Disconnects all input MIDI connections from a node.\n- **disconnectMIDIOutput(_:)**: Disconnects all output MIDI connections from a node.\n- **connectMIDI(_:to:format:block:)**: Establishes a MIDI-only connection between two nodes.\n- **connectMIDI(_:to:format:block:)**: Establishes a MIDI-only connection between a source node and multiple destination nodes.\n\n## Playing Audio\n\n- **prepare()**: Prepares the audio engine for starting.\n- **start()**: Starts the audio engine.\n- **isRunning**: A Boolean value that indicates whether the audio engine is running.\n- **pause()**: Pauses the audio engine.\n- **stop()**: Stops the audio engine and releases any previously prepared resources.\n- **reset()**: Resets all audio nodes in the audio engine.\n- **musicSequence**: The music sequence instance that you attach to the audio engine, if any.\n\n## Manually Rendering an Audio Engine\n\n- **enableManualRenderingMode(_:format:maximumFrameCount:)**: Sets the engine to operate in manual rendering mode with the render format and maximum frame count you specify.\n- **disableManualRenderingMode()**: Sets the engine to render to or from an audio device.\n- **renderOffline(_:to:)**: Makes a render call to the engine operating in the offline manual rendering mode.\n\n## Getting Manual Rendering Properties\n\n- **AVAudioEngineManualRenderingBlock**: The type that represents a block that renders the engine when operating in manual rendering mode.\n- **manualRenderingBlock**: The block that renders the engine when operating in manual rendering mode.\n- **manualRenderingFormat**: The render format of the engine in manual rendering mode.\n- **manualRenderingMaximumFrameCount**: The maximum number of PCM sample frames the engine produces in any single render call in manual rendering mode.\n- **manualRenderingMode**: The manual rendering mode configured on the engine.\n- **manualRenderingSampleTime**: An indication of where the engine is on its render timeline in manual rendering mode.\n- **isAutoShutdownEnabled**: A Boolean value that indicates whether autoshutdown is in an enabled state.\n- **isInManualRenderingMode**: A Boolean value that indicates whether the engine is operating in manual rendering mode.\n\n## Using Connection Points\n\n- **AVAudioConnectionPoint**: A representation of either a source or destination connection point in the audio engine.\n- **connect(_:to:fromBus:format:)**: Establishes a connection between a source node and multiple destination nodes.\n- **inputConnectionPoint(for:inputBus:)**: Returns connection information about a node’s input bus.\n- **outputConnectionPoints(for:outputBus:)**: Returns connection information about a node’s output bus.\n\n## Constants\n\n- **AVAudioEngineManualRenderingError**: Constants that describe error codes that the framework returns from manual rendering mode methods.\n- **AVAudioEngineManualRenderingMode**: The two modes for manual rendering.\n- **AVAudioEngineManualRenderingStatus**: Status codes that return from the render call to the engine operating in manual rendering mode.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an audio engine instance for rendering in real time.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/init()"
+        }
+      ],
+      "title" : "Creating an Audio Engine"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Attaches an audio node to the audio engine.",
+          "name" : "attach(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/attach(_:)"
+        },
+        {
+          "description" : "Detaches an audio node from the audio engine.",
+          "name" : "detach(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/detach(_:)"
+        },
+        {
+          "description" : "A read-only set that contains the nodes you attach to the audio engine.",
+          "name" : "attachedNodes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/attachedNodes"
+        }
+      ],
+      "title" : "Attaching and Detaching Audio Nodes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The audio engine’s singleton input audio node.",
+          "name" : "inputNode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/inputNode"
+        },
+        {
+          "description" : "The audio engine’s singleton output audio node.",
+          "name" : "outputNode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/outputNode"
+        },
+        {
+          "description" : "The audio engine’s optional singleton main mixer node.",
+          "name" : "mainMixerNode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/mainMixerNode"
+        }
+      ],
+      "title" : "Getting the Input, Output, and Main Mixer Nodes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Establishes a connection between two nodes.",
+          "name" : "connect(_:to:format:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/connect(_:to:format:)"
+        },
+        {
+          "description" : "Establishes a connection between two nodes, specifying the input and output busses.",
+          "name" : "connect(_:to:fromBus:toBus:format:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/connect(_:to:fromBus:toBus:format:)"
+        },
+        {
+          "description" : "Removes all input connections of the node.",
+          "name" : "disconnectNodeInput(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/disconnectNodeInput(_:)"
+        },
+        {
+          "description" : "Removes the input connection of a node on the specified bus.",
+          "name" : "disconnectNodeInput(_:bus:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/disconnectNodeInput(_:bus:)"
+        },
+        {
+          "description" : "Removes all output connections of a node.",
+          "name" : "disconnectNodeOutput(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/disconnectNodeOutput(_:)"
+        },
+        {
+          "description" : "Removes the output connection of a node on the specified bus.",
+          "name" : "disconnectNodeOutput(_:bus:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/disconnectNodeOutput(_:bus:)"
+        }
+      ],
+      "title" : "Connecting and Disconnecting Audio Nodes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Establishes a MIDI connection between two nodes.",
+          "name" : "connectMIDI(_:to:format:eventListBlock:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/connectMIDI(_:to:format:eventListBlock:)-73cd1"
+        },
+        {
+          "description" : "Establishes a MIDI connection between a source node and multiple destination nodes.",
+          "name" : "connectMIDI(_:to:format:eventListBlock:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/connectMIDI(_:to:format:eventListBlock:)-7qtd5"
+        },
+        {
+          "description" : "Removes a MIDI connection between two nodes.",
+          "name" : "disconnectMIDI(_:from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/disconnectMIDI(_:from:)-1kssy"
+        },
+        {
+          "description" : "Removes a MIDI connection between one source node and multiple destination nodes.",
+          "name" : "disconnectMIDI(_:from:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/disconnectMIDI(_:from:)-7oaab"
+        },
+        {
+          "description" : "Disconnects all input MIDI connections from a node.",
+          "name" : "disconnectMIDIInput(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/disconnectMIDIInput(_:)"
+        },
+        {
+          "description" : "Disconnects all output MIDI connections from a node.",
+          "name" : "disconnectMIDIOutput(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/disconnectMIDIOutput(_:)"
+        },
+        {
+          "description" : "Establishes a MIDI-only connection between two nodes.",
+          "name" : "connectMIDI(_:to:format:block:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/connectMIDI(_:to:format:block:)-3bc13"
+        },
+        {
+          "description" : "Establishes a MIDI-only connection between a source node and multiple destination nodes.",
+          "name" : "connectMIDI(_:to:format:block:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/connectMIDI(_:to:format:block:)-666bc"
+        }
+      ],
+      "title" : "Managing MIDI Nodes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Prepares the audio engine for starting.",
+          "name" : "prepare()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/prepare()"
+        },
+        {
+          "description" : "Starts the audio engine.",
+          "name" : "start()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/start()"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the audio engine is running.",
+          "name" : "isRunning",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/isRunning"
+        },
+        {
+          "description" : "Pauses the audio engine.",
+          "name" : "pause()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/pause()"
+        },
+        {
+          "description" : "Stops the audio engine and releases any previously prepared resources.",
+          "name" : "stop()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/stop()"
+        },
+        {
+          "description" : "Resets all audio nodes in the audio engine.",
+          "name" : "reset()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/reset()"
+        },
+        {
+          "description" : "The music sequence instance that you attach to the audio engine, if any.",
+          "name" : "musicSequence",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/musicSequence"
+        }
+      ],
+      "title" : "Playing Audio"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the engine to operate in manual rendering mode with the render format and maximum frame count you specify.",
+          "name" : "enableManualRenderingMode(_:format:maximumFrameCount:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/enableManualRenderingMode(_:format:maximumFrameCount:)"
+        },
+        {
+          "description" : "Sets the engine to render to or from an audio device.",
+          "name" : "disableManualRenderingMode()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/disableManualRenderingMode()"
+        },
+        {
+          "description" : "Makes a render call to the engine operating in the offline manual rendering mode.",
+          "name" : "renderOffline(_:to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/renderOffline(_:to:)"
+        }
+      ],
+      "title" : "Manually Rendering an Audio Engine"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The type that represents a block that renders the engine when operating in manual rendering mode.",
+          "name" : "AVAudioEngineManualRenderingBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngineManualRenderingBlock"
+        },
+        {
+          "description" : "The block that renders the engine when operating in manual rendering mode.",
+          "name" : "manualRenderingBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/manualRenderingBlock"
+        },
+        {
+          "description" : "The render format of the engine in manual rendering mode.",
+          "name" : "manualRenderingFormat",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/manualRenderingFormat"
+        },
+        {
+          "description" : "The maximum number of PCM sample frames the engine produces in any single render call in manual rendering mode.",
+          "name" : "manualRenderingMaximumFrameCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/manualRenderingMaximumFrameCount"
+        },
+        {
+          "description" : "The manual rendering mode configured on the engine.",
+          "name" : "manualRenderingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/manualRenderingMode"
+        },
+        {
+          "description" : "An indication of where the engine is on its render timeline in manual rendering mode.",
+          "name" : "manualRenderingSampleTime",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/manualRenderingSampleTime"
+        },
+        {
+          "description" : "A Boolean value that indicates whether autoshutdown is in an enabled state.",
+          "name" : "isAutoShutdownEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/isAutoShutdownEnabled"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the engine is operating in manual rendering mode.",
+          "name" : "isInManualRenderingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/isInManualRenderingMode"
+        }
+      ],
+      "title" : "Getting Manual Rendering Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A representation of either a source or destination connection point in the audio engine.",
+          "name" : "AVAudioConnectionPoint",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioConnectionPoint"
+        },
+        {
+          "description" : "Establishes a connection between a source node and multiple destination nodes.",
+          "name" : "connect(_:to:fromBus:format:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/connect(_:to:fromBus:format:)"
+        },
+        {
+          "description" : "Returns connection information about a node’s input bus.",
+          "name" : "inputConnectionPoint(for:inputBus:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/inputConnectionPoint(for:inputBus:)"
+        },
+        {
+          "description" : "Returns connection information about a node’s output bus.",
+          "name" : "outputConnectionPoints(for:outputBus:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine\/outputConnectionPoints(for:outputBus:)"
+        }
+      ],
+      "title" : "Using Connection Points"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Constants that describe error codes that the framework returns from manual rendering mode methods.",
+          "name" : "AVAudioEngineManualRenderingError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngineManualRenderingError"
+        },
+        {
+          "description" : "The two modes for manual rendering.",
+          "name" : "AVAudioEngineManualRenderingMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngineManualRenderingMode"
+        },
+        {
+          "description" : "Status codes that return from the render call to the engine operating in manual rendering mode.",
+          "name" : "AVAudioEngineManualRenderingStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngineManualRenderingStatus"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AVAudioEngine",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AVFAudio\/AVAudioEngine"
+}

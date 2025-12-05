@@ -1,0 +1,117 @@
+{
+  "abstract" : "A publisher that eventually produces a single value and then finishes or fails.",
+  "codeExamples" : [
+    {
+      "code" : "func generateAsyncRandomNumberFromFuture() -> Future <Int, Never> {\n    return Future() { promise in\n        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {\n            let number = Int.random(in: 1...10)\n            promise(Result.success(number))\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "cancellable = generateAsyncRandomNumberFromFuture()\n    .sink { number in print(\"Got random number \\(number).\") }",
+      "language" : "swift"
+    },
+    {
+      "code" : "let number = await generateAsyncRandomNumberFromFuture().value\nprint(\"Got random number \\(number).\")",
+      "language" : "swift"
+    },
+    {
+      "code" : "func generateAsyncRandomNumberFromContinuation() async -> Int {\n    return await withCheckedContinuation { continuation in\n        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {\n            let number = Int.random(in: 1...10)\n            continuation.resume(returning: number)\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let asyncRandom = await generateAsyncRandomNumberFromContinuation()",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Publisher"
+  ],
+  "contentHash" : "d98d0fdfca46cda8d761f4f5dca8082db0c8fafb03665030f0873d3b3b4e0ecd",
+  "crawledAt" : "2025-12-05T02:45:45Z",
+  "declaration" : {
+    "code" : "final class Future<Output, Failure> where Failure : Error",
+    "language" : "swift"
+  },
+  "id" : "FB625E4F-744E-473F-B9CE-B5E2428F2865",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Combine",
+  "overview" : "## Overview\n\nUse a future to perform some work and then asynchronously publish a single element. You initialize the future with a closure that takes a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Future\/Promise]; the closure calls the promise with a [doc:\/\/com.apple.documentation\/documentation\/Swift\/Result] that indicates either success or failure. In the success case, the future’s downstream subscriber receives the element prior to the publishing stream finishing normally. If the result is an error, publishing terminates with that error.\n\nThe following example shows a method that uses a future to asynchronously publish a random number after a brief delay:\n\nTo receive the published value, you use any Combine subscriber, such as a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscribers\/Sink], like this:\n\n### Integrating with Swift Concurrency\n\nTo integrate with the `async`-`await` syntax in Swift 5.5, `Future` can provide its value to an awaiting caller. This is particularly useful because unlike other types that conform to [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher] and potentially publish many elements, a `Future` only publishes one element (or fails). By using the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Future\/value-9iwjz] property, the above call point looks like this:\n\n### Alternatives to Futures\n\nThe `async`-`await` syntax in Swift can also replace the use of a future entirely, for the case where you want to perform some operation after an asynchronous task completes.\n\nYou do this with the function [doc:\/\/com.apple.documentation\/documentation\/Swift\/withCheckedContinuation(isolation:function:_:)] and its throwing equivalent, [doc:\/\/com.apple.documentation\/documentation\/Swift\/withCheckedThrowingContinuation(isolation:function:_:)]. The following example performs the same asynchronous random number generation as the `Future` example above, but as an `async` method:\n\nThe call point for this method doesn’t use a closure like the future’s sink subscriber does; it simply awaits and assigns the result:\n\nFor more information on continuations, see the [doc:\/\/com.apple.documentation\/documentation\/Swift\/concurrency] topic in the Swift standard library.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/Future\ncrawled: 2025-12-05T02:45:45Z\n---\n\n# Future\n\n**Class**\n\nA publisher that eventually produces a single value and then finishes or fails.\n\n## Declaration\n\n```swift\nfinal class Future<Output, Failure> where Failure : Error\n```\n\n## Overview\n\nUse a future to perform some work and then asynchronously publish a single element. You initialize the future with a closure that takes a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Future\/Promise]; the closure calls the promise with a [doc:\/\/com.apple.documentation\/documentation\/Swift\/Result] that indicates either success or failure. In the success case, the future’s downstream subscriber receives the element prior to the publishing stream finishing normally. If the result is an error, publishing terminates with that error.\n\nThe following example shows a method that uses a future to asynchronously publish a random number after a brief delay:\n\n```swift\nfunc generateAsyncRandomNumberFromFuture() -> Future <Int, Never> {\n    return Future() { promise in\n        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {\n            let number = Int.random(in: 1...10)\n            promise(Result.success(number))\n        }\n    }\n}\n```\n\nTo receive the published value, you use any Combine subscriber, such as a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscribers\/Sink], like this:\n\n```swift\ncancellable = generateAsyncRandomNumberFromFuture()\n    .sink { number in print(\"Got random number \\(number).\") }\n```\n\n### Integrating with Swift Concurrency\n\nTo integrate with the `async`-`await` syntax in Swift 5.5, `Future` can provide its value to an awaiting caller. This is particularly useful because unlike other types that conform to [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher] and potentially publish many elements, a `Future` only publishes one element (or fails). By using the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Future\/value-9iwjz] property, the above call point looks like this:\n\n```swift\nlet number = await generateAsyncRandomNumberFromFuture().value\nprint(\"Got random number \\(number).\")\n```\n\n### Alternatives to Futures\n\nThe `async`-`await` syntax in Swift can also replace the use of a future entirely, for the case where you want to perform some operation after an asynchronous task completes.\n\nYou do this with the function [doc:\/\/com.apple.documentation\/documentation\/Swift\/withCheckedContinuation(isolation:function:_:)] and its throwing equivalent, [doc:\/\/com.apple.documentation\/documentation\/Swift\/withCheckedThrowingContinuation(isolation:function:_:)]. The following example performs the same asynchronous random number generation as the `Future` example above, but as an `async` method:\n\n```swift\nfunc generateAsyncRandomNumberFromContinuation() async -> Int {\n    return await withCheckedContinuation { continuation in\n        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {\n            let number = Int.random(in: 1...10)\n            continuation.resume(returning: number)\n        }\n    }\n}\n```\n\nThe call point for this method doesn’t use a closure like the future’s sink subscriber does; it simply awaits and assigns the result:\n\n```swift\nlet asyncRandom = await generateAsyncRandomNumberFromContinuation()\n```\n\nFor more information on continuations, see the [doc:\/\/com.apple.documentation\/documentation\/Swift\/concurrency] topic in the Swift standard library.\n\n## Creating a future\n\n- **init(_:)**: Creates a publisher that invokes a promise closure when the publisher emits an element.\n- **Future.Promise**: A type that represents a closure to invoke in the future, when an element or error is available.\n\n## Accessing the value asynchronously\n\n- **value**: The published value of the future, delivered asynchronously.\n- **value**: The published value of the future or an error, delivered asynchronously.\n\n## Convenience Publishers\n\n- **Just**: A publisher that emits an output to each subscriber just once, and then finishes.\n- **Deferred**: A publisher that awaits subscription before running the supplied closure to create a publisher for the new subscriber.\n- **Empty**: A publisher that never publishes any values, and optionally finishes immediately.\n- **Fail**: A publisher that immediately terminates with the specified error.\n- **Record**: A publisher that allows for recording a series of inputs and a completion, for later playback to each subscriber.\n\n## Conforms To\n\n- Publisher\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a publisher that invokes a promise closure when the publisher emits an element.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Future\/init(_:)"
+        },
+        {
+          "description" : "A type that represents a closure to invoke in the future, when an element or error is available.",
+          "name" : "Future.Promise",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Future\/Promise"
+        }
+      ],
+      "title" : "Creating a future"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The published value of the future, delivered asynchronously.",
+          "name" : "value",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Future\/value-9iwjz"
+        },
+        {
+          "description" : "The published value of the future or an error, delivered asynchronously.",
+          "name" : "value",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Future\/value-5iprp"
+        }
+      ],
+      "title" : "Accessing the value asynchronously"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A publisher that emits an output to each subscriber just once, and then finishes.",
+          "name" : "Just",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Just"
+        },
+        {
+          "description" : "A publisher that awaits subscription before running the supplied closure to create a publisher for the new subscriber.",
+          "name" : "Deferred",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Deferred"
+        },
+        {
+          "description" : "A publisher that never publishes any values, and optionally finishes immediately.",
+          "name" : "Empty",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Empty"
+        },
+        {
+          "description" : "A publisher that immediately terminates with the specified error.",
+          "name" : "Fail",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Fail"
+        },
+        {
+          "description" : "A publisher that allows for recording a series of inputs and a completion, for later playback to each subscriber.",
+          "name" : "Record",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Record"
+        }
+      ],
+      "title" : "Convenience Publishers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Future",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Future"
+}

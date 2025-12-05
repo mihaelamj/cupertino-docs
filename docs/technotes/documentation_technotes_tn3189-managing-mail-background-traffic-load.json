@@ -1,0 +1,109 @@
+{
+  "abstract" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+  "codeExamples" : [
+    {
+      "code" : "C: A1 ID (\"name\" \"com.apple.email.maild\" \"os\" \"iOS\" \"vendor\" \"Apple Inc\" \"event\" NIL)\nS: * ID (\"name\" \"Mail Server\" \"version\" \"3\")\nS: A1 OK Completed"
+    },
+    {
+      "code" : "C: A1 ID (\"name\" \"com.apple.email.search-indexer\" \"os\" \"iOS\" \"vendor\" \"Apple Inc\" \"event\" \"indexer\")\nS: * ID (\"name\" \"Mail Server\" \"version\" \"3\")\nS: A1 OK Completed",
+      "language" : "text"
+    },
+    {
+      "code" : "C: A1 ID (\"name\" \"com.apple.email.maild\" \"os\" \"iOS\" \"vendor\" \"Apple Inc\" \"event\" \"back-fill,periodic\")\nS: * ID (\"name\" \"Mail Server\" \"version\" \"3\")\nS: A1 NO [UNAVAILABLE] Completed",
+      "language" : "text"
+    }
+  ],
+  "contentHash" : "c36a29c0de7129a0fa2ce6f78a8945b69ce3a0ff5cdb2f322606734a2e9927f5",
+  "crawledAt" : "2025-12-05T10:31:42Z",
+  "id" : "34E2D56B-B9C1-44A3-8C04-0EBF575C992B",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nTo enhance the user experience, iOS Mail downloads a user’s email in the background. As part of a software update, some email data may require re-downloading. Since many devices will update at similar times, iOS Mail introduces a mechanism for IMAP email servers to limit concurrent downloads.\n\nThis process involves two main steps:\n\n## Identify background traffic from Mail\n\nStarting with iOS 18.5, the [https:\/\/tools.ietf.org\/html\/rfc2971] `ID` command includes an `event` field. The value of this field is either `NIL` or a list of comma-separated identifiers.\n\nThe server should only consider the `event` field value if the email client identifies itself with a `name` field that has a `com.apple.` prefix. For example, `\"name\" \"com.apple.email.maild\"` indicates that this is the the Mail app.\n\nIf the comma-separated identifiers of the `event` field include either:\n\nit indicates that the connection is being used for background downloading.\n\nThe `event` field could take on values such as:\n\nThese would *not* indicate a background download. However, values such as:\n\nwould indicate background download activity because they include `indexer` or `back-fill`.\n\nHere’s an example interaction between the client (C) and server (S):\n\nIn this example, the client did include the `event` field, but its value is `NIL`. This is not a background download.\n\nHere’s another example interaction:\n\nIn this case, the client indicated that it is performing a background download through the `indexer` value of the `event` field.\n\n## Tell Mail to back off\n\nSince iOS Mail may use an already established connection to perform background activity, iOS Mail might send subsequent `ID` commands with updated `event` fields. These will always contain the full set of fields of the original `ID` command, notably the `name` and `event` field. These subsequent `ID` commands may include switching from non-background to background download.\n\nThe load shedding using `NO [UNAVAILABLE]` for background downloads lets IMAP email servers reduce peak load without a direct impact on user experience.\n\nIMAP email servers should only send `NO [UNAVAILABLE]` when the Mail app has identified itself as Mail through the `name` field, and has indicated that it is doing background downloads through the `event` field as noted above.\n\nHere’s an example of an interaction where the IMAP email server tell the Mail app to back off:\n\nHere the IMAP email server responds with a tagged response containing `NO` and the response code `UNAVAILABLE,` as defined in [https:\/\/tools.ietf.org\/html\/rfc3501] and [https:\/\/tools.ietf.org\/html\/rfc5530]. This informs the iOS Mail app to back off, and it will close the connection.\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load\ncrawled: 2025-12-05T10:31:42Z\n---\n\n# TN3189: Managing Mail background traffic load\n\n**Article**\n\nIdentify iOS Mail background traffic and manage its impact on your IMAP server.\n\n## Overview\n\nTo enhance the user experience, iOS Mail downloads a user’s email in the background. As part of a software update, some email data may require re-downloading. Since many devices will update at similar times, iOS Mail introduces a mechanism for IMAP email servers to limit concurrent downloads.\n\nThis process involves two main steps:\n\n1. **Client identification:** [https:\/\/tools.ietf.org\/html\/rfc3501] IMAP email servers can detect if a connection is for a background download. iOS Mail clients identify themselves to the server using the `ID` command. Starting with iOS 18.5, this command includes an `event` field. This field will indicate if the connection is being used for background downloading.\n2. **Load shedding:** If the server needs to limit its load and the client has been identified as a background download, the server should send a `NO [UNAVAILABLE]` tagged response to the `ID` command. This will result in the background download being postponed approximately a day, after which the client will retry the download.\n\n## Identify background traffic from Mail\n\nStarting with iOS 18.5, the [https:\/\/tools.ietf.org\/html\/rfc2971] `ID` command includes an `event` field. The value of this field is either `NIL` or a list of comma-separated identifiers.\n\nThe server should only consider the `event` field value if the email client identifies itself with a `name` field that has a `com.apple.` prefix. For example, `\"name\" \"com.apple.email.maild\"` indicates that this is the the Mail app.\n\nIf the comma-separated identifiers of the `event` field include either:\n\n- `indexer`, or\n- `back-fill`,\n\nit indicates that the connection is being used for background downloading.\n\n\n\nThe `event` field could take on values such as:\n\n- `periodic`\n- `periodic,push`\n- `NIL`\n\nThese would *not* indicate a background download. However, values such as:\n\n- `back-fill`\n- `periodic,back-fill`\n- `back-fill,periodic`\n- `indexer`\n\nwould indicate background download activity because they include `indexer` or `back-fill`.\n\nHere’s an example interaction between the client (C) and server (S):\n\n```\nC: A1 ID (\"name\" \"com.apple.email.maild\" \"os\" \"iOS\" \"vendor\" \"Apple Inc\" \"event\" NIL)\nS: * ID (\"name\" \"Mail Server\" \"version\" \"3\")\nS: A1 OK Completed\n```\n\nIn this example, the client did include the `event` field, but its value is `NIL`. This is not a background download.\n\nHere’s another example interaction:\n\n```text\nC: A1 ID (\"name\" \"com.apple.email.search-indexer\" \"os\" \"iOS\" \"vendor\" \"Apple Inc\" \"event\" \"indexer\")\nS: * ID (\"name\" \"Mail Server\" \"version\" \"3\")\nS: A1 OK Completed\n```\n\nIn this case, the client indicated that it is performing a background download through the `indexer` value of the `event` field.\n\n## Tell Mail to back off\n\nSince iOS Mail may use an already established connection to perform background activity, iOS Mail might send subsequent `ID` commands with updated `event` fields. These will always contain the full set of fields of the original `ID` command, notably the `name` and `event` field. These subsequent `ID` commands may include switching from non-background to background download.\n\nThe load shedding using `NO [UNAVAILABLE]` for background downloads lets IMAP email servers reduce peak load without a direct impact on user experience.\n\nIMAP email servers should only send `NO [UNAVAILABLE]` when the Mail app has identified itself as Mail through the `name` field, and has indicated that it is doing background downloads through the `event` field as noted above.\n\nHere’s an example of an interaction where the IMAP email server tell the Mail app to back off:\n\n```text\nC: A1 ID (\"name\" \"com.apple.email.maild\" \"os\" \"iOS\" \"vendor\" \"Apple Inc\" \"event\" \"back-fill,periodic\")\nS: * ID (\"name\" \"Mail Server\" \"version\" \"3\")\nS: A1 NO [UNAVAILABLE] Completed\n```\n\nHere the IMAP email server responds with a tagged response containing `NO` and the response code `UNAVAILABLE,` as defined in [https:\/\/tools.ietf.org\/html\/rfc3501] and [https:\/\/tools.ietf.org\/html\/rfc5530]. This informs the iOS Mail app to back off, and it will close the connection.\n\n\n\n## Revision History\n\n- **2025-05-09** First published.\n\n## Latest\n\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n- **TN3182: Adding privacy tracking keys to your privacy manifest**: Declare the tracking domains you use in your app or third-party SDK in a privacy manifest.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        },
+        {
+          "description" : "Declare the tracking domains you use in your app or third-party SDK in a privacy manifest.",
+          "name" : "TN3182: Adding privacy tracking keys to your privacy manifest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3182-adding-privacy-tracking-keys-to-your-privacy-manifest"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3189: Managing Mail background traffic load",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+}

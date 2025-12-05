@@ -1,0 +1,54 @@
+{
+  "abstract" : "Determines the action that the system takes when it downloads a message.",
+  "codeExamples" : [
+    {
+      "code" : "func decideActionForMessage(for message: MEMessage, completionHandler: @escaping (MEMessageActionDecision?) -> Void) {\n    var action: MEMessageActionDecision? = nil\n\n    \/\/ Check if the subject of the email is about Project Mars.\n    if message.subject.contains(\"Project Mars\") {\n        \/\/ Create an action to set the color of the\n        \/\/ message in the message list to red.\n         action = MEMessageActionDecision.action(.setColorActionWith(.red))\n    }\n    \n    \/\/ Call the completion handler with the action, if any.\n    completionHandler(action)\n\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func decideActionForMessage(for message: MEMessage, completionHandler: @escaping (MEMessageActionDecision?) -> Void) {\n    var action: MEMessageActionDecision? = nil\n\n    \/\/ Check if the message content is available.\n    if message.bodyData == nil {\n        \/\/ If it isn't, request a repeat call when it is.\n        action = MEMessageActionDecision.invokeAgainWithBody\n    } else if let bodyData = message.bodyData,\n              let body = String(data: bodyData, encoding: .utf8){\n        \n        \/\/ Determine if the message is junk or not.\n        let isJunk = body.contains(\"Make money fast!\")\n        \n        \/\/ If it is, then call the completion handler with an action\n        \/\/ to move the message to the Junk mailbox.\n        if isJunk {\n            action = MEMessageActionDecision.action(.moveToJunk)\n        }\n    }\n    \n    \/\/ Call the completion handler with the action, if any.\n    completionHandler(action)\n\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "abf3777c718c7d6eb96fcf1159266375fd599640726d202aa40c453cdc960925",
+  "crawledAt" : "2025-12-05T17:38:56Z",
+  "declaration" : {
+    "code" : "func decideAction(for message: MEMessage, completionHandler: @escaping (MEMessageActionDecision?) -> Void)",
+    "language" : "swift"
+  },
+  "id" : "D281EBCB-881B-4909-BB05-37BA47E68FAC",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "MailKit",
+  "overview" : "## Discussion\n\nAs MailKit downloads messages, it invokes this method to determine what action, if any, it should perform on the message. MailKit initially calls this method before downloading the message content. If you can determine the action to take without requiring the entire body, create a [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessageActionDecision] with an [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessageAction] that indicates the action to take. Use the properties of `message` to determine the action to take. For example, if the user chooses to set the color of messages from a particular person, use the message’s [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessage\/fromAddress] property.\n\nIf you can’t determine the action without the entire message content and `bodyData` is `nil`, call the completion handler and pass [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessageActionDecision\/invokeAgainWithBody] as the decision. MailKit invokes this method again later after the `bodyData` in the message is available.\n\nThe following code shows an implementation that sets the color of all messages with Project Mars in the subject to red. Because this example only relies on the [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessage\/subject] of the message, it calls the completion handler with an action immediately.\n\nThe next example shows a different implementation that relies on the message body content to determine if a message is junk. In this case, when `bodyData` is `nil`, the handler calls the completion handler and passes [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessageActionDecision\/invokeAgainWithBody].\n\nWhen MailKit downloads the message content, it invokes this method again. This time, the handler converts the body data to a string. If the string indicates that the message is junk, the handler calls the completion handler passing an action that moves the message to the user’s Junk mailbox.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/mailkit\/memessageactionhandler\/decideaction(for:completionhandler:)\ncrawled: 2025-12-05T17:38:56Z\n---\n\n# decideAction(for:completionHandler:)\n\n**Instance Method**\n\nDetermines the action that the system takes when it downloads a message.\n\n## Declaration\n\n```swift\nfunc decideAction(for message: MEMessage, completionHandler: @escaping (MEMessageActionDecision?) -> Void)\n```\n\n```swift\nfunc decideAction(for message: MEMessage) async -> MEMessageActionDecision?\n```\n\n## Parameters\n\n- **message**: The message the system downloads.\n- **completionHandler**: A block you call that indicates the action to perform on the message, or if MailKit should invoke this method again after it downloads the message content.\n\n## Discussion\n\n\n\nAs MailKit downloads messages, it invokes this method to determine what action, if any, it should perform on the message. MailKit initially calls this method before downloading the message content. If you can determine the action to take without requiring the entire body, create a [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessageActionDecision] with an [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessageAction] that indicates the action to take. Use the properties of `message` to determine the action to take. For example, if the user chooses to set the color of messages from a particular person, use the message’s [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessage\/fromAddress] property.\n\nIf you can’t determine the action without the entire message content and `bodyData` is `nil`, call the completion handler and pass [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessageActionDecision\/invokeAgainWithBody] as the decision. MailKit invokes this method again later after the `bodyData` in the message is available.\n\nThe following code shows an implementation that sets the color of all messages with Project Mars in the subject to red. Because this example only relies on the [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessage\/subject] of the message, it calls the completion handler with an action immediately.\n\n```swift\nfunc decideActionForMessage(for message: MEMessage, completionHandler: @escaping (MEMessageActionDecision?) -> Void) {\n    var action: MEMessageActionDecision? = nil\n\n    \/\/ Check if the subject of the email is about Project Mars.\n    if message.subject.contains(\"Project Mars\") {\n        \/\/ Create an action to set the color of the\n        \/\/ message in the message list to red.\n         action = MEMessageActionDecision.action(.setColorActionWith(.red))\n    }\n    \n    \/\/ Call the completion handler with the action, if any.\n    completionHandler(action)\n\n}\n```\n\n\n\nThe next example shows a different implementation that relies on the message body content to determine if a message is junk. In this case, when `bodyData` is `nil`, the handler calls the completion handler and passes [doc:\/\/com.apple.mailkit\/documentation\/MailKit\/MEMessageActionDecision\/invokeAgainWithBody].\n\nWhen MailKit downloads the message content, it invokes this method again. This time, the handler converts the body data to a string. If the string indicates that the message is junk, the handler calls the completion handler passing an action that moves the message to the user’s Junk mailbox.\n\n```swift\nfunc decideActionForMessage(for message: MEMessage, completionHandler: @escaping (MEMessageActionDecision?) -> Void) {\n    var action: MEMessageActionDecision? = nil\n\n    \/\/ Check if the message content is available.\n    if message.bodyData == nil {\n        \/\/ If it isn't, request a repeat call when it is.\n        action = MEMessageActionDecision.invokeAgainWithBody\n    } else if let bodyData = message.bodyData,\n              let body = String(data: bodyData, encoding: .utf8){\n        \n        \/\/ Determine if the message is junk or not.\n        let isJunk = body.contains(\"Make money fast!\")\n        \n        \/\/ If it is, then call the completion handler with an action\n        \/\/ to move the message to the Junk mailbox.\n        if isJunk {\n            action = MEMessageActionDecision.action(.moveToJunk)\n        }\n    }\n    \n    \/\/ Call the completion handler with the action, if any.\n    completionHandler(action)\n\n}\n```\n\n## Performing Actions on Messages\n\n- **MEMessageAction**: An action the system performs on a message, such as setting a color or archiving it.\n- **MEMessageActionDecision**: The action that the system performs on a message, or a request to ask the action handler again later when the message content is available.\n- **MEMessageAction.MessageColor**: A color that the system uses to display a message in the message list.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An action the system performs on a message, such as setting a color or archiving it.",
+          "name" : "MEMessageAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MailKit\/MEMessageAction"
+        },
+        {
+          "description" : "The action that the system performs on a message, or a request to ask the action handler again later when the message content is available.",
+          "name" : "MEMessageActionDecision",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MailKit\/MEMessageActionDecision"
+        },
+        {
+          "description" : "A color that the system uses to display a message in the message list.",
+          "name" : "MEMessageAction.MessageColor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MailKit\/MEMessageAction\/MessageColor"
+        }
+      ],
+      "title" : "Performing Actions on Messages"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "decideAction(for:completionHandler:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/mailkit\/memessageactionhandler\/decideaction(for:completionhandler:)"
+}

@@ -1,0 +1,54 @@
+{
+  "abstract" : "Returns a Boolean value indicating whether the given object is known to have a single strong reference.",
+  "codeExamples" : [
+    {
+      "code" : "mutating func update(withValue value: T) {\n    if !isKnownUniquelyReferenced(&myStorage) {\n        myStorage = self.copiedStorage()\n    }\n    myStorage.update(withValue: value)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Copies too frequently:\nmutating func badUpdate(withValue value: T) {\n    if myStorage.shouldCopy || !isKnownUniquelyReferenced(&myStorage) {\n        myStorage = self.copiedStorage()\n    }\n    myStorage.update(withValue: value)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "mutating func goodUpdate(withValue value: T) {\n    let shouldCopy = myStorage.shouldCopy\n    if shouldCopy || !isKnownUniquelyReferenced(&myStorage) {\n        myStorage = self.copiedStorage()\n    }\n    myStorage.update(withValue: value)\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "64be7f886760becd28f139205287b04d60d5036b05a30de4bda8d14f1f41e1b1",
+  "crawledAt" : "2025-12-05T02:32:56Z",
+  "declaration" : {
+    "code" : "func isKnownUniquelyReferenced<T>(_ object: inout T) -> Bool where T : AnyObject",
+    "language" : "swift"
+  },
+  "id" : "0E10D5DF-262A-41F5-94B6-D37E111BE29C",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Swift",
+  "overview" : "## Return Value\n\n`true` if `object` is known to have a single strong reference; otherwise, `false`.\n\n## Discussion\n\nThe `isKnownUniquelyReferenced(_:)` function is useful for implementing the copy-on-write optimization for the deep storage of value types:\n\nUse care when calling `isKnownUniquelyReferenced(_:)` from within a Boolean expression. In debug builds, an instance in the left-hand side of a `&&` or `||` expression may still be referenced when evaluating the right-hand side, inflating the instance’s reference count. For example, this version of the `update(withValue)` method will re-copy `myStorage` on every call:\n\nTo avoid this behavior, swap the call `isKnownUniquelyReferenced(_:)` to the left-hand side or store the result of the first expression in a local constant:\n\n`isKnownUniquelyReferenced(_:)` checks only for strong references to the given object—if `object` has additional weak or unowned references, the result may still be `true`. Because weak and unowned references cannot be the only reference to an object, passing a weak or unowned reference as `object` always results in `false`.\n\nIf the instance passed as `object` is being accessed by multiple threads simultaneously, this function may still return `true`. Therefore, you must only call this function from mutating methods with appropriate thread synchronization. That will ensure that `isKnownUniquelyReferenced(_:)` only returns `true` when there is really one accessor, or when there is a race condition, which is already undefined behavior.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Swift\/isKnownUniquelyReferenced(_:)-5kvtu\ncrawled: 2025-12-05T02:32:56Z\n---\n\n# isKnownUniquelyReferenced(_:)\n\n**Function**\n\nReturns a Boolean value indicating whether the given object is known to have a single strong reference.\n\n## Declaration\n\n```swift\nfunc isKnownUniquelyReferenced<T>(_ object: inout T) -> Bool where T : AnyObject\n```\n\n## Parameters\n\n- **object**: An instance of a class. This function does *not* modify `object`; the use of `inout` is an implementation artifact.\n\n## Return Value\n\n`true` if `object` is known to have a single strong reference; otherwise, `false`.\n\n## Discussion\n\nThe `isKnownUniquelyReferenced(_:)` function is useful for implementing the copy-on-write optimization for the deep storage of value types:\n\n```swift\nmutating func update(withValue value: T) {\n    if !isKnownUniquelyReferenced(&myStorage) {\n        myStorage = self.copiedStorage()\n    }\n    myStorage.update(withValue: value)\n}\n```\n\nUse care when calling `isKnownUniquelyReferenced(_:)` from within a Boolean expression. In debug builds, an instance in the left-hand side of a `&&` or `||` expression may still be referenced when evaluating the right-hand side, inflating the instance’s reference count. For example, this version of the `update(withValue)` method will re-copy `myStorage` on every call:\n\n```swift\n\/\/ Copies too frequently:\nmutating func badUpdate(withValue value: T) {\n    if myStorage.shouldCopy || !isKnownUniquelyReferenced(&myStorage) {\n        myStorage = self.copiedStorage()\n    }\n    myStorage.update(withValue: value)\n}\n```\n\nTo avoid this behavior, swap the call `isKnownUniquelyReferenced(_:)` to the left-hand side or store the result of the first expression in a local constant:\n\n```swift\nmutating func goodUpdate(withValue value: T) {\n    let shouldCopy = myStorage.shouldCopy\n    if shouldCopy || !isKnownUniquelyReferenced(&myStorage) {\n        myStorage = self.copiedStorage()\n    }\n    myStorage.update(withValue: value)\n}\n```\n\n`isKnownUniquelyReferenced(_:)` checks only for strong references to the given object—if `object` has additional weak or unowned references, the result may still be `true`. Because weak and unowned references cannot be the only reference to an object, passing a weak or unowned reference as `object` always results in `false`.\n\nIf the instance passed as `object` is being accessed by multiple threads simultaneously, this function may still return `true`. Therefore, you must only call this function from mutating methods with appropriate thread synchronization. That will ensure that `isKnownUniquelyReferenced(_:)` only returns `true` when there is really one accessor, or when there is a race condition, which is already undefined behavior.\n\n## Uniqueness Checking\n\n- **isKnownUniquelyReferenced(_:)**: Returns a Boolean value indicating whether the given object is known to have a single strong reference.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value indicating whether the given object is known to have a single strong reference.",
+          "name" : "isKnownUniquelyReferenced(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/isKnownUniquelyReferenced(_:)-98zpp"
+        }
+      ],
+      "title" : "Uniqueness Checking"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "isKnownUniquelyReferenced(_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Swift\/isKnownUniquelyReferenced(_:)-5kvtu"
+}

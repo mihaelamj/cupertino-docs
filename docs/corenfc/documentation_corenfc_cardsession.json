@@ -1,0 +1,180 @@
+{
+  "abstract" : "An ISO 7816 card emulation session.",
+  "codeExamples" : [
+    {
+      "code" : "import CoreNFC\n\nfunc CardSessionSample() {\n    \/\/\/ A place-holder function for APDU processing. In a real app,\n    \/\/\/ process the received data and return a response as Data.\n    let ProcessAPDU: (_: Data) -> Data = { capdu in return Data() }\n    \n    Task() {\n        \/\/ Proceed only if the current device and system are able and\n        \/\/ eligible to use CardSession.\n        guard NFCReaderSession.readingAvailable,\n              CardSession.isSupported,\n              await CardSession.isEligible else {\n            return\n        }\n    \n        \/\/ Hold a presentment intent assertion reference to prevent the\n        \/\/ default contactless app from launching. In a real app, monitor\n        \/\/ presentmentIntent.isValid to ensure the assertion remains active.\n        var presentmentIntent: NFCPresentmentIntentAssertion?\n\n        let cardSession: CardSession\n        do {\n            presentmentIntent = try await NFCPresentmentIntentAssertion.acquire()\n            cardSession = try await CardSession()\n        } catch {\n            \/\/\/ Handle failure to acquire NFC presentment intent assertion or\n            \/\/\/ card session.\n            return\n        }\n        \n        \/\/ Iterate over events as the card session produces them.\n        for try await event in cardSession.eventStream {\n            switch event {\n            case .sessionStarted:\n                cardSession.alertMessage = String(localized: \"Communicating with card reader.\")\n                break\n                \n            case .readerDetected:\n                \/\/\/ Start card emulation on first detection of an external reader.\n                try await cardSession.startEmulation()\n                \n            case .readerDeselected:\n                \/\/\/ Stop emulation on first notification of RF link loss.\n                await cardSession.stopEmulation(status: .success)\n                \n            case .received(let cardAPDU):\n                do {\n                    \/\/\/ Call handler to process received input and produce a response.\n                    let responseAPDU = ProcessAPDU(cardAPDU.payload)\n                    \n                    try await cardAPDU.respond(response: responseAPDU)\n                } catch {\n                    \/\/\/ Handle the error from respond(response:). If the error is\n                    \/\/\/ CardSession.Error.transmissionError, then retry by calling\n                    \/\/\/ CardSession.APDU.respond(response:) again.\n                }\n                \n            case .sessionInvalidated(reason: _):\n                cardSession.alertMessage = String(localized: \"Ending communication with card reader.\")\n                \/\/\/ Handle the reason for session invalidation.\n                break\n            }\n        }\n        \n        presentmentIntent = nil \/\/\/ Release presentment intent assertion.\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "9450e48b4369d036536336d342dc491aa511c2bb40a76067c93899bcc73dd6af",
+  "crawledAt" : "2025-12-05T03:27:54Z",
+  "declaration" : {
+    "code" : "class CardSession",
+    "language" : "swift"
+  },
+  "id" : "F119D36A-73FF-4D70-B43F-E3B86DD3645D",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Core NFC",
+  "overview" : "## Overview\n\nUse an instance of [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession] to perform [https:\/\/www.iso.org\/standard\/84943.html] protocol communication with an NFC reader, receiving and responding to Application Protocol Data Units (APDUs) in your app.\n\n[doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession] supports host card emulation (HCE) transactions for in-store payments, car keys, closed-loop transit, corporate badges, hotel keys, merchant loyalty\/rewards and event tickets in the European Economic Area (EEA).\n\nUse a card session to perform card emulation when in the presence of an NFC reader. You do this by managing the session as follows:\n\nThe following example shows a simple interaction with a card session. It attempts to acquire both a [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/NFCPresentmentIntentAssertion] and a [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession]. If both of these succeed, it uses a `for-await-in` loop to process events from the session’s [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/eventStream-swift.property] as it receives them.\n\n### Handling emulation duration\n\nCard emulation is valid for up to 60 seconds from the [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/startEmulation()] call. Once the session timeout occurs, the [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/eventStream-swift.property] posts the event [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/Event\/sessionInvalidated(reason:)] with a `reason` of [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/Error\/maxSessionDurationReached]. At this point, the session becomes invalidated.\n\n### Using entitlements\n\nYour app must have the following entitlements to use [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession]:\n\nIf your app lacks a required entitlement, [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/init()] raises [doc:\/\/com.apple.documentation\/documentation\/Swift\/fatalError(_:file:line:)]. To avoid this, check the [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/isSupported] and [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/isEligible] properties before attempting to create a card session.\n\nOptionally, your app may have the [doc:\/\/com.apple.documentation\/documentation\/BundleResources\/Entitlements\/com.apple.developer.nfc.hce.default-contactless-app] entitlement. A value of `YES` indicates that a person can use the iOS settings app to set this app as a default NFC contactless app.\n\nFor more information and to apply for these entitlements, visit [https:\/\/developer.apple.com\/support\/hce-payment-transactions-in-payment-apps\/].\n\n### Testing requirements\n\nTo test HCE-based contactless transactions, you’ll need to test with an iPhone and NFC hardware. [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession] requires the presence of an NFC reader, which isn’t supported in Simulator, to perform an ISO 7816 card emulation session.\n\nTo learn more about CardSession requirements, see [https:\/\/developer.apple.com\/support\/hce-payment-transactions-in-payment-apps\/].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\ncrawled: 2025-12-05T03:27:54Z\n---\n\n# CardSession\n\n**Class**\n\nAn ISO 7816 card emulation session.\n\n## Declaration\n\n```swift\nclass CardSession\n```\n\n## Overview\n\nUse an instance of [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession] to perform [https:\/\/www.iso.org\/standard\/84943.html] protocol communication with an NFC reader, receiving and responding to Application Protocol Data Units (APDUs) in your app.\n\n[doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession] supports host card emulation (HCE) transactions for in-store payments, car keys, closed-loop transit, corporate badges, hotel keys, merchant loyalty\/rewards and event tickets in the European Economic Area (EEA).\n\nUse a card session to perform card emulation when in the presence of an NFC reader. You do this by managing the session as follows:\n\n1. Verify that the system is eligible to use [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession]. Check `NFCReaderSession.readingAvailable` and `CardSession.isSupported` to ensure that the device supports card sessions with NFC. Also check `CardSession.isEligible` to verify that the system supports card session use in the current environment. Don’t continue unless all of these values are `true`.\n2. Create a card session with [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/init()] and begin iterating over events from the session’s [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/eventStream-swift.property]. Starting the session acquires necessary system resources and posts [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/Event\/sessionStarted] to the event stream when the app acquires the NFC resource. After this, the session sends the [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/Event\/readerDetected] event when the device detects the RF field of an NFC reader.\n3. Start card emulation by calling [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/startEmulation()] when your app is ready to handle APDUs from the reader. You typically do this after receiving the [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/Event\/readerDetected], but you can start emulation regardless of whether a reader is present. After you start emulation, the reader (if present) can communicate with the card, and emulation triggers the system modal UI to display over the app.\n4. At this point, begin receiving and processing APDUs from the event stream. Process the APDU [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/APDU\/payload] in each event, generate a response, and send it with [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/APDU\/respond(response:)]. If you don’t respond in a timely manner to every event, the reader might treat it as a timeout condition and fail with an error.\n5. Use the [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/alertMessage] property to provide updates to the person using the app as the communication continues.\n6. If the reader disconnects, possibly because of the device moving away from the reader, handle the event [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/Event\/readerDeselected].\n7. Stop card emulation by calling [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/stopEmulation(status:)]. This shuts down the RF interface and cuts off the RF connection with a reader if one exists.\n8. Invalidate the session with [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/invalidate()], which cleans up system resources.\n\nThe following example shows a simple interaction with a card session. It attempts to acquire both a [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/NFCPresentmentIntentAssertion] and a [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession]. If both of these succeed, it uses a `for-await-in` loop to process events from the session’s [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/eventStream-swift.property] as it receives them.\n\n```swift\nimport CoreNFC\n\nfunc CardSessionSample() {\n    \/\/\/ A place-holder function for APDU processing. In a real app,\n    \/\/\/ process the received data and return a response as Data.\n    let ProcessAPDU: (_: Data) -> Data = { capdu in return Data() }\n    \n    Task() {\n        \/\/ Proceed only if the current device and system are able and\n        \/\/ eligible to use CardSession.\n        guard NFCReaderSession.readingAvailable,\n              CardSession.isSupported,\n              await CardSession.isEligible else {\n            return\n        }\n    \n        \/\/ Hold a presentment intent assertion reference to prevent the\n        \/\/ default contactless app from launching. In a real app, monitor\n        \/\/ presentmentIntent.isValid to ensure the assertion remains active.\n        var presentmentIntent: NFCPresentmentIntentAssertion?\n\n        let cardSession: CardSession\n        do {\n            presentmentIntent = try await NFCPresentmentIntentAssertion.acquire()\n            cardSession = try await CardSession()\n        } catch {\n            \/\/\/ Handle failure to acquire NFC presentment intent assertion or\n            \/\/\/ card session.\n            return\n        }\n        \n        \/\/ Iterate over events as the card session produces them.\n        for try await event in cardSession.eventStream {\n            switch event {\n            case .sessionStarted:\n                cardSession.alertMessage = String(localized: \"Communicating with card reader.\")\n                break\n                \n            case .readerDetected:\n                \/\/\/ Start card emulation on first detection of an external reader.\n                try await cardSession.startEmulation()\n                \n            case .readerDeselected:\n                \/\/\/ Stop emulation on first notification of RF link loss.\n                await cardSession.stopEmulation(status: .success)\n                \n            case .received(let cardAPDU):\n                do {\n                    \/\/\/ Call handler to process received input and produce a response.\n                    let responseAPDU = ProcessAPDU(cardAPDU.payload)\n                    \n                    try await cardAPDU.respond(response: responseAPDU)\n                } catch {\n                    \/\/\/ Handle the error from respond(response:). If the error is\n                    \/\/\/ CardSession.Error.transmissionError, then retry by calling\n                    \/\/\/ CardSession.APDU.respond(response:) again.\n                }\n                \n            case .sessionInvalidated(reason: _):\n                cardSession.alertMessage = String(localized: \"Ending communication with card reader.\")\n                \/\/\/ Handle the reason for session invalidation.\n                break\n            }\n        }\n        \n        presentmentIntent = nil \/\/\/ Release presentment intent assertion.\n    }\n}\n```\n\n### Handling emulation duration\n\nCard emulation is valid for up to 60 seconds from the [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/startEmulation()] call. Once the session timeout occurs, the [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/eventStream-swift.property] posts the event [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/Event\/sessionInvalidated(reason:)] with a `reason` of [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/Error\/maxSessionDurationReached]. At this point, the session becomes invalidated.\n\n### Using entitlements\n\nYour app must have the following entitlements to use [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession]:\n\n\n\nIf your app lacks a required entitlement, [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/init()] raises [doc:\/\/com.apple.documentation\/documentation\/Swift\/fatalError(_:file:line:)]. To avoid this, check the [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/isSupported] and [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession\/isEligible] properties before attempting to create a card session.\n\nOptionally, your app may have the [doc:\/\/com.apple.documentation\/documentation\/BundleResources\/Entitlements\/com.apple.developer.nfc.hce.default-contactless-app] entitlement. A value of `YES` indicates that a person can use the iOS settings app to set this app as a default NFC contactless app.\n\nFor more information and to apply for these entitlements, visit [https:\/\/developer.apple.com\/support\/hce-payment-transactions-in-payment-apps\/].\n\n\n\n### Testing requirements\n\nTo test HCE-based contactless transactions, you’ll need to test with an iPhone and NFC hardware. [doc:\/\/com.apple.corenfc\/documentation\/CoreNFC\/CardSession] requires the presence of an NFC reader, which isn’t supported in Simulator, to perform an ISO 7816 card emulation session.\n\nTo learn more about CardSession requirements, see [https:\/\/developer.apple.com\/support\/hce-payment-transactions-in-payment-apps\/].\n\n## Creating a card session\n\n- **init()**: Creates a contactless card session.\n- **CardSession.Error**: An error type that indicates problems with a card session.\n\n## Determining card session availability\n\n- **isSupported**: A property that indicates whether the current device supports card session functionality.\n- **isEligible**: A property that indicates whether the current system supports card session functionality.\n\n## Managing card emulation\n\n- **startEmulation()**: Start the card emulation and present a modal user interface to the person using the app.\n- **CardSession.Error**: An error type that indicates problems with a card session.\n- **stopEmulation(status:)**: Stop card emulation and display a status.\n- **CardSession.EmulationUIStatus**: The final status to show in the user interface when ending card emulation.\n- **isEmulationInProgress**: A Boolean value that indicates whether emulation is currently active.\n\n## Handling card events\n\n- **eventStream**: An asynchronous sequence of events from the card session.\n- **CardSession.EventStream**: An asynchronous sequence of events produced by a card session.\n- **CardSession.Event**: A type that enumerates events produced by a card session.\n\n## Updating the user interface\n\n- **alertMessage**: A message to show on the alert action sheet after card emulation starts.\n\n## Ending a card session\n\n- **invalidate()**: Invalidates the current card emulation session.\n\n## Entitlements\n\n- **com.apple.developer.nfc.hce**: A Boolean value indicating whether your app can use the card session API.\n- **com.apple.developer.nfc.hce.iso7816.select-identifier-prefixes**: An array of identifier strings the app handles with the card session API.\n- **com.apple.developer.nfc.hce.default-contactless-app**: A Boolean value indicating whether your app can be a default app for contactless NFC with the card session API.\n\n## Classes\n\n- **CardSession.APDU**: An Application Programming Data Unit (APDU) received from the NFC card reader.\n\n## Card sessions\n\n- **NFCPresentmentIntentAssertion**: An object that signals your app’s intention to make exclusive use of the device’s contactless features.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a contactless card session.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/init()"
+        },
+        {
+          "description" : "An error type that indicates problems with a card session.",
+          "name" : "CardSession.Error",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/Error"
+        }
+      ],
+      "title" : "Creating a card session"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A property that indicates whether the current device supports card session functionality.",
+          "name" : "isSupported",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/isSupported"
+        },
+        {
+          "description" : "A property that indicates whether the current system supports card session functionality.",
+          "name" : "isEligible",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/isEligible"
+        }
+      ],
+      "title" : "Determining card session availability"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Start the card emulation and present a modal user interface to the person using the app.",
+          "name" : "startEmulation()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/startEmulation()"
+        },
+        {
+          "description" : "An error type that indicates problems with a card session.",
+          "name" : "CardSession.Error",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/Error"
+        },
+        {
+          "description" : "Stop card emulation and display a status.",
+          "name" : "stopEmulation(status:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/stopEmulation(status:)"
+        },
+        {
+          "description" : "The final status to show in the user interface when ending card emulation.",
+          "name" : "CardSession.EmulationUIStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/EmulationUIStatus"
+        },
+        {
+          "description" : "A Boolean value that indicates whether emulation is currently active.",
+          "name" : "isEmulationInProgress",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/isEmulationInProgress"
+        }
+      ],
+      "title" : "Managing card emulation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An asynchronous sequence of events from the card session.",
+          "name" : "eventStream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/eventStream-swift.property"
+        },
+        {
+          "description" : "An asynchronous sequence of events produced by a card session.",
+          "name" : "CardSession.EventStream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/EventStream-swift.class"
+        },
+        {
+          "description" : "A type that enumerates events produced by a card session.",
+          "name" : "CardSession.Event",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/Event"
+        }
+      ],
+      "title" : "Handling card events"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A message to show on the alert action sheet after card emulation starts.",
+          "name" : "alertMessage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/alertMessage"
+        }
+      ],
+      "title" : "Updating the user interface"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Invalidates the current card emulation session.",
+          "name" : "invalidate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/invalidate()"
+        }
+      ],
+      "title" : "Ending a card session"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value indicating whether your app can use the card session API.",
+          "name" : "com.apple.developer.nfc.hce",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Entitlements\/com.apple.developer.nfc.hce"
+        },
+        {
+          "description" : "An array of identifier strings the app handles with the card session API.",
+          "name" : "com.apple.developer.nfc.hce.iso7816.select-identifier-prefixes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Entitlements\/com.apple.developer.nfc.hce.iso7816.select-identifier-prefixes"
+        },
+        {
+          "description" : "A Boolean value indicating whether your app can be a default app for contactless NFC with the card session API.",
+          "name" : "com.apple.developer.nfc.hce.default-contactless-app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Entitlements\/com.apple.developer.nfc.hce.default-contactless-app"
+        }
+      ],
+      "title" : "Entitlements"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An Application Programming Data Unit (APDU) received from the NFC card reader.",
+          "name" : "CardSession.APDU",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession\/APDU"
+        }
+      ],
+      "title" : "Classes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that signals your app’s intention to make exclusive use of the device’s contactless features.",
+          "name" : "NFCPresentmentIntentAssertion",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/NFCPresentmentIntentAssertion"
+        }
+      ],
+      "title" : "Card sessions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "CardSession",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CoreNFC\/CardSession"
+}

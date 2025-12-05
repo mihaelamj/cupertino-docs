@@ -1,0 +1,66 @@
+{
+  "abstract" : "Subscribes to two additional publishers and invokes a closure upon receiving output from any of the publishers.",
+  "codeExamples" : [
+    {
+      "code" : "let pub = PassthroughSubject<Int, Never>()\nlet pub2 = PassthroughSubject<Int, Never>()\nlet pub3 = PassthroughSubject<Int, Never>()\n\ncancellable = pub\n    .combineLatest(pub2, pub3) { firstValue, secondValue, thirdValue in\n        return firstValue * secondValue * thirdValue\n    }\n    .sink { print(\"Result: \\($0).\") }\n\npub.send(1)\npub.send(2)\npub2.send(2)\npub3.send(10)\n\npub.send(9)\npub3.send(4)\npub2.send(12)\n\n\/\/ Prints:\n\/\/  Result: 40.     \/\/ pub = 2, pub2 = 2, pub3 = 10\n\/\/  Result: 180.    \/\/ pub = 9, pub2 = 2, pub3 = 10\n\/\/  Result: 72.     \/\/ pub = 9, pub2 = 2, pub3 = 4\n\/\/  Result: 432.    \/\/ pub = 9, pub2 = 12, pub3 = 4",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "96b124fed9ae34618413da96ea993554662a6f1db133a8227ee2daa25cc1c252",
+  "crawledAt" : "2025-12-05T02:44:50Z",
+  "declaration" : {
+    "code" : "func combineLatest<P, Q, T>(_ publisher1: P, _ publisher2: Q, _ transform: @escaping (Self.Output, P.Output, Q.Output) -> T) -> Publishers.Map<Publishers.CombineLatest3<Self, P, Q>, T> where P : Publisher, Q : Publisher, Self.Failure == P.Failure, P.Failure == Q.Failure",
+    "language" : "swift"
+  },
+  "id" : "3FF5BC3D-5C0C-4ED5-9029-A3A68E42CA7D",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Combine",
+  "overview" : "## Return Value\n\nA publisher that receives and combines elements from this publisher and two other publishers.\n\n## Discussion\n\nUse `combineLatest<P, Q>(_:,_:)` to combine the current and two additional publishers and transform them using a closure you specify to publish a new value to the downstream.\n\nThe combined publisher passes through any requests to *all* upstream publishers. However, it still obeys the demand-fulfilling rule of only sending the request amount downstream. If the demand isn’t `.unlimited`, it drops values from upstream publishers. It implements this by using a buffer size of 1 for each upstream, and holds the most-recent value in each buffer. All upstream publishers need to finish for this publisher to finish. If an upstream publisher never publishes a value, this publisher never finishes. If any of the combined publishers terminates with a failure, this publisher also fails.\n\nIn the example below, `combineLatest()` receives the most-recent values published by three publishers, multiplies them together, and republishes the result:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:_:)-6ekpz\ncrawled: 2025-12-05T02:44:50Z\n---\n\n# combineLatest(_:_:_:)\n\n**Instance Method**\n\nSubscribes to two additional publishers and invokes a closure upon receiving output from any of the publishers.\n\n## Declaration\n\n```swift\nfunc combineLatest<P, Q, T>(_ publisher1: P, _ publisher2: Q, _ transform: @escaping (Self.Output, P.Output, Q.Output) -> T) -> Publishers.Map<Publishers.CombineLatest3<Self, P, Q>, T> where P : Publisher, Q : Publisher, Self.Failure == P.Failure, P.Failure == Q.Failure\n```\n\n## Parameters\n\n- **publisher1**: A second publisher to combine with the first publisher.\n- **publisher2**: A third publisher to combine with the first publisher.\n- **transform**: A closure that receives the most-recent value from each publisher and returns a new value to publish.\n\n## Return Value\n\nA publisher that receives and combines elements from this publisher and two other publishers.\n\n## Discussion\n\nUse `combineLatest<P, Q>(_:,_:)` to combine the current and two additional publishers and transform them using a closure you specify to publish a new value to the downstream.\n\n\n\nThe combined publisher passes through any requests to *all* upstream publishers. However, it still obeys the demand-fulfilling rule of only sending the request amount downstream. If the demand isn’t `.unlimited`, it drops values from upstream publishers. It implements this by using a buffer size of 1 for each upstream, and holds the most-recent value in each buffer. All upstream publishers need to finish for this publisher to finish. If an upstream publisher never publishes a value, this publisher never finishes. If any of the combined publishers terminates with a failure, this publisher also fails.\n\nIn the example below, `combineLatest()` receives the most-recent values published by three publishers, multiplies them together, and republishes the result:\n\n```swift\nlet pub = PassthroughSubject<Int, Never>()\nlet pub2 = PassthroughSubject<Int, Never>()\nlet pub3 = PassthroughSubject<Int, Never>()\n\ncancellable = pub\n    .combineLatest(pub2, pub3) { firstValue, secondValue, thirdValue in\n        return firstValue * secondValue * thirdValue\n    }\n    .sink { print(\"Result: \\($0).\") }\n\npub.send(1)\npub.send(2)\npub2.send(2)\npub3.send(10)\n\npub.send(9)\npub3.send(4)\npub2.send(12)\n\n\/\/ Prints:\n\/\/  Result: 40.     \/\/ pub = 2, pub2 = 2, pub3 = 10\n\/\/  Result: 180.    \/\/ pub = 9, pub2 = 2, pub3 = 10\n\/\/  Result: 72.     \/\/ pub = 9, pub2 = 2, pub3 = 4\n\/\/  Result: 432.    \/\/ pub = 9, pub2 = 12, pub3 = 4\n```\n\n## Collecting and republishing the latest elements from multiple publishers\n\n- **combineLatest(_:_:)**: Subscribes to an additional publisher and invokes a closure upon receiving output from either publisher.\n- **combineLatest(_:)**: Subscribes to an additional publisher and publishes a tuple upon receiving output from either publisher.\n- **combineLatest(_:_:)**: Subscribes to two additional publishers and publishes a tuple upon receiving output from any of the publishers.\n- **combineLatest(_:_:_:_:)**: Subscribes to three additional publishers and invokes a closure upon receiving output from any of the publishers.\n- **combineLatest(_:_:_:)**: Subscribes to three additional publishers and publishes a tuple upon receiving output from any of the publishers.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Subscribes to an additional publisher and invokes a closure upon receiving output from either publisher.",
+          "name" : "combineLatest(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:)-1n30g"
+        },
+        {
+          "description" : "Subscribes to an additional publisher and publishes a tuple upon receiving output from either publisher.",
+          "name" : "combineLatest(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:)"
+        },
+        {
+          "description" : "Subscribes to two additional publishers and publishes a tuple upon receiving output from any of the publishers.",
+          "name" : "combineLatest(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:)-5crqg"
+        },
+        {
+          "description" : "Subscribes to three additional publishers and invokes a closure upon receiving output from any of the publishers.",
+          "name" : "combineLatest(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:_:_:)"
+        },
+        {
+          "description" : "Subscribes to three additional publishers and publishes a tuple upon receiving output from any of the publishers.",
+          "name" : "combineLatest(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:_:)-48buc"
+        }
+      ],
+      "title" : "Collecting and republishing the latest elements from multiple publishers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "combineLatest(_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/combineLatest(_:_:_:)-6ekpz"
+}

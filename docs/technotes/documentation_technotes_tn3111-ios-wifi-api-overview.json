@@ -1,0 +1,99 @@
+{
+  "abstract" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "3a4fc677c31778d8a1b825c584704998afa9f57eea8158f6fb732d8d77ae145c",
+  "crawledAt" : "2025-12-05T10:31:39Z",
+  "id" : "46B69057-A9D6-444E-B8B4-5C8223C37CF1",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\niOS does not have a general-purpose API for Wi-Fi scanning and configuration.  However, it does support a wide range of special-purpose Wi-Fi APIs.  This technote lists some use cases supported by those special-purpose APIs.\n\nWhile the focus of this technote is iOS, these APIs are also available on iPadOS.\n\n## Navigate an internet hotspot\n\nIf your app helps the user navigate an internet hotspot — a Wi-Fi network where the user must interact with the network to gain access to the wider internet — adopt the [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/hotspot-helper] API.\n\nTo use `NEHotspotHelper` you must first be granted a special entitlement (`com.apple.developer.networking.HotspotHelper`) by Apple.  For information on how to apply for this, see [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/hotspot-helper].\n\niOS 26 introduced support for hotspot helper app extensions.  Adopt these to improve the efficiency, reliability, and privacy of your hotspot helper app.\n\n## Add an accessory to the user’s network\n\nIf you’re creating a hardware accessory and you want to make it easy for the user to add it to their local network, your best option is to build your accessory with that in mind.  Use one of these approaches:\n\nIf your accessory does not support WAC or HomeKit, you can build an accessory configuration experience on top of `NEHotspotConfigurationManager`, although this will not be as seamless as the WAC and HomeKit accessory experience.  For an example of how you might approach this, see [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/configuring-a-wi-fi-accessory-to-join-a-network].\n\n## Temporarily join a network\n\nIf your app needs to temporarily join a Wi-Fi network — for example, you want to interact with a Wi-Fi enabled accessory with its own independent network — use `NEHotspotConfigurationManager` and set [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEHotspotConfiguration\/joinOnce] to true.  For more details, see [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/wi-fi-configuration].\n\nIf you’re working with a Wi-Fi accessory, use [doc:\/\/com.apple.documentation\/documentation\/AccessorySetupKit] to simplify discovery and configuration of your accessory.\n\n## Permanently join a network\n\nSome apps need to configure the iOS device to permanently join a Wi-Fi network, as if the user had selected the network in Settings > Wi-Fi.  For example, an app from an ISP might do this to get the user’s iOS device on to the Wi-Fi network published by a new DSL gateway that they’ve just installed.  If your app needs to do this, use `NEHotspotConfigurationManager` and set [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEHotspotConfiguration\/joinOnce] to false.  For more details, see [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/wi-fi-configuration].\n\n## Peer-to-peer networking\n\nIf your goal is to communicate with nearby devices and accessories without configuring a Wi-Fi network, you have two options:\n\niOS introduced support for Wi-Fi Aware in iOS 26.  It’s supported on iPhone 12 and later.  See the [doc:\/\/com.apple.documentation\/documentation\/WiFiAware] framework documentation for more details.\n\nWi-Fi Aware is an industry standard specification, opening up the possibility of communicating with non-Apple devices and accessories.\n\nApple peer-to-peer Wi-Fi dates all the way back to iOS 7.  It works on all iOS, iPadOS, macOS, tvOS, and visionOS devices.  For information about networking APIs that support Apple peer-to-peer Wi-Fi, see [doc:\/\/com.apple.documentation\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api].\n\nApple peer-to-peer Wi-Fi is not documented for third-party use, so this mechanism only works between Apple devices.\n\n## Location tracking\n\nIf you’d like to use Wi-Fi data to determine the device’s location, use Core Location.  This locates the device using a wide variety of techniques, including Wi-Fi.  For more information, see [https:\/\/developer.apple.com\/maps\/].\n\n## Current Wi-Fi network\n\nIf you need to know the name of the device’s current Wi-Fi network, call [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEHotspotNetwork\/fetchCurrent(completionHandler:)].  That method requires iOS 14 or later.  On older systems, call [doc:\/\/com.apple.documentation\/documentation\/SystemConfiguration\/CNCopyCurrentNetworkInfo].\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview\ncrawled: 2025-12-05T10:31:39Z\n---\n\n# TN3111: iOS Wi-Fi API overview\n\n**Article**\n\nExplore the various Wi-Fi APIs available on iOS and their expected use cases.\n\n## Overview\n\niOS does not have a general-purpose API for Wi-Fi scanning and configuration.  However, it does support a wide range of special-purpose Wi-Fi APIs.  This technote lists some use cases supported by those special-purpose APIs.\n\nWhile the focus of this technote is iOS, these APIs are also available on iPadOS.\n\n## Navigate an internet hotspot\n\nIf your app helps the user navigate an internet hotspot — a Wi-Fi network where the user must interact with the network to gain access to the wider internet — adopt the [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/hotspot-helper] API.\n\nTo use `NEHotspotHelper` you must first be granted a special entitlement (`com.apple.developer.networking.HotspotHelper`) by Apple.  For information on how to apply for this, see [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/hotspot-helper].\n\n\n\niOS 26 introduced support for hotspot helper app extensions.  Adopt these to improve the efficiency, reliability, and privacy of your hotspot helper app.\n\n## Add an accessory to the user’s network\n\nIf you’re creating a hardware accessory and you want to make it easy for the user to add it to their local network, your best option is to build your accessory with that in mind.  Use one of these approaches:\n\n- Wireless Accessory Configuration (WAC) — The user can configure a WAC-capable accessory directly in Settings.  Optionally, use [doc:\/\/com.apple.documentation\/documentation\/ExternalAccessory\/EAWiFiUnconfiguredAccessoryBrowser] to integrate accessory configuration directly in your app.\n- HomeKit — Call `HMHome` APIs like [doc:\/\/com.apple.documentation\/documentation\/HomeKit\/HMAccessorySetupManager\/performAccessorySetup(using:completionHandler:)] to ask the system to scan for, pair, and configure any unpaired HomeKit accessories .\n\n\n\nIf your accessory does not support WAC or HomeKit, you can build an accessory configuration experience on top of `NEHotspotConfigurationManager`, although this will not be as seamless as the WAC and HomeKit accessory experience.  For an example of how you might approach this, see [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/configuring-a-wi-fi-accessory-to-join-a-network].\n\n## Temporarily join a network\n\nIf your app needs to temporarily join a Wi-Fi network — for example, you want to interact with a Wi-Fi enabled accessory with its own independent network — use `NEHotspotConfigurationManager` and set [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEHotspotConfiguration\/joinOnce] to true.  For more details, see [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/wi-fi-configuration].\n\nIf you’re working with a Wi-Fi accessory, use [doc:\/\/com.apple.documentation\/documentation\/AccessorySetupKit] to simplify discovery and configuration of your accessory.\n\n## Permanently join a network\n\nSome apps need to configure the iOS device to permanently join a Wi-Fi network, as if the user had selected the network in Settings > Wi-Fi.  For example, an app from an ISP might do this to get the user’s iOS device on to the Wi-Fi network published by a new DSL gateway that they’ve just installed.  If your app needs to do this, use `NEHotspotConfigurationManager` and set [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEHotspotConfiguration\/joinOnce] to false.  For more details, see [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/wi-fi-configuration].\n\n## Peer-to-peer networking\n\nIf your goal is to communicate with nearby devices and accessories without configuring a Wi-Fi network, you have two options:\n\n- Wi-Fi Aware™ (also known as Neighbor Awareness Networking or NAN)\n- Apple peer-to-peer Wi-Fi\n\niOS introduced support for Wi-Fi Aware in iOS 26.  It’s supported on iPhone 12 and later.  See the [doc:\/\/com.apple.documentation\/documentation\/WiFiAware] framework documentation for more details.\n\nWi-Fi Aware is an industry standard specification, opening up the possibility of communicating with non-Apple devices and accessories.\n\nApple peer-to-peer Wi-Fi dates all the way back to iOS 7.  It works on all iOS, iPadOS, macOS, tvOS, and visionOS devices.  For information about networking APIs that support Apple peer-to-peer Wi-Fi, see [doc:\/\/com.apple.documentation\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api].\n\n\n\nApple peer-to-peer Wi-Fi is not documented for third-party use, so this mechanism only works between Apple devices.\n\n## Location tracking\n\nIf you’d like to use Wi-Fi data to determine the device’s location, use Core Location.  This locates the device using a wide variety of techniques, including Wi-Fi.  For more information, see [https:\/\/developer.apple.com\/maps\/].\n\n## Current Wi-Fi network\n\nIf you need to know the name of the device’s current Wi-Fi network, call [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEHotspotNetwork\/fetchCurrent(completionHandler:)].  That method requires iOS 14 or later.  On older systems, call [doc:\/\/com.apple.documentation\/documentation\/SystemConfiguration\/CNCopyCurrentNetworkInfo].\n\n## Revision History\n\n- **2025-08-29** Added information about hotspot helper app extensions and Wi-Fi Aware, both new in iOS 26.\n- **2024-09-24** Added information about AccessorySetupKit.  Added a link to TN3151.  Made other minor editorial changes.\n- **2022-05-24** Made minor editorial changes.\n- **2022-02-08** Republished as TN3111.  Broke the content into task-focused sections.  Added a link to [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/configuring-a-wi-fi-accessory-to-join-a-network].  Added a reference to [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEHotspotNetwork\/fetchCurrent(completionHandler:)].  Updated the text for the new publication platform.\n- **2017-08-14** Added information about `NEHotspotConfigurationManager`.\n- **2016-11-16** First published as QA1942 ”iOS Wi-Fi Management APIs”.\n\n## Latest\n\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n- **TN3182: Adding privacy tracking keys to your privacy manifest**: Declare the tracking domains you use in your app or third-party SDK in a privacy manifest.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        },
+        {
+          "description" : "Declare the tracking domains you use in your app or third-party SDK in a privacy manifest.",
+          "name" : "TN3182: Adding privacy tracking keys to your privacy manifest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3182-adding-privacy-tracking-keys-to-your-privacy-manifest"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3111: iOS Wi-Fi API overview",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+}

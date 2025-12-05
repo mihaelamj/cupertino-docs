@@ -1,0 +1,485 @@
+{
+  "abstract" : "An object that contains zero or more media samples of a uniform media type.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "0b00ddea741b854f957150b95d8bdccd13f09c9d0925b6cede9f6f3542ec618e",
+  "crawledAt" : "2025-12-05T21:03:55Z",
+  "id" : "9A670027-6E4D-4670-B842-97BB3500A1DF",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Core Media",
+  "overview" : "## Overview\n\nSample buffers are Core Foundation objects that the system uses to move media sample data through the media pipeline. An instance of `CMSampleBuffer` contains zero or more compressed (or uncompressed) samples of a particular media type and contains one of the following:\n\nA sample buffer can contain both sample-level and buffer-level attachments. Each individual sample in a buffer may provide attachments that include information such as timestamps and video frame dependencies. You read and write sample-level attachments using the [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/CMSampleBufferGetSampleAttachmentsArray(_:createIfNecessary:)] function. Buffer-level attachments provide information about the buffer as a whole, such as playback speed and actions to perform upon consuming the buffer. You can read and write buffer-level attachments using the APIs described in [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/cmattachment-api] and the keys listed under [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/sample-attachment-keys].\n\nIt’s possible for a sample buffer to describe samples it doesn’t yet contain. For example, some media services may have access to sample size, timing, and format information before they read the data. Such services may create sample buffers with that information and insert them into queues early, and attach (or fill) the buffer of media data later, when it becomes ready. Sample buffers have the concept of data-readiness, which means you can test, set, and force them to become ready “now.” It’s also possible for a sample buffer to contain nothing but a special buffer-level attachment that describes a media stream event (for example, “discontinuity: drain and reset decoder before processing the next `CMSampleBuffer`”).",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/coremedia\/cmsamplebuffer-api\ncrawled: 2025-12-05T21:03:55Z\n---\n\n# CMSampleBuffer\n\n**API Collection**\n\nAn object that contains zero or more media samples of a uniform media type.\n\n## Overview\n\nSample buffers are Core Foundation objects that the system uses to move media sample data through the media pipeline. An instance of `CMSampleBuffer` contains zero or more compressed (or uncompressed) samples of a particular media type and contains one of the following:\n\n- A [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/CMBlockBuffer] of one or more media samples\n- A [doc:\/\/com.apple.documentation\/documentation\/CoreVideo\/cvimagebuffer-q40], a reference to the format description for the stream of `CMSampleBuffers`, size and timing information for each of the contained media samples, and both buffer-level and sample-level attachments\n\nA sample buffer can contain both sample-level and buffer-level attachments. Each individual sample in a buffer may provide attachments that include information such as timestamps and video frame dependencies. You read and write sample-level attachments using the [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/CMSampleBufferGetSampleAttachmentsArray(_:createIfNecessary:)] function. Buffer-level attachments provide information about the buffer as a whole, such as playback speed and actions to perform upon consuming the buffer. You can read and write buffer-level attachments using the APIs described in [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/cmattachment-api] and the keys listed under [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/sample-attachment-keys].\n\nIt’s possible for a sample buffer to describe samples it doesn’t yet contain. For example, some media services may have access to sample size, timing, and format information before they read the data. Such services may create sample buffers with that information and insert them into queues early, and attach (or fill) the buffer of media data later, when it becomes ready. Sample buffers have the concept of data-readiness, which means you can test, set, and force them to become ready “now.” It’s also possible for a sample buffer to contain nothing but a special buffer-level attachment that describes a media stream event (for example, “discontinuity: drain and reset decoder before processing the next `CMSampleBuffer`”).\n\n## Creating Sample Buffers\n\n- **CMSampleBufferCreateReady(allocator:dataBuffer:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)**: Creates a sample buffer with media data.\n- **CMSampleBufferCreateReadyWithImageBuffer(allocator:imageBuffer:formatDescription:sampleTiming:sampleBufferOut:)**: Creates a sample buffer with image data.\n- **CMAudioSampleBufferCreateReadyWithPacketDescriptions(allocator:dataBuffer:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)**: Creates a sample buffer with packet descriptions.\n- **CMSampleBufferCreateWithMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:_:_:)**: Creates a sample buffer with a handler to make the data ready for use.\n- **CMSampleBufferCreateForImageBufferWithMakeDataReadyHandler(_:_:_:_:_:_:_:)**: Creates a sample buffer with an image buffer and a handler to make the data ready for use.\n- **CMAudioSampleBufferCreateWithPacketDescriptionsAndMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:)**: Creates a sample buffer with packet descriptions and a handler to make the data ready for use.\n- **CMSampleBufferCreate(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)**: Creates a sample buffer with a callback to make the data ready for use.\n- **CMSampleBufferCreateForImageBuffer(allocator:imageBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleTiming:sampleBufferOut:)**: Creates a sample buffer with an image buffer and a callback to make the data ready for use.\n- **CMAudioSampleBufferCreateWithPacketDescriptions(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)**: Creates a sample buffer with packet descriptions and a callback to make the data ready for use.\n\n## Copying Sample Buffers\n\n- **CMSampleBufferCreateCopy(allocator:sampleBuffer:sampleBufferOut:)**: Creates a copy of a sample buffer.\n- **CMSampleBufferCreateCopyWithNewTiming(allocator:sampleBuffer:sampleTimingEntryCount:sampleTimingArray:sampleBufferOut:)**: Creates a copy of a sample buffer with new timing information.\n- **CMSampleBufferCopySampleBufferForRange(allocator:sampleBuffer:sampleRange:sampleBufferOut:)**: Creates a sample buffer that contains a range of samples from an existing sample buffer.\n\n## Determining Readiness\n\n- **CMSampleBufferDataIsReady(_:)**: Returns a Boolean value that indicates whether the sample buffer’s data is ready for use.\n- **CMSampleBufferSetDataReady(_:)**: Marks a sample buffer’s data as ready for use.\n- **CMSampleBufferSetDataFailed(_:status:)**: Marks the sample buffer’s data as failed to indicate that it won’t become ready.\n- **CMSampleBufferHasDataFailed(_:statusOut:)**: Returns a Boolean value that indicates whether the sample buffer’s data loading request failed.\n- **CMSampleBufferMakeDataReady(_:)**: Makes the sample buffer’s data ready for use by invoking its callback to load the data.\n- **CMSampleBufferTrackDataReadiness(_:sampleBufferToTrack:)**: Associates a sample buffer’s data readiness with that of another sample buffer.\n\n## Invalidating Sample Buffers\n\n- **CMSampleBufferSetInvalidateHandler(_:invalidateHandler:)**: Sets the sample buffer’s invalidation handler.\n- **CMSampleBufferInvalidate(_:)**: Invalidates a sample buffer by calling its invalidation callback.\n- **CMSampleBufferIsValid(_:)**: Returns a Boolean value that indicates whether a sample buffer is valid.\n- **CMSampleBufferSetInvalidateCallback(_:callback:refcon:)**: Sets the sample buffer’s invalidation callback.\n\n## Inspecting Size Information\n\n- **CMSampleBufferGetNumSamples(_:)**: Returns the number of media samples in a sample buffer.\n- **CMSampleBufferGetTotalSampleSize(_:)**: Returns the total size in bytes of sample data in a sample buffer.\n- **CMSampleBufferGetSampleSize(_:at:)**: Returns the size in bytes of a specified sample in a sample buffer.\n- **CMSampleBufferGetSampleSizeArray(_:entryCount:arrayToFill:entriesNeededOut:)**: Retrieves an array of sample sizes that represents each sample in a sample buffer.\n\n## Inspecting Duration and Timing\n\n- **CMSampleBufferGetDuration(_:)**: Returns the total duration of a sample buffer.\n- **CMSampleBufferGetDecodeTimeStamp(_:)**: Returns the decode timestamp that’s the earliest numerically of all the samples in a sample buffer.\n- **CMSampleBufferGetPresentationTimeStamp(_:)**: Returns the presentation timestamp that’s the earliest numerically of all the samples in a sample buffer.\n- **CMSampleBufferGetOutputDuration(_:)**: Returns the output duration of a sample buffer.\n- **CMSampleBufferGetOutputDecodeTimeStamp(_:)**: Returns the output decode timestamp of a sample buffer.\n- **CMSampleBufferGetOutputPresentationTimeStamp(_:)**: Returns the output presentation timestamp of a sample buffer.\n- **CMSampleBufferSetOutputPresentationTimeStamp(_:newValue:)**: Sets an output presentation timestamp to use in place of a calculated value.\n- **CMSampleBufferGetSampleTimingInfo(_:at:timingInfoOut:)**: Retrieves a timing information structure that describes a specified sample in a sample buffer.\n- **CMSampleBufferGetSampleTimingInfoArray(_:entryCount:arrayToFill:entriesNeededOut:)**: Retrieves an array of sample timing information structures that represents each sample in a sample buffer.\n- **CMSampleBufferGetOutputSampleTimingInfoArray(_:entryCount:arrayToFill:entriesNeededOut:)**: Retrieves an array of output timing information structures that represents each sample in a sample buffer.\n\n## Accessing the Format Description\n\n- **CMSampleBufferGetFormatDescription(_:)**: Returns the format description of the samples in a sample buffer.\n\n## Modifying Sample Buffers\n\n- **CMSampleBufferGetDataBuffer(_:)**: Returns a block buffer that contains the media data.\n- **CMSampleBufferSetDataBuffer(_:newValue:)**: Sets a block buffer of media data on a sample buffer.\n- **CMSampleBufferGetImageBuffer(_:)**: Returns an image buffer that contains the media data.\n- **CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(_:bufferListSizeNeededOut:bufferListOut:bufferListSize:blockBufferAllocator:blockBufferMemoryAllocator:flags:blockBufferOut:)**: Returns an audio buffer list that contains the media data.\n- **CMSampleBufferSetDataBufferFromAudioBufferList(_:blockBufferAllocator:blockBufferMemoryAllocator:flags:bufferList:)**: Creates a block buffer that contains a copy of the data from an audio buffer list.\n- **CMSampleBufferCopyPCMDataIntoAudioBufferList(_:at:frameCount:into:)**: Copies PCM audio data from a sample buffer into an audio buffer list.\n- **CMSampleBufferGetAudioStreamPacketDescriptions(_:allocatedSize:packetDescriptionsOut:packetDescriptionsSizeNeededOut:)**: Creates an array of audio stream packet descriptions.\n- **CMSampleBufferGetAudioStreamPacketDescriptionsPtr(_:packetDescriptionsPointerOut:sizeOut:)**: Returns a pointer to a constant array of audio stream packet descriptions.\n\n## Managing Attachments\n\n- **CMSampleBufferGetSampleAttachmentsArray(_:createIfNecessary:)**: Retrieves an array of sample attachment dictionaries that represents each sample in a sample buffer.\n- **Sample Attachment Keys**: Keys that specify attachments to individual samples in a buffer.\n\n## Processing Samples\n\n- **CMSampleBufferCallBlockForEachSample(_:_:)**: Calls a block for every individual sample in a sample buffer.\n- **CMSampleBufferCallForEachSample(_:callback:refcon:)**: Calls a function for every individual sample in a sample buffer.\n\n## Accessing the Type Identifier\n\n- **CMSampleBufferGetTypeID()**: Returns the type identifier of sample buffer objects.\n\n## Data Types\n\n- **CMSampleBuffer**: A reference to a buffer of media data.\n- **Sample Buffer Flags**: Flags that customize the behavior of framework operations.\n- **CMSampleTimingInfo**: A collection of timing information for a sample in a sample buffer.\n- **CMBuffer**: A reference to a buffer object.\n- **CMBufferGetSizeCallback**: A client callback that returns a size.\n- **CMItemIndex**: A datatype that represents an item index.\n- **CMItemCount**: A datatype that represents an item count.\n- **CMPersistentTrackID**: A datatype that represents a persistent track identifier.\n- **CMMuxedStreamType**: A datatype that represents a muxed stream of data.\n\n## Notifications\n\n- **Sample Buffer Notifications**: Notifications the system posts when processing sample buffer objects.\n\n## Errors\n\n- **Sample Buffer Error Codes**: Errors that occur when processing sample buffer objects.\n- **kCMPersistentTrackID_Invalid**: Indicates an invalid track ID.\n\n## Functions\n\n- **CMTimeFoldIntoRange(_:foldRange:)**: Folds a time into a time range.\n- **CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(_:parameterSetIndex:parameterSetPointerOut:parameterSetSizeOut:parameterSetCountOut:nalUnitHeaderLengthOut:)**: Returns a parameter set contained in an HEVC (H.265) format description.\n\n## Sample Processing\n\n- **CMBlockBuffer**: An object the system uses to move blocks of memory through a processing system.\n- **CMTaggedBufferGroup**: Objective-C types and interfaces for working with Core Media tagged buffer groups.\n- **CMFormatDescription**: A media format descriptor that describes the samples in a sample buffer.\n- **CMAttachment**: Add supporting metadata to sample buffers.\n- **CMTaggedBuffer**: An instance of a media buffer containing metadata tags.\n- **CMMutableDataBlockBuffer**: A block buffer that provides read-write access to a range of bytes.\n- **CMReadOnlyDataBlockBuffer**: A block buffer that provides read-only access to the a range of bytes.\n- **CMReadySampleBuffer**: Buffer carrying readily available samples of media data.\n- **CMSampleDataReference**: References sample data in at a URL.\n- **CMTaggedDynamicBuffer**: Contains a collection of tags associated with a read-only media buffer.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a sample buffer with media data.",
+          "name" : "CMSampleBufferCreateReady(allocator:dataBuffer:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateReady(allocator:dataBuffer:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a sample buffer with image data.",
+          "name" : "CMSampleBufferCreateReadyWithImageBuffer(allocator:imageBuffer:formatDescription:sampleTiming:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateReadyWithImageBuffer(allocator:imageBuffer:formatDescription:sampleTiming:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a sample buffer with packet descriptions.",
+          "name" : "CMAudioSampleBufferCreateReadyWithPacketDescriptions(allocator:dataBuffer:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMAudioSampleBufferCreateReadyWithPacketDescriptions(allocator:dataBuffer:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a sample buffer with a handler to make the data ready for use.",
+          "name" : "CMSampleBufferCreateWithMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateWithMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Creates a sample buffer with an image buffer and a handler to make the data ready for use.",
+          "name" : "CMSampleBufferCreateForImageBufferWithMakeDataReadyHandler(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateForImageBufferWithMakeDataReadyHandler(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Creates a sample buffer with packet descriptions and a handler to make the data ready for use.",
+          "name" : "CMAudioSampleBufferCreateWithPacketDescriptionsAndMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMAudioSampleBufferCreateWithPacketDescriptionsAndMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Creates a sample buffer with a callback to make the data ready for use.",
+          "name" : "CMSampleBufferCreate(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreate(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a sample buffer with an image buffer and a callback to make the data ready for use.",
+          "name" : "CMSampleBufferCreateForImageBuffer(allocator:imageBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleTiming:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateForImageBuffer(allocator:imageBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleTiming:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a sample buffer with packet descriptions and a callback to make the data ready for use.",
+          "name" : "CMAudioSampleBufferCreateWithPacketDescriptions(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMAudioSampleBufferCreateWithPacketDescriptions(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)"
+        }
+      ],
+      "title" : "Creating Sample Buffers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a copy of a sample buffer.",
+          "name" : "CMSampleBufferCreateCopy(allocator:sampleBuffer:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateCopy(allocator:sampleBuffer:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a copy of a sample buffer with new timing information.",
+          "name" : "CMSampleBufferCreateCopyWithNewTiming(allocator:sampleBuffer:sampleTimingEntryCount:sampleTimingArray:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateCopyWithNewTiming(allocator:sampleBuffer:sampleTimingEntryCount:sampleTimingArray:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a sample buffer that contains a range of samples from an existing sample buffer.",
+          "name" : "CMSampleBufferCopySampleBufferForRange(allocator:sampleBuffer:sampleRange:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCopySampleBufferForRange(allocator:sampleBuffer:sampleRange:sampleBufferOut:)"
+        }
+      ],
+      "title" : "Copying Sample Buffers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value that indicates whether the sample buffer’s data is ready for use.",
+          "name" : "CMSampleBufferDataIsReady(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferDataIsReady(_:)"
+        },
+        {
+          "description" : "Marks a sample buffer’s data as ready for use.",
+          "name" : "CMSampleBufferSetDataReady(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferSetDataReady(_:)"
+        },
+        {
+          "description" : "Marks the sample buffer’s data as failed to indicate that it won’t become ready.",
+          "name" : "CMSampleBufferSetDataFailed(_:status:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferSetDataFailed(_:status:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether the sample buffer’s data loading request failed.",
+          "name" : "CMSampleBufferHasDataFailed(_:statusOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferHasDataFailed(_:statusOut:)"
+        },
+        {
+          "description" : "Makes the sample buffer’s data ready for use by invoking its callback to load the data.",
+          "name" : "CMSampleBufferMakeDataReady(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferMakeDataReady(_:)"
+        },
+        {
+          "description" : "Associates a sample buffer’s data readiness with that of another sample buffer.",
+          "name" : "CMSampleBufferTrackDataReadiness(_:sampleBufferToTrack:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferTrackDataReadiness(_:sampleBufferToTrack:)"
+        }
+      ],
+      "title" : "Determining Readiness"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the sample buffer’s invalidation handler.",
+          "name" : "CMSampleBufferSetInvalidateHandler(_:invalidateHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferSetInvalidateHandler(_:invalidateHandler:)"
+        },
+        {
+          "description" : "Invalidates a sample buffer by calling its invalidation callback.",
+          "name" : "CMSampleBufferInvalidate(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferInvalidate(_:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether a sample buffer is valid.",
+          "name" : "CMSampleBufferIsValid(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferIsValid(_:)"
+        },
+        {
+          "description" : "Sets the sample buffer’s invalidation callback.",
+          "name" : "CMSampleBufferSetInvalidateCallback(_:callback:refcon:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferSetInvalidateCallback(_:callback:refcon:)"
+        }
+      ],
+      "title" : "Invalidating Sample Buffers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the number of media samples in a sample buffer.",
+          "name" : "CMSampleBufferGetNumSamples(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetNumSamples(_:)"
+        },
+        {
+          "description" : "Returns the total size in bytes of sample data in a sample buffer.",
+          "name" : "CMSampleBufferGetTotalSampleSize(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetTotalSampleSize(_:)"
+        },
+        {
+          "description" : "Returns the size in bytes of a specified sample in a sample buffer.",
+          "name" : "CMSampleBufferGetSampleSize(_:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetSampleSize(_:at:)"
+        },
+        {
+          "description" : "Retrieves an array of sample sizes that represents each sample in a sample buffer.",
+          "name" : "CMSampleBufferGetSampleSizeArray(_:entryCount:arrayToFill:entriesNeededOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetSampleSizeArray(_:entryCount:arrayToFill:entriesNeededOut:)"
+        }
+      ],
+      "title" : "Inspecting Size Information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the total duration of a sample buffer.",
+          "name" : "CMSampleBufferGetDuration(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetDuration(_:)"
+        },
+        {
+          "description" : "Returns the decode timestamp that’s the earliest numerically of all the samples in a sample buffer.",
+          "name" : "CMSampleBufferGetDecodeTimeStamp(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetDecodeTimeStamp(_:)"
+        },
+        {
+          "description" : "Returns the presentation timestamp that’s the earliest numerically of all the samples in a sample buffer.",
+          "name" : "CMSampleBufferGetPresentationTimeStamp(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetPresentationTimeStamp(_:)"
+        },
+        {
+          "description" : "Returns the output duration of a sample buffer.",
+          "name" : "CMSampleBufferGetOutputDuration(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetOutputDuration(_:)"
+        },
+        {
+          "description" : "Returns the output decode timestamp of a sample buffer.",
+          "name" : "CMSampleBufferGetOutputDecodeTimeStamp(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetOutputDecodeTimeStamp(_:)"
+        },
+        {
+          "description" : "Returns the output presentation timestamp of a sample buffer.",
+          "name" : "CMSampleBufferGetOutputPresentationTimeStamp(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetOutputPresentationTimeStamp(_:)"
+        },
+        {
+          "description" : "Sets an output presentation timestamp to use in place of a calculated value.",
+          "name" : "CMSampleBufferSetOutputPresentationTimeStamp(_:newValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferSetOutputPresentationTimeStamp(_:newValue:)"
+        },
+        {
+          "description" : "Retrieves a timing information structure that describes a specified sample in a sample buffer.",
+          "name" : "CMSampleBufferGetSampleTimingInfo(_:at:timingInfoOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetSampleTimingInfo(_:at:timingInfoOut:)"
+        },
+        {
+          "description" : "Retrieves an array of sample timing information structures that represents each sample in a sample buffer.",
+          "name" : "CMSampleBufferGetSampleTimingInfoArray(_:entryCount:arrayToFill:entriesNeededOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetSampleTimingInfoArray(_:entryCount:arrayToFill:entriesNeededOut:)"
+        },
+        {
+          "description" : "Retrieves an array of output timing information structures that represents each sample in a sample buffer.",
+          "name" : "CMSampleBufferGetOutputSampleTimingInfoArray(_:entryCount:arrayToFill:entriesNeededOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetOutputSampleTimingInfoArray(_:entryCount:arrayToFill:entriesNeededOut:)"
+        }
+      ],
+      "title" : "Inspecting Duration and Timing"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the format description of the samples in a sample buffer.",
+          "name" : "CMSampleBufferGetFormatDescription(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetFormatDescription(_:)"
+        }
+      ],
+      "title" : "Accessing the Format Description"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a block buffer that contains the media data.",
+          "name" : "CMSampleBufferGetDataBuffer(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetDataBuffer(_:)"
+        },
+        {
+          "description" : "Sets a block buffer of media data on a sample buffer.",
+          "name" : "CMSampleBufferSetDataBuffer(_:newValue:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferSetDataBuffer(_:newValue:)"
+        },
+        {
+          "description" : "Returns an image buffer that contains the media data.",
+          "name" : "CMSampleBufferGetImageBuffer(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetImageBuffer(_:)"
+        },
+        {
+          "description" : "Returns an audio buffer list that contains the media data.",
+          "name" : "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(_:bufferListSizeNeededOut:bufferListOut:bufferListSize:blockBufferAllocator:blockBufferMemoryAllocator:flags:blockBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(_:bufferListSizeNeededOut:bufferListOut:bufferListSize:blockBufferAllocator:blockBufferMemoryAllocator:flags:blockBufferOut:)"
+        },
+        {
+          "description" : "Creates a block buffer that contains a copy of the data from an audio buffer list.",
+          "name" : "CMSampleBufferSetDataBufferFromAudioBufferList(_:blockBufferAllocator:blockBufferMemoryAllocator:flags:bufferList:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferSetDataBufferFromAudioBufferList(_:blockBufferAllocator:blockBufferMemoryAllocator:flags:bufferList:)"
+        },
+        {
+          "description" : "Copies PCM audio data from a sample buffer into an audio buffer list.",
+          "name" : "CMSampleBufferCopyPCMDataIntoAudioBufferList(_:at:frameCount:into:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCopyPCMDataIntoAudioBufferList(_:at:frameCount:into:)"
+        },
+        {
+          "description" : "Creates an array of audio stream packet descriptions.",
+          "name" : "CMSampleBufferGetAudioStreamPacketDescriptions(_:allocatedSize:packetDescriptionsOut:packetDescriptionsSizeNeededOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetAudioStreamPacketDescriptions(_:allocatedSize:packetDescriptionsOut:packetDescriptionsSizeNeededOut:)"
+        },
+        {
+          "description" : "Returns a pointer to a constant array of audio stream packet descriptions.",
+          "name" : "CMSampleBufferGetAudioStreamPacketDescriptionsPtr(_:packetDescriptionsPointerOut:sizeOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetAudioStreamPacketDescriptionsPtr(_:packetDescriptionsPointerOut:sizeOut:)"
+        }
+      ],
+      "title" : "Modifying Sample Buffers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Retrieves an array of sample attachment dictionaries that represents each sample in a sample buffer.",
+          "name" : "CMSampleBufferGetSampleAttachmentsArray(_:createIfNecessary:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetSampleAttachmentsArray(_:createIfNecessary:)"
+        },
+        {
+          "description" : "Keys that specify attachments to individual samples in a buffer.",
+          "name" : "Sample Attachment Keys",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/sample-attachment-keys"
+        }
+      ],
+      "title" : "Managing Attachments"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Calls a block for every individual sample in a sample buffer.",
+          "name" : "CMSampleBufferCallBlockForEachSample(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCallBlockForEachSample(_:_:)"
+        },
+        {
+          "description" : "Calls a function for every individual sample in a sample buffer.",
+          "name" : "CMSampleBufferCallForEachSample(_:callback:refcon:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCallForEachSample(_:callback:refcon:)"
+        }
+      ],
+      "title" : "Processing Samples"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the type identifier of sample buffer objects.",
+          "name" : "CMSampleBufferGetTypeID()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferGetTypeID()"
+        }
+      ],
+      "title" : "Accessing the Type Identifier"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A reference to a buffer of media data.",
+          "name" : "CMSampleBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBuffer"
+        },
+        {
+          "description" : "Flags that customize the behavior of framework operations.",
+          "name" : "Sample Buffer Flags",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/sample-buffer-flags"
+        },
+        {
+          "description" : "A collection of timing information for a sample in a sample buffer.",
+          "name" : "CMSampleTimingInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleTimingInfo"
+        },
+        {
+          "description" : "A reference to a buffer object.",
+          "name" : "CMBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMBuffer"
+        },
+        {
+          "description" : "A client callback that returns a size.",
+          "name" : "CMBufferGetSizeCallback",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMBufferGetSizeCallback"
+        },
+        {
+          "description" : "A datatype that represents an item index.",
+          "name" : "CMItemIndex",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMItemIndex"
+        },
+        {
+          "description" : "A datatype that represents an item count.",
+          "name" : "CMItemCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMItemCount"
+        },
+        {
+          "description" : "A datatype that represents a persistent track identifier.",
+          "name" : "CMPersistentTrackID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMPersistentTrackID"
+        },
+        {
+          "description" : "A datatype that represents a muxed stream of data.",
+          "name" : "CMMuxedStreamType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMMuxedStreamType"
+        }
+      ],
+      "title" : "Data Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Notifications the system posts when processing sample buffer objects.",
+          "name" : "Sample Buffer Notifications",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/sample-buffer-notifications"
+        }
+      ],
+      "title" : "Notifications"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Errors that occur when processing sample buffer objects.",
+          "name" : "Sample Buffer Error Codes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/sample-buffer-errors"
+        },
+        {
+          "description" : "Indicates an invalid track ID.",
+          "name" : "kCMPersistentTrackID_Invalid",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/kCMPersistentTrackID_Invalid"
+        }
+      ],
+      "title" : "Errors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Folds a time into a time range.",
+          "name" : "CMTimeFoldIntoRange(_:foldRange:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMTimeFoldIntoRange(_:foldRange:)"
+        },
+        {
+          "description" : "Returns a parameter set contained in an HEVC (H.265) format description.",
+          "name" : "CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(_:parameterSetIndex:parameterSetPointerOut:parameterSetSizeOut:parameterSetCountOut:nalUnitHeaderLengthOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(_:parameterSetIndex:parameterSetPointerOut:parameterSetSizeOut:parameterSetCountOut:nalUnitHeaderLengthOut:)"
+        }
+      ],
+      "title" : "Functions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object the system uses to move blocks of memory through a processing system.",
+          "name" : "CMBlockBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/cmblockbuffer-api"
+        },
+        {
+          "description" : "Objective-C types and interfaces for working with Core Media tagged buffer groups.",
+          "name" : "CMTaggedBufferGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/cmtaggedbuffergroup"
+        },
+        {
+          "description" : "A media format descriptor that describes the samples in a sample buffer.",
+          "name" : "CMFormatDescription",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/cmformatdescription-api"
+        },
+        {
+          "description" : "Add supporting metadata to sample buffers.",
+          "name" : "CMAttachment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/cmattachment-api"
+        },
+        {
+          "description" : "An instance of a media buffer containing metadata tags.",
+          "name" : "CMTaggedBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMTaggedBuffer"
+        },
+        {
+          "description" : "A block buffer that provides read-write access to a range of bytes.",
+          "name" : "CMMutableDataBlockBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMMutableDataBlockBuffer"
+        },
+        {
+          "description" : "A block buffer that provides read-only access to the a range of bytes.",
+          "name" : "CMReadOnlyDataBlockBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMReadOnlyDataBlockBuffer"
+        },
+        {
+          "description" : "Buffer carrying readily available samples of media data.",
+          "name" : "CMReadySampleBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMReadySampleBuffer"
+        },
+        {
+          "description" : "References sample data in at a URL.",
+          "name" : "CMSampleDataReference",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleDataReference"
+        },
+        {
+          "description" : "Contains a collection of tags associated with a read-only media buffer.",
+          "name" : "CMTaggedDynamicBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMTaggedDynamicBuffer"
+        }
+      ],
+      "title" : "Sample Processing"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "CMSampleBuffer",
+  "url" : "https:\/\/developer.apple.com\/documentation\/coremedia\/cmsamplebuffer-api"
+}

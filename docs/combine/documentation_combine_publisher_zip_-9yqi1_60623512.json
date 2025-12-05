@@ -1,0 +1,66 @@
+{
+  "abstract" : "Combines elements from two other publishers and delivers a transformed output.",
+  "codeExamples" : [
+    {
+      "code" : "let numbersPub = PassthroughSubject<Int, Never>()\nlet lettersPub = PassthroughSubject<String, Never>()\nlet emojiPub = PassthroughSubject<String, Never>()\n\ncancellable = numbersPub\n    .zip(letters, emoji) { anInt, aLetter, anEmoji in\n        (\"\\(String(repeating: anEmoji, count: anInt)) \\(String(repeating: aLetter, count: anInt))\")\n    }\n    .sink { print(\"\\($0)\") }\n\nnumbersPub.send(1)     \/\/ numbersPub: 1      lettersPub:        emojiPub:            zip output: <none>\nnumbersPub.send(2)     \/\/ numbersPub: 1,2    lettersPub:        emojiPub:            zip output: <none>\nnumbersPub.send(3)     \/\/ numbersPub: 1,2,3  lettersPub:        emojiPub:            zip output: <none>\nlettersPub.send(\"A\")   \/\/ numbersPub: 1,2,3  lettersPub: \"A\"    emojiPub:            zip output: <none>\nemojiPub.send(\"😀\")    \/\/ numbersPub: 2,3    lettersPub: \"A\"    emojiPub:\"😀\"        zip output: \"😀 A\"\nlettersPub.send(\"B\")   \/\/ numbersPub: 2,3    lettersPub: \"B\"    emojiPub:            zip output: <none>\nemojiPub.send(\"🥰\")    \/\/ numbersPub: 3      lettersPub:        emojiPub:\"😀\", \"🥰\"  zip output: \"🥰🥰 BB\"\n\n\/\/ Prints:\n\/\/ 😀 A\n\/\/ 🥰🥰 BB",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "01de0203a46b96aa3dc6429041885093ce0ae9b33c4405c7288d3427842d7582",
+  "crawledAt" : "2025-12-05T02:45:00Z",
+  "declaration" : {
+    "code" : "func zip<P, Q, T>(_ publisher1: P, _ publisher2: Q, _ transform: @escaping (Self.Output, P.Output, Q.Output) -> T) -> Publishers.Map<Publishers.Zip3<Self, P, Q>, T> where P : Publisher, Q : Publisher, Self.Failure == P.Failure, P.Failure == Q.Failure",
+    "language" : "swift"
+  },
+  "id" : "D57A2147-9A59-4901-B994-D2BD5A8A5EB6",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Combine",
+  "overview" : "## Return Value\n\nA publisher that uses the `transform` closure to emit new elements, produced by combining the most recent value from three upstream publishers.\n\n## Discussion\n\nUse [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/zip(_:_:_:)-9yqi1] to return a new publisher that combines the elements from two other publishers using a transformation you specify to publish a new value to the downstream subscriber. The returned publisher waits until all three publishers have emitted an event, then delivers the oldest unconsumed event from each publisher together that the operator uses in the transformation.\n\nIn this example, `numbersPub`, `lettersPub` and `emojiPub` are each a [doc:\/\/com.apple.Combine\/documentation\/Combine\/PassthroughSubject] that emit values; [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/zip(_:_:_:)-9yqi1] receives the oldest value from each publisher and uses the `Int` from `numbersPub` and publishes a string that repeats the [doc:\/\/com.apple.documentation\/documentation\/Swift\/String] from `lettersPub` and `emojiPub` that many times.\n\nIf any upstream publisher finishes successfully or fails with an error, so too does the zipped publisher.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:_:)-9yqi1\ncrawled: 2025-12-05T02:45:00Z\n---\n\n# zip(_:_:_:)\n\n**Instance Method**\n\nCombines elements from two other publishers and delivers a transformed output.\n\n## Declaration\n\n```swift\nfunc zip<P, Q, T>(_ publisher1: P, _ publisher2: Q, _ transform: @escaping (Self.Output, P.Output, Q.Output) -> T) -> Publishers.Map<Publishers.Zip3<Self, P, Q>, T> where P : Publisher, Q : Publisher, Self.Failure == P.Failure, P.Failure == Q.Failure\n```\n\n## Parameters\n\n- **publisher1**: A second publisher.\n- **publisher2**: A third publisher.\n- **transform**: A closure that receives the most-recent value from each publisher and returns a new value to publish.\n\n## Return Value\n\nA publisher that uses the `transform` closure to emit new elements, produced by combining the most recent value from three upstream publishers.\n\n## Discussion\n\nUse [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/zip(_:_:_:)-9yqi1] to return a new publisher that combines the elements from two other publishers using a transformation you specify to publish a new value to the downstream subscriber. The returned publisher waits until all three publishers have emitted an event, then delivers the oldest unconsumed event from each publisher together that the operator uses in the transformation.\n\nIn this example, `numbersPub`, `lettersPub` and `emojiPub` are each a [doc:\/\/com.apple.Combine\/documentation\/Combine\/PassthroughSubject] that emit values; [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/zip(_:_:_:)-9yqi1] receives the oldest value from each publisher and uses the `Int` from `numbersPub` and publishes a string that repeats the [doc:\/\/com.apple.documentation\/documentation\/Swift\/String] from `lettersPub` and `emojiPub` that many times.\n\n```swift\nlet numbersPub = PassthroughSubject<Int, Never>()\nlet lettersPub = PassthroughSubject<String, Never>()\nlet emojiPub = PassthroughSubject<String, Never>()\n\ncancellable = numbersPub\n    .zip(letters, emoji) { anInt, aLetter, anEmoji in\n        (\"\\(String(repeating: anEmoji, count: anInt)) \\(String(repeating: aLetter, count: anInt))\")\n    }\n    .sink { print(\"\\($0)\") }\n\nnumbersPub.send(1)     \/\/ numbersPub: 1      lettersPub:        emojiPub:            zip output: <none>\nnumbersPub.send(2)     \/\/ numbersPub: 1,2    lettersPub:        emojiPub:            zip output: <none>\nnumbersPub.send(3)     \/\/ numbersPub: 1,2,3  lettersPub:        emojiPub:            zip output: <none>\nlettersPub.send(\"A\")   \/\/ numbersPub: 1,2,3  lettersPub: \"A\"    emojiPub:            zip output: <none>\nemojiPub.send(\"😀\")    \/\/ numbersPub: 2,3    lettersPub: \"A\"    emojiPub:\"😀\"        zip output: \"😀 A\"\nlettersPub.send(\"B\")   \/\/ numbersPub: 2,3    lettersPub: \"B\"    emojiPub:            zip output: <none>\nemojiPub.send(\"🥰\")    \/\/ numbersPub: 3      lettersPub:        emojiPub:\"😀\", \"🥰\"  zip output: \"🥰🥰 BB\"\n\n\/\/ Prints:\n\/\/ 😀 A\n\/\/ 🥰🥰 BB\n```\n\nIf any upstream publisher finishes successfully or fails with an error, so too does the zipped publisher.\n\n## Collecting and republishing the oldest unconsumed elements from multiple publishers\n\n- **zip(_:)**: Combines elements from another publisher and deliver pairs of elements as tuples.\n- **zip(_:_:)**: Combines elements from another publisher and delivers a transformed output.\n- **zip(_:_:)**: Combines elements from two other publishers and delivers groups of elements as tuples.\n- **zip(_:_:_:)**: Combines elements from three other publishers and delivers groups of elements as tuples.\n- **zip(_:_:_:_:)**: Combines elements from three other publishers and delivers a transformed output.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Combines elements from another publisher and deliver pairs of elements as tuples.",
+          "name" : "zip(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:)"
+        },
+        {
+          "description" : "Combines elements from another publisher and delivers a transformed output.",
+          "name" : "zip(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:)-4xn21"
+        },
+        {
+          "description" : "Combines elements from two other publishers and delivers groups of elements as tuples.",
+          "name" : "zip(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:)-8d7k7"
+        },
+        {
+          "description" : "Combines elements from three other publishers and delivers groups of elements as tuples.",
+          "name" : "zip(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:_:)-16rcy"
+        },
+        {
+          "description" : "Combines elements from three other publishers and delivers a transformed output.",
+          "name" : "zip(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:_:_:)"
+        }
+      ],
+      "title" : "Collecting and republishing the oldest unconsumed elements from multiple publishers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "zip(_:_:_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/zip(_:_:_:)-9yqi1"
+}

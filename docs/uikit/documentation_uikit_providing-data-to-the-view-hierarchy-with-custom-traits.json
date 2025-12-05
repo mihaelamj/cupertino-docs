@@ -1,0 +1,67 @@
+{
+  "abstract" : "Share data that needs to flow hierarchically across multiple levels of your view hierarchy.",
+  "codeExamples" : [
+    {
+      "code" : "struct ContainedInSettingsTrait: UITraitDefinition {\n    static let defaultValue = false\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "self.traitOverrides[ContainedInSettingsTrait.self] = true",
+      "language" : "swift"
+    },
+    {
+      "code" : "let value = traitCollection[ContainedInSettingsTrait.self]",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension UITraitCollection {\n    var isContainedInSettings: Bool { self[ContainedInSettingsTrait.self] }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "extension UIMutableTraits {\n    var isContainedInSettings: Bool {\n        get { self[ContainedInSettingsTrait.self] }\n        set { self[ContainedInSettingsTrait.self] = newValue }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let traitCollection = UITraitCollection { mutableTraits in\n    mutableTraits.isContainedInSettings = true\n}\n\nlet value = traitCollection.isContainedInSettings",
+      "language" : "swift"
+    },
+    {
+      "code" : "enum MyAppTheme: Int {\n    case standard, pastel, bold, monochrome\n}\n\nstruct MyAppThemeTrait: UITraitDefinition {\n    static let defaultValue = MyAppTheme.standard\n    static let affectsColorAppearance = true\n    static let name = \"Theme\"\n    static let identifier = \"com.myapp.theme\"\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "5c750bcd1b3e034e717cf1b1f9abade700972e9887acaa7d91c8526279bce90f",
+  "crawledAt" : "2025-12-05T21:11:08Z",
+  "id" : "1A28DE07-51E6-476A-95F0-09F93AEE37CF",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "UIKit",
+  "overview" : "## Overview\n\nA custom trait is a type that conforms to [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitDefinition-3572h]. Use a custom trait to pass application data, such as a color theme that a person selects in your app, through the objects in your view hierarchy that adopt [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitEnvironment]. Represent data with a custom trait when you want to:\n\nAvoid using custom traits for data that you can pass directly between view controllers and views.\n\n### Create, set, and access a custom trait\n\nTo create a custom trait, define a type that conforms to [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitDefinition-3572h]:\n\n[doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitDefinition-64c15\/defaultValue] is the only required static property. The system infers the type for your custom trait from the type of the value you set for `defaultValue`. After you define your custom trait, set its value using your trait as the key in the `traitOverrides` property of an object in your view hierarchy:\n\nThen, the system propagates the trait and value to that object’s descendants in the view hierarchy. For example, if the object is a view controller, the system propagates the view controller’s trait collection with the override to the view controller’s view and subviews, and to any child view controllers.\n\nAccess the value of your trait using your trait as the key in a trait collection:\n\n### Simplify custom trait access with extensions\n\nAdd convenience properties to [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitCollection] and [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIMutableTraits-8l00o] to make your custom trait easier to access. First, extend [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitCollection] with a property to get the value of your custom trait from a trait collection:\n\nNext, extend [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIMutableTraits-8l00o] to get and set the value of your custom trait:\n\nThen, use standard property syntax to access and update your custom trait:\n\n### Enhance custom trait interactions\n\nSet optional properties of [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitDefinition-3572h] to give your trait additional system capabilities and improve debugging:\n\nThe following example demonstrates setting these optional properties:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/uikit\/providing-data-to-the-view-hierarchy-with-custom-traits\ncrawled: 2025-12-05T21:11:08Z\n---\n\n# Providing data to the view hierarchy with custom traits\n\n**Article**\n\nShare data that needs to flow hierarchically across multiple levels of your view hierarchy.\n\n## Overview\n\nA custom trait is a type that conforms to [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitDefinition-3572h]. Use a custom trait to pass application data, such as a color theme that a person selects in your app, through the objects in your view hierarchy that adopt [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitEnvironment]. Represent data with a custom trait when you want to:\n\n- Propagate data to many children, such as contained view controllers or subviews.\n- Pass data to distant components; for example, from a [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIWindowScene] subclass to a view inside a stack of view controllers.\n- Provide context about the environment, such as information about a containing view controller from the current view controller, without a dependency on the containing view controller.\n\nAvoid using custom traits for data that you can pass directly between view controllers and views.\n\n### Create, set, and access a custom trait\n\nTo create a custom trait, define a type that conforms to [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitDefinition-3572h]:\n\n```swift\nstruct ContainedInSettingsTrait: UITraitDefinition {\n    static let defaultValue = false\n}\n```\n\n[doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitDefinition-64c15\/defaultValue] is the only required static property. The system infers the type for your custom trait from the type of the value you set for `defaultValue`. After you define your custom trait, set its value using your trait as the key in the `traitOverrides` property of an object in your view hierarchy:\n\n```swift\nself.traitOverrides[ContainedInSettingsTrait.self] = true\n```\n\nThen, the system propagates the trait and value to that object’s descendants in the view hierarchy. For example, if the object is a view controller, the system propagates the view controller’s trait collection with the override to the view controller’s view and subviews, and to any child view controllers.\n\nAccess the value of your trait using your trait as the key in a trait collection:\n\n```swift\nlet value = traitCollection[ContainedInSettingsTrait.self]\n```\n\n### Simplify custom trait access with extensions\n\nAdd convenience properties to [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitCollection] and [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIMutableTraits-8l00o] to make your custom trait easier to access. First, extend [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitCollection] with a property to get the value of your custom trait from a trait collection:\n\n```swift\nextension UITraitCollection {\n    var isContainedInSettings: Bool { self[ContainedInSettingsTrait.self] }\n}\n```\n\nNext, extend [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UIMutableTraits-8l00o] to get and set the value of your custom trait:\n\n```swift\nextension UIMutableTraits {\n    var isContainedInSettings: Bool {\n        get { self[ContainedInSettingsTrait.self] }\n        set { self[ContainedInSettingsTrait.self] = newValue }\n    }\n}\n```\n\nThen, use standard property syntax to access and update your custom trait:\n\n```swift\nlet traitCollection = UITraitCollection { mutableTraits in\n    mutableTraits.isContainedInSettings = true\n}\n\nlet value = traitCollection.isContainedInSettings\n```\n\n### Enhance custom trait interactions\n\nSet optional properties of [doc:\/\/com.apple.uikit\/documentation\/UIKit\/UITraitDefinition-3572h] to give your trait additional system capabilities and improve debugging:\n\n\n\nThe following example demonstrates setting these optional properties:\n\n```swift\nenum MyAppTheme: Int {\n    case standard, pastel, bold, monochrome\n}\n\nstruct MyAppThemeTrait: UITraitDefinition {\n    static let defaultValue = MyAppTheme.standard\n    static let affectsColorAppearance = true\n    static let name = \"Theme\"\n    static let identifier = \"com.myapp.theme\"\n}\n```\n\n## Custom traits\n\n- **UIMutableTraits**: A mutable container of traits.\n- **UITrait**: A type representing a trait in a trait collection.\n- **UITraitDefinition**: A type representing a trait in a trait collection.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A mutable container of traits.",
+          "name" : "UIMutableTraits",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UIMutableTraits-13ja5"
+        },
+        {
+          "description" : "A type representing a trait in a trait collection.",
+          "name" : "UITrait",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITrait-9423"
+        },
+        {
+          "description" : "A type representing a trait in a trait collection.",
+          "name" : "UITraitDefinition",
+          "url" : "https:\/\/developer.apple.com\/documentation\/UIKit\/UITraitDefinition-64c15"
+        }
+      ],
+      "title" : "Custom traits"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Providing data to the view hierarchy with custom traits",
+  "url" : "https:\/\/developer.apple.com\/documentation\/uikit\/providing-data-to-the-view-hierarchy-with-custom-traits"
+}

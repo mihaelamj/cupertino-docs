@@ -1,0 +1,71 @@
+{
+  "abstract" : "Converts any failure from the upstream publisher into a new error.",
+  "codeExamples" : [
+    {
+      "code" : "struct DivisionByZeroError: Error {}\nstruct MyGenericError: Error { var wrappedError: Error }\n\nfunc myDivide(_ dividend: Double, _ divisor: Double) throws -> Double {\n       guard divisor != 0 else { throw DivisionByZeroError() }\n       return dividend \/ divisor\n   }\n\nlet divisors: [Double] = [5, 4, 3, 2, 1, 0]\ndivisors.publisher\n    .tryMap { try myDivide(1, $0) }\n    .mapError { MyGenericError(wrappedError: $0) }\n    .sink(\n        receiveCompletion: { print (\"completion: \\($0)\") ,\n        receiveValue: { print (\"value: \\($0)\", terminator: \" \") }\n     )\n\n\/\/ Prints: \"0.2 0.25 0.3333333333333333 0.5 1.0 completion: failure(MyGenericError(wrappedError: DivisionByZeroError()))\"",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "521a96bdd505e89f284c48a9a293425be4819eb8dc8970aef8d5004701f58cd8",
+  "crawledAt" : "2025-12-05T02:44:08Z",
+  "declaration" : {
+    "code" : "func mapError<E>(_ transform: @escaping (Self.Failure) -> E) -> Publishers.MapError<Self, E> where E : Error",
+    "language" : "swift"
+  },
+  "id" : "F6E14326-E423-42CD-AC1B-665A2A0E8578",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Combine",
+  "overview" : "## Return Value\n\nA publisher that replaces any upstream failure with a new error produced by the `transform` closure.\n\n## Discussion\n\nUse the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/mapError(_:)] operator when you need to replace one error type with another, or where a downstream operator needs the error types of its inputs to match.\n\nThe following example uses a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryMap(_:)] operator to divide `1` by each element produced by a sequence publisher. When the publisher produces a `0`, the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryMap(_:)] fails with a `DivisionByZeroError`. The [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/mapError(_:)] operator converts this into a `MyGenericError`.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/mapError(_:)\ncrawled: 2025-12-05T02:44:08Z\n---\n\n# mapError(_:)\n\n**Instance Method**\n\nConverts any failure from the upstream publisher into a new error.\n\n## Declaration\n\n```swift\nfunc mapError<E>(_ transform: @escaping (Self.Failure) -> E) -> Publishers.MapError<Self, E> where E : Error\n```\n\n## Parameters\n\n- **transform**: A closure that takes the upstream failure as a parameter and returns a new error for the publisher to terminate with.\n\n## Return Value\n\nA publisher that replaces any upstream failure with a new error produced by the `transform` closure.\n\n## Discussion\n\nUse the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/mapError(_:)] operator when you need to replace one error type with another, or where a downstream operator needs the error types of its inputs to match.\n\nThe following example uses a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryMap(_:)] operator to divide `1` by each element produced by a sequence publisher. When the publisher produces a `0`, the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryMap(_:)] fails with a `DivisionByZeroError`. The [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/mapError(_:)] operator converts this into a `MyGenericError`.\n\n```swift\nstruct DivisionByZeroError: Error {}\nstruct MyGenericError: Error { var wrappedError: Error }\n\nfunc myDivide(_ dividend: Double, _ divisor: Double) throws -> Double {\n       guard divisor != 0 else { throw DivisionByZeroError() }\n       return dividend \/ divisor\n   }\n\nlet divisors: [Double] = [5, 4, 3, 2, 1, 0]\ndivisors.publisher\n    .tryMap { try myDivide(1, $0) }\n    .mapError { MyGenericError(wrappedError: $0) }\n    .sink(\n        receiveCompletion: { print (\"completion: \\($0)\") ,\n        receiveValue: { print (\"value: \\($0)\", terminator: \" \") }\n     )\n\n\/\/ Prints: \"0.2 0.25 0.3333333333333333 0.5 1.0 completion: failure(MyGenericError(wrappedError: DivisionByZeroError()))\"\n```\n\n## Mapping elements\n\n- **map(_:)**: Transforms all elements from the upstream publisher with a provided closure.\n- **tryMap(_:)**: Transforms all elements from the upstream publisher with a provided error-throwing closure.\n- **replaceNil(with:)**: Replaces nil elements in the stream with the provided element.\n- **scan(_:_:)**: Transforms elements from the upstream publisher by providing the current element to a closure along with the last value returned by the closure.\n- **tryScan(_:_:)**: Transforms elements from the upstream publisher by providing the current element to an error-throwing closure along with the last value returned by the closure.\n- **setFailureType(to:)**: Changes the failure type declared by the upstream publisher.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Transforms all elements from the upstream publisher with a provided closure.",
+          "name" : "map(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/map(_:)-99evh"
+        },
+        {
+          "description" : "Transforms all elements from the upstream publisher with a provided error-throwing closure.",
+          "name" : "tryMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryMap(_:)"
+        },
+        {
+          "description" : "Replaces nil elements in the stream with the provided element.",
+          "name" : "replaceNil(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/replaceNil(with:)"
+        },
+        {
+          "description" : "Transforms elements from the upstream publisher by providing the current element to a closure along with the last value returned by the closure.",
+          "name" : "scan(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/scan(_:_:)"
+        },
+        {
+          "description" : "Transforms elements from the upstream publisher by providing the current element to an error-throwing closure along with the last value returned by the closure.",
+          "name" : "tryScan(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryScan(_:_:)"
+        },
+        {
+          "description" : "Changes the failure type declared by the upstream publisher.",
+          "name" : "setFailureType(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/setFailureType(to:)"
+        }
+      ],
+      "title" : "Mapping elements"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "mapError(_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/mapError(_:)"
+}

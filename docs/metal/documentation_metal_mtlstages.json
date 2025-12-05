@@ -1,5 +1,5 @@
 {
-  "abstract" : "Describes stages of GPU work.",
+  "abstract" : "The segments of command execution within the Metal pass types.",
   "codeExamples" : [
 
   ],
@@ -13,17 +13,17 @@
     "SendableMetatype",
     "SetAlgebra"
   ],
-  "contentHash" : "e89682907226c3befac562f02b351cdfa66e7cc4f5bc79a308b27e74fb95c8f0",
-  "crawledAt" : "2025-12-03T04:12:57Z",
+  "contentHash" : "3f4e04df75949d4d4b99597ad2dc214d3b3d4205ab7a7a866a176a22efa39836",
+  "crawledAt" : "2025-12-05T12:08:11Z",
   "declaration" : {
     "code" : "struct MTLStages",
     "language" : "swift"
   },
-  "id" : "B0B69F9B-9778-4B5B-975B-2A6177818F23",
+  "id" : "16CA96FA-4876-46CE-B936-BB5F0B9BFC81",
   "kind" : "struct",
   "language" : "swift",
   "module" : "Metal",
-  "overview" : "## Overview\n\nAll commands you encoder into command buffers relate to one or more shader stages, for example, a compute dispatch command from a compute command encoder relates to stage [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStages\/dispatch].\n\nUse these stages to issue barriers between shader stages to ensure Metal correctly synchronizes GPU commands.",
+  "overview" : "## Overview\n\nMetal associates each command with one or more stages within a pass. Use these stage identifiers to synchronize command execution within a pass by selecting which stages wait for other stages to complete.\n\nMetal 4 introduces the following unified command encoders that combine multiple stages into a single pass:\n\nMetal 3 provides separate command encoders for different types of work:",
   "platforms" : [
     "iOS",
     "iPadOS",
@@ -32,8 +32,87 @@
     "tvOS",
     "visionOS"
   ],
-  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\ncrawled: 2025-12-03T04:12:57Z\n---\n\n# MTLStages\n\n**Structure**\n\nDescribes stages of GPU work.\n\n## Declaration\n\n```swift\nstruct MTLStages\n```\n\n## Overview\n\nAll commands you encoder into command buffers relate to one or more shader stages, for example, a compute dispatch command from a compute command encoder relates to stage [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLStages\/dispatch].\n\nUse these stages to issue barriers between shader stages to ensure Metal correctly synchronizes GPU commands.\n\n## Initializers\n\n- **init(rawValue:)**\n\n## Type Properties\n\n- **accelerationStructure**: Represents all acceleration structure operations.\n- **all**: Convenience mask representing all stages of GPU work.\n- **blit**: Represents all blit operations in a pass.\n- **dispatch**: Represents all compute dispatches in a compute pass.\n- **fragment**: Represents all fragment shader stage work in a render pass.\n- **machineLearning**: Represents all machine learning network dispatch operations.\n- **mesh**: Represents all mesh shader stage work work in a render pass.\n- **object**: Represents all object shader stage work in a render pass.\n- **resourceState**: Represents all sparse and placement sparse resource mapping updates.\n- **tile**: Represents all tile shading stage work in a render pass.\n- **vertex**: Represents all vertex shader stage work in a render pass.\n\n## Synchronizing with barriers and fences\n\n- **Synchronizing stages within a pass**: Block GPU stages in the a pass from running until other stages in the same pass finish.\n- **Synchronizing passes with a fence**: Block GPU stages in a pass until another pass unblocks it by signaling a fence.\n- **Synchronizing passes with consumer barriers**: Block GPU stages in a pass, and all subsequent passes, from running until stages from earlier passes finish.\n- **Synchronizing passes with producer barriers**: Block GPU stages in subsequent passes from running until stages in a pass, and earlier passes, finish.\n- **Synchronizing CPU and GPU work**: Avoid stalls between CPU and GPU work by using multiple instances of a resource.\n- **Implementing a multistage image filter using heaps and fences**: Use fences to synchronize access to resources allocated on a heap.\n- **MTLFence**: A synchronization mechanism that orders memory operations between GPU passes.\n- **MTLRenderStages**: The stages in a render pass that triggers a synchronization command.\n- **MTLBarrierScope**: Describes the types of resources that a barrier operates on.\n- **MTL4VisibilityOptions**: Memory consistency options for synchronization commands.\n\n## Conforms To\n\n- BitwiseCopyable\n- Equatable\n- ExpressibleByArrayLiteral\n- OptionSet\n- RawRepresentable\n- Sendable\n- SendableMetatype\n- SetAlgebra\n\n",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/metal\/mtlstages\ncrawled: 2025-12-05T12:08:11Z\n---\n\n# MTLStages\n\n**Structure**\n\nThe segments of command execution within the Metal pass types.\n\n## Declaration\n\n```swift\nstruct MTLStages\n```\n\n## Overview\n\nMetal associates each command with one or more stages within a pass. Use these stage identifiers to synchronize command execution within a pass by selecting which stages wait for other stages to complete.\n\nMetal 4 introduces the following unified command encoders that combine multiple stages into a single pass:\n\n- [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4RenderCommandEncoder] instances encode render passes that run vertex, fragment, object, mesh, and tile stages.\n- [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4ComputeCommandEncoder] instances encode unified compute passes that run blit, dispatch, and acceleration structure stages.\n- [doc:\/\/com.apple.metal\/documentation\/Metal\/MTL4MachineLearningCommandEncoder] instances encode passes that run machine learning stages.\n\nMetal 3 provides separate command encoders for different types of work:\n\n- [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderCommandEncoder] instances encode render passes that run vertex, fragment, object, mesh, and tile stages.\n- [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLComputeCommandEncoder] instances encode compute passes that run dispatch stages.\n- [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLBlitCommandEncoder] instances encode blit passes that run blit stages, which initialize and copy data for resources, such as buffers and textures.\n- [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLAccelerationStructureCommandEncoder] instances encode passes that run acceleration structure stages, such as for ray tracing.\n\n## Render pass stages\n\n- **vertex**: Represents all vertex shader stage work in a render pass.\n- **fragment**: Represents all fragment shader stage work in a render pass.\n- **tile**: Represents all tile shading stage work in a render pass.\n- **object**: Represents all object shader stage work in a render pass.\n- **mesh**: Represents all mesh shader stage work work in a render pass.\n\n## Compute pass stages\n\n- **dispatch**: Represents all compute dispatches in a compute pass.\n- **blit**: Represents all blit operations in a pass.\n- **accelerationStructure**: Represents all acceleration structure operations.\n- **machineLearning**: Represents all machine learning network dispatch operations.\n\n## Resource pass stages\n\n- **resourceState**: Represents all sparse and placement sparse resource mapping updates.\n\n## Convenience values\n\n- **all**: Convenience mask representing all stages of GPU work.\n\n## Swift support\n\n- **init(rawValue:)**\n\n## Synchronizing with barriers and fences\n\n- **Synchronizing stages within a pass**: Block GPU stages in the a pass from running until other stages in the same pass finish.\n- **Synchronizing passes with a fence**: Block GPU stages in a pass until another pass unblocks it by signaling a fence.\n- **Synchronizing passes with consumer barriers**: Block GPU stages in a pass, and all subsequent passes, from running until stages from earlier passes finish.\n- **Synchronizing passes with producer barriers**: Block GPU stages in subsequent passes from running until stages in a pass, and earlier passes, finish.\n- **Synchronizing CPU and GPU work**: Avoid stalls between CPU and GPU work by using multiple instances of a resource.\n- **Implementing a multistage image filter using heaps and fences**: Use fences to synchronize access to resources allocated on a heap.\n- **MTLFence**: A synchronization mechanism that orders memory operations between GPU passes.\n- **MTLRenderStages**: The stages in a render pass that triggers a synchronization command.\n- **MTLBarrierScope**: Describes the types of resources that a barrier operates on.\n- **MTL4VisibilityOptions**: Memory consistency options for synchronization commands.\n\n## Conforms To\n\n- BitwiseCopyable\n- Equatable\n- ExpressibleByArrayLiteral\n- OptionSet\n- RawRepresentable\n- Sendable\n- SendableMetatype\n- SetAlgebra\n\n",
   "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Represents all vertex shader stage work in a render pass.",
+          "name" : "vertex",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/vertex"
+        },
+        {
+          "description" : "Represents all fragment shader stage work in a render pass.",
+          "name" : "fragment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/fragment"
+        },
+        {
+          "description" : "Represents all tile shading stage work in a render pass.",
+          "name" : "tile",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/tile"
+        },
+        {
+          "description" : "Represents all object shader stage work in a render pass.",
+          "name" : "object",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/object"
+        },
+        {
+          "description" : "Represents all mesh shader stage work work in a render pass.",
+          "name" : "mesh",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/mesh"
+        }
+      ],
+      "title" : "Render pass stages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Represents all compute dispatches in a compute pass.",
+          "name" : "dispatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/dispatch"
+        },
+        {
+          "description" : "Represents all blit operations in a pass.",
+          "name" : "blit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/blit"
+        },
+        {
+          "description" : "Represents all acceleration structure operations.",
+          "name" : "accelerationStructure",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/accelerationStructure"
+        },
+        {
+          "description" : "Represents all machine learning network dispatch operations.",
+          "name" : "machineLearning",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/machineLearning"
+        }
+      ],
+      "title" : "Compute pass stages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Represents all sparse and placement sparse resource mapping updates.",
+          "name" : "resourceState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/resourceState"
+        }
+      ],
+      "title" : "Resource pass stages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Convenience mask representing all stages of GPU work.",
+          "name" : "all",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/all"
+        }
+      ],
+      "title" : "Convenience values"
+    },
     {
       "content" : "",
       "items" : [
@@ -43,68 +122,7 @@
           "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/init(rawValue:)"
         }
       ],
-      "title" : "Initializers"
-    },
-    {
-      "content" : "",
-      "items" : [
-        {
-          "description" : "Represents all acceleration structure operations.",
-          "name" : "accelerationStructure",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/accelerationStructure"
-        },
-        {
-          "description" : "Convenience mask representing all stages of GPU work.",
-          "name" : "all",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/all"
-        },
-        {
-          "description" : "Represents all blit operations in a pass.",
-          "name" : "blit",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/blit"
-        },
-        {
-          "description" : "Represents all compute dispatches in a compute pass.",
-          "name" : "dispatch",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/dispatch"
-        },
-        {
-          "description" : "Represents all fragment shader stage work in a render pass.",
-          "name" : "fragment",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/fragment"
-        },
-        {
-          "description" : "Represents all machine learning network dispatch operations.",
-          "name" : "machineLearning",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/machineLearning"
-        },
-        {
-          "description" : "Represents all mesh shader stage work work in a render pass.",
-          "name" : "mesh",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/mesh"
-        },
-        {
-          "description" : "Represents all object shader stage work in a render pass.",
-          "name" : "object",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/object"
-        },
-        {
-          "description" : "Represents all sparse and placement sparse resource mapping updates.",
-          "name" : "resourceState",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/resourceState"
-        },
-        {
-          "description" : "Represents all tile shading stage work in a render pass.",
-          "name" : "tile",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/tile"
-        },
-        {
-          "description" : "Represents all vertex shader stage work in a render pass.",
-          "name" : "vertex",
-          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages\/vertex"
-        }
-      ],
-      "title" : "Type Properties"
+      "title" : "Swift support"
     },
     {
       "content" : "",
@@ -165,5 +183,5 @@
   ],
   "source" : "appleJSON",
   "title" : "MTLStages",
-  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLStages"
+  "url" : "https:\/\/developer.apple.com\/documentation\/metal\/mtlstages"
 }

@@ -1,0 +1,454 @@
+{
+  "abstract" : "An enumeration that represents the available VMX capabilities.",
+  "codeExamples" : [
+    {
+      "code" : "static uint64_t canonicalize(uint64_t ctrl, uint64_t mask) {\n    return (ctrl | (mask & 0xffffffff)) & (mask >> 32);\n}\n\nmain() {\n    \n    \/\/ Fetch the supported capabilities for the PROCBASED2 field\n    if (hv_vmx_read_capability(HV_VMX_CAP_PROCBASED2, &proc2_cap) != 0)\n        errx(1, \"vcpu_read_capability(%u, CAP_VMX_PROCBASED2) failed\", vcpu);\n    \n    \/\/ Apply the constraints to our request to use TSC scaling\n    const uint64_t newcap = canonicalize(CPU_BASED2_TSC_SCALING, proc2_cap);\n    \n    \/\/ Test to see if that bit is supported on this platform\n    if ((newcap & CPU_BASED2_TSC_SCALING) == 0) {\n        warnx(“TSC scaling not supported on this platform”);\n    }\n    \n    \/\/ Continue, but without TSC scaling ...\n    write_vmcs(vcpu, VMCS_CTRL_CPU_BASED2, newcap);\n\n    \/\/ ...\n}\n",
+      "language" : "objc"
+    }
+  ],
+  "contentHash" : "907e24f59c8ed89d101f34589e3d8b74072050efb7e29d7c98f7eaf456ae8380",
+  "crawledAt" : "2025-12-05T20:09:35Z",
+  "id" : "BB97A1AE-96A5-4068-B281-7237EDEFC7CA",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Hypervisor",
+  "overview" : "## Overview\n\nThe capabilites available to the hypervisor can vary depending on the specific hardware platform or OS release. Use the [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vmx_read_capability(_:_:)] API at run time to determine the capabilities that can you can select.\n\nThe example below demonstrates the process for checking for the availability a specific capability, here checking for the avaiability of timestamp-counter scaling (TSC scaling):",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Hypervisor\/1469645-vmx-capabilities\ncrawled: 2025-12-05T20:09:35Z\n---\n\n# VMX Capabilities\n\n**API Collection**\n\nAn enumeration that represents the available VMX capabilities.\n\n## Overview\n\nThe capabilites available to the hypervisor can vary depending on the specific hardware platform or OS release. Use the [doc:\/\/com.apple.hypervisor\/documentation\/Hypervisor\/hv_vmx_read_capability(_:_:)] API at run time to determine the capabilities that can you can select.\n\nThe example below demonstrates the process for checking for the availability a specific capability, here checking for the avaiability of timestamp-counter scaling (TSC scaling):\n\n```objc\nstatic uint64_t canonicalize(uint64_t ctrl, uint64_t mask) {\n    return (ctrl | (mask & 0xffffffff)) & (mask >> 32);\n}\n\nmain() {\n    \n    \/\/ Fetch the supported capabilities for the PROCBASED2 field\n    if (hv_vmx_read_capability(HV_VMX_CAP_PROCBASED2, &proc2_cap) != 0)\n        errx(1, \"vcpu_read_capability(%u, CAP_VMX_PROCBASED2) failed\", vcpu);\n    \n    \/\/ Apply the constraints to our request to use TSC scaling\n    const uint64_t newcap = canonicalize(CPU_BASED2_TSC_SCALING, proc2_cap);\n    \n    \/\/ Test to see if that bit is supported on this platform\n    if ((newcap & CPU_BASED2_TSC_SCALING) == 0) {\n        warnx(“TSC scaling not supported on this platform”);\n    }\n    \n    \/\/ Continue, but without TSC scaling ...\n    write_vmcs(vcpu, VMCS_CTRL_CPU_BASED2, newcap);\n\n    \/\/ ...\n}\n\n```\n\n## Capabilities\n\n- **PIN_BASED_INTR**: The value that controls whether external interrupts cause VM exits.\n- **PIN_BASED_NMI**: The value that controls whether external non-maskable interrupts cause VM exits.\n- **PIN_BASED_VIRTUAL_NMI**: The value that controls blocking of non-maskable interrupts.\n- **PIN_BASED_PREEMPTION_TIMER**: The value that controls whether the VMX-preemption timer counts down in VMX non-root operation.\n- **PIN_BASED_POSTED_INTR**: The value that controls whether the processor gives special treatment to interrupts with posted-interrupt notification vectors.\n- **CPU_BASED_IRQ_WND**: The value that controls whether a VM exits at the beginning of any instruction where there’s no blocking of interrupts and the interrupt flag is 1.\n- **CPU_BASED_TSC_OFFSET**: The value that controls whether reading the timestamp-counter MSRs changes depending on the value of the timestamp-counter offset field.\n- **CPU_BASED_HLT**: The value that controls whether the execution of HALT instructions cause VM exits.\n- **CPU_BASED_INVLPG**: The value that controls whether the execution of invalid page instructions (INVLPG) cause VM exits.\n- **CPU_BASED_MWAIT**: The value that controls whether the execution of Monitor Wait instructions (MWAIT) cause VM exits.\n- **CPU_BASED_RDPMC**: The value that controls whether the execution of Read Performance Monitoring Counters instructions (RDPMC) cause VM exits.\n- **CPU_BASED_RDTSC**: The value that controls whether the execution of Read Timestamp-Counter instructions (RDTSC) cause VM exits.\n- **CPU_BASED_CR3_LOAD**: The value that controls whether executions of MOV to Control Register 3 (CR3) cause VM exits.\n- **CPU_BASED_CR3_STORE**: The value that controls whether executions of MOV from Control Register 3 (CR3) cause VM exits.\n- **CPU_BASED_CR8_LOAD**: The value that controls whether executions of MOV to Control Register 8 (CR8) cause VM exits.\n- **CPU_BASED_CR8_STORE**: The value that controls whether executions of MOV from Control Register 8 (CR8) cause VM exits.\n- **CPU_BASED_TPR_SHADOW**: The value that controls enabling Task Priority Register (TPR) virtualization and other APIC-virtualization features.\n- **CPU_BASED_VIRTUAL_NMI_WND**: The value that controls if a VM exit occurs at the beginning of any instruction if there’s no virtual-NMI blocking.\n- **CPU_BASED_MOV_DR**: The value that controls whether executions of MOV to or from Debug Registers (DR) cause VM exits.\n- **CPU_BASED_UNCOND_IO**: The value that controls whether executions of various I\/O instructions cause VM exits.\n- **CPU_BASED_IO_BITMAPS**: The value that controls whether to use I\/O bitmaps to restrict executions of I\/O instructions.\n- **CPU_BASED_MTF**: The value that controls enabling the monitor trap flag debugging feature.\n- **CPU_BASED_MSR_BITMAPS**: The value that controls use of whether Model Specific Register (MSR) bitmaps to control execution of the read-from and write-to MSR instructions.\n- **CPU_BASED_MONITOR**: The value that controls whether executions of the Set Up Monitor Address instruction (MONITOR) cause VM exits.\n- **CPU_BASED_PAUSE**: The value that controls whether executions of spin-wait loop (PAUSE) instruction causes VM exits.\n- **CPU_BASED_SECONDARY_CTLS**: The value that conntrols use of the secondary processor-based VM-execution controls.\n- **CPU_BASED2_VIRTUAL_APIC**: The value that controls whether the logical processor provides special treatment for access to the Advanced Programmable Interrupt Controller (APIC).\n- **CPU_BASED2_EPT**: The value that controls enabling extended page tables (EPT).\n- **CPU_BASED2_DESC_TABLE**: The value that controls whether executions of descriptor table instructions cause VM exits.\n- **CPU_BASED2_RDTSCP**: The value that controls whether any execution of read timestamp-counter and processor ID instruction (RDTSCP) causes an invalid-opcode exception.\n- **CPU_BASED2_X2APIC**: The value that controls the logical processor’s treatment of reading\/writing of Model Specific Registers to APIC MSRs.\n- **CPU_BASED2_VPID**: The value that controls the association of cached translations of linear addresses with a virtual processor identifier (VPID).\n- **CPU_BASED2_WBINVD**: The value that controls whether executions of the Invalidate Cache with Writeback instruction (WBINVD) cause VM exits.\n- **CPU_BASED2_UNRESTRICTED**: The value that controls whether guest software may run in unpaged protected mode or in real address mode.\n- **CPU_BASED2_APIC_REG_VIRT**: This value controls whether the logical processor virtualizes certain advanced programmable interrupt controller (APIC) accesses.\n- **CPU_BASED2_VIRT_INTR_DELIVERY**: The value that enables evaluation and delivery of pending virtual interrupts and emulation of writes to the APIC registers that control interrupt prioritization.\n- **CPU_BASED2_PAUSE_LOOP**: The value that controls whether a series of executions of the PAUSE instruction can cause a VM exit.\n- **CPU_BASED2_RDRAND**: The value that controls whether executions of the hardware random number generator instruction (RDRAND) cause VM exits.\n- **CPU_BASED2_INVPCID**: The value that controls whether any execution of the Invalidate Process-Context Identifier instruction (INVPCID) causes an invalid opcode exception.\n- **CPU_BASED2_VMFUNC**: The value that enables use of the “Invoke VM function” (VMFUNC) instruction in VMX non-root operation.\n- **CPU_BASED2_VMCS_SHADOW**: The value that controls whether execution of VMREAD and VMWRITE in VMX non-root operation may access a shadow VMCS instead of causing a VM exit.\n- **CPU_BASED2_ENCLS_EXIT_MAP**: The value that controls whether executions of Enclave Instruction Leaf Functions (ENCLS) cause examination of the ENCLS-exiting bitmap to determine whether the instruction causes a VM exit.\n- **CPU_BASED2_RDSEED**: The value that controls whether executions of random number generator instructions (RDSEED) cause VM exits.\n- **CPU_BASED2_PML**: The value that controls whether an access to a guest-physical address that sets an extended page table (EPT) dirty bit also adds an entry to the page-modification log.\n- **CPU_BASED2_EPT_VE**: The value that controls whether extended page table (EPT) violations cause virtualization exceptions instead of VM exits.\n- **CPU_BASED2_PT_CONCEAL_VMX**: The value that controls whether the processor trace facility suppresses information that the processor was in VMX non-root operation.\n- **CPU_BASED2_XSAVES_XRSTORS**: The value that controls whether any execution of save or restore state instructions (XSAVES or XRSTORS) causes an invalid opcode exception.\n- **CPU_BASED2_EPT_MODE_BASED_EXEC**: The value that controls whether to base extended page table (EPT) execute permissions on whether access to a linear address is supervisor or user mode.\n- **CPU_BASED2_EPT_SUBPAGE_WRITE**: The value that controls whether extended page table (EPT) write permissions specify granularity of 128 bytes.\n- **CPU_BASED2_PT_GUEST_PHYSICAL**: The value that controls whether to treat all output addresses used by Intel Processor Trace as guest-physical addresses and translated using the extended page table.\n- **CPU_BASED2_TSC_SCALING**: The value that controls whether the execution of various read time stamp counters and read model-specific registers that read from the IA32 timestamp counter model specific register return a value modified by the TSC multiplier field.\n- **CPU_BASED2_USER_WAIT_PAUSE**: The value that controls whether any execution of TPAUSE, UMONITOR, or UMWAIT instrucitons generate an illegal opcode exception.\n- **CPU_BASED2_ENCLV_EXIT_MAP**: The value that controls whether executions of an enclave VMM function instruction (ENCLV) checks the ENCLV-exiting bitmap to determine whether the instruction causes a VM exit.\n- **VMX_EPT_VPID_SUPPORT_AD**: The value that controls if extended page tables (EPT) support accessed and dirty flags.\n- **VMX_EPT_VPID_SUPPORT_EXONLY**: The value that controls whether extended page tables (EPT) support execute-only translations.\n- **VMEXIT_SAVE_DBG_CONTROLS**: Thievalue that controls whether to save debug register 7 DR7 and the IA32 debug control DEBUGCTL MSR on VM exit.\n- **VMEXIT_HOST_IA32E**: This value controls, on processors that support Intel 64 architecture, whether a logical processor is in 64-bit mode after the next VM exit.\n- **VMEXIT_LOAD_IA32_PERF_GLOBAL_CTRL**: The value that controls whether to load the IA32_PERF_GLOBAL_CTRL model specific register on VM exit.\n- **VMEXIT_ACK_INTR**: The value that controls whether the logical processor sends an acknowledgement to the interrupt controller when the VM exits.\n- **VMEXIT_SAVE_IA32_PAT**: The value that controls whether to save the IA32_EFER model specific register on VM exit.\n- **VMEXIT_LOAD_IA32_PAT**: The value that controls whether to load the IA32_EFER mode specific register on VM exit.\n- **VMEXIT_SAVE_EFER**: The value that controls whether to save the IA32_EFER MSR on VM exit.\n- **VMEXIT_LOAD_EFER**: The value that controls whether to load the IA32_EFER MSR on VM exit.\n- **VMEXIT_SAVE_VMX_TIMER**: The value that controls whether to save the value of the VMX-preemption timer on VM exit.\n- **VMEXIT_CLEAR_IA32_BNDCFGS**: The value that controls whether to clear the IA32_BNDCFGS model specific register on VM exit.\n- **VMEXIT_PT_CONCEAL_VMX**: The value that controls whether the Intel Processor Trace produces a paging information packet on VM exit or a VMCS packet on SMM VM exit.\n- **VMEXIT_CLEAR_IA32_RTIT_CTL**: The value that controls whether to clear the IA32_RTIT_CTL model specific register (MSR) on VM exit.\n- **VMEXIT_LOAD_CET_STATE**: The value that controls whether to load CET-related MSRs and SPP on VM exit.\n- **VMENTRY_LOAD_DBG_CONTROLS**: The value that controls whetherto load Debug Register 7 and the IA32_DEBUGCTL model specific register (MSR) on VM entry.\n- **VMENTRY_GUEST_IA32E**: The value that controls whether the logical processor is in IA-32e mode after VM entry.\n- **VMENTRY_SMM**: The value that controls whether the logical processor is in system-management mode (SMM) after VM entry.\n- **VMENTRY_DEACTIVATE_DUAL_MONITOR**: The value that controls whether the treatment of SMIs and system-management mode (SMM) is in effect after the VM entry.\n- **VMENTRY_LOAD_IA32_PERF_GLOBAL_CTRL**: The value that controls whether to load the IA32_PERF_GLOBAL_CTRL model specific register on VM entry.\n- **VMENTRY_LOAD_IA32_PAT**: The value that controls whether to load the IA32_PAT model specific register on VM entry.\n- **VMENTRY_LOAD_EFER**: The value that determines whether to load the IA32_EFER model specific register on VM entry.\n- **VMENTRY_LOAD_IA32_BNDCFGS**: The value that controls whether to load the IA32_BNDCFGS model specific register on VM entry.\n- **VMENTRY_PT_CONCEAL_VMX**: The value that controls whether the Intel Processor Trace produces a paging information packet (PIP) on a VM entry or a VMCS packet on a VM entry that returns from system-management mode.\n- **VMENTRY_LOAD_IA32_RTIT_CTL**: The value that controls whether to clear the IA32_RTIT_CTL model specific register (MSR) on VM exit.\n- **VMENTRY_LOAD_CET_STATE**: The value that controls whether to load CET-related model specific registers and SPP on VM exit.\n\n## Capabilities\n\n- **hv_vmx_read_capability(_:_:)**: Returns, by reference, the VMX virtualization capabilities of the host processor.\n- **hv_vmx_get_msr_info(_:_:)**: Returns information about guest MSR configuration.\n- **hv_vmx_capability_t**: The type that describes Virtual Machine Extensions (VMX) capability fields.\n- **hv_vmx_msr_info_t**: The type that describes Move to Status Register (MSR) information fields.\n- **MSR Information Fields**: The type that describes Machine Specific Register (MSR) fields.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The value that controls whether external interrupts cause VM exits.",
+          "name" : "PIN_BASED_INTR",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/PIN_BASED_INTR"
+        },
+        {
+          "description" : "The value that controls whether external non-maskable interrupts cause VM exits.",
+          "name" : "PIN_BASED_NMI",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/PIN_BASED_NMI"
+        },
+        {
+          "description" : "The value that controls blocking of non-maskable interrupts.",
+          "name" : "PIN_BASED_VIRTUAL_NMI",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/PIN_BASED_VIRTUAL_NMI"
+        },
+        {
+          "description" : "The value that controls whether the VMX-preemption timer counts down in VMX non-root operation.",
+          "name" : "PIN_BASED_PREEMPTION_TIMER",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/PIN_BASED_PREEMPTION_TIMER"
+        },
+        {
+          "description" : "The value that controls whether the processor gives special treatment to interrupts with posted-interrupt notification vectors.",
+          "name" : "PIN_BASED_POSTED_INTR",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/PIN_BASED_POSTED_INTR"
+        },
+        {
+          "description" : "The value that controls whether a VM exits at the beginning of any instruction where there’s no blocking of interrupts and the interrupt flag is 1.",
+          "name" : "CPU_BASED_IRQ_WND",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_IRQ_WND"
+        },
+        {
+          "description" : "The value that controls whether reading the timestamp-counter MSRs changes depending on the value of the timestamp-counter offset field.",
+          "name" : "CPU_BASED_TSC_OFFSET",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_TSC_OFFSET"
+        },
+        {
+          "description" : "The value that controls whether the execution of HALT instructions cause VM exits.",
+          "name" : "CPU_BASED_HLT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_HLT"
+        },
+        {
+          "description" : "The value that controls whether the execution of invalid page instructions (INVLPG) cause VM exits.",
+          "name" : "CPU_BASED_INVLPG",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_INVLPG"
+        },
+        {
+          "description" : "The value that controls whether the execution of Monitor Wait instructions (MWAIT) cause VM exits.",
+          "name" : "CPU_BASED_MWAIT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_MWAIT"
+        },
+        {
+          "description" : "The value that controls whether the execution of Read Performance Monitoring Counters instructions (RDPMC) cause VM exits.",
+          "name" : "CPU_BASED_RDPMC",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_RDPMC"
+        },
+        {
+          "description" : "The value that controls whether the execution of Read Timestamp-Counter instructions (RDTSC) cause VM exits.",
+          "name" : "CPU_BASED_RDTSC",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_RDTSC"
+        },
+        {
+          "description" : "The value that controls whether executions of MOV to Control Register 3 (CR3) cause VM exits.",
+          "name" : "CPU_BASED_CR3_LOAD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_CR3_LOAD"
+        },
+        {
+          "description" : "The value that controls whether executions of MOV from Control Register 3 (CR3) cause VM exits.",
+          "name" : "CPU_BASED_CR3_STORE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_CR3_STORE"
+        },
+        {
+          "description" : "The value that controls whether executions of MOV to Control Register 8 (CR8) cause VM exits.",
+          "name" : "CPU_BASED_CR8_LOAD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_CR8_LOAD"
+        },
+        {
+          "description" : "The value that controls whether executions of MOV from Control Register 8 (CR8) cause VM exits.",
+          "name" : "CPU_BASED_CR8_STORE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_CR8_STORE"
+        },
+        {
+          "description" : "The value that controls enabling Task Priority Register (TPR) virtualization and other APIC-virtualization features.",
+          "name" : "CPU_BASED_TPR_SHADOW",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_TPR_SHADOW"
+        },
+        {
+          "description" : "The value that controls if a VM exit occurs at the beginning of any instruction if there’s no virtual-NMI blocking.",
+          "name" : "CPU_BASED_VIRTUAL_NMI_WND",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_VIRTUAL_NMI_WND"
+        },
+        {
+          "description" : "The value that controls whether executions of MOV to or from Debug Registers (DR) cause VM exits.",
+          "name" : "CPU_BASED_MOV_DR",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_MOV_DR"
+        },
+        {
+          "description" : "The value that controls whether executions of various I\/O instructions cause VM exits.",
+          "name" : "CPU_BASED_UNCOND_IO",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_UNCOND_IO"
+        },
+        {
+          "description" : "The value that controls whether to use I\/O bitmaps to restrict executions of I\/O instructions.",
+          "name" : "CPU_BASED_IO_BITMAPS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_IO_BITMAPS"
+        },
+        {
+          "description" : "The value that controls enabling the monitor trap flag debugging feature.",
+          "name" : "CPU_BASED_MTF",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_MTF"
+        },
+        {
+          "description" : "The value that controls use of whether Model Specific Register (MSR) bitmaps to control execution of the read-from and write-to MSR instructions.",
+          "name" : "CPU_BASED_MSR_BITMAPS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_MSR_BITMAPS"
+        },
+        {
+          "description" : "The value that controls whether executions of the Set Up Monitor Address instruction (MONITOR) cause VM exits.",
+          "name" : "CPU_BASED_MONITOR",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_MONITOR"
+        },
+        {
+          "description" : "The value that controls whether executions of spin-wait loop (PAUSE) instruction causes VM exits.",
+          "name" : "CPU_BASED_PAUSE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_PAUSE"
+        },
+        {
+          "description" : "The value that conntrols use of the secondary processor-based VM-execution controls.",
+          "name" : "CPU_BASED_SECONDARY_CTLS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED_SECONDARY_CTLS"
+        },
+        {
+          "description" : "The value that controls whether the logical processor provides special treatment for access to the Advanced Programmable Interrupt Controller (APIC).",
+          "name" : "CPU_BASED2_VIRTUAL_APIC",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_VIRTUAL_APIC"
+        },
+        {
+          "description" : "The value that controls enabling extended page tables (EPT).",
+          "name" : "CPU_BASED2_EPT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_EPT"
+        },
+        {
+          "description" : "The value that controls whether executions of descriptor table instructions cause VM exits.",
+          "name" : "CPU_BASED2_DESC_TABLE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_DESC_TABLE"
+        },
+        {
+          "description" : "The value that controls whether any execution of read timestamp-counter and processor ID instruction (RDTSCP) causes an invalid-opcode exception.",
+          "name" : "CPU_BASED2_RDTSCP",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_RDTSCP"
+        },
+        {
+          "description" : "The value that controls the logical processor’s treatment of reading\/writing of Model Specific Registers to APIC MSRs.",
+          "name" : "CPU_BASED2_X2APIC",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_X2APIC"
+        },
+        {
+          "description" : "The value that controls the association of cached translations of linear addresses with a virtual processor identifier (VPID).",
+          "name" : "CPU_BASED2_VPID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_VPID"
+        },
+        {
+          "description" : "The value that controls whether executions of the Invalidate Cache with Writeback instruction (WBINVD) cause VM exits.",
+          "name" : "CPU_BASED2_WBINVD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_WBINVD"
+        },
+        {
+          "description" : "The value that controls whether guest software may run in unpaged protected mode or in real address mode.",
+          "name" : "CPU_BASED2_UNRESTRICTED",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_UNRESTRICTED"
+        },
+        {
+          "description" : "This value controls whether the logical processor virtualizes certain advanced programmable interrupt controller (APIC) accesses.",
+          "name" : "CPU_BASED2_APIC_REG_VIRT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_APIC_REG_VIRT"
+        },
+        {
+          "description" : "The value that enables evaluation and delivery of pending virtual interrupts and emulation of writes to the APIC registers that control interrupt prioritization.",
+          "name" : "CPU_BASED2_VIRT_INTR_DELIVERY",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_VIRT_INTR_DELIVERY"
+        },
+        {
+          "description" : "The value that controls whether a series of executions of the PAUSE instruction can cause a VM exit.",
+          "name" : "CPU_BASED2_PAUSE_LOOP",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_PAUSE_LOOP"
+        },
+        {
+          "description" : "The value that controls whether executions of the hardware random number generator instruction (RDRAND) cause VM exits.",
+          "name" : "CPU_BASED2_RDRAND",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_RDRAND"
+        },
+        {
+          "description" : "The value that controls whether any execution of the Invalidate Process-Context Identifier instruction (INVPCID) causes an invalid opcode exception.",
+          "name" : "CPU_BASED2_INVPCID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_INVPCID"
+        },
+        {
+          "description" : "The value that enables use of the “Invoke VM function” (VMFUNC) instruction in VMX non-root operation.",
+          "name" : "CPU_BASED2_VMFUNC",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_VMFUNC"
+        },
+        {
+          "description" : "The value that controls whether execution of VMREAD and VMWRITE in VMX non-root operation may access a shadow VMCS instead of causing a VM exit.",
+          "name" : "CPU_BASED2_VMCS_SHADOW",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_VMCS_SHADOW"
+        },
+        {
+          "description" : "The value that controls whether executions of Enclave Instruction Leaf Functions (ENCLS) cause examination of the ENCLS-exiting bitmap to determine whether the instruction causes a VM exit.",
+          "name" : "CPU_BASED2_ENCLS_EXIT_MAP",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_ENCLS_EXIT_MAP"
+        },
+        {
+          "description" : "The value that controls whether executions of random number generator instructions (RDSEED) cause VM exits.",
+          "name" : "CPU_BASED2_RDSEED",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_RDSEED"
+        },
+        {
+          "description" : "The value that controls whether an access to a guest-physical address that sets an extended page table (EPT) dirty bit also adds an entry to the page-modification log.",
+          "name" : "CPU_BASED2_PML",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_PML"
+        },
+        {
+          "description" : "The value that controls whether extended page table (EPT) violations cause virtualization exceptions instead of VM exits.",
+          "name" : "CPU_BASED2_EPT_VE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_EPT_VE"
+        },
+        {
+          "description" : "The value that controls whether the processor trace facility suppresses information that the processor was in VMX non-root operation.",
+          "name" : "CPU_BASED2_PT_CONCEAL_VMX",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_PT_CONCEAL_VMX"
+        },
+        {
+          "description" : "The value that controls whether any execution of save or restore state instructions (XSAVES or XRSTORS) causes an invalid opcode exception.",
+          "name" : "CPU_BASED2_XSAVES_XRSTORS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_XSAVES_XRSTORS"
+        },
+        {
+          "description" : "The value that controls whether to base extended page table (EPT) execute permissions on whether access to a linear address is supervisor or user mode.",
+          "name" : "CPU_BASED2_EPT_MODE_BASED_EXEC",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_EPT_MODE_BASED_EXEC"
+        },
+        {
+          "description" : "The value that controls whether extended page table (EPT) write permissions specify granularity of 128 bytes.",
+          "name" : "CPU_BASED2_EPT_SUBPAGE_WRITE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_EPT_SUBPAGE_WRITE"
+        },
+        {
+          "description" : "The value that controls whether to treat all output addresses used by Intel Processor Trace as guest-physical addresses and translated using the extended page table.",
+          "name" : "CPU_BASED2_PT_GUEST_PHYSICAL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_PT_GUEST_PHYSICAL"
+        },
+        {
+          "description" : "The value that controls whether the execution of various read time stamp counters and read model-specific registers that read from the IA32 timestamp counter model specific register return a value modified by the TSC multiplier field.",
+          "name" : "CPU_BASED2_TSC_SCALING",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_TSC_SCALING"
+        },
+        {
+          "description" : "The value that controls whether any execution of TPAUSE, UMONITOR, or UMWAIT instrucitons generate an illegal opcode exception.",
+          "name" : "CPU_BASED2_USER_WAIT_PAUSE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_USER_WAIT_PAUSE"
+        },
+        {
+          "description" : "The value that controls whether executions of an enclave VMM function instruction (ENCLV) checks the ENCLV-exiting bitmap to determine whether the instruction causes a VM exit.",
+          "name" : "CPU_BASED2_ENCLV_EXIT_MAP",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/CPU_BASED2_ENCLV_EXIT_MAP"
+        },
+        {
+          "description" : "The value that controls if extended page tables (EPT) support accessed and dirty flags.",
+          "name" : "VMX_EPT_VPID_SUPPORT_AD",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMX_EPT_VPID_SUPPORT_AD"
+        },
+        {
+          "description" : "The value that controls whether extended page tables (EPT) support execute-only translations.",
+          "name" : "VMX_EPT_VPID_SUPPORT_EXONLY",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMX_EPT_VPID_SUPPORT_EXONLY"
+        },
+        {
+          "description" : "Thievalue that controls whether to save debug register 7 DR7 and the IA32 debug control DEBUGCTL MSR on VM exit.",
+          "name" : "VMEXIT_SAVE_DBG_CONTROLS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_SAVE_DBG_CONTROLS"
+        },
+        {
+          "description" : "This value controls, on processors that support Intel 64 architecture, whether a logical processor is in 64-bit mode after the next VM exit.",
+          "name" : "VMEXIT_HOST_IA32E",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_HOST_IA32E"
+        },
+        {
+          "description" : "The value that controls whether to load the IA32_PERF_GLOBAL_CTRL model specific register on VM exit.",
+          "name" : "VMEXIT_LOAD_IA32_PERF_GLOBAL_CTRL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_LOAD_IA32_PERF_GLOBAL_CTRL"
+        },
+        {
+          "description" : "The value that controls whether the logical processor sends an acknowledgement to the interrupt controller when the VM exits.",
+          "name" : "VMEXIT_ACK_INTR",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_ACK_INTR"
+        },
+        {
+          "description" : "The value that controls whether to save the IA32_EFER model specific register on VM exit.",
+          "name" : "VMEXIT_SAVE_IA32_PAT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_SAVE_IA32_PAT"
+        },
+        {
+          "description" : "The value that controls whether to load the IA32_EFER mode specific register on VM exit.",
+          "name" : "VMEXIT_LOAD_IA32_PAT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_LOAD_IA32_PAT"
+        },
+        {
+          "description" : "The value that controls whether to save the IA32_EFER MSR on VM exit.",
+          "name" : "VMEXIT_SAVE_EFER",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_SAVE_EFER"
+        },
+        {
+          "description" : "The value that controls whether to load the IA32_EFER MSR on VM exit.",
+          "name" : "VMEXIT_LOAD_EFER",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_LOAD_EFER"
+        },
+        {
+          "description" : "The value that controls whether to save the value of the VMX-preemption timer on VM exit.",
+          "name" : "VMEXIT_SAVE_VMX_TIMER",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_SAVE_VMX_TIMER"
+        },
+        {
+          "description" : "The value that controls whether to clear the IA32_BNDCFGS model specific register on VM exit.",
+          "name" : "VMEXIT_CLEAR_IA32_BNDCFGS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_CLEAR_IA32_BNDCFGS"
+        },
+        {
+          "description" : "The value that controls whether the Intel Processor Trace produces a paging information packet on VM exit or a VMCS packet on SMM VM exit.",
+          "name" : "VMEXIT_PT_CONCEAL_VMX",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_PT_CONCEAL_VMX"
+        },
+        {
+          "description" : "The value that controls whether to clear the IA32_RTIT_CTL model specific register (MSR) on VM exit.",
+          "name" : "VMEXIT_CLEAR_IA32_RTIT_CTL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_CLEAR_IA32_RTIT_CTL"
+        },
+        {
+          "description" : "The value that controls whether to load CET-related MSRs and SPP on VM exit.",
+          "name" : "VMEXIT_LOAD_CET_STATE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMEXIT_LOAD_CET_STATE"
+        },
+        {
+          "description" : "The value that controls whetherto load Debug Register 7 and the IA32_DEBUGCTL model specific register (MSR) on VM entry.",
+          "name" : "VMENTRY_LOAD_DBG_CONTROLS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_LOAD_DBG_CONTROLS"
+        },
+        {
+          "description" : "The value that controls whether the logical processor is in IA-32e mode after VM entry.",
+          "name" : "VMENTRY_GUEST_IA32E",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_GUEST_IA32E"
+        },
+        {
+          "description" : "The value that controls whether the logical processor is in system-management mode (SMM) after VM entry.",
+          "name" : "VMENTRY_SMM",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_SMM"
+        },
+        {
+          "description" : "The value that controls whether the treatment of SMIs and system-management mode (SMM) is in effect after the VM entry.",
+          "name" : "VMENTRY_DEACTIVATE_DUAL_MONITOR",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_DEACTIVATE_DUAL_MONITOR"
+        },
+        {
+          "description" : "The value that controls whether to load the IA32_PERF_GLOBAL_CTRL model specific register on VM entry.",
+          "name" : "VMENTRY_LOAD_IA32_PERF_GLOBAL_CTRL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_LOAD_IA32_PERF_GLOBAL_CTRL"
+        },
+        {
+          "description" : "The value that controls whether to load the IA32_PAT model specific register on VM entry.",
+          "name" : "VMENTRY_LOAD_IA32_PAT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_LOAD_IA32_PAT"
+        },
+        {
+          "description" : "The value that determines whether to load the IA32_EFER model specific register on VM entry.",
+          "name" : "VMENTRY_LOAD_EFER",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_LOAD_EFER"
+        },
+        {
+          "description" : "The value that controls whether to load the IA32_BNDCFGS model specific register on VM entry.",
+          "name" : "VMENTRY_LOAD_IA32_BNDCFGS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_LOAD_IA32_BNDCFGS"
+        },
+        {
+          "description" : "The value that controls whether the Intel Processor Trace produces a paging information packet (PIP) on a VM entry or a VMCS packet on a VM entry that returns from system-management mode.",
+          "name" : "VMENTRY_PT_CONCEAL_VMX",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_PT_CONCEAL_VMX"
+        },
+        {
+          "description" : "The value that controls whether to clear the IA32_RTIT_CTL model specific register (MSR) on VM exit.",
+          "name" : "VMENTRY_LOAD_IA32_RTIT_CTL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_LOAD_IA32_RTIT_CTL"
+        },
+        {
+          "description" : "The value that controls whether to load CET-related model specific registers and SPP on VM exit.",
+          "name" : "VMENTRY_LOAD_CET_STATE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/VMENTRY_LOAD_CET_STATE"
+        }
+      ],
+      "title" : "Capabilities"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns, by reference, the VMX virtualization capabilities of the host processor.",
+          "name" : "hv_vmx_read_capability(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hv_vmx_read_capability(_:_:)"
+        },
+        {
+          "description" : "Returns information about guest MSR configuration.",
+          "name" : "hv_vmx_get_msr_info(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hv_vmx_get_msr_info(_:_:)"
+        },
+        {
+          "description" : "The type that describes Virtual Machine Extensions (VMX) capability fields.",
+          "name" : "hv_vmx_capability_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hv_vmx_capability_t"
+        },
+        {
+          "description" : "The type that describes Move to Status Register (MSR) information fields.",
+          "name" : "hv_vmx_msr_info_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/hv_vmx_msr_info_t"
+        },
+        {
+          "description" : "The type that describes Machine Specific Register (MSR) fields.",
+          "name" : "MSR Information Fields",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/3567084-msr-information-fields"
+        }
+      ],
+      "title" : "Capabilities"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "VMX Capabilities",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Hypervisor\/1469645-vmx-capabilities"
+}

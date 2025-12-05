@@ -1,0 +1,56 @@
+{
+  "abstract" : "Attempts to recreate a failed subscription with the upstream publisher up to the number of times you specify.",
+  "codeExamples" : [
+    {
+      "code" : "struct WebSiteData: Codable {\n    var rawHTML: String\n}\n\nlet myURL = URL(string: \"https:\/\/www.example.com\")\n\ncancellable = URLSession.shared.dataTaskPublisher(for: myURL!)\n    .retry(3)\n    .map({ (page) -> WebSiteData in\n        return WebSiteData(rawHTML: String(decoding: page.data, as: UTF8.self))\n    })\n    .catch { error in\n        return Just(WebSiteData(rawHTML: \"<HTML>Unable to load page - timed out.<\/HTML>\"))\n}\n.sink(receiveCompletion: { print (\"completion: \\($0)\") },\n      receiveValue: { print (\"value: \\($0)\") }\n )\n\n\/\/ Prints: The HTML content from the remote URL upon a successful connection,\n\/\/         or returns \"<HTML>Unable to load page - timed out.<\/HTML>\" if the number of retries exceeds the specified value.",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "e041897292d3a010d4ebcfb4da69babb4f0a84f90e0e70b33c9ab1e1af927f6b",
+  "crawledAt" : "2025-12-05T02:45:10Z",
+  "declaration" : {
+    "code" : "func retry(_ retries: Int) -> Publishers.Retry<Self>",
+    "language" : "swift"
+  },
+  "id" : "DA0F3B40-2802-476A-96F1-5D4B51C3B7F2",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Combine",
+  "overview" : "## Return Value\n\nA publisher that attempts to recreate its subscription to a failed upstream publisher.\n\n## Discussion\n\nUse [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/retry(_:)] to try a connecting to an upstream publisher after a failed connection attempt.\n\nIn the example below, a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/URLSession\/DataTaskPublisher] attempts to connect to a remote URL. If the connection attempt succeeds, it publishes the remote service’s HTML to the downstream publisher and completes normally. Otherwise, the retry operator attempts to reestablish the connection. If after three attempts the publisher still can’t connect to the remote URL, the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/catch(_:)] operator replaces the error with a new publisher that publishes a “connection timed out” HTML page. After the downstream subscriber receives the timed out message, the stream completes normally.\n\nAfter exceeding the specified number of retries, the publisher passes the failure to the downstream receiver.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/retry(_:)\ncrawled: 2025-12-05T02:45:10Z\n---\n\n# retry(_:)\n\n**Instance Method**\n\nAttempts to recreate a failed subscription with the upstream publisher up to the number of times you specify.\n\n## Declaration\n\n```swift\nfunc retry(_ retries: Int) -> Publishers.Retry<Self>\n```\n\n## Parameters\n\n- **retries**: The number of times to attempt to recreate the subscription.\n\n## Return Value\n\nA publisher that attempts to recreate its subscription to a failed upstream publisher.\n\n## Discussion\n\nUse [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/retry(_:)] to try a connecting to an upstream publisher after a failed connection attempt.\n\nIn the example below, a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/URLSession\/DataTaskPublisher] attempts to connect to a remote URL. If the connection attempt succeeds, it publishes the remote service’s HTML to the downstream publisher and completes normally. Otherwise, the retry operator attempts to reestablish the connection. If after three attempts the publisher still can’t connect to the remote URL, the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/catch(_:)] operator replaces the error with a new publisher that publishes a “connection timed out” HTML page. After the downstream subscriber receives the timed out message, the stream completes normally.\n\n```swift\nstruct WebSiteData: Codable {\n    var rawHTML: String\n}\n\nlet myURL = URL(string: \"https:\/\/www.example.com\")\n\ncancellable = URLSession.shared.dataTaskPublisher(for: myURL!)\n    .retry(3)\n    .map({ (page) -> WebSiteData in\n        return WebSiteData(rawHTML: String(decoding: page.data, as: UTF8.self))\n    })\n    .catch { error in\n        return Just(WebSiteData(rawHTML: \"<HTML>Unable to load page - timed out.<\/HTML>\"))\n}\n.sink(receiveCompletion: { print (\"completion: \\($0)\") },\n      receiveValue: { print (\"value: \\($0)\") }\n )\n\n\/\/ Prints: The HTML content from the remote URL upon a successful connection,\n\/\/         or returns \"<HTML>Unable to load page - timed out.<\/HTML>\" if the number of retries exceeds the specified value.\n```\n\nAfter exceeding the specified number of retries, the publisher passes the failure to the downstream receiver.\n\n## Handling errors\n\n- **assertNoFailure(_:file:line:)**: Raises a fatal error when its upstream publisher fails, and otherwise republishes all received input.\n- **catch(_:)**: Handles errors from an upstream publisher by replacing it with another publisher.\n- **tryCatch(_:)**: Handles errors from an upstream publisher by either replacing it with another publisher or throwing a new error.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Raises a fatal error when its upstream publisher fails, and otherwise republishes all received input.",
+          "name" : "assertNoFailure(_:file:line:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/assertNoFailure(_:file:line:)"
+        },
+        {
+          "description" : "Handles errors from an upstream publisher by replacing it with another publisher.",
+          "name" : "catch(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/catch(_:)"
+        },
+        {
+          "description" : "Handles errors from an upstream publisher by either replacing it with another publisher or throwing a new error.",
+          "name" : "tryCatch(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryCatch(_:)"
+        }
+      ],
+      "title" : "Handling errors"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "retry(_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/retry(_:)"
+}

@@ -1,0 +1,61 @@
+{
+  "abstract" : "Publishes elements only after a specified time interval elapses between events.",
+  "codeExamples" : [
+    {
+      "code" : "let bounces:[(Int,TimeInterval)] = [\n    (0, 0),\n    (1, 0.25),  \/\/ 0.25s interval since last index\n    (2, 1),     \/\/ 0.75s interval since last index\n    (3, 1.25),  \/\/ 0.25s interval since last index\n    (4, 1.5),   \/\/ 0.25s interval since last index\n    (5, 2)      \/\/ 0.5s interval since last index\n]\n\nlet subject = PassthroughSubject<Int, Never>()\ncancellable = subject\n    .debounce(for: .seconds(0.5), scheduler: RunLoop.main)\n    .sink { index in\n        print (\"Received index \\(index)\")\n    }\n\nfor bounce in bounces {\n    DispatchQueue.main.asyncAfter(deadline: .now() + bounce.1) {\n        subject.send(bounce.0)\n    }\n}\n\n\/\/ Prints:\n\/\/  Received index 1\n\/\/  Received index 4\n\/\/  Received index 5\n\n\/\/  Here is the event flow shown from the perspective of time, showing value delivery through the `debounce()` operator:\n\n\/\/  Time 0: Send index 0.\n\/\/  Time 0.25: Send index 1. Index 0 was waiting and is discarded.\n\/\/  Time 0.75: Debounce period ends, publish index 1.\n\/\/  Time 1: Send index 2.\n\/\/  Time 1.25: Send index 3. Index 2 was waiting and is discarded.\n\/\/  Time 1.5: Send index 4. Index 3 was waiting and is discarded.\n\/\/  Time 2: Debounce period ends, publish index 4. Also, send index 5.\n\/\/  Time 2.5: Debounce period ends, publish index 5.",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "688ac94d1d028ee7879051cbda1c429b4fe46d4e274af06b2de67646aaa568cb",
+  "crawledAt" : "2025-12-05T02:45:11Z",
+  "declaration" : {
+    "code" : "func debounce<S>(for dueTime: S.SchedulerTimeType.Stride, scheduler: S, options: S.SchedulerOptions? = nil) -> Publishers.Debounce<Self, S> where S : Scheduler",
+    "language" : "swift"
+  },
+  "id" : "2ECD18C7-8581-4C51-B160-A634B033C694",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Combine",
+  "overview" : "## Return Value\n\nA publisher that publishes events only after a specified time elapses.\n\n## Discussion\n\nUse the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/debounce(for:scheduler:options:)] operator to control the number of values and time between delivery of values from the upstream publisher. This operator is useful to process bursty or high-volume event streams where you need to reduce the number of values delivered to the downstream to a rate you specify.\n\nIn this example, a [doc:\/\/com.apple.Combine\/documentation\/Combine\/PassthroughSubject] publishes elements on a schedule defined by the `bounces` array. The array is composed of tuples representing a value sent by the [doc:\/\/com.apple.Combine\/documentation\/Combine\/PassthroughSubject], and a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/TimeInterval] ranging from one-quarter second up to 2 seconds that drives a delivery timer. As the queue builds, elements arriving faster than one-half second `debounceInterval` are discarded, while elements arriving at a rate slower than `debounceInterval` are passed through to the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/sink(receiveValue:)] operator.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/debounce(for:scheduler:options:)\ncrawled: 2025-12-05T02:45:11Z\n---\n\n# debounce(for:scheduler:options:)\n\n**Instance Method**\n\nPublishes elements only after a specified time interval elapses between events.\n\n## Declaration\n\n```swift\nfunc debounce<S>(for dueTime: S.SchedulerTimeType.Stride, scheduler: S, options: S.SchedulerOptions? = nil) -> Publishers.Debounce<Self, S> where S : Scheduler\n```\n\n## Parameters\n\n- **dueTime**: The time the publisher should wait before publishing an element.\n- **scheduler**: The scheduler on which this publisher delivers elements\n- **options**: Scheduler options that customize this publisher’s delivery of elements.\n\n## Return Value\n\nA publisher that publishes events only after a specified time elapses.\n\n## Discussion\n\nUse the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/debounce(for:scheduler:options:)] operator to control the number of values and time between delivery of values from the upstream publisher. This operator is useful to process bursty or high-volume event streams where you need to reduce the number of values delivered to the downstream to a rate you specify.\n\nIn this example, a [doc:\/\/com.apple.Combine\/documentation\/Combine\/PassthroughSubject] publishes elements on a schedule defined by the `bounces` array. The array is composed of tuples representing a value sent by the [doc:\/\/com.apple.Combine\/documentation\/Combine\/PassthroughSubject], and a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/TimeInterval] ranging from one-quarter second up to 2 seconds that drives a delivery timer. As the queue builds, elements arriving faster than one-half second `debounceInterval` are discarded, while elements arriving at a rate slower than `debounceInterval` are passed through to the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/sink(receiveValue:)] operator.\n\n```swift\nlet bounces:[(Int,TimeInterval)] = [\n    (0, 0),\n    (1, 0.25),  \/\/ 0.25s interval since last index\n    (2, 1),     \/\/ 0.75s interval since last index\n    (3, 1.25),  \/\/ 0.25s interval since last index\n    (4, 1.5),   \/\/ 0.25s interval since last index\n    (5, 2)      \/\/ 0.5s interval since last index\n]\n\nlet subject = PassthroughSubject<Int, Never>()\ncancellable = subject\n    .debounce(for: .seconds(0.5), scheduler: RunLoop.main)\n    .sink { index in\n        print (\"Received index \\(index)\")\n    }\n\nfor bounce in bounces {\n    DispatchQueue.main.asyncAfter(deadline: .now() + bounce.1) {\n        subject.send(bounce.0)\n    }\n}\n\n\/\/ Prints:\n\/\/  Received index 1\n\/\/  Received index 4\n\/\/  Received index 5\n\n\/\/  Here is the event flow shown from the perspective of time, showing value delivery through the `debounce()` operator:\n\n\/\/  Time 0: Send index 0.\n\/\/  Time 0.25: Send index 1. Index 0 was waiting and is discarded.\n\/\/  Time 0.75: Debounce period ends, publish index 1.\n\/\/  Time 1: Send index 2.\n\/\/  Time 1.25: Send index 3. Index 2 was waiting and is discarded.\n\/\/  Time 1.5: Send index 4. Index 3 was waiting and is discarded.\n\/\/  Time 2: Debounce period ends, publish index 4. Also, send index 5.\n\/\/  Time 2.5: Debounce period ends, publish index 5.\n```\n\n## Controlling timing\n\n- **measureInterval(using:options:)**: Measures and emits the time interval between events received from an upstream publisher.\n- **delay(for:tolerance:scheduler:options:)**: Delays delivery of all output to the downstream receiver by a specified amount of time on a particular scheduler.\n- **throttle(for:scheduler:latest:)**: Publishes either the most-recent or first element published by the upstream publisher in the specified time interval.\n- **timeout(_:scheduler:options:customError:)**: Terminates publishing if the upstream publisher exceeds the specified time interval without producing an element.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Measures and emits the time interval between events received from an upstream publisher.",
+          "name" : "measureInterval(using:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/measureInterval(using:options:)"
+        },
+        {
+          "description" : "Delays delivery of all output to the downstream receiver by a specified amount of time on a particular scheduler.",
+          "name" : "delay(for:tolerance:scheduler:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/delay(for:tolerance:scheduler:options:)"
+        },
+        {
+          "description" : "Publishes either the most-recent or first element published by the upstream publisher in the specified time interval.",
+          "name" : "throttle(for:scheduler:latest:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/throttle(for:scheduler:latest:)"
+        },
+        {
+          "description" : "Terminates publishing if the upstream publisher exceeds the specified time interval without producing an element.",
+          "name" : "timeout(_:scheduler:options:customError:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/timeout(_:scheduler:options:customError:)"
+        }
+      ],
+      "title" : "Controlling timing"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "debounce(for:scheduler:options:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/debounce(for:scheduler:options:)"
+}

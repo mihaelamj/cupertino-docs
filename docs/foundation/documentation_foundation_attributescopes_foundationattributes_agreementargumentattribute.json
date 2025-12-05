@@ -1,0 +1,104 @@
+{
+  "abstract" : "An attribute that represents grammatical agreement with an argument in a localized string.",
+  "codeExamples" : [
+    {
+      "code" : "struct Order {\n    let item: String\n    let size: String\n}\n\nlet order = Order(item: String(localized: \"salad\"), size: String(localized: \"small\"))\n\n\/\/ ____________\n\/\/ In the Spanish localization file:\n\/\/ \"salad\" = \"ensalada\"\n\/\/ \"small\" = \"pequeño\"\n\/\/ ____________\n\n\/\/ Define the resource you want to apply grammatical agreement to.\nlet resource = LocalizedStringResource(\"Your \\(order.size) \\(order.item) is ready.\")\n\n\/\/ ____________\n\/\/ In the Spanish localization file:\n\/\/ \"Your %1@ %2@ is ready.\" = \"Tu ^[%2$@ %1$@](inflect: true) está ^[listo](agreeWithArgument: 2).\"\n\/\/ ____________\n\n\/\/ Make a new string imposing grammatical agreement on the resource from the localized phrase.\nlet result = AttributedString(localized: resource)\n\/\/ result == \"Tu ensalada pequeña está lista.\"\n",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "AttributedStringKey",
+    "BitwiseCopyable",
+    "Copyable",
+    "DecodableAttributedStringKey",
+    "EncodableAttributedStringKey",
+    "MarkdownDecodableAttributedStringKey"
+  ],
+  "contentHash" : "fc7dbfcd026929ef09c814cbb8ce2258ac1dcece361e1adb85614fa2cbd19749",
+  "crawledAt" : "2025-12-05T19:11:37Z",
+  "declaration" : {
+    "code" : "@frozen enum AgreementArgumentAttribute",
+    "language" : "swift"
+  },
+  "id" : "BB51AA54-8B0C-4EF8-9282-9B4D945901A8",
+  "kind" : "enum",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Overview\n\nMany languages require grammatical agreement in their sentences. In Spanish, for example, the adjectives and verbs need to agree with the gender of the subject they refer to in the sentence. For example, suppose you need to translate the following sentence into Spanish: *Your small salad is ready.* The correct translation is: *Tu ensalada pequeña está lista.*\n\nThe challenge is that, most often, the localization file only contains masculine forms of translated words. So, in this sentence, the masculine words for *small* and *ready*, *pequeño* and *listo*, need to inflect and become *pequeña* and *lista* to agree with the feminine subject of the sentence (*ensalada*).\n\nYou can make the first part of the sentence grammatically agree by inflecting the words *ensalada* and *pequeño* together using the `inflect` attribute. Because *ensalada* is the feminine subject of the sentence, masculine *pequeño* inflects to feminine *pequeña*.\n\nThe second part of the sentence, however, requires the `agreeWithArgument` attribute. Although *listo* is at the end of the sentence, it needs to inflect on the subject, *ensalada*, which is at the beginning. By wrapping *listo* in an `agreeWithArgument` attribute and pointing it to the feminine word *ensalada*, masculine *listo* inflects to feminine *lista*, making the entire sentence agree.\n\nUsing `agreeWithArgument` this way eliminates the need for the localization file to include both the masculine and the feminine forms of each word. By wrapping the words needing inflection, and then pointing them to the words they need to agree with, the system achieves agreement in the localized text for you.\n\nThe following steps ensure proper gender agreement in the translation:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/AgreementArgumentAttribute\ncrawled: 2025-12-05T19:11:37Z\n---\n\n# AttributeScopes.FoundationAttributes.AgreementArgumentAttribute\n\n**Enumeration**\n\nAn attribute that represents grammatical agreement with an argument in a localized string.\n\n## Declaration\n\n```swift\n@frozen enum AgreementArgumentAttribute\n```\n\n## Overview\n\nMany languages require grammatical agreement in their sentences. In Spanish, for example, the adjectives and verbs need to agree with the gender of the subject they refer to in the sentence. For example, suppose you need to translate the following sentence into Spanish: *Your small salad is ready.* The correct translation is: *Tu ensalada pequeña está lista.*\n\nThe challenge is that, most often, the localization file only contains masculine forms of translated words. So, in this sentence, the masculine words for *small* and *ready*, *pequeño* and *listo*, need to inflect and become *pequeña* and *lista* to agree with the feminine subject of the sentence (*ensalada*).\n\nYou can make the first part of the sentence grammatically agree by inflecting the words *ensalada* and *pequeño* together using the `inflect` attribute. Because *ensalada* is the feminine subject of the sentence, masculine *pequeño* inflects to feminine *pequeña*.\n\nThe second part of the sentence, however, requires the `agreeWithArgument` attribute. Although *listo* is at the end of the sentence, it needs to inflect on the subject, *ensalada*, which is at the beginning. By wrapping *listo* in an `agreeWithArgument` attribute and pointing it to the feminine word *ensalada*, masculine *listo* inflects to feminine *lista*, making the entire sentence agree.\n\nUsing `agreeWithArgument` this way eliminates the need for the localization file to include both the masculine and the feminine forms of each word. By wrapping the words needing inflection, and then pointing them to the words they need to agree with, the system achieves agreement in the localized text for you.\n\nThe following steps ensure proper gender agreement in the translation:\n\n1. Create a type containing all the words you need for translation. For example, create an `Order` structure containing two localizable string properties for `item` and `size`.\n2. Add the necessary translations for the food items and the sizes into the Spanish localization file.\n3. Create a [doc:\/\/com.apple.foundation\/documentation\/Foundation\/LocalizedStringResource] containing the English key phrase from the Spanish localization file to translate, along with placeholder variables representing the words to inflect (*size* and *item*).\n4. In the Spanish localization file, add `%@` placeholders for the words you want to substitute as part of the translation. Make the Spanish words for the size and the item grammatically agree using the `inflect` attribute with a value of [doc:\/\/com.apple.documentation\/documentation\/Swift\/true]. Then make the masculine Spanish word for *ready* (*listo*) agree with the feminine word for *salad* (*ensalada*) by wrapping *listo* in an `agreeWithArgument` attribute, pointing to the second replacement in the sentence (*ensalada*). Note how the placeholder attributes for *small salad*, `%1@` and `%2@`, reverse order in the code example below when translating from English to Spanish.\n5. Inflect the entire sentence by passing the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/LocalizedStringResource] instance into a new instance of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/AttributedString].\n\n```swift\nstruct Order {\n    let item: String\n    let size: String\n}\n\nlet order = Order(item: String(localized: \"salad\"), size: String(localized: \"small\"))\n\n\/\/ ____________\n\/\/ In the Spanish localization file:\n\/\/ \"salad\" = \"ensalada\"\n\/\/ \"small\" = \"pequeño\"\n\/\/ ____________\n\n\/\/ Define the resource you want to apply grammatical agreement to.\nlet resource = LocalizedStringResource(\"Your \\(order.size) \\(order.item) is ready.\")\n\n\/\/ ____________\n\/\/ In the Spanish localization file:\n\/\/ \"Your %1@ %2@ is ready.\" = \"Tu ^[%2$@ %1$@](inflect: true) está ^[listo](agreeWithArgument: 2).\"\n\/\/ ____________\n\n\/\/ Make a new string imposing grammatical agreement on the resource from the localized phrase.\nlet result = AttributedString(localized: resource)\n\/\/ result == \"Tu ensalada pequeña está lista.\"\n\n```\n\n## Using automatic grammar agreement attributes\n\n- **inflect**: A scope for accessing an inflection rule attribute.\n- **AttributeScopes.FoundationAttributes.InflectionRuleAttribute**: A type for using an inflection rule as an attribute.\n- **agreementArgument**: A scope for accessing an agreement argument attribute.\n- **agreementConcept**: A scope for accessing an agreement concept attribute.\n- **AttributeScopes.FoundationAttributes.AgreementConceptAttribute**: An attribute that represents grammatical agreement for objects that aren’t part of the inflected text.\n- **morphology**: A scope for accessing a morphology attribute.\n- **AttributeScopes.FoundationAttributes.MorphologyAttribute**: A type for using a morphology as an attribute.\n- **referentConcept**: A scope for accessing a referent concept attribute.\n- **AttributeScopes.FoundationAttributes.ReferentConceptAttribute**: An attribute that specifies a grammatical agreement concept for substituting pronouns in localized text.\n- **inflectionAlternative**: A scope for accessing an inflection alternative attribute.\n- **AttributeScopes.FoundationAttributes.InflectionAlternativeAttribute**: An attribute that provides an alternative inflection phrase when the system can’t achieve grammatical agreement.\n\n## Conforms To\n\n- AttributedStringKey\n- BitwiseCopyable\n- Copyable\n- DecodableAttributedStringKey\n- EncodableAttributedStringKey\n- MarkdownDecodableAttributedStringKey\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A scope for accessing an inflection rule attribute.",
+          "name" : "inflect",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/inflect"
+        },
+        {
+          "description" : "A type for using an inflection rule as an attribute.",
+          "name" : "AttributeScopes.FoundationAttributes.InflectionRuleAttribute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/InflectionRuleAttribute"
+        },
+        {
+          "description" : "A scope for accessing an agreement argument attribute.",
+          "name" : "agreementArgument",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/agreementArgument"
+        },
+        {
+          "description" : "A scope for accessing an agreement concept attribute.",
+          "name" : "agreementConcept",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/agreementConcept"
+        },
+        {
+          "description" : "An attribute that represents grammatical agreement for objects that aren’t part of the inflected text.",
+          "name" : "AttributeScopes.FoundationAttributes.AgreementConceptAttribute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/AgreementConceptAttribute"
+        },
+        {
+          "description" : "A scope for accessing a morphology attribute.",
+          "name" : "morphology",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/morphology"
+        },
+        {
+          "description" : "A type for using a morphology as an attribute.",
+          "name" : "AttributeScopes.FoundationAttributes.MorphologyAttribute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/MorphologyAttribute"
+        },
+        {
+          "description" : "A scope for accessing a referent concept attribute.",
+          "name" : "referentConcept",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/referentConcept"
+        },
+        {
+          "description" : "An attribute that specifies a grammatical agreement concept for substituting pronouns in localized text.",
+          "name" : "AttributeScopes.FoundationAttributes.ReferentConceptAttribute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/ReferentConceptAttribute"
+        },
+        {
+          "description" : "A scope for accessing an inflection alternative attribute.",
+          "name" : "inflectionAlternative",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/inflectionAlternative"
+        },
+        {
+          "description" : "An attribute that provides an alternative inflection phrase when the system can’t achieve grammatical agreement.",
+          "name" : "AttributeScopes.FoundationAttributes.InflectionAlternativeAttribute",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/InflectionAlternativeAttribute"
+        }
+      ],
+      "title" : "Using automatic grammar agreement attributes"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "AttributeScopes.FoundationAttributes.AgreementArgumentAttribute",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/AttributeScopes\/FoundationAttributes\/AgreementArgumentAttribute"
+}

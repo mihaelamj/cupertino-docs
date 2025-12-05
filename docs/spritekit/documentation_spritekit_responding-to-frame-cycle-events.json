@@ -1,0 +1,50 @@
+{
+  "abstract" : "Implement per-frame app logic, such as the scene’s update function that’s called every frame.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "87635c9a59a7e60641c3bcd4e05435d1e9a4195e2feebc99eb941558f0f07819",
+  "crawledAt" : "2025-12-05T22:33:52Z",
+  "id" : "11A02583-A139-41C0-BA9C-15C2C90A4A57",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "SpriteKit",
+  "overview" : "## Overview\n\nWhen a scene is presented via [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKView\/presentScene(_:)], SpriteKit calls you every frame if you implement any of the functions shown in the following image:\n\n\n\nIf you don’t implement any of the frame-cycle functions, SpriteKit will only render the scene when something within it has changed, improving energy efficiency and allowing your game or app to perform other operations instead.\n\n### Decide Which Events to Implement\n\nEach time through the rendering loop, the scene’s contents are updated and then rendered. You can’t override the rendering behavior; instead you update the nodes in the scene. However, the scene includes methods you can override to customize scene processing, and you can use actions and physics to alter properties of nodes in the tree. Here are the steps in the rendering loop:\n\n### Use a Scene Delegate Instead of Subclassing a Scene\n\nSubclassing [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene] and overriding frame-cycle functions is a simple way to implement your app’s logic, but you avoid subclassing by using a delegate. All of the frame-cycle functions defined by `SKScene` have an [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKSceneDelegate] protocol equivalent function. So, if you provide a scene delegate, the delegate’s frame-cycle methods are called instead of those on the scene. For example, an iOS app might use a view controller as the scene delegate. See [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/subclassing-scenes-versus-assigning-a-delegate] for more information.\n\n### Implement Post-Processing\n\nA scene can process the actions on the scene tree in any order. For this reason, if you have tasks that you need to run each frame and you need precise control over when they run, you should use the [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene\/didEvaluateActions()] and [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene\/didSimulatePhysics()] methods to perform those tasks. Typically, you make changes during post-processing that require the final calculated positions of certain nodes in the tree. Your post-processing can take these positions and perform other useful work on the tree.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SpriteKit\/responding-to-frame-cycle-events\ncrawled: 2025-12-05T22:33:52Z\n---\n\n# Responding to Frame-Cycle Events\n\n**Article**\n\nImplement per-frame app logic, such as the scene’s update function that’s called every frame.\n\n## Overview\n\nWhen a scene is presented via [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKView\/presentScene(_:)], SpriteKit calls you every frame if you implement any of the functions shown in the following image:\n\n\n\nIf you don’t implement any of the frame-cycle functions, SpriteKit will only render the scene when something within it has changed, improving energy efficiency and allowing your game or app to perform other operations instead.\n\n### Decide Which Events to Implement\n\nEach time through the rendering loop, the scene’s contents are updated and then rendered. You can’t override the rendering behavior; instead you update the nodes in the scene. However, the scene includes methods you can override to customize scene processing, and you can use actions and physics to alter properties of nodes in the tree. Here are the steps in the rendering loop:\n\n1. The scene’s [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene\/update(_:)] method is called with the time elapsed so far in the simulation. This is the primary place to implement your own in-game simulation, including input handling, artificial intelligence, game scripting, and other similar game logic. Often, you use this method to make changes to nodes or to run actions on nodes.\n2. The scene processes actions on all the nodes in the tree. It finds any running actions and applies those changes to the tree. In practice, because of custom actions, you can also hook into the action mechanism to call your own code. You cannot directly control the order in which actions are processed or cause the scene to skip actions on certain nodes, except by removing the actions from those nodes or removing the nodes from the tree.\n3. The scene’s [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene\/didEvaluateActions()] method is called after all actions for the frame have been processed.\n4. The scene simulates physics on nodes in the tree that have physics bodies. Adding physics to nodes in a scene is described in [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKPhysicsBody], but the end result of simulating physics is that the position and rotation of nodes in the tree may be adjusted by the physics simulation. Your game can also receive callbacks when physics bodies come into contact with each other. See [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKPhysicsContactDelegate].\n5. The scene’s [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene\/didSimulatePhysics()] method is called after all physics bodies for the frame have been simulated.\n6. The scene applies any constraints associated with nodes in the scene. Constraints are used to establish relationships in the scene. For example, you can apply a constraint that makes sure a node is always pointed at another node, regardless of how it is moved. By using constraints, you avoid needing to write a lot of custom code in your scene handling.\n7. The scene calls its [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene\/didApplyConstraints()] method.\n8. The scene calls its [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene\/didFinishUpdate()] method. This is your last chance to make changes to the scene.\n9. The scene is rendered.\n\n### Use a Scene Delegate Instead of Subclassing a Scene\n\nSubclassing [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene] and overriding frame-cycle functions is a simple way to implement your app’s logic, but you avoid subclassing by using a delegate. All of the frame-cycle functions defined by `SKScene` have an [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKSceneDelegate] protocol equivalent function. So, if you provide a scene delegate, the delegate’s frame-cycle methods are called instead of those on the scene. For example, an iOS app might use a view controller as the scene delegate. See [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/subclassing-scenes-versus-assigning-a-delegate] for more information.\n\n### Implement Post-Processing\n\nA scene can process the actions on the scene tree in any order. For this reason, if you have tasks that you need to run each frame and you need precise control over when they run, you should use the [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene\/didEvaluateActions()] and [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKScene\/didSimulatePhysics()] methods to perform those tasks. Typically, you make changes during post-processing that require the final calculated positions of certain nodes in the tree. Your post-processing can take these positions and perform other useful work on the tree.\n\n## Responding to Frame-Cycle Events\n\n- **update(_:)**: Tells your app to perform any app-specific logic to update your scene.\n- **didEvaluateActions()**: Tells your app to peform any necessary logic after scene actions are evaluated.\n- **didSimulatePhysics()**: Tells your app to peform any necessary logic after physics simulations are performed.\n- **didApplyConstraints()**: Tells your app to peform any necessary logic after constraints are applied.\n- **didFinishUpdate()**: Tells your app to peform any necessary logic after the scene has finished all of the steps required to process animations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells your app to perform any app-specific logic to update your scene.",
+          "name" : "update(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SpriteKit\/SKScene\/update(_:)"
+        },
+        {
+          "description" : "Tells your app to peform any necessary logic after scene actions are evaluated.",
+          "name" : "didEvaluateActions()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SpriteKit\/SKScene\/didEvaluateActions()"
+        },
+        {
+          "description" : "Tells your app to peform any necessary logic after physics simulations are performed.",
+          "name" : "didSimulatePhysics()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SpriteKit\/SKScene\/didSimulatePhysics()"
+        },
+        {
+          "description" : "Tells your app to peform any necessary logic after constraints are applied.",
+          "name" : "didApplyConstraints()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SpriteKit\/SKScene\/didApplyConstraints()"
+        },
+        {
+          "description" : "Tells your app to peform any necessary logic after the scene has finished all of the steps required to process animations.",
+          "name" : "didFinishUpdate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SpriteKit\/SKScene\/didFinishUpdate()"
+        }
+      ],
+      "title" : "Responding to Frame-Cycle Events"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Responding to Frame-Cycle Events",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SpriteKit\/responding-to-frame-cycle-events"
+}

@@ -1,0 +1,81 @@
+{
+  "abstract" : "Calls an error-throwing closure with each received element and publishes any returned optional that has a value.",
+  "codeExamples" : [
+    {
+      "code" : "struct ParseError: Error {}\nfunc romanNumeral(from: Int) throws -> String? {\n    let romanNumeralDict: [Int : String] =\n        [1: \"I\", 2: \"II\", 3: \"III\", 4: \"IV\", 5: \"V\"]\n    guard from != 0 else { throw ParseError() }\n    return romanNumeralDict[from]\n}\nlet numbers = [6, 5, 4, 3, 2, 1, 0]\ncancellable = numbers.publisher\n    .tryCompactMap { try romanNumeral(from: $0) }\n    .sink(\n          receiveCompletion: { print (\"\\($0)\") },\n          receiveValue: { print (\"\\($0)\", terminator: \" \") }\n     )\n\n\/\/ Prints: \"(Unknown) V IV III II I failure(ParseError())\"",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "b50d011767510921644cf4d831d16d4a283758bcc02f917166dcada5eea5d969",
+  "crawledAt" : "2025-12-05T02:44:14Z",
+  "declaration" : {
+    "code" : "func tryCompactMap<T>(_ transform: @escaping (Self.Output) throws -> T?) -> Publishers.TryCompactMap<Self, T>",
+    "language" : "swift"
+  },
+  "id" : "93748626-5DA4-4C3D-877C-7482F331CA44",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Combine",
+  "overview" : "## Return Value\n\nAny non-`nil` optional results of calling the supplied closure.\n\n## Discussion\n\nUse [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryCompactMap(_:)] to remove `nil` elements from a publisher’s stream based on an error-throwing closure you provide. If the closure throws an error, the publisher cancels the upstream publisher and sends the thrown error to the downstream subscriber as a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/Failure].\n\nThe following example uses an array of numbers as the source for a collection-based publisher. A [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryCompactMap(_:)] operator consumes each integer from the publisher and uses a dictionary to transform the numbers from its Arabic to Roman numerals, as an optional [doc:\/\/com.apple.documentation\/documentation\/Swift\/String].\n\nIf the closure called by [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryCompactMap(_:)] fails to look up a Roman numeral, it returns the optional String `(unknown)`.\n\nIf the closure called by [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryCompactMap(_:)] determines the input is `0`, it throws an error. The [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryCompactMap(_:)] operator catches this error and stops publishing, sending a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscribers\/Completion\/failure(_:)] that wraps the error.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryCompactMap(_:)\ncrawled: 2025-12-05T02:44:14Z\n---\n\n# tryCompactMap(_:)\n\n**Instance Method**\n\nCalls an error-throwing closure with each received element and publishes any returned optional that has a value.\n\n## Declaration\n\n```swift\nfunc tryCompactMap<T>(_ transform: @escaping (Self.Output) throws -> T?) -> Publishers.TryCompactMap<Self, T>\n```\n\n## Parameters\n\n- **transform**: An error-throwing closure that receives a value and returns an optional value.\n\n## Return Value\n\nAny non-`nil` optional results of calling the supplied closure.\n\n## Discussion\n\nUse [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryCompactMap(_:)] to remove `nil` elements from a publisher’s stream based on an error-throwing closure you provide. If the closure throws an error, the publisher cancels the upstream publisher and sends the thrown error to the downstream subscriber as a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/Failure].\n\nThe following example uses an array of numbers as the source for a collection-based publisher. A [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryCompactMap(_:)] operator consumes each integer from the publisher and uses a dictionary to transform the numbers from its Arabic to Roman numerals, as an optional [doc:\/\/com.apple.documentation\/documentation\/Swift\/String].\n\nIf the closure called by [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryCompactMap(_:)] fails to look up a Roman numeral, it returns the optional String `(unknown)`.\n\nIf the closure called by [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryCompactMap(_:)] determines the input is `0`, it throws an error. The [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/tryCompactMap(_:)] operator catches this error and stops publishing, sending a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscribers\/Completion\/failure(_:)] that wraps the error.\n\n```swift\nstruct ParseError: Error {}\nfunc romanNumeral(from: Int) throws -> String? {\n    let romanNumeralDict: [Int : String] =\n        [1: \"I\", 2: \"II\", 3: \"III\", 4: \"IV\", 5: \"V\"]\n    guard from != 0 else { throw ParseError() }\n    return romanNumeralDict[from]\n}\nlet numbers = [6, 5, 4, 3, 2, 1, 0]\ncancellable = numbers.publisher\n    .tryCompactMap { try romanNumeral(from: $0) }\n    .sink(\n          receiveCompletion: { print (\"\\($0)\") },\n          receiveValue: { print (\"\\($0)\", terminator: \" \") }\n     )\n\n\/\/ Prints: \"(Unknown) V IV III II I failure(ParseError())\"\n```\n\n## Filtering elements\n\n- **filter(_:)**: Republishes all elements that match a provided closure.\n- **tryFilter(_:)**: Republishes all elements that match a provided error-throwing closure.\n- **compactMap(_:)**: Calls a closure with each received element and publishes any returned optional that has a value.\n- **removeDuplicates()**: Publishes only elements that don’t match the previous element.\n- **removeDuplicates(by:)**: Publishes only elements that don’t match the previous element, as evaluated by a provided closure.\n- **tryRemoveDuplicates(by:)**: Publishes only elements that don’t match the previous element, as evaluated by a provided error-throwing closure.\n- **replaceEmpty(with:)**: Replaces an empty stream with the provided element.\n- **replaceError(with:)**: Replaces any errors in the stream with the provided element.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Republishes all elements that match a provided closure.",
+          "name" : "filter(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/filter(_:)"
+        },
+        {
+          "description" : "Republishes all elements that match a provided error-throwing closure.",
+          "name" : "tryFilter(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryFilter(_:)"
+        },
+        {
+          "description" : "Calls a closure with each received element and publishes any returned optional that has a value.",
+          "name" : "compactMap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/compactMap(_:)"
+        },
+        {
+          "description" : "Publishes only elements that don’t match the previous element.",
+          "name" : "removeDuplicates()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/removeDuplicates()"
+        },
+        {
+          "description" : "Publishes only elements that don’t match the previous element, as evaluated by a provided closure.",
+          "name" : "removeDuplicates(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/removeDuplicates(by:)"
+        },
+        {
+          "description" : "Publishes only elements that don’t match the previous element, as evaluated by a provided error-throwing closure.",
+          "name" : "tryRemoveDuplicates(by:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryRemoveDuplicates(by:)"
+        },
+        {
+          "description" : "Replaces an empty stream with the provided element.",
+          "name" : "replaceEmpty(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/replaceEmpty(with:)"
+        },
+        {
+          "description" : "Replaces any errors in the stream with the provided element.",
+          "name" : "replaceError(with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/replaceError(with:)"
+        }
+      ],
+      "title" : "Filtering elements"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "tryCompactMap(_:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/Publisher\/tryCompactMap(_:)"
+}

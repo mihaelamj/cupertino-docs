@@ -1,0 +1,71 @@
+{
+  "abstract" : "The format descriptions of the media samples that a track references.",
+  "codeExamples" : [
+    {
+      "code" : "extension AVAssetTrack {\n    var mediaFormat: String {\n        get async throws {\n            var format = \"\"\n            let descriptions = try await load(.formatDescriptions)\n            for (index, formatDesc) in descriptions.enumerated() {\n                \/\/ Get a string representation of the media type.\n                let type = CMFormatDescriptionGetMediaType(formatDesc).toString()\n                \/\/ Get a string representation of the media subtype.\n                let subType = CMFormatDescriptionGetMediaSubType(formatDesc).toString()\n                \/\/ Format the string as type\/subType, such as vide\/avc1 or soun\/aac.\n                format += \"\\(type)\/\\(subType)\"\n                \/\/ Comma-separate if there's more than one format description.\n                if index < descriptions.count - 1 {\n                    format += \",\"\n                }\n            }\n            return format\n        }\n    }\n}\n \nextension FourCharCode {\n    \/\/ Create a string representation of a FourCC.\n    func toString() -> String {\n        let bytes: [CChar] = [\n            CChar((self >> 24) & 0xff),\n            CChar((self >> 16) & 0xff),\n            CChar((self >> 8) & 0xff),\n            CChar(self & 0xff),\n            0\n        ]\n        let result = String(cString: bytes)\n        let characterSet = CharacterSet.whitespaces\n        return result.trimmingCharacters(in: characterSet)\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "6a3b0167472d50f4cebe14e7dd4a80ec63f30c7984a77269eedcc7021915ec17",
+  "crawledAt" : "2025-12-04T21:54:45Z",
+  "declaration" : {
+    "code" : "static var formatDescriptions: AVAsyncProperty<Root, [CMFormatDescription]> { get }",
+    "language" : "swift"
+  },
+  "id" : "D57381EE-6854-4FAE-B3D3-0A29A7980172",
+  "kind" : "property",
+  "language" : "swift",
+  "module" : "AVFoundation",
+  "overview" : "## Discussion\n\nUse the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAsynchronousKeyValueLoading\/load(_:isolation:)] method to retrieve the property value.\n\nThe array contains [doc:\/\/com.apple.documentation\/documentation\/CoreMedia\/CMFormatDescription] objects that indicate the format of media samples the track references.\n\nAsset tracks typically present uniform media (for example, media that uses the same encoding settings) and contain a single format description. However, in some cases, an asset track may contain multiple format descriptions. For example, an H.264-encoded video track may have some segments that use the Main profile and others that use the High profile. Also, an individual [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCompositionTrack], which subclasses [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAssetTrack], may contain audio or video segments using different codecs.\n\nYou can use [doc:\/\/com.apple.documentation\/documentation\/CoreMedia\/CMFormatDescription] to access low-level details about the media the track references. For example, you can retrieve the details of track’s media type and subtype as the code below shows:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVPartialAsyncProperty\/formatDescriptions\ncrawled: 2025-12-04T21:54:45Z\n---\n\n# formatDescriptions\n\n**Type Property**\n\nThe format descriptions of the media samples that a track references.\n\n## Declaration\n\n```swift\nstatic var formatDescriptions: AVAsyncProperty<Root, [CMFormatDescription]> { get }\n```\n\n## Discussion\n\nUse the [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAsynchronousKeyValueLoading\/load(_:isolation:)] method to retrieve the property value.\n\nThe array contains [doc:\/\/com.apple.documentation\/documentation\/CoreMedia\/CMFormatDescription] objects that indicate the format of media samples the track references.\n\nAsset tracks typically present uniform media (for example, media that uses the same encoding settings) and contain a single format description. However, in some cases, an asset track may contain multiple format descriptions. For example, an H.264-encoded video track may have some segments that use the Main profile and others that use the High profile. Also, an individual [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVCompositionTrack], which subclasses [doc:\/\/com.apple.avfoundation\/documentation\/AVFoundation\/AVAssetTrack], may contain audio or video segments using different codecs.\n\nYou can use [doc:\/\/com.apple.documentation\/documentation\/CoreMedia\/CMFormatDescription] to access low-level details about the media the track references. For example, you can retrieve the details of track’s media type and subtype as the code below shows:\n\n```swift\nextension AVAssetTrack {\n    var mediaFormat: String {\n        get async throws {\n            var format = \"\"\n            let descriptions = try await load(.formatDescriptions)\n            for (index, formatDesc) in descriptions.enumerated() {\n                \/\/ Get a string representation of the media type.\n                let type = CMFormatDescriptionGetMediaType(formatDesc).toString()\n                \/\/ Get a string representation of the media subtype.\n                let subType = CMFormatDescriptionGetMediaSubType(formatDesc).toString()\n                \/\/ Format the string as type\/subType, such as vide\/avc1 or soun\/aac.\n                format += \"\\(type)\/\\(subType)\"\n                \/\/ Comma-separate if there's more than one format description.\n                if index < descriptions.count - 1 {\n                    format += \",\"\n                }\n            }\n            return format\n        }\n    }\n}\n \nextension FourCharCode {\n    \/\/ Create a string representation of a FourCC.\n    func toString() -> String {\n        let bytes: [CChar] = [\n            CChar((self >> 24) & 0xff),\n            CChar((self >> 16) & 0xff),\n            CChar((self >> 8) & 0xff),\n            CChar(self & 0xff),\n            0\n        ]\n        let result = String(cString: bytes)\n        let characterSet = CharacterSet.whitespaces\n        return result.trimmingCharacters(in: characterSet)\n    }\n}\n```\n\n## Loading track information\n\n- **isPlayable**: A Boolean value that indicates whether the track is playable in the current environment.\n- **isDecodable**: A Boolean value that indicates whether the track is decodable in the current environment.\n- **isEnabled**: A Boolean value that indicates whether the track is in an enabled state.\n- **isSelfContained**: A Boolean value that indicates whether the track references sample data only within its container file.\n- **totalSampleDataLength**: The total number of bytes of sample data the track requires.\n- **mediaCharacteristics**: The media characteristics for the track.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the track is playable in the current environment.",
+          "name" : "isPlayable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVPartialAsyncProperty\/isPlayable-6txa5"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the track is decodable in the current environment.",
+          "name" : "isDecodable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVPartialAsyncProperty\/isDecodable"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the track is in an enabled state.",
+          "name" : "isEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVPartialAsyncProperty\/isEnabled"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the track references sample data only within its container file.",
+          "name" : "isSelfContained",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVPartialAsyncProperty\/isSelfContained"
+        },
+        {
+          "description" : "The total number of bytes of sample data the track requires.",
+          "name" : "totalSampleDataLength",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVPartialAsyncProperty\/totalSampleDataLength"
+        },
+        {
+          "description" : "The media characteristics for the track.",
+          "name" : "mediaCharacteristics",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVPartialAsyncProperty\/mediaCharacteristics"
+        }
+      ],
+      "title" : "Loading track information"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "formatDescriptions",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AVFoundation\/AVPartialAsyncProperty\/formatDescriptions"
+}

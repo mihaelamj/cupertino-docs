@@ -1,0 +1,705 @@
+{
+  "abstract" : "Describes the macOS Objective-C runtime library support functions and data structures.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "d232e769851edd56f1b3b7ac265cfafce59f313a83728a92aca16776f9e5cc3d",
+  "crawledAt" : "2025-12-05T10:31:45Z",
+  "id" : "701A2BAD-0301-4274-9F01-2E266FF0A75B",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "Objective-C Runtime",
+  "overview" : "## Overview\n\nThe Objective-C runtime is a runtime library that provides support for the dynamic properties of the Objective-C language, and as such is linked to by all Objective-C apps. Objective-C runtime library support functions are implemented in the shared library found at `\/usr\/lib\/libobjc.A.dylib`.\n\nYou typically don’t need to use the Objective-C runtime library directly when programming in Objective-C. This API is useful primarily for developing bridge layers between Objective-C and other languages, or for low-level debugging.\n\nThe macOS implementation of the Objective-C runtime library is unique to the Mac. For other platforms, the GNU Compiler Collection provides a different implementation with a similar API. This document covers only the macOS implementation.\n\nThe low-level Objective-C runtime API is significantly updated in OS X version 10.5. Many functions and all existing data structures are replaced with new functions. The old functions and structures are deprecated in 32-bit and absent in 64-bit mode. The API constrains several values to 32-bit ints even in 64-bit mode—class count, protocol count, methods per class, ivars per class, arguments per method, sizeof(all arguments) per method, and class version number. In addition, the new Objective-C ABI (not described here) further constrains `sizeof(anInstance)` to 32 bits, and three other values to 24 bits—methods per class, ivars per class, and sizeof(a single ivar). Finally, the obsolete `NXHashTable` and `NXMapTable` are limited to 4 billion items.\n\n“Deprecated” below means “deprecated in OS X version 10.5 for 32-bit code, and disallowed for 64-bit code.”\n\n### Who Should Read This Document\n\nThe document is intended for readers who might be interested in learning about the Objective-C runtime.\n\nBecause this isn’t a document about C, it assumes some prior acquaintance with that language. However, it doesn’t have to be an extensive acquaintance.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objective-c-runtime\ncrawled: 2025-12-05T10:31:45Z\n---\n\n# Objective-C Runtime\n\n**API Collection**\n\nDescribes the macOS Objective-C runtime library support functions and data structures.\n\n## Overview\n\nThe Objective-C runtime is a runtime library that provides support for the dynamic properties of the Objective-C language, and as such is linked to by all Objective-C apps. Objective-C runtime library support functions are implemented in the shared library found at `\/usr\/lib\/libobjc.A.dylib`.\n\nYou typically don’t need to use the Objective-C runtime library directly when programming in Objective-C. This API is useful primarily for developing bridge layers between Objective-C and other languages, or for low-level debugging.\n\nThe macOS implementation of the Objective-C runtime library is unique to the Mac. For other platforms, the GNU Compiler Collection provides a different implementation with a similar API. This document covers only the macOS implementation.\n\nThe low-level Objective-C runtime API is significantly updated in OS X version 10.5. Many functions and all existing data structures are replaced with new functions. The old functions and structures are deprecated in 32-bit and absent in 64-bit mode. The API constrains several values to 32-bit ints even in 64-bit mode—class count, protocol count, methods per class, ivars per class, arguments per method, sizeof(all arguments) per method, and class version number. In addition, the new Objective-C ABI (not described here) further constrains `sizeof(anInstance)` to 32 bits, and three other values to 24 bits—methods per class, ivars per class, and sizeof(a single ivar). Finally, the obsolete `NXHashTable` and `NXMapTable` are limited to 4 billion items.\n\n\n\n“Deprecated” below means “deprecated in OS X version 10.5 for 32-bit code, and disallowed for 64-bit code.”\n\n### Who Should Read This Document\n\nThe document is intended for readers who might be interested in learning about the Objective-C runtime.\n\nBecause this isn’t a document about C, it assumes some prior acquaintance with that language. However, it doesn’t have to be an extensive acquaintance.\n\n## Working with Classes\n\n- **class_getName(_:)**: Returns the name of a class.\n- **class_getSuperclass(_:)**: Returns the superclass of a class.\n- **class_setSuperclass(_:_:)**: Sets the superclass of a given class.\n- **class_isMetaClass(_:)**: Returns a Boolean value that indicates whether a class object is a metaclass.\n- **class_getInstanceSize(_:)**: Returns the size of instances of a class.\n- **class_getInstanceVariable(_:_:)**: Returns the `Ivar` for a specified instance variable of a given class.\n- **class_getClassVariable(_:_:)**: Returns the `Ivar` for a specified class variable of a given class.\n- **class_addIvar(_:_:_:_:_:)**: Adds a new instance variable to a class.\n- **class_copyIvarList(_:_:)**: Describes the instance variables declared by a class.\n- **class_getIvarLayout(_:)**: Returns a description of the `Ivar` layout for a given class.\n- **class_setIvarLayout(_:_:)**: Sets the `Ivar` layout for a given class.\n- **class_getWeakIvarLayout(_:)**: Returns a description of the layout of weak `Ivar`s for a given class.\n- **class_setWeakIvarLayout(_:_:)**: Sets the layout for weak `Ivar`s for a given class.\n- **class_getProperty(_:_:)**: Returns a property with a given name of a given class.\n- **class_copyPropertyList(_:_:)**: Describes the properties declared by a class.\n- **class_addMethod(_:_:_:_:)**: Adds a new method to a class with a given name and implementation.\n- **class_getInstanceMethod(_:_:)**: Returns a specified instance method for a given class.\n- **class_getClassMethod(_:_:)**: Returns a pointer to the data structure describing a given class method for a given class.\n- **class_copyMethodList(_:_:)**: Describes the instance methods implemented by a class.\n- **class_replaceMethod(_:_:_:_:)**: Replaces the implementation of a method for a given class.\n- **class_getMethodImplementation(_:_:)**: Returns the function pointer that would be called if a particular message were sent to an instance of a class.\n- **class_getMethodImplementation_stret(_:_:)**: Returns the function pointer that would be called if a particular message were sent to an instance of a class.\n- **class_respondsToSelector(_:_:)**: Returns a Boolean value that indicates whether instances of a class respond to a particular selector.\n- **class_addProtocol(_:_:)**: Adds a protocol to a class.\n- **class_addProperty(_:_:_:_:)**: Adds a property to a class.\n- **class_replaceProperty(_:_:_:_:)**: Replace a property of a class.\n- **class_conformsToProtocol(_:_:)**: Returns a Boolean value that indicates whether a class conforms to a given protocol.\n- **class_copyProtocolList(_:_:)**: Describes the protocols adopted by a class.\n- **class_getVersion(_:)**: Returns the version number of a class definition.\n- **class_setVersion(_:_:)**: Sets the version number of a class definition.\n- **objc_setFutureClass**: Used by CoreFoundation’s toll-free bridging.\n\n## Adding Classes\n\n- **objc_allocateClassPair(_:_:_:)**: Creates a new class and metaclass.\n- **objc_disposeClassPair(_:)**: Destroys a class and its associated metaclass.\n- **objc_registerClassPair(_:)**: Registers a class that was allocated using [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/objc_allocateClassPair(_:_:_:)].\n- **objc_duplicateClass(_:_:_:)**: Used by Foundation’s Key-Value Observing.\n\n## Instantiating Classes\n\n- **class_createInstance(_:_:)**: Creates an instance of a class, allocating memory for the class in the default malloc memory zone.\n\n## Working with Instances\n\n- **object_getIndexedIvars(_:)**: Returns a pointer to any extra bytes allocated with a instance given object.\n- **object_getIvar(_:_:)**: Reads the value of an instance variable in an object.\n- **object_setIvar(_:_:_:)**: Sets the value of an instance variable in an object.\n- **object_getClassName(_:)**: Returns the class name of a given object.\n- **object_getClass(_:)**: Returns the class of an object.\n- **object_setClass(_:_:)**: Sets the class of an object.\n\n## Obtaining Class Definitions\n\n- **objc_getClassList(_:_:)**: Obtains the list of registered class definitions.\n- **objc_copyClassList(_:)**: Creates and returns a list of pointers to all registered class definitions.\n- **objc_lookUpClass(_:)**: Returns the class definition of a specified class.\n- **objc_getClass(_:)**: Returns the class definition of a specified class.\n- **objc_getRequiredClass(_:)**: Returns the class definition of a specified class.\n- **objc_getMetaClass(_:)**: Returns the metaclass definition of a specified class.\n\n## Working with Instance Variables\n\n- **ivar_getName(_:)**: Returns the name of an instance variable.\n- **ivar_getTypeEncoding(_:)**: Returns the type string of an instance variable.\n- **ivar_getOffset(_:)**: Returns the offset of an instance variable.\n\n## Associative References\n\n- **objc_setAssociatedObject(_:_:_:_:)**: Sets an associated value for a given object using a given key and association policy.\n- **objc_getAssociatedObject(_:_:)**: Returns the value associated with a given object for a given key.\n- **objc_removeAssociatedObjects(_:)**: Removes all associations for a given object.\n\n## Working with Methods\n\n- **method_getName(_:)**: Returns the name of a method.\n- **method_getImplementation(_:)**: Returns the implementation of a method.\n- **method_getTypeEncoding(_:)**: Returns a string describing a method’s parameter and return types.\n- **method_copyReturnType(_:)**: Returns a string describing a method’s return type.\n- **method_copyArgumentType(_:_:)**: Returns a string describing a single parameter type of a method.\n- **method_getReturnType(_:_:_:)**: Returns by reference a string describing a method’s return type.\n- **method_getNumberOfArguments(_:)**: Returns the number of arguments accepted by a method.\n- **method_getArgumentType(_:_:_:_:)**: Returns by reference a string describing a single parameter type of a method.\n- **method_getDescription(_:)**: Returns a method description structure for a specified method.\n- **method_setImplementation(_:_:)**: Sets the implementation of a method.\n- **method_exchangeImplementations(_:_:)**: Exchanges the implementations of two methods.\n\n## Working with Libraries\n\n- **objc_copyImageNames(_:)**: Returns the names of all the loaded Objective-C frameworks and dynamic libraries.\n- **class_getImageName(_:)**: Returns the name of the dynamic library a class originated from.\n- **objc_copyClassNamesForImage(_:_:)**: Returns the names of all the classes within a specified library or framework.\n\n## Working with Selectors\n\n- **sel_getName(_:)**: Returns the name of the method specified by a given selector.\n- **sel_registerName(_:)**: Registers a method with the Objective-C runtime system, maps the method name to a selector, and returns the selector value.\n- **sel_getUid(_:)**: Registers a method name with the Objective-C runtime system.\n- **sel_isEqual(_:_:)**: Returns a Boolean value that indicates whether two selectors are equal.\n\n## Working with Protocols\n\n- **objc_getProtocol(_:)**: Returns a specified protocol.\n- **objc_copyProtocolList(_:)**: Returns an array of all the protocols known to the runtime.\n- **objc_allocateProtocol(_:)**: Creates a new protocol instance.\n- **objc_registerProtocol(_:)**: Registers a newly created protocol with the Objective-C runtime.\n- **protocol_addMethodDescription(_:_:_:_:_:)**: Adds a method to a protocol.\n- **protocol_addProtocol(_:_:)**: Adds a registered protocol to another protocol that is under construction.\n- **protocol_addProperty(_:_:_:_:_:_:)**: Adds a property to a protocol that is under construction.\n- **protocol_getName(_:)**: Returns the name of a protocol.\n- **protocol_isEqual(_:_:)**: Returns a Boolean value that indicates whether two protocols are equal.\n- **protocol_copyMethodDescriptionList(_:_:_:_:)**: Returns an array of method descriptions of methods meeting a given specification for a given protocol.\n- **protocol_getMethodDescription(_:_:_:_:)**: Returns a method description structure for a specified method of a given protocol.\n- **protocol_copyPropertyList(_:_:)**: Returns an array of the properties declared by a protocol.\n- **protocol_getProperty(_:_:_:_:)**: Returns the specified property of a given protocol.\n- **protocol_copyProtocolList(_:_:)**: Returns an array of the protocols adopted by a protocol.\n- **protocol_conformsToProtocol(_:_:)**: Returns a Boolean value that indicates whether one protocol conforms to another protocol.\n\n## Working with Properties\n\n- **property_getName(_:)**: Returns the name of a property.\n- **property_getAttributes(_:)**: Returns the attribute string of a property.\n- **property_copyAttributeValue(_:_:)**: Returns the value of a property attribute given the attribute name.\n- **property_copyAttributeList(_:_:)**: Returns an array of property attributes for a given property.\n\n## Using Objective-C Language Features\n\n- **objc_enumerationMutation(_:)**: Inserted by the compiler when a mutation is detected during a foreach iteration.\n- **objc_setEnumerationMutationHandler(_:)**: Sets the current mutation handler.\n- **imp_implementationWithBlock(_:)**: Creates a pointer to a function that calls the specified block when the method is called.\n- **imp_getBlock(_:)**: Returns the block associated with an `IMP` that was created using [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/imp_implementationWithBlock(_:)].\n- **imp_removeBlock(_:)**: Disassociates a block from an `IMP` that was created using [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/imp_implementationWithBlock(_:)], and releases the copy of the block that was created.\n- **objc_loadWeak(_:)**: Loads the object referenced by a weak pointer and returns it.\n- **objc_storeWeak(_:_:)**: Stores a new value in a `__weak` variable.\n\n## Class-Definition Data Structures\n\n- **Method**: An opaque type that represents a method in a class definition.\n- **Ivar**: An opaque type that represents an instance variable.\n- **Category**: An opaque type that represents a category.\n- **objc_property_t**: An opaque type that represents an Objective-C declared property.\n- **IMP**: A pointer to the start of a method implementation.\n- **objc_method_description**: Defines an Objective-C method.\n- **objc_cache**: Performance optimization for method calls. Contains pointers to recently used methods.\n- **objc_property_attribute_t**: Defines a property attribute.\n\n## Instance Data Types\n\n- **objc_object**: Represents an instance of a class.\n- **objc_super**: Specifies the superclass of an instance.\n\n## Associative References\n\n- **objc_AssociationPolicy**: Type to specify the behavior of an association.\n\n## Related Documentation\n\n- **Objective-C Runtime Programming Guide**\n\n## Reference\n\n- **Objective-C Structures**\n- **Objective-C Constants**\n- **Objective-C Functions**\n- **Objective-C Data Types**\n- **Objective-C Macros**\n- **Objective-C Enumerations**\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the name of a class.",
+          "name" : "class_getName(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getName(_:)"
+        },
+        {
+          "description" : "Returns the superclass of a class.",
+          "name" : "class_getSuperclass(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getSuperclass(_:)"
+        },
+        {
+          "description" : "Sets the superclass of a given class.",
+          "name" : "class_setSuperclass(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_setSuperclass(_:_:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether a class object is a metaclass.",
+          "name" : "class_isMetaClass(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_isMetaClass(_:)"
+        },
+        {
+          "description" : "Returns the size of instances of a class.",
+          "name" : "class_getInstanceSize(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getInstanceSize(_:)"
+        },
+        {
+          "description" : "Returns the `Ivar` for a specified instance variable of a given class.",
+          "name" : "class_getInstanceVariable(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getInstanceVariable(_:_:)"
+        },
+        {
+          "description" : "Returns the `Ivar` for a specified class variable of a given class.",
+          "name" : "class_getClassVariable(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getClassVariable(_:_:)"
+        },
+        {
+          "description" : "Adds a new instance variable to a class.",
+          "name" : "class_addIvar(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_addIvar(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Describes the instance variables declared by a class.",
+          "name" : "class_copyIvarList(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_copyIvarList(_:_:)"
+        },
+        {
+          "description" : "Returns a description of the `Ivar` layout for a given class.",
+          "name" : "class_getIvarLayout(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getIvarLayout(_:)"
+        },
+        {
+          "description" : "Sets the `Ivar` layout for a given class.",
+          "name" : "class_setIvarLayout(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_setIvarLayout(_:_:)"
+        },
+        {
+          "description" : "Returns a description of the layout of weak `Ivar`s for a given class.",
+          "name" : "class_getWeakIvarLayout(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getWeakIvarLayout(_:)"
+        },
+        {
+          "description" : "Sets the layout for weak `Ivar`s for a given class.",
+          "name" : "class_setWeakIvarLayout(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_setWeakIvarLayout(_:_:)"
+        },
+        {
+          "description" : "Returns a property with a given name of a given class.",
+          "name" : "class_getProperty(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getProperty(_:_:)"
+        },
+        {
+          "description" : "Describes the properties declared by a class.",
+          "name" : "class_copyPropertyList(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_copyPropertyList(_:_:)"
+        },
+        {
+          "description" : "Adds a new method to a class with a given name and implementation.",
+          "name" : "class_addMethod(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_addMethod(_:_:_:_:)"
+        },
+        {
+          "description" : "Returns a specified instance method for a given class.",
+          "name" : "class_getInstanceMethod(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getInstanceMethod(_:_:)"
+        },
+        {
+          "description" : "Returns a pointer to the data structure describing a given class method for a given class.",
+          "name" : "class_getClassMethod(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getClassMethod(_:_:)"
+        },
+        {
+          "description" : "Describes the instance methods implemented by a class.",
+          "name" : "class_copyMethodList(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_copyMethodList(_:_:)"
+        },
+        {
+          "description" : "Replaces the implementation of a method for a given class.",
+          "name" : "class_replaceMethod(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_replaceMethod(_:_:_:_:)"
+        },
+        {
+          "description" : "Returns the function pointer that would be called if a particular message were sent to an instance of a class.",
+          "name" : "class_getMethodImplementation(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getMethodImplementation(_:_:)"
+        },
+        {
+          "description" : "Returns the function pointer that would be called if a particular message were sent to an instance of a class.",
+          "name" : "class_getMethodImplementation_stret(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getMethodImplementation_stret(_:_:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether instances of a class respond to a particular selector.",
+          "name" : "class_respondsToSelector(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_respondsToSelector(_:_:)"
+        },
+        {
+          "description" : "Adds a protocol to a class.",
+          "name" : "class_addProtocol(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_addProtocol(_:_:)"
+        },
+        {
+          "description" : "Adds a property to a class.",
+          "name" : "class_addProperty(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_addProperty(_:_:_:_:)"
+        },
+        {
+          "description" : "Replace a property of a class.",
+          "name" : "class_replaceProperty(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_replaceProperty(_:_:_:_:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether a class conforms to a given protocol.",
+          "name" : "class_conformsToProtocol(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_conformsToProtocol(_:_:)"
+        },
+        {
+          "description" : "Describes the protocols adopted by a class.",
+          "name" : "class_copyProtocolList(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_copyProtocolList(_:_:)"
+        },
+        {
+          "description" : "Returns the version number of a class definition.",
+          "name" : "class_getVersion(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getVersion(_:)"
+        },
+        {
+          "description" : "Sets the version number of a class definition.",
+          "name" : "class_setVersion(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_setVersion(_:_:)"
+        },
+        {
+          "description" : "Used by CoreFoundation’s toll-free bridging.",
+          "name" : "objc_setFutureClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/1808430-objc_setfutureclass"
+        }
+      ],
+      "title" : "Working with Classes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new class and metaclass.",
+          "name" : "objc_allocateClassPair(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_allocateClassPair(_:_:_:)"
+        },
+        {
+          "description" : "Destroys a class and its associated metaclass.",
+          "name" : "objc_disposeClassPair(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_disposeClassPair(_:)"
+        },
+        {
+          "description" : "Registers a class that was allocated using [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/objc_allocateClassPair(_:_:_:)].",
+          "name" : "objc_registerClassPair(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_registerClassPair(_:)"
+        },
+        {
+          "description" : "Used by Foundation’s Key-Value Observing.",
+          "name" : "objc_duplicateClass(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_duplicateClass(_:_:_:)"
+        }
+      ],
+      "title" : "Adding Classes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an instance of a class, allocating memory for the class in the default malloc memory zone.",
+          "name" : "class_createInstance(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_createInstance(_:_:)"
+        }
+      ],
+      "title" : "Instantiating Classes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a pointer to any extra bytes allocated with a instance given object.",
+          "name" : "object_getIndexedIvars(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/object_getIndexedIvars(_:)"
+        },
+        {
+          "description" : "Reads the value of an instance variable in an object.",
+          "name" : "object_getIvar(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/object_getIvar(_:_:)"
+        },
+        {
+          "description" : "Sets the value of an instance variable in an object.",
+          "name" : "object_setIvar(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/object_setIvar(_:_:_:)"
+        },
+        {
+          "description" : "Returns the class name of a given object.",
+          "name" : "object_getClassName(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/object_getClassName(_:)"
+        },
+        {
+          "description" : "Returns the class of an object.",
+          "name" : "object_getClass(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/object_getClass(_:)"
+        },
+        {
+          "description" : "Sets the class of an object.",
+          "name" : "object_setClass(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/object_setClass(_:_:)"
+        }
+      ],
+      "title" : "Working with Instances"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Obtains the list of registered class definitions.",
+          "name" : "objc_getClassList(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_getClassList(_:_:)"
+        },
+        {
+          "description" : "Creates and returns a list of pointers to all registered class definitions.",
+          "name" : "objc_copyClassList(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_copyClassList(_:)"
+        },
+        {
+          "description" : "Returns the class definition of a specified class.",
+          "name" : "objc_lookUpClass(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_lookUpClass(_:)"
+        },
+        {
+          "description" : "Returns the class definition of a specified class.",
+          "name" : "objc_getClass(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_getClass(_:)"
+        },
+        {
+          "description" : "Returns the class definition of a specified class.",
+          "name" : "objc_getRequiredClass(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_getRequiredClass(_:)"
+        },
+        {
+          "description" : "Returns the metaclass definition of a specified class.",
+          "name" : "objc_getMetaClass(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_getMetaClass(_:)"
+        }
+      ],
+      "title" : "Obtaining Class Definitions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the name of an instance variable.",
+          "name" : "ivar_getName(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/ivar_getName(_:)"
+        },
+        {
+          "description" : "Returns the type string of an instance variable.",
+          "name" : "ivar_getTypeEncoding(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/ivar_getTypeEncoding(_:)"
+        },
+        {
+          "description" : "Returns the offset of an instance variable.",
+          "name" : "ivar_getOffset(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/ivar_getOffset(_:)"
+        }
+      ],
+      "title" : "Working with Instance Variables"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets an associated value for a given object using a given key and association policy.",
+          "name" : "objc_setAssociatedObject(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_setAssociatedObject(_:_:_:_:)"
+        },
+        {
+          "description" : "Returns the value associated with a given object for a given key.",
+          "name" : "objc_getAssociatedObject(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_getAssociatedObject(_:_:)"
+        },
+        {
+          "description" : "Removes all associations for a given object.",
+          "name" : "objc_removeAssociatedObjects(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_removeAssociatedObjects(_:)"
+        }
+      ],
+      "title" : "Associative References"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the name of a method.",
+          "name" : "method_getName(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_getName(_:)"
+        },
+        {
+          "description" : "Returns the implementation of a method.",
+          "name" : "method_getImplementation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_getImplementation(_:)"
+        },
+        {
+          "description" : "Returns a string describing a method’s parameter and return types.",
+          "name" : "method_getTypeEncoding(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_getTypeEncoding(_:)"
+        },
+        {
+          "description" : "Returns a string describing a method’s return type.",
+          "name" : "method_copyReturnType(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_copyReturnType(_:)"
+        },
+        {
+          "description" : "Returns a string describing a single parameter type of a method.",
+          "name" : "method_copyArgumentType(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_copyArgumentType(_:_:)"
+        },
+        {
+          "description" : "Returns by reference a string describing a method’s return type.",
+          "name" : "method_getReturnType(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_getReturnType(_:_:_:)"
+        },
+        {
+          "description" : "Returns the number of arguments accepted by a method.",
+          "name" : "method_getNumberOfArguments(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_getNumberOfArguments(_:)"
+        },
+        {
+          "description" : "Returns by reference a string describing a single parameter type of a method.",
+          "name" : "method_getArgumentType(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_getArgumentType(_:_:_:_:)"
+        },
+        {
+          "description" : "Returns a method description structure for a specified method.",
+          "name" : "method_getDescription(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_getDescription(_:)"
+        },
+        {
+          "description" : "Sets the implementation of a method.",
+          "name" : "method_setImplementation(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_setImplementation(_:_:)"
+        },
+        {
+          "description" : "Exchanges the implementations of two methods.",
+          "name" : "method_exchangeImplementations(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/method_exchangeImplementations(_:_:)"
+        }
+      ],
+      "title" : "Working with Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the names of all the loaded Objective-C frameworks and dynamic libraries.",
+          "name" : "objc_copyImageNames(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_copyImageNames(_:)"
+        },
+        {
+          "description" : "Returns the name of the dynamic library a class originated from.",
+          "name" : "class_getImageName(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/class_getImageName(_:)"
+        },
+        {
+          "description" : "Returns the names of all the classes within a specified library or framework.",
+          "name" : "objc_copyClassNamesForImage(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_copyClassNamesForImage(_:_:)"
+        }
+      ],
+      "title" : "Working with Libraries"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the name of the method specified by a given selector.",
+          "name" : "sel_getName(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/sel_getName(_:)"
+        },
+        {
+          "description" : "Registers a method with the Objective-C runtime system, maps the method name to a selector, and returns the selector value.",
+          "name" : "sel_registerName(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/sel_registerName(_:)"
+        },
+        {
+          "description" : "Registers a method name with the Objective-C runtime system.",
+          "name" : "sel_getUid(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/sel_getUid(_:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether two selectors are equal.",
+          "name" : "sel_isEqual(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/sel_isEqual(_:_:)"
+        }
+      ],
+      "title" : "Working with Selectors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a specified protocol.",
+          "name" : "objc_getProtocol(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_getProtocol(_:)"
+        },
+        {
+          "description" : "Returns an array of all the protocols known to the runtime.",
+          "name" : "objc_copyProtocolList(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_copyProtocolList(_:)"
+        },
+        {
+          "description" : "Creates a new protocol instance.",
+          "name" : "objc_allocateProtocol(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_allocateProtocol(_:)"
+        },
+        {
+          "description" : "Registers a newly created protocol with the Objective-C runtime.",
+          "name" : "objc_registerProtocol(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_registerProtocol(_:)"
+        },
+        {
+          "description" : "Adds a method to a protocol.",
+          "name" : "protocol_addMethodDescription(_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_addMethodDescription(_:_:_:_:_:)"
+        },
+        {
+          "description" : "Adds a registered protocol to another protocol that is under construction.",
+          "name" : "protocol_addProtocol(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_addProtocol(_:_:)"
+        },
+        {
+          "description" : "Adds a property to a protocol that is under construction.",
+          "name" : "protocol_addProperty(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_addProperty(_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Returns the name of a protocol.",
+          "name" : "protocol_getName(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_getName(_:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether two protocols are equal.",
+          "name" : "protocol_isEqual(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_isEqual(_:_:)"
+        },
+        {
+          "description" : "Returns an array of method descriptions of methods meeting a given specification for a given protocol.",
+          "name" : "protocol_copyMethodDescriptionList(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_copyMethodDescriptionList(_:_:_:_:)"
+        },
+        {
+          "description" : "Returns a method description structure for a specified method of a given protocol.",
+          "name" : "protocol_getMethodDescription(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_getMethodDescription(_:_:_:_:)"
+        },
+        {
+          "description" : "Returns an array of the properties declared by a protocol.",
+          "name" : "protocol_copyPropertyList(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_copyPropertyList(_:_:)"
+        },
+        {
+          "description" : "Returns the specified property of a given protocol.",
+          "name" : "protocol_getProperty(_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_getProperty(_:_:_:_:)"
+        },
+        {
+          "description" : "Returns an array of the protocols adopted by a protocol.",
+          "name" : "protocol_copyProtocolList(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_copyProtocolList(_:_:)"
+        },
+        {
+          "description" : "Returns a Boolean value that indicates whether one protocol conforms to another protocol.",
+          "name" : "protocol_conformsToProtocol(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/protocol_conformsToProtocol(_:_:)"
+        }
+      ],
+      "title" : "Working with Protocols"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the name of a property.",
+          "name" : "property_getName(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/property_getName(_:)"
+        },
+        {
+          "description" : "Returns the attribute string of a property.",
+          "name" : "property_getAttributes(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/property_getAttributes(_:)"
+        },
+        {
+          "description" : "Returns the value of a property attribute given the attribute name.",
+          "name" : "property_copyAttributeValue(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/property_copyAttributeValue(_:_:)"
+        },
+        {
+          "description" : "Returns an array of property attributes for a given property.",
+          "name" : "property_copyAttributeList(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/property_copyAttributeList(_:_:)"
+        }
+      ],
+      "title" : "Working with Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Inserted by the compiler when a mutation is detected during a foreach iteration.",
+          "name" : "objc_enumerationMutation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_enumerationMutation(_:)"
+        },
+        {
+          "description" : "Sets the current mutation handler.",
+          "name" : "objc_setEnumerationMutationHandler(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_setEnumerationMutationHandler(_:)"
+        },
+        {
+          "description" : "Creates a pointer to a function that calls the specified block when the method is called.",
+          "name" : "imp_implementationWithBlock(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/imp_implementationWithBlock(_:)"
+        },
+        {
+          "description" : "Returns the block associated with an `IMP` that was created using [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/imp_implementationWithBlock(_:)].",
+          "name" : "imp_getBlock(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/imp_getBlock(_:)"
+        },
+        {
+          "description" : "Disassociates a block from an `IMP` that was created using [doc:\/\/com.apple.objectivec\/documentation\/ObjectiveC\/imp_implementationWithBlock(_:)], and releases the copy of the block that was created.",
+          "name" : "imp_removeBlock(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/imp_removeBlock(_:)"
+        },
+        {
+          "description" : "Loads the object referenced by a weak pointer and returns it.",
+          "name" : "objc_loadWeak(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_loadWeak(_:)"
+        },
+        {
+          "description" : "Stores a new value in a `__weak` variable.",
+          "name" : "objc_storeWeak(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_storeWeak(_:_:)"
+        }
+      ],
+      "title" : "Using Objective-C Language Features"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An opaque type that represents a method in a class definition.",
+          "name" : "Method",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/Method"
+        },
+        {
+          "description" : "An opaque type that represents an instance variable.",
+          "name" : "Ivar",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/Ivar"
+        },
+        {
+          "description" : "An opaque type that represents a category.",
+          "name" : "Category",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/Category"
+        },
+        {
+          "description" : "An opaque type that represents an Objective-C declared property.",
+          "name" : "objc_property_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_property_t"
+        },
+        {
+          "description" : "A pointer to the start of a method implementation.",
+          "name" : "IMP",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/IMP"
+        },
+        {
+          "description" : "Defines an Objective-C method.",
+          "name" : "objc_method_description",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_method_description"
+        },
+        {
+          "description" : "Performance optimization for method calls. Contains pointers to recently used methods.",
+          "name" : "objc_cache",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_cache"
+        },
+        {
+          "description" : "Defines a property attribute.",
+          "name" : "objc_property_attribute_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_property_attribute_t"
+        }
+      ],
+      "title" : "Class-Definition Data Structures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Represents an instance of a class.",
+          "name" : "objc_object",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_object"
+        },
+        {
+          "description" : "Specifies the superclass of an instance.",
+          "name" : "objc_super",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_super-swift.struct"
+        }
+      ],
+      "title" : "Instance Data Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Type to specify the behavior of an association.",
+          "name" : "objc_AssociationPolicy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objc_AssociationPolicy"
+        }
+      ],
+      "title" : "Associative References"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "Objective-C Runtime Programming Guide"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Objective-C Structures",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objective-c-structures"
+        },
+        {
+          "description" : "",
+          "name" : "Objective-C Constants",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objective-c-constants"
+        },
+        {
+          "description" : "",
+          "name" : "Objective-C Functions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objective-c-functions"
+        },
+        {
+          "description" : "",
+          "name" : "Objective-C Data Types",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objective-c-data-types"
+        },
+        {
+          "description" : "",
+          "name" : "Objective-C Macros",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objective-c-macros"
+        },
+        {
+          "description" : "",
+          "name" : "Objective-C Enumerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objective-c-enums"
+        }
+      ],
+      "title" : "Reference"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Objective-C Runtime",
+  "url" : "https:\/\/developer.apple.com\/documentation\/ObjectiveC\/objective-c-runtime"
+}

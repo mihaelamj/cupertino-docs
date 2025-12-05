@@ -1,0 +1,1966 @@
+{
+  "abstract" : "The base class for most I\/O Kit families, devices, and drivers.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "564bfaa76dbe56e28bcf8ca99266ab5a5deb21b498786dd7cf3246b201c14222",
+  "crawledAt" : "2025-12-04T21:52:07Z",
+  "declaration" : {
+    "code" : "class IOService : IORegistryEntry",
+    "language" : "swift"
+  },
+  "id" : "8C0561F9-5E77-4282-A09B-0E0406C4D9ED",
+  "kind" : "class",
+  "language" : "occ",
+  "module" : "Kernel",
+  "overview" : "## Overview\n\n[doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice] provides general utility functions that are useful across all families. It defines APIs used to publish services, instantiates other services based on the existence of a providing service such as driver stacking, destroys a service and its dependent stack, and notifies interested parties of service state changes.\n\nThis class uses a *matching dictionary* that contains service type properties to discover supported devices. For example, a matching dictionary may describe a [doc:\/\/com.apple.usbdriverkit\/documentation\/USBDriverKit\/IOUSBHostDevice] (or subclass), an [doc:\/\/com.apple.usbdriverkit\/documentation\/USBDriverKit\/IOUSBHostDevice] with a certain class code, or an [doc:\/\/com.apple.documentation\/documentation\/kernel\/iopcidevice] with a set of matching names or device and vendor IDs. The list of properties considered for matching depends on the family that creates the dictionary.\n\nMatching dictionaries are associated with [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice] classes by the catalogue, as driver property tables, and also supplied by clients of the notification APIs.\n\n[doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice] performs matching based on several criteria: the C++ class (using [doc:\/\/com.apple.documentation\/documentation\/kernel\/osmetaclass] dynamic casting), the registry entry name, a registry path to the service (which includes device tree paths), a name assigned by BSD, or  location (point of attachment).\n\n### Instantiate Drivers\n\nDrivers are subclasses of [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice], and the catalogue manages their availability. The system instantiates drivers based on the publication of an [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice] they use (for example, an [doc:\/\/com.apple.documentation\/documentation\/kernel\/iopcidevice] or [doc:\/\/com.apple.usbdriverkit\/documentation\/USBDriverKit\/IOUSBHostDevice]), or when they are added to the catalogue and the I\/O services they use are already available.\n\nWhen [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice\/1532797-registerservice] publishes the IOService, the matching and probing process begins. This is always single threaded per provider. The system constructs a list of matching dictionaries from the catalogue and installed publish notification requests that successfully match the service, along with ordering supplied by `kIOProbeScoreKey` in the dictionary, or supplied with the notification. Each entry in the list is then processed in order. For notifications, the notification is delivered. For driver property tables, a lot more happens.\n\nThe system instantiates the driver class and calls `init()` with its property table, attaches the new driver instance to the provider, and calls [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice\/1532835-probe] with the provider as an argument. The default `probe` method returns success — your driver should implement this method to interrogate the provider to make sure it can work with it. It may also modify its probe score at this time. After probing, the system detaches the driver and attaches the next one in the list for probing.\n\nWhen the probing phase completes, the list consists of successfully probed drivers, in order of their probe score (after adjustments during the [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice\/1532835-probe] call). The system divides the list into categories based on the `kIOMatchCategoryKey` property. Drivers without a match category are considered in one default category. Match categories allow multiple clients of a provider to attach and start, though the provider may also enforce open\/close semantics to gain active access to it.\n\nFor each category, the system attaches the highest scoring driver in that category to the provider, then calls [doc:\/\/com.apple.documentation\/documentation\/kernel\/iohidinterface\/1812781-start]. If the method returns success, the system discards the rest of the drivers in the same match category; otherwise, it starts the next highest scoring driver.\n\nThe driver should only consider itself ready for work when the system calls its [doc:\/\/com.apple.documentation\/documentation\/kernel\/iohidinterface\/1812781-start] method. This indicates that the driver is using the provider and consuming that match category. The driver should also be prepared for allocation, probing and freeing, even if the probe is successful.\n\nAfter the drivers are synchronously started, the system delivers the installed “matched” notifications that match the registered service.\n\n### Match with Service Properties\n\nHere are the service properties you can use when setting up the matching dictionary.\n\n",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\ncrawled: 2025-12-04T21:52:07Z\n---\n\n# IOService\n\n**Class**\n\nThe base class for most I\/O Kit families, devices, and drivers.\n\n## Declaration\n\n```swift\nclass IOService : IORegistryEntry\n```\n\n## Overview\n\n[doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice] provides general utility functions that are useful across all families. It defines APIs used to publish services, instantiates other services based on the existence of a providing service such as driver stacking, destroys a service and its dependent stack, and notifies interested parties of service state changes.\n\nThis class uses a *matching dictionary* that contains service type properties to discover supported devices. For example, a matching dictionary may describe a [doc:\/\/com.apple.usbdriverkit\/documentation\/USBDriverKit\/IOUSBHostDevice] (or subclass), an [doc:\/\/com.apple.usbdriverkit\/documentation\/USBDriverKit\/IOUSBHostDevice] with a certain class code, or an [doc:\/\/com.apple.documentation\/documentation\/kernel\/iopcidevice] with a set of matching names or device and vendor IDs. The list of properties considered for matching depends on the family that creates the dictionary.\n\nMatching dictionaries are associated with [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice] classes by the catalogue, as driver property tables, and also supplied by clients of the notification APIs.\n\n[doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice] performs matching based on several criteria: the C++ class (using [doc:\/\/com.apple.documentation\/documentation\/kernel\/osmetaclass] dynamic casting), the registry entry name, a registry path to the service (which includes device tree paths), a name assigned by BSD, or  location (point of attachment).\n\n### Instantiate Drivers\n\nDrivers are subclasses of [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice], and the catalogue manages their availability. The system instantiates drivers based on the publication of an [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice] they use (for example, an [doc:\/\/com.apple.documentation\/documentation\/kernel\/iopcidevice] or [doc:\/\/com.apple.usbdriverkit\/documentation\/USBDriverKit\/IOUSBHostDevice]), or when they are added to the catalogue and the I\/O services they use are already available.\n\nWhen [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice\/1532797-registerservice] publishes the IOService, the matching and probing process begins. This is always single threaded per provider. The system constructs a list of matching dictionaries from the catalogue and installed publish notification requests that successfully match the service, along with ordering supplied by `kIOProbeScoreKey` in the dictionary, or supplied with the notification. Each entry in the list is then processed in order. For notifications, the notification is delivered. For driver property tables, a lot more happens.\n\nThe system instantiates the driver class and calls `init()` with its property table, attaches the new driver instance to the provider, and calls [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice\/1532835-probe] with the provider as an argument. The default `probe` method returns success — your driver should implement this method to interrogate the provider to make sure it can work with it. It may also modify its probe score at this time. After probing, the system detaches the driver and attaches the next one in the list for probing.\n\nWhen the probing phase completes, the list consists of successfully probed drivers, in order of their probe score (after adjustments during the [doc:\/\/com.apple.documentation\/documentation\/kernel\/ioservice\/1532835-probe] call). The system divides the list into categories based on the `kIOMatchCategoryKey` property. Drivers without a match category are considered in one default category. Match categories allow multiple clients of a provider to attach and start, though the provider may also enforce open\/close semantics to gain active access to it.\n\nFor each category, the system attaches the highest scoring driver in that category to the provider, then calls [doc:\/\/com.apple.documentation\/documentation\/kernel\/iohidinterface\/1812781-start]. If the method returns success, the system discards the rest of the drivers in the same match category; otherwise, it starts the next highest scoring driver.\n\nThe driver should only consider itself ready for work when the system calls its [doc:\/\/com.apple.documentation\/documentation\/kernel\/iohidinterface\/1812781-start] method. This indicates that the driver is using the provider and consuming that match category. The driver should also be prepared for allocation, probing and freeing, even if the probe is successful.\n\nAfter the drivers are synchronously started, the system delivers the installed “matched” notifications that match the registered service.\n\n### Match with Service Properties\n\nHere are the service properties you can use when setting up the matching dictionary.\n\n\n\n\n\n## Miscellaneous\n\n- **acknowledgePowerChange**: Acknowledges an in-progress power state change.\n- **acknowledgeSetPowerState**: Acknowledges the belated completion of a driver’s setPowerState power state change.\n- **activityTickle**: Informs power management when a power-managed device is in use, so that power management can track when it is idle and adjust its power state accordingly.\n- **addLocation**: Adds a location matching property to an existing dictionary.\n- **addMatchingNotification**: Adds a persistant notification handler to be notified of IOService events.\n- **addNotification**: Deprecated use addMatchingNotification(). Adds a persistant notification handler to be notified of IOService events.\n- **addPowerChild**: Informs a driver that it has a new child.\n- **adjustBusy**: Adjusts the `busyState` of an IOService object.\n- **attach**: Attaches an IOService client to a provider in the I\/O Registry.\n- **callPlatformFunction**: Calls the platform function with the given name.\n- **causeInterrupt**: Causes a device interrupt to occur.\n- **changePowerStateTo**: Sets a driver's power state.\n- **changePowerStateToPriv**: Tells a driver's superclass to change the power state of its device.\n- **clampPowerOn**: Deprecated. Do not use.\n- **close**: Releases active access to a provider.\n- **command_received**\n- **compareProperties**: Compares a set of properties in a matching dictionary with an IOService object's property table.\n- **compareProperty(OSDictionary *, const char *)**: Compares a property in a matching dictionary with an IOService object's property table.\n- **compareProperty(OSDictionary *, const OSString *)**: Compares a property in a matching dictionary with an IOService object's property table.\n- **configureReport**: configure IOReporting channels\n- **copyClientWithCategory**\n- **copyMatchingService**: Finds one of the current published IOService objects matching a matching dictionary.\n- **currentCapability**: Finds out the capability of a device's current power state.\n- **currentPowerConsumption**: Finds out the current power consumption of a device.\n- **deRegisterInterestedDriver**: De-registers power state interest from a previous call to `registerInterestedDriver`.\n- **detach**: Detaches an IOService client from a provider in the I\/O Registry.\n- **didTerminate**: Passes a termination up the stack.\n- **didYouWakeSystem**: Asks a driver if its device is the one that just woke the system from sleep.\n- **disableInterrupt**: Synchronously disables a device interrupt.\n- **enableInterrupt**: Enables a device interrupt.\n- **errnoFromReturn**: Translates an IOReturn code to a BSD `errno`.\n- **finalize**: Finalizes the destruction of an IOService object.\n- **free**: Frees data structures that were allocated when power management was initialized on this service.\n- **getAggressiveness**: Returns the current aggressiveness value for the given type.\n- **getBusyState**: Returns the `busyState` of an IOService object.\n- **getClient**: Returns an IOService object's primary client.\n- **getClientIterator**: Returns an iterator over an IOService object's clients.\n- **getDeviceMemory**: Returns the array of IODeviceMemory objects representing a device's memory mapped ranges.\n- **getDeviceMemoryCount**: Returns a count of the physical memory ranges available for a device.\n- **getDeviceMemoryWithIndex**: Returns an instance of IODeviceMemory representing one of a device's memory mapped ranges.\n- **getInterruptType**: Returns the type of interrupt used for a device supplying hardware interrupts.\n- **getMatchingServices**: Finds the set of current published IOService objects matching a matching dictionary.\n- **getOpenClientIterator**: Returns an iterator over a provider's clients that currently have opened the provider.\n- **getOpenProviderIterator**: Returns an iterator over an client's providers that are currently opened by the client.\n- **getPlatform**: Returns a pointer to the platform expert instance for the computer.\n- **getPMRootDomain**: Returns a pointer to the power management root domain instance for the computer.\n- **getPMworkloop**: Returns a pointer to the system-wide power management work loop.\n- **getPowerState**: Determines a device's power state.\n- **getProvider**: Returns an IOService object's primary provider.\n- **getProviderIterator**: Returns an iterator over an IOService object's providers.\n- **getResources**: Allocates any needed resources for a published IOService object before clients attach.\n- **getResourceService**: Returns a pointer to the IOResources service.\n- **getServiceRoot**: Returns a pointer to the root of the service plane.\n- **getState**: Accessor for IOService state bits, not normally needed or used outside IOService.\n- **getWorkLoop**: Returns the current work loop or `provider->getWorkLoop`.\n- **handleClose**: Controls the open \/ close behavior of an IOService object (overrideable by subclasses).\n- **handleIsOpen**: Controls the open \/ close behavior of an IOService object (overrideable by subclasses).\n- **handleOpen**: Controls the open \/ close behavior of an IOService object (overrideable by subclasses).\n- **initialPowerStateForDomainState**: Determines which power state a device is in, given the current power domain state.\n- **isInactive**: Checks if the IOService object has been terminated, and is in the process of being destroyed.\n- **isOpen**: Determines whether a specific, or any, client has an IOService object open.\n- **joinPMtree**: Joins the driver into the power plane of the I\/O Registry.\n- **lockForArbitration**: Locks an IOService object against changes in state or ownership.\n- **makeUsable**: Requests that a device become usable.\n- **mapDeviceMemoryWithIndex**: Maps a physical range of a device.\n- **matchLocation**: Allows a registered IOService object to direct location matching.\n- **matchPropertyTable**: Allows a registered IOService object to implement family specific matching.\n- **maxCapabilityForDomainState**: Determines a driver's highest power state possible for a given power domain state.\n- **message**: Receives a generic message delivered from an attached provider.\n- **messageClient**: Sends a generic message to an attached client.\n- **messageClients**: Sends a generic message to all attached clients.\n- **nameMatching(const char *, OSDictionary *)**: Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify an IOService name match.\n- **nameMatching(const OSString *, OSDictionary *)**: Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify an IOService name match.\n- **newTemperature**: Tells a power managed driver that the temperature in the thermal zone has changed.\n- **newUserClient**: Creates a connection for a non kernel client.\n- **nextIdleTimeout**: Allows subclasses to customize idle power management behavior.\n- **open**: Requests active access to a provider.\n- **PM_Clamp_Timer_Expired**\n- **PM_idle_timer_expiration**\n- **PMinit**: Initializes power management for a driver.\n- **PMstop**: Stop power managing the driver.\n- **powerChangeDone**: Tells a driver when a power state change is complete.\n- **powerOverrideOffPriv**: Allows a driver to disable a power override.\n- **powerOverrideOnPriv**: Allows a driver to ignore its children's power management requests and only use changePowerStateToPriv to define its own power state.\n- **powerStateDidChangeTo**: Informs interested parties that a device has changed to a different power state.\n- **powerStateForDomainState**: Determines what power state the device would be in for a given power domain state.\n- **powerStateWillChangeTo**: Informs interested parties that a device is about to change its power state.\n- **probe**: During an IOService object's instantiation, probes a matched service to see if it can be used.\n- **propertyMatching**: Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify an IOService phandle match.\n- **publishResource(const char *, OSObject *)**: Uses the resource service to publish a property.\n- **publishResource(const OSSymbol *, OSObject *)**: Uses the resource service to publish a property.\n- **registerInterestedDriver**: Allows an IOService object to register interest in the changing power state of a power-managed IOService object.\n- **registerInterrupt**: Registers a C function interrupt handler for a device supplying interrupts.\n- **registerPowerDriver**: Registers a set of power states that the driver supports.\n- **registerService**: Starts the registration process for a newly discovered IOService object.\n- **registryEntryIDMatching**: Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify a IORegistryEntryID match.\n- **removePowerChild**: Informs a power managed driver that one of its power plane childen is disappearing.\n- **requestPowerDomainState**: Tells a driver to adjust its power state.\n- **requestProbe**: Requests that hardware be re-scanned for devices.\n- **requestTerminate**: Passes a termination up the stack.\n- **resourceMatching(const char *, OSDictionary *)**: Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify a resource service match.\n- **resourceMatching(const OSString *, OSDictionary *)**: Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify a resource service match.\n- **serviceMatching(const char *, OSDictionary *)**: Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify an IOService class match.\n- **serviceMatching(const OSString *, OSDictionary *)**: Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify an IOService class match.\n- **setAggressiveness**: Broadcasts an aggressiveness factor from the parent of a driver to the driver.\n- **setDeviceMemory**: Sets the array of IODeviceMemory objects representing a device's memory mapped ranges.\n- **setIdleTimerPeriod**: Sets or changes the idle timer period.\n- **setPowerParent**: This call is handled internally by power management. It is not intended to be overridden or called by drivers.\n- **setPowerState**: Requests a power managed driver to change the power state of its device.\n- **start**: During an IOService object's instantiation, starts the IOService object that has been selected to run on the provider.\n- **start_PM_idle_timer**\n- **stop**: During an IOService termination, the stop method is called in its clients before they are detached & it is destroyed.\n- **stringFromReturn**: Supplies a programmer-friendly string from an IOReturn code.\n- **systemWake**: Tells every driver in the power plane that the system is waking up.\n- **systemWillShutdown**: Notifies members of the power plane of system shutdown and restart.\n- **temperatureCriticalForZone**: Alerts a driver to a critical temperature in some thermal zone.\n- **temporaryPowerClampOn**: A driver calls this method to hold itself in the highest power state until it has children.\n- **terminate**: Makes an IOService object inactive and begins its destruction.\n- **terminateClient**: Passes a termination up the stack.\n- **unlockForArbitration**: Unlocks an IOService obkect after a successful lockForArbitration.\n- **unregisterInterrupt**: Removes a C function interrupt handler for a device supplying hardware interrupts.\n- **updateReport**: request current data for the specified channels\n- **waitForMatchingService**: Waits for a matching to service to be published.\n- **waitForService**: Deprecated use waitForMatchingService(). Waits for a matching to service to be published.\n- **waitQuiet**: Waits for an IOService object's `busyState` to be zero.\n- **willTerminate**: Passes a termination up the stack.\n- **youAreRoot**: Informs power management which IOService object is the power plane root.\n\n## DataTypes\n\n- **ExpansionData**\n\n## Instance Variables\n\n- **reserved**\n\n## Instance Methods\n\n- **AdjustBusy**\n- **AdjustBusy_Impl**\n- **ChangePowerState**: Changes the device’s power state to the specified level.\n- **ChangePowerState_Impl**\n- **ClientCrashed**\n- **ClientCrashed_Impl**\n- **ConfigureReport**\n- **ConfigureReport_Impl**\n- **CopyDispatchQueue_Impl**\n- **CopyName**\n- **CopyName_Impl**\n- **CopyProperties**: Returns the registry properties associated with the current service.\n- **CopyProperties_Impl**\n- **CopyProviderProperties**\n- **CopyProviderProperties_Impl**\n- **CopySystemStateNotificationService**\n- **CopySystemStateNotificationService_Impl**\n- **CoreAnalyticsSendEvent**\n- **CoreAnalyticsSendEvent_Impl**\n- **Create**\n- **CreateDefaultDispatchQueue**\n- **CreateDefaultDispatchQueue_Impl**\n- **Create_Impl**\n- **Dispatch**\n- **GetBusyState**\n- **GetBusyState_Impl**\n- **GetProvider**\n- **GetRegistryEntryID**: Returns the registry ID for the current service.\n- **GetRegistryEntryID_Impl**\n- **JoinPMTree**\n- **JoinPMTree_Impl**\n- **NewUserClient**\n- **NewUserClient_Impl**\n- **PMinit**\n- **PMstop**\n- **RegisterService**: Starts the registration process for the service and performs any additional matching.\n- **RegisterService_Impl**\n- **RemoveProperty**\n- **RemoveProperty_Impl**\n- **RequireMaxBusStall**\n- **RequireMaxBusStall_Impl**\n- **SearchProperty**\n- **SearchProperty_Impl**\n- **SendIOMessageServicePropertyChange**\n- **SendIOMessageServicePropertyChange_Impl**\n- **SetDispatchQueue_Impl**\n- **SetLegend**\n- **SetLegend_Impl**\n- **SetName**\n- **SetName_Impl**\n- **SetPowerOverride**\n- **SetPowerOverride_Impl**\n- **SetPowerState**: Updates the service in response to power-related changes for a provider.\n- **SetPowerState_Impl**\n- **SetProperties**\n- **SetProperties_Impl**\n- **Start**: Starts the current service and associates it with the specified provider.\n- **Start_Impl**\n- **StateNotificationItemCopy**\n- **StateNotificationItemCopy_Impl**\n- **StateNotificationItemCreate**\n- **StateNotificationItemCreate_Impl**\n- **StateNotificationItemSet**\n- **StateNotificationItemSet_Impl**\n- **Stop**: Stops the service associated with the specified provider.\n- **Stop_Impl**\n- **Stop_async**\n- **Stop_async_Impl**\n- **StringFromReturn**\n- **StringFromReturn**\n- **StringFromReturn_Impl**\n- **Terminate**\n- **Terminate_Impl**\n- **UpdateReport**\n- **UpdateReport_Impl**\n- **UserSetProperties**\n- **UserSetProperties_Impl**\n- **acknowledgeNotification**\n- **acknowledgePowerChange**\n- **activityTickle**\n- **addInterruptStatistics**\n- **addNeededResource**\n- **addPowerChild**\n- **adjustBusy**\n- **allowPowerChange**\n- **applyToClients**\n- **applyToClients**\n- **applyToInterested**\n- **applyToProviders**\n- **applyToProviders**\n- **askChangeDown**\n- **attach**\n- **callPlatformFunction**\n- **callPlatformFunction**\n- **canTerminateForReplacement**\n- **cancelPowerChange**\n- **causeInterrupt**\n- **changePowerStateTo**\n- **changePowerStateToPriv**\n- **checkResource**\n- **checkResources**\n- **close**\n- **compareProperties**\n- **compareProperty**\n- **compareProperty**\n- **configureReport**\n- **copyClientWithCategory**\n- **copyNotifiers**\n- **currentCapability**\n- **currentPowerConsumption**\n- **deRegisterInterestedDriver**\n- **deliverNotification**\n- **detach**\n- **didTerminate**\n- **disableInterrupt**\n- **doServiceMatch**\n- **doServiceTerminate**\n- **enableInterrupt**\n- **errnoFromReturn**\n- **finalize**\n- **free**: Performs any final cleanup for the service.\n- **getAggressiveness**\n- **getBusyState**\n- **getClient**\n- **getClientIterator**\n- **getClientWithCategory**\n- **getDeviceMemory**\n- **getDeviceMemoryCount**\n- **getDeviceMemoryWithIndex**\n- **getInterruptType**\n- **getMetaClass**\n- **getOpenClientIterator**\n- **getOpenProviderIterator**\n- **getPowerState**\n- **getProvider**\n- **getProviderIterator**\n- **getResources**\n- **getState**\n- **getWorkLoop**\n- **handleClose**\n- **handleIsOpen**\n- **handleOpen**\n- **hasParent**\n- **init**\n- **init**: Handles the basic initialization of the service.\n- **initialPowerStateForDomainState**\n- **invokeNotifier**\n- **invokeNotifiers**\n- **isInactive**\n- **isOpen**\n- **joinPMtree**\n- **lockForArbitration**\n- **lookupInterrupt**\n- **makeUsable**\n- **mapDeviceMemoryWithIndex**\n- **matchInternal**\n- **matchLocation**\n- **matchPassive**\n- **matchPropertyTable**\n- **matchPropertyTable**\n- **maxCapabilityForDomainState**\n- **message**\n- **messageClient**\n- **messageClients**\n- **newUserClient**\n- **newUserClient**\n- **newUserClient**\n- **newUserClient**\n- **nextIdleTimeout**\n- **open**\n- **passiveMatch**\n- **powerChangeDone**\n- **powerOverrideOffPriv**\n- **powerOverrideOnPriv**\n- **powerStateDidChangeTo**\n- **powerStateForDomainState**\n- **powerStateWillChangeTo**\n- **probe**\n- **probeCandidates**\n- **registerInterest**\n- **registerInterest**\n- **registerInterestedDriver**\n- **registerInterrupt**\n- **registerInterruptBlock**\n- **registerPowerDriver**\n- **registerService**\n- **removeInterruptStatistics**\n- **removePowerChild**\n- **requestPowerDomainState**\n- **requestProbe**\n- **requestTerminate**\n- **requireMaxBusStall**\n- **requireMaxInterruptDelay**\n- **resolveInterrupt**\n- **scheduleStop**\n- **scheduleTerminatePhase2**\n- **serializeProperties**\n- **setAggressiveness**\n- **setDeviceMemory**\n- **setIdleTimerPeriod**\n- **start**\n- **startCandidate**\n- **startMatching**\n- **start_PM_idle_timer**\n- **stop**\n- **stringFromReturn**\n- **systemWillShutdown**\n- **tellChangeDown**\n- **tellChangeUp**\n- **tellNoChangeDown**\n- **temporaryPowerClampOn**\n- **terminate**\n- **terminateClient**\n- **terminatePhase1**\n- **unlockForArbitration**\n- **unregisterAllInterest**\n- **unregisterAllInterrupts**\n- **unregisterInterrupt**\n- **updateReport**\n- **waitForState**\n- **waitForState**\n- **waitQuiet**\n- **waitQuiet**\n- **willTerminate**\n\n## Type Methods\n\n- **AdjustBusy_Invoke**\n- **ChangePowerState_Invoke**\n- **ClientCrashed_Invoke**\n- **ConfigureReport_Invoke**\n- **CopyName_Invoke**\n- **CopyProperties_Invoke**\n- **CopyProviderProperties_Invoke**\n- **CopySystemStateNotificationService_Invoke**\n- **CoreAnalyticsSendEvent_Invoke**\n- **CreateDefaultDispatchQueue_Invoke**\n- **CreateKernelClassMatchingDictionary**\n- **CreateKernelClassMatchingDictionary**\n- **CreateNameMatchingDictionary**\n- **CreateNameMatchingDictionary**\n- **CreatePropertyMatchingDictionary**\n- **CreatePropertyMatchingDictionary**\n- **CreateUserClassMatchingDictionary**\n- **CreateUserClassMatchingDictionary**\n- **Create_Invoke**\n- **GetBusyState_Invoke**\n- **GetRegistryEntryID_Invoke**\n- **JoinPMTree_Invoke**\n- **NewUserClient_Invoke**\n- **RegisterService_Invoke**\n- **RemoveProperty_Invoke**\n- **RequireMaxBusStall_Invoke**\n- **SearchProperty_Invoke**\n- **SendIOMessageServicePropertyChange_Invoke**\n- **SetLegend_Invoke**\n- **SetName_Invoke**\n- **SetPowerOverride_Invoke**\n- **SetPowerState_Invoke**\n- **SetProperties_Invoke**\n- **Start_Invoke**\n- **StateNotificationItemCopy_Invoke**\n- **StateNotificationItemCreate_Invoke**\n- **StateNotificationItemSet_Invoke**\n- **Stop_Invoke**\n- **Stop_async_Invoke**\n- **StringFromReturn_Invoke**\n- **Terminate_Invoke**\n- **UpdateReport_Invoke**\n- **UserSetProperties_Invoke**\n- **actionDidStop**\n- **actionDidTerminate**\n- **actionFinalize**\n- **actionStop**\n- **actionWillStop**\n- **actionWillTerminate**\n- **addLocation**\n- **addMatchingNotification**\n- **addMatchingNotification**\n- **addNotification**\n- **copyExistingServices**\n- **copyMatchingService**\n- **doInstallNotification**\n- **getMatchingServices**\n- **getPMRootDomain**\n- **getPlatform**\n- **getResourceService**\n- **getServiceRoot**\n- **getSystemStateNotificationService**\n- **instanceMatch**\n- **nameMatching**\n- **nameMatching**\n- **propertyMatching**\n- **publishHiddenMedia**\n- **publishHiddenMediaApplier**\n- **publishResource**\n- **publishResource**\n- **publishUserResource**\n- **registryEntryIDMatching**\n- **resourceMatching**\n- **resourceMatching**\n- **serviceMatching**\n- **serviceMatching**\n- **setNotification**\n- **setRootMedia**\n- **syncNotificationHandler**\n- **terminateThread**\n- **terminateWorker**\n- **userServerCheckInTokenCancellationHandler**\n- **waitForMatchingService**\n- **waitForService**\n- **waitToBecomeTerminateThread**\n\n## Driver Services\n\n- **IOPlatformIO**: The base class for platform I\/O drivers.\n\n## Inherits From\n\n- IORegistryEntry\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Acknowledges an in-progress power state change.",
+          "name" : "acknowledgePowerChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809710-acknowledgepowerchange"
+        },
+        {
+          "description" : "Acknowledges the belated completion of a driver’s setPowerState power state change.",
+          "name" : "acknowledgeSetPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532596-acknowledgesetpowerstate"
+        },
+        {
+          "description" : "Informs power management when a power-managed device is in use, so that power management can track when it is idle and adjust its power state accordingly.",
+          "name" : "activityTickle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809731-activitytickle"
+        },
+        {
+          "description" : "Adds a location matching property to an existing dictionary.",
+          "name" : "addLocation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809740-addlocation"
+        },
+        {
+          "description" : "Adds a persistant notification handler to be notified of IOService events.",
+          "name" : "addMatchingNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809749-addmatchingnotification"
+        },
+        {
+          "description" : "Deprecated use addMatchingNotification(). Adds a persistant notification handler to be notified of IOService events.",
+          "name" : "addNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809760-addnotification"
+        },
+        {
+          "description" : "Informs a driver that it has a new child.",
+          "name" : "addPowerChild",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809766-addpowerchild"
+        },
+        {
+          "description" : "Adjusts the `busyState` of an IOService object.",
+          "name" : "adjustBusy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809776-adjustbusy"
+        },
+        {
+          "description" : "Attaches an IOService client to a provider in the I\/O Registry.",
+          "name" : "attach",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809786-attach"
+        },
+        {
+          "description" : "Calls the platform function with the given name.",
+          "name" : "callPlatformFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809795-callplatformfunction"
+        },
+        {
+          "description" : "Causes a device interrupt to occur.",
+          "name" : "causeInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809803-causeinterrupt"
+        },
+        {
+          "description" : "Sets a driver's power state.",
+          "name" : "changePowerStateTo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809809-changepowerstateto"
+        },
+        {
+          "description" : "Tells a driver's superclass to change the power state of its device.",
+          "name" : "changePowerStateToPriv",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809819-changepowerstatetopriv"
+        },
+        {
+          "description" : "Deprecated. Do not use.",
+          "name" : "clampPowerOn",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809824-clamppoweron"
+        },
+        {
+          "description" : "Releases active access to a provider.",
+          "name" : "close",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809831-close"
+        },
+        {
+          "description" : "",
+          "name" : "command_received",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809840-command_received"
+        },
+        {
+          "description" : "Compares a set of properties in a matching dictionary with an IOService object's property table.",
+          "name" : "compareProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809848-compareproperties"
+        },
+        {
+          "description" : "Compares a property in a matching dictionary with an IOService object's property table.",
+          "name" : "compareProperty(OSDictionary *, const char *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809855-compareproperty"
+        },
+        {
+          "description" : "Compares a property in a matching dictionary with an IOService object's property table.",
+          "name" : "compareProperty(OSDictionary *, const OSString *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809861-compareproperty"
+        },
+        {
+          "description" : "configure IOReporting channels",
+          "name" : "configureReport",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809870-configurereport"
+        },
+        {
+          "description" : "",
+          "name" : "copyClientWithCategory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809878-copyclientwithcategory"
+        },
+        {
+          "description" : "Finds one of the current published IOService objects matching a matching dictionary.",
+          "name" : "copyMatchingService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809887-copymatchingservice"
+        },
+        {
+          "description" : "Finds out the capability of a device's current power state.",
+          "name" : "currentCapability",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809891-currentcapability"
+        },
+        {
+          "description" : "Finds out the current power consumption of a device.",
+          "name" : "currentPowerConsumption",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809899-currentpowerconsumption"
+        },
+        {
+          "description" : "De-registers power state interest from a previous call to `registerInterestedDriver`.",
+          "name" : "deRegisterInterestedDriver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809905-deregisterinteresteddriver"
+        },
+        {
+          "description" : "Detaches an IOService client from a provider in the I\/O Registry.",
+          "name" : "detach",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809913-detach"
+        },
+        {
+          "description" : "Passes a termination up the stack.",
+          "name" : "didTerminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809918-didterminate"
+        },
+        {
+          "description" : "Asks a driver if its device is the one that just woke the system from sleep.",
+          "name" : "didYouWakeSystem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809924-didyouwakesystem"
+        },
+        {
+          "description" : "Synchronously disables a device interrupt.",
+          "name" : "disableInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809929-disableinterrupt"
+        },
+        {
+          "description" : "Enables a device interrupt.",
+          "name" : "enableInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809937-enableinterrupt"
+        },
+        {
+          "description" : "Translates an IOReturn code to a BSD `errno`.",
+          "name" : "errnoFromReturn",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809942-errnofromreturn"
+        },
+        {
+          "description" : "Finalizes the destruction of an IOService object.",
+          "name" : "finalize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809948-finalize"
+        },
+        {
+          "description" : "Frees data structures that were allocated when power management was initialized on this service.",
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809960-free"
+        },
+        {
+          "description" : "Returns the current aggressiveness value for the given type.",
+          "name" : "getAggressiveness",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809962-getaggressiveness"
+        },
+        {
+          "description" : "Returns the `busyState` of an IOService object.",
+          "name" : "getBusyState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809968-getbusystate"
+        },
+        {
+          "description" : "Returns an IOService object's primary client.",
+          "name" : "getClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809973-getclient"
+        },
+        {
+          "description" : "Returns an iterator over an IOService object's clients.",
+          "name" : "getClientIterator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809979-getclientiterator"
+        },
+        {
+          "description" : "Returns the array of IODeviceMemory objects representing a device's memory mapped ranges.",
+          "name" : "getDeviceMemory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809984-getdevicememory"
+        },
+        {
+          "description" : "Returns a count of the physical memory ranges available for a device.",
+          "name" : "getDeviceMemoryCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809990-getdevicememorycount"
+        },
+        {
+          "description" : "Returns an instance of IODeviceMemory representing one of a device's memory mapped ranges.",
+          "name" : "getDeviceMemoryWithIndex",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1809999-getdevicememorywithindex"
+        },
+        {
+          "description" : "Returns the type of interrupt used for a device supplying hardware interrupts.",
+          "name" : "getInterruptType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810004-getinterrupttype"
+        },
+        {
+          "description" : "Finds the set of current published IOService objects matching a matching dictionary.",
+          "name" : "getMatchingServices",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810011-getmatchingservices"
+        },
+        {
+          "description" : "Returns an iterator over a provider's clients that currently have opened the provider.",
+          "name" : "getOpenClientIterator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810018-getopenclientiterator"
+        },
+        {
+          "description" : "Returns an iterator over an client's providers that are currently opened by the client.",
+          "name" : "getOpenProviderIterator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810027-getopenprovideriterator"
+        },
+        {
+          "description" : "Returns a pointer to the platform expert instance for the computer.",
+          "name" : "getPlatform",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810033-getplatform"
+        },
+        {
+          "description" : "Returns a pointer to the power management root domain instance for the computer.",
+          "name" : "getPMRootDomain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810046-getpmrootdomain"
+        },
+        {
+          "description" : "Returns a pointer to the system-wide power management work loop.",
+          "name" : "getPMworkloop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810059-getpmworkloop"
+        },
+        {
+          "description" : "Determines a device's power state.",
+          "name" : "getPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810074-getpowerstate"
+        },
+        {
+          "description" : "Returns an IOService object's primary provider.",
+          "name" : "getProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810088-getprovider"
+        },
+        {
+          "description" : "Returns an iterator over an IOService object's providers.",
+          "name" : "getProviderIterator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810097-getprovideriterator"
+        },
+        {
+          "description" : "Allocates any needed resources for a published IOService object before clients attach.",
+          "name" : "getResources",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810107-getresources"
+        },
+        {
+          "description" : "Returns a pointer to the IOResources service.",
+          "name" : "getResourceService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810116-getresourceservice"
+        },
+        {
+          "description" : "Returns a pointer to the root of the service plane.",
+          "name" : "getServiceRoot",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810122-getserviceroot"
+        },
+        {
+          "description" : "Accessor for IOService state bits, not normally needed or used outside IOService.",
+          "name" : "getState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810137-getstate"
+        },
+        {
+          "description" : "Returns the current work loop or `provider->getWorkLoop`.",
+          "name" : "getWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810145-getworkloop"
+        },
+        {
+          "description" : "Controls the open \/ close behavior of an IOService object (overrideable by subclasses).",
+          "name" : "handleClose",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810153-handleclose"
+        },
+        {
+          "description" : "Controls the open \/ close behavior of an IOService object (overrideable by subclasses).",
+          "name" : "handleIsOpen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810164-handleisopen"
+        },
+        {
+          "description" : "Controls the open \/ close behavior of an IOService object (overrideable by subclasses).",
+          "name" : "handleOpen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810174-handleopen"
+        },
+        {
+          "description" : "Determines which power state a device is in, given the current power domain state.",
+          "name" : "initialPowerStateForDomainState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810182-initialpowerstatefordomainstate"
+        },
+        {
+          "description" : "Checks if the IOService object has been terminated, and is in the process of being destroyed.",
+          "name" : "isInactive",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810198-isinactive"
+        },
+        {
+          "description" : "Determines whether a specific, or any, client has an IOService object open.",
+          "name" : "isOpen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810209-isopen"
+        },
+        {
+          "description" : "Joins the driver into the power plane of the I\/O Registry.",
+          "name" : "joinPMtree",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810216-joinpmtree"
+        },
+        {
+          "description" : "Locks an IOService object against changes in state or ownership.",
+          "name" : "lockForArbitration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810228-lockforarbitration"
+        },
+        {
+          "description" : "Requests that a device become usable.",
+          "name" : "makeUsable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810246-makeusable"
+        },
+        {
+          "description" : "Maps a physical range of a device.",
+          "name" : "mapDeviceMemoryWithIndex",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810261-mapdevicememorywithindex"
+        },
+        {
+          "description" : "Allows a registered IOService object to direct location matching.",
+          "name" : "matchLocation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810275-matchlocation"
+        },
+        {
+          "description" : "Allows a registered IOService object to implement family specific matching.",
+          "name" : "matchPropertyTable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810286-matchpropertytable"
+        },
+        {
+          "description" : "Determines a driver's highest power state possible for a given power domain state.",
+          "name" : "maxCapabilityForDomainState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810302-maxcapabilityfordomainstate"
+        },
+        {
+          "description" : "Receives a generic message delivered from an attached provider.",
+          "name" : "message",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810323-message"
+        },
+        {
+          "description" : "Sends a generic message to an attached client.",
+          "name" : "messageClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810334-messageclient"
+        },
+        {
+          "description" : "Sends a generic message to all attached clients.",
+          "name" : "messageClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810353-messageclients"
+        },
+        {
+          "description" : "Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify an IOService name match.",
+          "name" : "nameMatching(const char *, OSDictionary *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810365-namematching"
+        },
+        {
+          "description" : "Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify an IOService name match.",
+          "name" : "nameMatching(const OSString *, OSDictionary *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810383-namematching"
+        },
+        {
+          "description" : "Tells a power managed driver that the temperature in the thermal zone has changed.",
+          "name" : "newTemperature",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810402-newtemperature"
+        },
+        {
+          "description" : "Creates a connection for a non kernel client.",
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810417-newuserclient"
+        },
+        {
+          "description" : "Allows subclasses to customize idle power management behavior.",
+          "name" : "nextIdleTimeout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810435-nextidletimeout"
+        },
+        {
+          "description" : "Requests active access to a provider.",
+          "name" : "open",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810450-open"
+        },
+        {
+          "description" : "",
+          "name" : "PM_Clamp_Timer_Expired",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810463-pm_clamp_timer_expired"
+        },
+        {
+          "description" : "",
+          "name" : "PM_idle_timer_expiration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810474-pm_idle_timer_expiration"
+        },
+        {
+          "description" : "Initializes power management for a driver.",
+          "name" : "PMinit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810486-pminit"
+        },
+        {
+          "description" : "Stop power managing the driver.",
+          "name" : "PMstop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810502-pmstop"
+        },
+        {
+          "description" : "Tells a driver when a power state change is complete.",
+          "name" : "powerChangeDone",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810518-powerchangedone"
+        },
+        {
+          "description" : "Allows a driver to disable a power override.",
+          "name" : "powerOverrideOffPriv",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810533-poweroverrideoffpriv"
+        },
+        {
+          "description" : "Allows a driver to ignore its children's power management requests and only use changePowerStateToPriv to define its own power state.",
+          "name" : "powerOverrideOnPriv",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810549-poweroverrideonpriv"
+        },
+        {
+          "description" : "Informs interested parties that a device has changed to a different power state.",
+          "name" : "powerStateDidChangeTo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810564-powerstatedidchangeto"
+        },
+        {
+          "description" : "Determines what power state the device would be in for a given power domain state.",
+          "name" : "powerStateForDomainState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810576-powerstatefordomainstate"
+        },
+        {
+          "description" : "Informs interested parties that a device is about to change its power state.",
+          "name" : "powerStateWillChangeTo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810597-powerstatewillchangeto"
+        },
+        {
+          "description" : "During an IOService object's instantiation, probes a matched service to see if it can be used.",
+          "name" : "probe",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810605-probe"
+        },
+        {
+          "description" : "Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify an IOService phandle match.",
+          "name" : "propertyMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810622-propertymatching"
+        },
+        {
+          "description" : "Uses the resource service to publish a property.",
+          "name" : "publishResource(const char *, OSObject *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810642-publishresource"
+        },
+        {
+          "description" : "Uses the resource service to publish a property.",
+          "name" : "publishResource(const OSSymbol *, OSObject *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810661-publishresource"
+        },
+        {
+          "description" : "Allows an IOService object to register interest in the changing power state of a power-managed IOService object.",
+          "name" : "registerInterestedDriver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810675-registerinteresteddriver"
+        },
+        {
+          "description" : "Registers a C function interrupt handler for a device supplying interrupts.",
+          "name" : "registerInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810691-registerinterrupt"
+        },
+        {
+          "description" : "Registers a set of power states that the driver supports.",
+          "name" : "registerPowerDriver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810706-registerpowerdriver"
+        },
+        {
+          "description" : "Starts the registration process for a newly discovered IOService object.",
+          "name" : "registerService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810726-registerservice"
+        },
+        {
+          "description" : "Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify a IORegistryEntryID match.",
+          "name" : "registryEntryIDMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810750-registryentryidmatching"
+        },
+        {
+          "description" : "Informs a power managed driver that one of its power plane childen is disappearing.",
+          "name" : "removePowerChild",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810770-removepowerchild"
+        },
+        {
+          "description" : "Tells a driver to adjust its power state.",
+          "name" : "requestPowerDomainState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810786-requestpowerdomainstate"
+        },
+        {
+          "description" : "Requests that hardware be re-scanned for devices.",
+          "name" : "requestProbe",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810804-requestprobe"
+        },
+        {
+          "description" : "Passes a termination up the stack.",
+          "name" : "requestTerminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810819-requestterminate"
+        },
+        {
+          "description" : "Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify a resource service match.",
+          "name" : "resourceMatching(const char *, OSDictionary *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810840-resourcematching"
+        },
+        {
+          "description" : "Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify a resource service match.",
+          "name" : "resourceMatching(const OSString *, OSDictionary *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810857-resourcematching"
+        },
+        {
+          "description" : "Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify an IOService class match.",
+          "name" : "serviceMatching(const char *, OSDictionary *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810880-servicematching"
+        },
+        {
+          "description" : "Creates a matching dictionary, or adds matching properties to an existing dictionary, that specify an IOService class match.",
+          "name" : "serviceMatching(const OSString *, OSDictionary *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810901-servicematching"
+        },
+        {
+          "description" : "Broadcasts an aggressiveness factor from the parent of a driver to the driver.",
+          "name" : "setAggressiveness",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810925-setaggressiveness"
+        },
+        {
+          "description" : "Sets the array of IODeviceMemory objects representing a device's memory mapped ranges.",
+          "name" : "setDeviceMemory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810946-setdevicememory"
+        },
+        {
+          "description" : "Sets or changes the idle timer period.",
+          "name" : "setIdleTimerPeriod",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810962-setidletimerperiod"
+        },
+        {
+          "description" : "This call is handled internally by power management. It is not intended to be overridden or called by drivers.",
+          "name" : "setPowerParent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1810987-setpowerparent"
+        },
+        {
+          "description" : "Requests a power managed driver to change the power state of its device.",
+          "name" : "setPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532866-setpowerstate"
+        },
+        {
+          "description" : "During an IOService object's instantiation, starts the IOService object that has been selected to run on the provider.",
+          "name" : "start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811009-start"
+        },
+        {
+          "description" : "",
+          "name" : "start_PM_idle_timer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811024-start_pm_idle_timer"
+        },
+        {
+          "description" : "During an IOService termination, the stop method is called in its clients before they are detached & it is destroyed.",
+          "name" : "stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811034-stop"
+        },
+        {
+          "description" : "Supplies a programmer-friendly string from an IOReturn code.",
+          "name" : "stringFromReturn",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811046-stringfromreturn"
+        },
+        {
+          "description" : "Tells every driver in the power plane that the system is waking up.",
+          "name" : "systemWake",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811056-systemwake"
+        },
+        {
+          "description" : "Notifies members of the power plane of system shutdown and restart.",
+          "name" : "systemWillShutdown",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811071-systemwillshutdown"
+        },
+        {
+          "description" : "Alerts a driver to a critical temperature in some thermal zone.",
+          "name" : "temperatureCriticalForZone",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811087-temperaturecriticalforzone"
+        },
+        {
+          "description" : "A driver calls this method to hold itself in the highest power state until it has children.",
+          "name" : "temporaryPowerClampOn",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811099-temporarypowerclampon"
+        },
+        {
+          "description" : "Makes an IOService object inactive and begins its destruction.",
+          "name" : "terminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811110-terminate"
+        },
+        {
+          "description" : "Passes a termination up the stack.",
+          "name" : "terminateClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811121-terminateclient"
+        },
+        {
+          "description" : "Unlocks an IOService obkect after a successful lockForArbitration.",
+          "name" : "unlockForArbitration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811130-unlockforarbitration"
+        },
+        {
+          "description" : "Removes a C function interrupt handler for a device supplying hardware interrupts.",
+          "name" : "unregisterInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811142-unregisterinterrupt"
+        },
+        {
+          "description" : "request current data for the specified channels",
+          "name" : "updateReport",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811152-updatereport"
+        },
+        {
+          "description" : "Waits for a matching to service to be published.",
+          "name" : "waitForMatchingService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811164-waitformatchingservice"
+        },
+        {
+          "description" : "Deprecated use waitForMatchingService(). Waits for a matching to service to be published.",
+          "name" : "waitForService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811172-waitforservice"
+        },
+        {
+          "description" : "Waits for an IOService object's `busyState` to be zero.",
+          "name" : "waitQuiet",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811184-waitquiet"
+        },
+        {
+          "description" : "Passes a termination up the stack.",
+          "name" : "willTerminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811202-willterminate"
+        },
+        {
+          "description" : "Informs power management which IOService object is the power plane root.",
+          "name" : "youAreRoot",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1811214-youareroot"
+        }
+      ],
+      "title" : "Miscellaneous"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "ExpansionData",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/expansiondata"
+        }
+      ],
+      "title" : "DataTypes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "reserved",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/reserved"
+        }
+      ],
+      "title" : "Instance Variables"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "AdjustBusy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753458-adjustbusy"
+        },
+        {
+          "name" : "AdjustBusy_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753459-adjustbusy_impl"
+        },
+        {
+          "description" : "Changes the device’s power state to the specified level.",
+          "name" : "ChangePowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/changepowerstate"
+        },
+        {
+          "name" : "ChangePowerState_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3152487-changepowerstate_impl"
+        },
+        {
+          "name" : "ClientCrashed",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3727923-clientcrashed"
+        },
+        {
+          "name" : "ClientCrashed_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3727924-clientcrashed_impl"
+        },
+        {
+          "name" : "ConfigureReport",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753461-configurereport"
+        },
+        {
+          "name" : "ConfigureReport_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753462-configurereport_impl"
+        },
+        {
+          "name" : "CopyDispatchQueue_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3075032-copydispatchqueue_impl"
+        },
+        {
+          "name" : "CopyName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753464-copyname"
+        },
+        {
+          "name" : "CopyName_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753465-copyname_impl"
+        },
+        {
+          "description" : "Returns the registry properties associated with the current service.",
+          "name" : "CopyProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/copyproperties"
+        },
+        {
+          "name" : "CopyProperties_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3180695-copyproperties_impl"
+        },
+        {
+          "name" : "CopyProviderProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3538559-copyproviderproperties"
+        },
+        {
+          "name" : "CopyProviderProperties_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3538560-copyproviderproperties_impl"
+        },
+        {
+          "name" : "CopySystemStateNotificationService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753467-copysystemstatenotificationservi"
+        },
+        {
+          "name" : "CopySystemStateNotificationService_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753468-copysystemstatenotificationservi"
+        },
+        {
+          "name" : "CoreAnalyticsSendEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753470-coreanalyticssendevent"
+        },
+        {
+          "name" : "CoreAnalyticsSendEvent_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753471-coreanalyticssendevent_impl"
+        },
+        {
+          "name" : "Create",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325788-create"
+        },
+        {
+          "name" : "CreateDefaultDispatchQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753473-createdefaultdispatchqueue"
+        },
+        {
+          "name" : "CreateDefaultDispatchQueue_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753474-createdefaultdispatchqueue_impl"
+        },
+        {
+          "name" : "Create_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325789-create_impl"
+        },
+        {
+          "name" : "Dispatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3180697-dispatch"
+        },
+        {
+          "name" : "GetBusyState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753476-getbusystate"
+        },
+        {
+          "name" : "GetBusyState_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753477-getbusystate_impl"
+        },
+        {
+          "name" : "GetProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/getprovider"
+        },
+        {
+          "description" : "Returns the registry ID for the current service.",
+          "name" : "GetRegistryEntryID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/getregistryentryid"
+        },
+        {
+          "name" : "GetRegistryEntryID_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3180699-getregistryentryid_impl"
+        },
+        {
+          "name" : "JoinPMTree",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/4061663-joinpmtree"
+        },
+        {
+          "name" : "JoinPMTree_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/4061664-joinpmtree_impl"
+        },
+        {
+          "name" : "NewUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325791-newuserclient"
+        },
+        {
+          "name" : "NewUserClient_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325792-newuserclient_impl"
+        },
+        {
+          "name" : "PMinit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532776-pminit"
+        },
+        {
+          "name" : "PMstop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532667-pmstop"
+        },
+        {
+          "description" : "Starts the registration process for the service and performs any additional matching.",
+          "name" : "RegisterService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/registerservice"
+        },
+        {
+          "name" : "RegisterService_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3075044-registerservice_impl"
+        },
+        {
+          "name" : "RemoveProperty",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753480-removeproperty"
+        },
+        {
+          "name" : "RemoveProperty_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753481-removeproperty_impl"
+        },
+        {
+          "name" : "RequireMaxBusStall",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3689549-requiremaxbusstall"
+        },
+        {
+          "name" : "RequireMaxBusStall_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3689550-requiremaxbusstall_impl"
+        },
+        {
+          "name" : "SearchProperty",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325794-searchproperty"
+        },
+        {
+          "name" : "SearchProperty_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325795-searchproperty_impl"
+        },
+        {
+          "name" : "SendIOMessageServicePropertyChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3943382-sendiomessageservicepropertychan"
+        },
+        {
+          "name" : "SendIOMessageServicePropertyChange_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3943383-sendiomessageservicepropertychan"
+        },
+        {
+          "name" : "SetDispatchQueue_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3180703-setdispatchqueue_impl"
+        },
+        {
+          "name" : "SetLegend",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753483-setlegend"
+        },
+        {
+          "name" : "SetLegend_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753484-setlegend_impl"
+        },
+        {
+          "name" : "SetName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325797-setname"
+        },
+        {
+          "name" : "SetName_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325798-setname_impl"
+        },
+        {
+          "name" : "SetPowerOverride",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/4485635-setpoweroverride"
+        },
+        {
+          "name" : "SetPowerOverride_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/4485636-setpoweroverride_impl"
+        },
+        {
+          "description" : "Updates the service in response to power-related changes for a provider.",
+          "name" : "SetPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/setpowerstate"
+        },
+        {
+          "name" : "SetPowerState_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3180705-setpowerstate_impl"
+        },
+        {
+          "name" : "SetProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3075047-setproperties"
+        },
+        {
+          "name" : "SetProperties_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3075048-setproperties_impl"
+        },
+        {
+          "description" : "Starts the current service and associates it with the specified provider.",
+          "name" : "Start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/start"
+        },
+        {
+          "name" : "Start_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3180711-start_impl"
+        },
+        {
+          "name" : "StateNotificationItemCopy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753486-statenotificationitemcopy"
+        },
+        {
+          "name" : "StateNotificationItemCopy_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753487-statenotificationitemcopy_impl"
+        },
+        {
+          "name" : "StateNotificationItemCreate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753489-statenotificationitemcreate"
+        },
+        {
+          "name" : "StateNotificationItemCreate_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753490-statenotificationitemcreate_impl"
+        },
+        {
+          "name" : "StateNotificationItemSet",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753492-statenotificationitemset"
+        },
+        {
+          "name" : "StateNotificationItemSet_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753493-statenotificationitemset_impl"
+        },
+        {
+          "description" : "Stops the service associated with the specified provider.",
+          "name" : "Stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/stop"
+        },
+        {
+          "name" : "Stop_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3180714-stop_impl"
+        },
+        {
+          "name" : "Stop_async",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3684894-stop_async"
+        },
+        {
+          "name" : "Stop_async_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3684895-stop_async_impl"
+        },
+        {
+          "name" : "StringFromReturn",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753495-stringfromreturn"
+        },
+        {
+          "name" : "StringFromReturn",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3943385-stringfromreturn"
+        },
+        {
+          "name" : "StringFromReturn_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753496-stringfromreturn_impl"
+        },
+        {
+          "name" : "Terminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3538570-terminate"
+        },
+        {
+          "name" : "Terminate_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3538571-terminate_impl"
+        },
+        {
+          "name" : "UpdateReport",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753498-updatereport"
+        },
+        {
+          "name" : "UpdateReport_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753499-updatereport_impl"
+        },
+        {
+          "name" : "UserSetProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753501-usersetproperties"
+        },
+        {
+          "name" : "UserSetProperties_Impl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753502-usersetproperties_impl"
+        },
+        {
+          "name" : "acknowledgeNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532615-acknowledgenotification"
+        },
+        {
+          "name" : "acknowledgePowerChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532614-acknowledgepowerchange"
+        },
+        {
+          "name" : "activityTickle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532877-activitytickle"
+        },
+        {
+          "name" : "addInterruptStatistics",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532794-addinterruptstatistics"
+        },
+        {
+          "name" : "addNeededResource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532799-addneededresource"
+        },
+        {
+          "name" : "addPowerChild",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532771-addpowerchild"
+        },
+        {
+          "name" : "adjustBusy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532718-adjustbusy"
+        },
+        {
+          "name" : "allowPowerChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532563-allowpowerchange"
+        },
+        {
+          "name" : "applyToClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532705-applytoclients"
+        },
+        {
+          "name" : "applyToClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3567140-applytoclients"
+        },
+        {
+          "name" : "applyToInterested",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532867-applytointerested"
+        },
+        {
+          "name" : "applyToProviders",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532775-applytoproviders"
+        },
+        {
+          "name" : "applyToProviders",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3567141-applytoproviders"
+        },
+        {
+          "name" : "askChangeDown",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532647-askchangedown"
+        },
+        {
+          "name" : "attach",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532842-attach"
+        },
+        {
+          "name" : "callPlatformFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532716-callplatformfunction"
+        },
+        {
+          "name" : "callPlatformFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516483-callplatformfunction"
+        },
+        {
+          "name" : "canTerminateForReplacement",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3857674-canterminateforreplacement"
+        },
+        {
+          "name" : "cancelPowerChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532580-cancelpowerchange"
+        },
+        {
+          "name" : "causeInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532818-causeinterrupt"
+        },
+        {
+          "name" : "changePowerStateTo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532683-changepowerstateto"
+        },
+        {
+          "name" : "changePowerStateToPriv",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532812-changepowerstatetopriv"
+        },
+        {
+          "name" : "checkResource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532783-checkresource"
+        },
+        {
+          "name" : "checkResources",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532599-checkresources"
+        },
+        {
+          "name" : "close",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532865-close"
+        },
+        {
+          "name" : "compareProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532808-compareproperties"
+        },
+        {
+          "name" : "compareProperty",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532873-compareproperty"
+        },
+        {
+          "name" : "compareProperty",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516484-compareproperty"
+        },
+        {
+          "name" : "configureReport",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532713-configurereport"
+        },
+        {
+          "name" : "copyClientWithCategory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532583-copyclientwithcategory"
+        },
+        {
+          "name" : "copyNotifiers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/2870324-copynotifiers"
+        },
+        {
+          "name" : "currentCapability",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532694-currentcapability"
+        },
+        {
+          "name" : "currentPowerConsumption",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532862-currentpowerconsumption"
+        },
+        {
+          "name" : "deRegisterInterestedDriver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532853-deregisterinteresteddriver"
+        },
+        {
+          "name" : "deliverNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532765-delivernotification"
+        },
+        {
+          "name" : "detach",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532594-detach"
+        },
+        {
+          "name" : "didTerminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532715-didterminate"
+        },
+        {
+          "name" : "disableInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532634-disableinterrupt"
+        },
+        {
+          "name" : "doServiceMatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532795-doservicematch"
+        },
+        {
+          "name" : "doServiceTerminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532573-doserviceterminate"
+        },
+        {
+          "name" : "enableInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532864-enableinterrupt"
+        },
+        {
+          "name" : "errnoFromReturn",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532706-errnofromreturn"
+        },
+        {
+          "name" : "finalize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532659-finalize"
+        },
+        {
+          "description" : "Performs any final cleanup for the service.",
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/free"
+        },
+        {
+          "name" : "getAggressiveness",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532725-getaggressiveness"
+        },
+        {
+          "name" : "getBusyState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532698-getbusystate"
+        },
+        {
+          "name" : "getClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532758-getclient"
+        },
+        {
+          "name" : "getClientIterator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532748-getclientiterator"
+        },
+        {
+          "name" : "getClientWithCategory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532672-getclientwithcategory"
+        },
+        {
+          "name" : "getDeviceMemory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532588-getdevicememory"
+        },
+        {
+          "name" : "getDeviceMemoryCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532745-getdevicememorycount"
+        },
+        {
+          "name" : "getDeviceMemoryWithIndex",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532861-getdevicememorywithindex"
+        },
+        {
+          "name" : "getInterruptType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532557-getinterrupttype"
+        },
+        {
+          "name" : "getMetaClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532719-getmetaclass"
+        },
+        {
+          "name" : "getOpenClientIterator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532757-getopenclientiterator"
+        },
+        {
+          "name" : "getOpenProviderIterator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532590-getopenprovideriterator"
+        },
+        {
+          "name" : "getPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532710-getpowerstate"
+        },
+        {
+          "name" : "getProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532585-getprovider"
+        },
+        {
+          "name" : "getProviderIterator",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532627-getprovideriterator"
+        },
+        {
+          "name" : "getResources",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532807-getresources"
+        },
+        {
+          "name" : "getState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532791-getstate"
+        },
+        {
+          "name" : "getWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532780-getworkloop"
+        },
+        {
+          "name" : "handleClose",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532838-handleclose"
+        },
+        {
+          "name" : "handleIsOpen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532682-handleisopen"
+        },
+        {
+          "name" : "handleOpen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532701-handleopen"
+        },
+        {
+          "name" : "hasParent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3857675-hasparent"
+        },
+        {
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532700-init"
+        },
+        {
+          "description" : "Handles the basic initialization of the service.",
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/init"
+        },
+        {
+          "name" : "initialPowerStateForDomainState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532851-initialpowerstatefordomainstate"
+        },
+        {
+          "name" : "invokeNotifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/2870327-invokenotifier"
+        },
+        {
+          "name" : "invokeNotifiers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/2870325-invokenotifiers"
+        },
+        {
+          "name" : "isInactive",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532870-isinactive"
+        },
+        {
+          "name" : "isOpen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532598-isopen"
+        },
+        {
+          "name" : "joinPMtree",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532587-joinpmtree"
+        },
+        {
+          "name" : "lockForArbitration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532692-lockforarbitration"
+        },
+        {
+          "name" : "lookupInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532726-lookupinterrupt"
+        },
+        {
+          "name" : "makeUsable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532872-makeusable"
+        },
+        {
+          "name" : "mapDeviceMemoryWithIndex",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532762-mapdevicememorywithindex"
+        },
+        {
+          "name" : "matchInternal",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532714-matchinternal"
+        },
+        {
+          "name" : "matchLocation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532803-matchlocation"
+        },
+        {
+          "name" : "matchPassive",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532642-matchpassive"
+        },
+        {
+          "name" : "matchPropertyTable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532892-matchpropertytable"
+        },
+        {
+          "name" : "matchPropertyTable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516485-matchpropertytable"
+        },
+        {
+          "name" : "maxCapabilityForDomainState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532813-maxcapabilityfordomainstate"
+        },
+        {
+          "name" : "message",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532558-message"
+        },
+        {
+          "name" : "messageClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532884-messageclient"
+        },
+        {
+          "name" : "messageClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532646-messageclients"
+        },
+        {
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532702-newuserclient"
+        },
+        {
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516487-newuserclient"
+        },
+        {
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3553375-newuserclient"
+        },
+        {
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3553376-newuserclient"
+        },
+        {
+          "name" : "nextIdleTimeout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532675-nextidletimeout"
+        },
+        {
+          "name" : "open",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532575-open"
+        },
+        {
+          "name" : "passiveMatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532787-passivematch"
+        },
+        {
+          "name" : "powerChangeDone",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532685-powerchangedone"
+        },
+        {
+          "name" : "powerOverrideOffPriv",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532855-poweroverrideoffpriv"
+        },
+        {
+          "name" : "powerOverrideOnPriv",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532639-poweroverrideonpriv"
+        },
+        {
+          "name" : "powerStateDidChangeTo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532891-powerstatedidchangeto"
+        },
+        {
+          "name" : "powerStateForDomainState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532649-powerstatefordomainstate"
+        },
+        {
+          "name" : "powerStateWillChangeTo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532889-powerstatewillchangeto"
+        },
+        {
+          "name" : "probe",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532835-probe"
+        },
+        {
+          "name" : "probeCandidates",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532781-probecandidates"
+        },
+        {
+          "name" : "registerInterest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532612-registerinterest"
+        },
+        {
+          "name" : "registerInterest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516489-registerinterest"
+        },
+        {
+          "name" : "registerInterestedDriver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532847-registerinteresteddriver"
+        },
+        {
+          "name" : "registerInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532830-registerinterrupt"
+        },
+        {
+          "name" : "registerInterruptBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/2967276-registerinterruptblock"
+        },
+        {
+          "name" : "registerPowerDriver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532665-registerpowerdriver"
+        },
+        {
+          "name" : "registerService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532797-registerservice"
+        },
+        {
+          "name" : "removeInterruptStatistics",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532663-removeinterruptstatistics"
+        },
+        {
+          "name" : "removePowerChild",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532779-removepowerchild"
+        },
+        {
+          "name" : "requestPowerDomainState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532751-requestpowerdomainstate"
+        },
+        {
+          "name" : "requestProbe",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532789-requestprobe"
+        },
+        {
+          "name" : "requestTerminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532728-requestterminate"
+        },
+        {
+          "name" : "requireMaxBusStall",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532887-requiremaxbusstall"
+        },
+        {
+          "name" : "requireMaxInterruptDelay",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532798-requiremaxinterruptdelay"
+        },
+        {
+          "name" : "resolveInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532677-resolveinterrupt"
+        },
+        {
+          "name" : "scheduleStop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532571-schedulestop"
+        },
+        {
+          "name" : "scheduleTerminatePhase2",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532641-scheduleterminatephase2"
+        },
+        {
+          "name" : "serializeProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532823-serializeproperties"
+        },
+        {
+          "name" : "setAggressiveness",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532679-setaggressiveness"
+        },
+        {
+          "name" : "setDeviceMemory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532699-setdevicememory"
+        },
+        {
+          "name" : "setIdleTimerPeriod",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532753-setidletimerperiod"
+        },
+        {
+          "name" : "start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532606-start"
+        },
+        {
+          "name" : "startCandidate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532735-startcandidate"
+        },
+        {
+          "name" : "startMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532845-startmatching"
+        },
+        {
+          "name" : "start_PM_idle_timer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532669-start_pm_idle_timer"
+        },
+        {
+          "name" : "stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532568-stop"
+        },
+        {
+          "name" : "stringFromReturn",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532752-stringfromreturn"
+        },
+        {
+          "name" : "systemWillShutdown",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532569-systemwillshutdown"
+        },
+        {
+          "name" : "tellChangeDown",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532643-tellchangedown"
+        },
+        {
+          "name" : "tellChangeUp",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532625-tellchangeup"
+        },
+        {
+          "name" : "tellNoChangeDown",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532656-tellnochangedown"
+        },
+        {
+          "name" : "temporaryPowerClampOn",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532592-temporarypowerclampon"
+        },
+        {
+          "name" : "terminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532674-terminate"
+        },
+        {
+          "name" : "terminateClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532730-terminateclient"
+        },
+        {
+          "name" : "terminatePhase1",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532849-terminatephase1"
+        },
+        {
+          "name" : "unlockForArbitration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532561-unlockforarbitration"
+        },
+        {
+          "name" : "unregisterAllInterest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532882-unregisterallinterest"
+        },
+        {
+          "name" : "unregisterAllInterrupts",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/4445089-unregisterallinterrupts"
+        },
+        {
+          "name" : "unregisterInterrupt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532856-unregisterinterrupt"
+        },
+        {
+          "name" : "updateReport",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532767-updatereport"
+        },
+        {
+          "name" : "waitForState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532770-waitforstate"
+        },
+        {
+          "name" : "waitForState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516492-waitforstate"
+        },
+        {
+          "name" : "waitQuiet",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532773-waitquiet"
+        },
+        {
+          "name" : "waitQuiet",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516493-waitquiet"
+        },
+        {
+          "name" : "willTerminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532846-willterminate"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "AdjustBusy_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753460-adjustbusy_invoke"
+        },
+        {
+          "name" : "ChangePowerState_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3152488-changepowerstate_invoke"
+        },
+        {
+          "name" : "ClientCrashed_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3727925-clientcrashed_invoke"
+        },
+        {
+          "name" : "ConfigureReport_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753463-configurereport_invoke"
+        },
+        {
+          "name" : "CopyName_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753466-copyname_invoke"
+        },
+        {
+          "name" : "CopyProperties_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3075035-copyproperties_invoke"
+        },
+        {
+          "name" : "CopyProviderProperties_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3538561-copyproviderproperties_invoke"
+        },
+        {
+          "name" : "CopySystemStateNotificationService_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753469-copysystemstatenotificationservi"
+        },
+        {
+          "name" : "CoreAnalyticsSendEvent_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753472-coreanalyticssendevent_invoke"
+        },
+        {
+          "name" : "CreateDefaultDispatchQueue_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753475-createdefaultdispatchqueue_invok"
+        },
+        {
+          "name" : "CreateKernelClassMatchingDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/createkernelclassmatchingdictionary-9b28"
+        },
+        {
+          "name" : "CreateKernelClassMatchingDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/createkernelclassmatchingdictionary-3uqly"
+        },
+        {
+          "name" : "CreateNameMatchingDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/createnamematchingdictionary-2nzta"
+        },
+        {
+          "name" : "CreateNameMatchingDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/createnamematchingdictionary-206ej"
+        },
+        {
+          "name" : "CreatePropertyMatchingDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/createpropertymatchingdictionary-4tuca"
+        },
+        {
+          "name" : "CreatePropertyMatchingDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/createpropertymatchingdictionary-6o4ss"
+        },
+        {
+          "name" : "CreateUserClassMatchingDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/createuserclassmatchingdictionary-4gpbj"
+        },
+        {
+          "name" : "CreateUserClassMatchingDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/ioservice\/createuserclassmatchingdictionary-60ptx"
+        },
+        {
+          "name" : "Create_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325790-create_invoke"
+        },
+        {
+          "name" : "GetBusyState_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753478-getbusystate_invoke"
+        },
+        {
+          "name" : "GetRegistryEntryID_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3075041-getregistryentryid_invoke"
+        },
+        {
+          "name" : "JoinPMTree_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/4061665-joinpmtree_invoke"
+        },
+        {
+          "name" : "NewUserClient_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325793-newuserclient_invoke"
+        },
+        {
+          "name" : "RegisterService_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3075045-registerservice_invoke"
+        },
+        {
+          "name" : "RemoveProperty_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753482-removeproperty_invoke"
+        },
+        {
+          "name" : "RequireMaxBusStall_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3689551-requiremaxbusstall_invoke"
+        },
+        {
+          "name" : "SearchProperty_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325796-searchproperty_invoke"
+        },
+        {
+          "name" : "SendIOMessageServicePropertyChange_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3943384-sendiomessageservicepropertychan"
+        },
+        {
+          "name" : "SetLegend_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753485-setlegend_invoke"
+        },
+        {
+          "name" : "SetName_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3325799-setname_invoke"
+        },
+        {
+          "name" : "SetPowerOverride_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/4485637-setpoweroverride_invoke"
+        },
+        {
+          "name" : "SetPowerState_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3152491-setpowerstate_invoke"
+        },
+        {
+          "name" : "SetProperties_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3075049-setproperties_invoke"
+        },
+        {
+          "name" : "Start_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3075052-start_invoke"
+        },
+        {
+          "name" : "StateNotificationItemCopy_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753488-statenotificationitemcopy_invoke"
+        },
+        {
+          "name" : "StateNotificationItemCreate_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753491-statenotificationitemcreate_invo"
+        },
+        {
+          "name" : "StateNotificationItemSet_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753494-statenotificationitemset_invoke"
+        },
+        {
+          "name" : "Stop_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3075055-stop_invoke"
+        },
+        {
+          "name" : "Stop_async_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3684896-stop_async_invoke"
+        },
+        {
+          "name" : "StringFromReturn_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753497-stringfromreturn_invoke"
+        },
+        {
+          "name" : "Terminate_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3538572-terminate_invoke"
+        },
+        {
+          "name" : "UpdateReport_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753500-updatereport_invoke"
+        },
+        {
+          "name" : "UserSetProperties_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753503-usersetproperties_invoke"
+        },
+        {
+          "name" : "actionDidStop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532805-actiondidstop"
+        },
+        {
+          "name" : "actionDidTerminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532611-actiondidterminate"
+        },
+        {
+          "name" : "actionFinalize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532875-actionfinalize"
+        },
+        {
+          "name" : "actionStop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532839-actionstop"
+        },
+        {
+          "name" : "actionWillStop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532676-actionwillstop"
+        },
+        {
+          "name" : "actionWillTerminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532651-actionwillterminate"
+        },
+        {
+          "name" : "addLocation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532786-addlocation"
+        },
+        {
+          "name" : "addMatchingNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532878-addmatchingnotification"
+        },
+        {
+          "name" : "addMatchingNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516482-addmatchingnotification"
+        },
+        {
+          "name" : "addNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532881-addnotification"
+        },
+        {
+          "name" : "copyExistingServices",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532695-copyexistingservices"
+        },
+        {
+          "name" : "copyMatchingService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532874-copymatchingservice"
+        },
+        {
+          "name" : "doInstallNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532603-doinstallnotification"
+        },
+        {
+          "name" : "getMatchingServices",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532708-getmatchingservices"
+        },
+        {
+          "name" : "getPMRootDomain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532815-getpmrootdomain"
+        },
+        {
+          "name" : "getPlatform",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532696-getplatform"
+        },
+        {
+          "name" : "getResourceService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532617-getresourceservice"
+        },
+        {
+          "name" : "getServiceRoot",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532741-getserviceroot"
+        },
+        {
+          "name" : "getSystemStateNotificationService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3753504-getsystemstatenotificationservic"
+        },
+        {
+          "name" : "instanceMatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532586-instancematch"
+        },
+        {
+          "name" : "nameMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532678-namematching"
+        },
+        {
+          "name" : "nameMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516486-namematching"
+        },
+        {
+          "name" : "propertyMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532859-propertymatching"
+        },
+        {
+          "name" : "publishHiddenMedia",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3857676-publishhiddenmedia"
+        },
+        {
+          "name" : "publishHiddenMediaApplier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3857677-publishhiddenmediaapplier"
+        },
+        {
+          "name" : "publishResource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532848-publishresource"
+        },
+        {
+          "name" : "publishResource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516488-publishresource"
+        },
+        {
+          "name" : "publishUserResource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3192003-publishuserresource"
+        },
+        {
+          "name" : "registryEntryIDMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532608-registryentryidmatching"
+        },
+        {
+          "name" : "resourceMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532747-resourcematching"
+        },
+        {
+          "name" : "resourceMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516490-resourcematching"
+        },
+        {
+          "name" : "serviceMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532788-servicematching"
+        },
+        {
+          "name" : "serviceMatching",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3516491-servicematching"
+        },
+        {
+          "name" : "setNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532577-setnotification"
+        },
+        {
+          "name" : "setRootMedia",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3857678-setrootmedia"
+        },
+        {
+          "name" : "syncNotificationHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532755-syncnotificationhandler"
+        },
+        {
+          "name" : "terminateThread",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532810-terminatethread"
+        },
+        {
+          "name" : "terminateWorker",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532833-terminateworker"
+        },
+        {
+          "name" : "userServerCheckInTokenCancellationHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/3786074-userservercheckintokencancellati"
+        },
+        {
+          "name" : "waitForMatchingService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532633-waitformatchingservice"
+        },
+        {
+          "name" : "waitForService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/1532827-waitforservice"
+        },
+        {
+          "name" : "waitToBecomeTerminateThread",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/2935674-waittobecometerminatethread"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The base class for platform I\/O drivers.",
+          "name" : "IOPlatformIO",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioplatformio"
+        }
+      ],
+      "title" : "Driver Services"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "IORegistryEntry"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "IOService",
+  "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice"
+}

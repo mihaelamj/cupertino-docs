@@ -1,0 +1,143 @@
+{
+  "abstract" : "A repeatable user-defined action.",
+  "codeExamples" : [
+    {
+      "code" : "struct LandmarkTips: App {\n    static let landmarksAppDidOpen = Tips.Event(id: \"landmarksAppDidOpen\")\n\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n                .onAppear { Self.landmarksAppDidOpen.sendDonation() }\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct LandmarkFeatureTip: Tip {\n    var rules: [Rule] {\n        \/\/ Tip will only display when the landmarksAppDidOpen event has been donated 3 or more times in the last week.\n        #Rule(LandmarkTips.landmarksAppDidOpen) {\n            $0.donations.donatedWithin(.week).count >= 3\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct LandmarkDetail: View {\n    static let didViewLandmarkDetail = Tips.Event<DidViewLandmark>(id: \"didViewLandmarkDetail\")\n\n    struct DidViewLandmark: Codable, Sendable {\n        let landmarkID: Int\n        let landmarkName: String\n    }\n\n    var landmark: Landmark\n\n    var body: some View {\n        ScrollView {\n            MapView(coordinate: landmark.locationCoordinate)\n        }\n        .onAppear {\n            Self.didViewLandmarkDetail.sendDonation(.init(landmarkID: landmark.id, landmarkName: landmark.name))\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "struct LandmarkDetailTip: Tip {\n    var rules: [Rule] {\n        \/\/ Tip will only display when the didViewLandmarkDetail has been donated 3 or more times for landmarks not named \"Wilbere Bowl\".\n        #Rule(LandmarkDetail.didViewLandmarkDetail) {\n            $0.donations.filter({ $0.landmarkName != \"Wilbere Bowl\" }).count > 3\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "1b81a33f2a658ebe3021b07688d9bf3728a2c294493e4d82143f57604562b789",
+  "crawledAt" : "2025-12-05T12:33:20Z",
+  "declaration" : {
+    "code" : "typealias Event = Tips.Event",
+    "language" : "swift"
+  },
+  "id" : "00345AE4-FF50-4C51-B5E3-CDDF7D3AE40D",
+  "kind" : "typealias",
+  "language" : "swift",
+  "module" : "TipKit",
+  "overview" : "## Overview\n\nUse an event when you want to track an action that can occur one or more times in your app (such as a user logging in). Then use [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tips\/Event\/donate()] to donate to the event when the action occurs, increasing the event count by one.\n\n### Creating an event with no associated donation value\n\nThe example below creates a `landmarksAppDidOpen` event with no associated donation value and donates it anytime `ContentView` appears:\n\nThe example below creates a display rule for `LandmarkFeatureTip` based on the `landmarksAppDidOpen` event.\n\n### Creating an event with an associated donation value\n\nThe example below creates a `didViewLandmarkDetail` event with an associated donation value and donates it anytime the `LandmarkDetail` appears:\n\nThe example below creates a display rule for `LandmarkDetailTip` based on the `didViewLandmarkDetail` event.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/TipKit\/Tip\/Event\ncrawled: 2025-12-05T12:33:20Z\n---\n\n# Event\n\n**Type Alias**\n\nA repeatable user-defined action.\n\n## Declaration\n\n```swift\ntypealias Event = Tips.Event\n```\n\n## Overview\n\nUse an event when you want to track an action that can occur one or more times in your app (such as a user logging in). Then use [doc:\/\/com.apple.TipKit\/documentation\/TipKit\/Tips\/Event\/donate()] to donate to the event when the action occurs, increasing the event count by one.\n\n\n\n### Creating an event with no associated donation value\n\nThe example below creates a `landmarksAppDidOpen` event with no associated donation value and donates it anytime `ContentView` appears:\n\n```swift\nstruct LandmarkTips: App {\n    static let landmarksAppDidOpen = Tips.Event(id: \"landmarksAppDidOpen\")\n\n    var body: some Scene {\n        WindowGroup {\n            ContentView()\n                .onAppear { Self.landmarksAppDidOpen.sendDonation() }\n        }\n    }\n}\n```\n\nThe example below creates a display rule for `LandmarkFeatureTip` based on the `landmarksAppDidOpen` event.\n\n```swift\nstruct LandmarkFeatureTip: Tip {\n    var rules: [Rule] {\n        \/\/ Tip will only display when the landmarksAppDidOpen event has been donated 3 or more times in the last week.\n        #Rule(LandmarkTips.landmarksAppDidOpen) {\n            $0.donations.donatedWithin(.week).count >= 3\n        }\n    }\n}\n```\n\n### Creating an event with an associated donation value\n\nThe example below creates a `didViewLandmarkDetail` event with an associated donation value and donates it anytime the `LandmarkDetail` appears:\n\n```swift\nstruct LandmarkDetail: View {\n    static let didViewLandmarkDetail = Tips.Event<DidViewLandmark>(id: \"didViewLandmarkDetail\")\n\n    struct DidViewLandmark: Codable, Sendable {\n        let landmarkID: Int\n        let landmarkName: String\n    }\n\n    var landmark: Landmark\n\n    var body: some View {\n        ScrollView {\n            MapView(coordinate: landmark.locationCoordinate)\n        }\n        .onAppear {\n            Self.didViewLandmarkDetail.sendDonation(.init(landmarkID: landmark.id, landmarkName: landmark.name))\n        }\n    }\n}\n```\n\nThe example below creates a display rule for `LandmarkDetailTip` based on the `didViewLandmarkDetail` event.\n\n```swift\nstruct LandmarkDetailTip: Tip {\n    var rules: [Rule] {\n        \/\/ Tip will only display when the didViewLandmarkDetail has been donated 3 or more times for landmarks not named \"Wilbere Bowl\".\n        #Rule(LandmarkDetail.didViewLandmarkDetail) {\n            $0.donations.filter({ $0.landmarkName != \"Wilbere Bowl\" }).count > 3\n        }\n    }\n}\n```\n\n## Initializers\n\n- **init(id:)**: Creates an event.\n- **init(id:donationLimit:)**: Creates an event.\n\n## Initializers with a donation value\n\n- **init(id:)**: Creates an event with an associated donation value.\n- **init(id:donationLimit:)**: Creates an event with an associated donation value.\n\n## Donations\n\n- **Donation**: A repeatable user-defined action.\n- **donations**: Returns an events existing donations.\n\n## Add Donations\n\n- **donate()**: Donates an event with no associated `Donation` value.\n- **donate(_:)**: Donates an event along with its associated `Donation` value.\n- **sendDonation(_:)**: Asynchronously donates an event with no associated `Donation` value.\n- **sendDonation(_:_:)**: Asynchronously donates an event along with its associated `Donation` value.\n\n## Delete Donations\n\n- **deleteDonations()**: Deletes an event’s existing donations.\n\n## Related Documentation\n\n- **Rule**: A condition to meet before displaying a tip.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an event.",
+          "name" : "init(id:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/init(id:)-99edo"
+        },
+        {
+          "description" : "Creates an event.",
+          "name" : "init(id:donationLimit:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/init(id:donationLimit:)-7tgi1"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates an event with an associated donation value.",
+          "name" : "init(id:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/init(id:)-3edd4"
+        },
+        {
+          "description" : "Creates an event with an associated donation value.",
+          "name" : "init(id:donationLimit:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/init(id:donationLimit:)-1d1hy"
+        }
+      ],
+      "title" : "Initializers with a donation value"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A repeatable user-defined action.",
+          "name" : "Donation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/Donation"
+        },
+        {
+          "description" : "Returns an events existing donations.",
+          "name" : "donations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/donations"
+        }
+      ],
+      "title" : "Donations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Donates an event with no associated `Donation` value.",
+          "name" : "donate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/donate()"
+        },
+        {
+          "description" : "Donates an event along with its associated `Donation` value.",
+          "name" : "donate(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/donate(_:)"
+        },
+        {
+          "description" : "Asynchronously donates an event with no associated `Donation` value.",
+          "name" : "sendDonation(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/sendDonation(_:)"
+        },
+        {
+          "description" : "Asynchronously donates an event along with its associated `Donation` value.",
+          "name" : "sendDonation(_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/sendDonation(_:_:)"
+        }
+      ],
+      "title" : "Add Donations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Deletes an event’s existing donations.",
+          "name" : "deleteDonations()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Event\/deleteDonations()"
+        }
+      ],
+      "title" : "Delete Donations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A condition to meet before displaying a tip.",
+          "name" : "Rule",
+          "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tips\/Rule"
+        }
+      ],
+      "title" : "Related Documentation"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Event",
+  "url" : "https:\/\/developer.apple.com\/documentation\/TipKit\/Tip\/Event"
+}
