@@ -1,0 +1,312 @@
+{
+  "abstract" : "Event source for interrupt delivery to work-loop based drivers.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "ac74c1b534fe8a75df3c44b2995f5a69f6f9481a122a09ed5892a242f9a40c90",
+  "crawledAt" : "2025-12-07T00:43:00Z",
+  "declaration" : {
+    "code" : "class IOInterruptEventSource : IOEventSource",
+    "language" : "swift"
+  },
+  "id" : "521C6F3F-0EA8-4E02-97A4-D8E2342AE324",
+  "kind" : "class",
+  "language" : "occ",
+  "module" : "Kernel",
+  "overview" : "## Overview\n\nThe IOInterruptEventSource is a generic object that delivers calls interrupt routines in it's client in a guaranteed single-threaded manner. IOInterruptEventSource is part of the IOKit $link IOWorkLoop infrastructure where the semantic that one and only one action method is executing within a work-loops event chain.\n\nWhen the action method is called in the client member function will receive 2 arguments, (IOEventSource *) sender and (int) count, See $link IOInterruptEventSource::Action. Where sender will be reference to the interrupt that occurred and the count will be computed by the difference between the $link producerCount and $link consumerCount. This number may not be reliable as no attempt is made to adjust for around the world type problems but is provided for general information and statistic gathering.\n\nIn general a client will use the factory member function to create and initialise the event source and then add it to their work-loop. It is the work loop's responsiblity to maintain the new event source in it's event chain. See $link IOWorkLoop.\n\nAn interrupt event source attaches itself to the given provider's interrupt source at initialisation time. At this time it determines if it is connected to a level or edge triggered interrupt. If the interrupt is an level triggered interrupt the event source automatically disables the interrupt source at primary interrupt time and after it call's the client it automatically reenables the interrupt. This action is fairly expensive but it is 100% safe and defaults sensibly so that the driver writer does not have to implement type dependant interrupt routines. So to repeat, the driver writer does not have to be concerned by the actual underlying interrupt mechanism as the event source hides the complexity.\n\nSaying this if the hardware is a multi-device card, for instance a 4 port NIC, where all of the devices are sharing one level triggered interrupt AND it is possible to determine each port's interrupt state non-destructively then the $link IOFilterInterruptEventSource would be a better choice.\n\nWarning: All IOInterruptEventSources are created in the disabled state. If you want to actually schedule interrupt delivery do not forget to enable the source.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\ncrawled: 2025-12-07T00:43:00Z\n---\n\n# IOInterruptEventSource\n\n**Class**\n\nEvent source for interrupt delivery to work-loop based drivers.\n\n## Declaration\n\n```swift\nclass IOInterruptEventSource : IOEventSource\n```\n\n## Overview\n\nThe IOInterruptEventSource is a generic object that delivers calls interrupt routines in it's client in a guaranteed single-threaded manner. IOInterruptEventSource is part of the IOKit $link IOWorkLoop infrastructure where the semantic that one and only one action method is executing within a work-loops event chain.\n\nWhen the action method is called in the client member function will receive 2 arguments, (IOEventSource *) sender and (int) count, See $link IOInterruptEventSource::Action. Where sender will be reference to the interrupt that occurred and the count will be computed by the difference between the $link producerCount and $link consumerCount. This number may not be reliable as no attempt is made to adjust for around the world type problems but is provided for general information and statistic gathering.\n\nIn general a client will use the factory member function to create and initialise the event source and then add it to their work-loop. It is the work loop's responsiblity to maintain the new event source in it's event chain. See $link IOWorkLoop.\n\nAn interrupt event source attaches itself to the given provider's interrupt source at initialisation time. At this time it determines if it is connected to a level or edge triggered interrupt. If the interrupt is an level triggered interrupt the event source automatically disables the interrupt source at primary interrupt time and after it call's the client it automatically reenables the interrupt. This action is fairly expensive but it is 100% safe and defaults sensibly so that the driver writer does not have to implement type dependant interrupt routines. So to repeat, the driver writer does not have to be concerned by the actual underlying interrupt mechanism as the event source hides the complexity.\n\nSaying this if the hardware is a multi-device card, for instance a 4 port NIC, where all of the devices are sharing one level triggered interrupt AND it is possible to determine each port's interrupt state non-destructively then the $link IOFilterInterruptEventSource would be a better choice.\n\nWarning: All IOInterruptEventSources are created in the disabled state. If you want to actually schedule interrupt delivery do not forget to enable the source.\n\n## Miscellaneous\n\n- **checkForWork**: Pure Virtual member function used by IOWorkLoop for issueing a client calls.\n- **disable**: Disable event source.\n- **disableInterruptOccurred**: Functions that get called by the interrupt controller.See $link IOService::registerInterrupt\n- **enable**: Enable event source.\n- **free**: Sub-class implementation of free method, disconnects from the interrupt source.\n- **getAutoDisable**: Get'ter for $link autoDisable variable.\n- **getIntIndex**: Get'ter for $link intIndex interrupt index variable.\n- **getProvider**: Get'ter for $link provider variable.\n- **init**: Primary initialiser for the IOInterruptEventSource class.\n- **interruptEventSource**: Factory function for IOInterruptEventSources creation and initialisation.\n- **interruptOccurred**: Functions that get called by the interrupt controller. See $link IOService::registerInterrupt\n- **normalInterruptOccurred**: Functions that get called by the interrupt controller.See $link IOService::registerInterrupt\n- **setWorkLoop**: Sub-class implementation of setWorkLoop method.\n- **warmCPU**: Tries to reduce latency for an interrupt which will be received near a specified time.\n\n## Callbacks\n\n- **Action**\n\n## Constants\n\n- **Miscellaneous Defines**\n\n## DataTypes\n\n- **ExpansionData**\n\n## Instance Variables\n\n- **reserved**\n- **provider**\n- **producerCount**\n- **intIndex**\n- **explicitDisable**\n- **consumerCount**\n- **autoDisable**\n\n## Instance Methods\n\n- **checkForWork**\n- **disable**\n- **disableInterruptOccurred**\n- **enable**\n- **enablePrimaryInterruptTimestamp**\n- **free**\n- **getAutoDisable**\n- **getIntIndex**\n- **getMetaClass**\n- **getPrimaryInterruptTimestamp**\n- **getProvider**\n- **init**\n- **interruptOccurred**\n- **normalInterruptOccurred**\n- **registerInterruptHandler**\n- **setWorkLoop**\n- **unregisterInterruptHandler**\n- **warmCPU**\n\n## Type Methods\n\n- **interruptEventSource**\n- **interruptEventSource**\n\n## Interrupts\n\n- **IOInterruptDispatchSource**\n- **IOInterruptDispatchSourceInterface**\n- **IOFilterInterruptEventSource**: Filtering varient of the $link IOInterruptEventSource.\n- **IOInterruptController**\n- **PassthruInterruptController**\n- **IOInterruptSource**\n- **IOInterruptVector**\n\n## Inherits From\n\n- IOEventSource\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Pure Virtual member function used by IOWorkLoop for issueing a client calls.",
+          "name" : "checkForWork",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812548-checkforwork"
+        },
+        {
+          "description" : "Disable event source.",
+          "name" : "disable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812553-disable"
+        },
+        {
+          "description" : "Functions that get called by the interrupt controller.See $link IOService::registerInterrupt",
+          "name" : "disableInterruptOccurred",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812562-disableinterruptoccurred"
+        },
+        {
+          "description" : "Enable event source.",
+          "name" : "enable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812570-enable"
+        },
+        {
+          "description" : "Sub-class implementation of free method, disconnects from the interrupt source.",
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812582-free"
+        },
+        {
+          "description" : "Get'ter for $link autoDisable variable.",
+          "name" : "getAutoDisable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812592-getautodisable"
+        },
+        {
+          "description" : "Get'ter for $link intIndex interrupt index variable.",
+          "name" : "getIntIndex",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812606-getintindex"
+        },
+        {
+          "description" : "Get'ter for $link provider variable.",
+          "name" : "getProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812623-getprovider"
+        },
+        {
+          "description" : "Primary initialiser for the IOInterruptEventSource class.",
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812641-init"
+        },
+        {
+          "description" : "Factory function for IOInterruptEventSources creation and initialisation.",
+          "name" : "interruptEventSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812661-interrupteventsource"
+        },
+        {
+          "description" : "Functions that get called by the interrupt controller. See $link IOService::registerInterrupt",
+          "name" : "interruptOccurred",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812679-interruptoccurred"
+        },
+        {
+          "description" : "Functions that get called by the interrupt controller.See $link IOService::registerInterrupt",
+          "name" : "normalInterruptOccurred",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812702-normalinterruptoccurred"
+        },
+        {
+          "description" : "Sub-class implementation of setWorkLoop method.",
+          "name" : "setWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812729-setworkloop"
+        },
+        {
+          "description" : "Tries to reduce latency for an interrupt which will be received near a specified time.",
+          "name" : "warmCPU",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1812762-warmcpu"
+        }
+      ],
+      "title" : "Miscellaneous"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Action",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioworkloop\/action"
+        }
+      ],
+      "title" : "Callbacks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Miscellaneous Defines",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/miscellaneous_defines"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "ExpansionData",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/expansiondata"
+        }
+      ],
+      "title" : "DataTypes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "reserved",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/reserved"
+        },
+        {
+          "description" : "",
+          "name" : "provider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/provider"
+        },
+        {
+          "description" : "",
+          "name" : "producerCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/producercount"
+        },
+        {
+          "description" : "",
+          "name" : "intIndex",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/intindex"
+        },
+        {
+          "description" : "",
+          "name" : "explicitDisable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/explicitdisable"
+        },
+        {
+          "description" : "",
+          "name" : "consumerCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/consumercount"
+        },
+        {
+          "description" : "",
+          "name" : "autoDisable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/autodisable"
+        }
+      ],
+      "title" : "Instance Variables"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "checkForWork",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577653-checkforwork"
+        },
+        {
+          "name" : "disable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577654-disable"
+        },
+        {
+          "name" : "disableInterruptOccurred",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577646-disableinterruptoccurred"
+        },
+        {
+          "name" : "enable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577657-enable"
+        },
+        {
+          "name" : "enablePrimaryInterruptTimestamp",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/3237243-enableprimaryinterrupttimestamp"
+        },
+        {
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577645-free"
+        },
+        {
+          "name" : "getAutoDisable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577655-getautodisable"
+        },
+        {
+          "name" : "getIntIndex",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577661-getintindex"
+        },
+        {
+          "name" : "getMetaClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577651-getmetaclass"
+        },
+        {
+          "name" : "getPrimaryInterruptTimestamp",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/3553358-getprimaryinterrupttimestamp"
+        },
+        {
+          "name" : "getProvider",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577650-getprovider"
+        },
+        {
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577649-init"
+        },
+        {
+          "name" : "interruptOccurred",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577659-interruptoccurred"
+        },
+        {
+          "name" : "normalInterruptOccurred",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577662-normalinterruptoccurred"
+        },
+        {
+          "name" : "registerInterruptHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577660-registerinterrupthandler"
+        },
+        {
+          "name" : "setWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577647-setworkloop"
+        },
+        {
+          "name" : "unregisterInterruptHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577644-unregisterinterrupthandler"
+        },
+        {
+          "name" : "warmCPU",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577656-warmcpu"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "interruptEventSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/1577652-interrupteventsource"
+        },
+        {
+          "name" : "interruptEventSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource\/3516456-interrupteventsource"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "IOInterruptDispatchSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerruptdispatchsource"
+        },
+        {
+          "name" : "IOInterruptDispatchSourceInterface",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerruptdispatchsourceinterface"
+        },
+        {
+          "description" : "Filtering varient of the $link IOInterruptEventSource.",
+          "name" : "IOFilterInterruptEventSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iofilterinterrupteventsource"
+        },
+        {
+          "name" : "IOInterruptController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerruptcontroller"
+        },
+        {
+          "name" : "PassthruInterruptController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/passthruinterruptcontroller"
+        },
+        {
+          "name" : "IOInterruptSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerruptsource"
+        },
+        {
+          "name" : "IOInterruptVector",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerruptvector"
+        }
+      ],
+      "title" : "Interrupts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "IOEventSource"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "IOInterruptEventSource",
+  "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iointerrupteventsource"
+}

@@ -1,0 +1,543 @@
+{
+  "abstract" : "Represents any controllable attribute of an IOAudioDevice.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "3fcad2b79210b6d02e5a092e7adbcce786366bd1b22f8eadcd614e623ac222c3",
+  "crawledAt" : "2025-12-07T02:14:47Z",
+  "declaration" : {
+    "code" : "class IOAudioControl : IOService",
+    "language" : "swift"
+  },
+  "id" : "2F589371-2653-4AC7-BA01-F910649F399D",
+  "kind" : "class",
+  "language" : "occ",
+  "module" : "Kernel",
+  "overview" : "## Overview\n\nAn IOAudioControl instance may belong to one IOAudioPort. Additionally, it may associated with an IOAudioEngine as a default control for that IOAudioEngine.\n\nWhen its value changes, it sends a notification to the CoreAudio.framework (HAL). It also makes a call to the ValueChangeHandler.\n\nThe base IOAudioControl class contains a type, a value and a channel ID representing the channel(s) which the control acts on. It may also contain a readable format for the name of the channel as well as a control ID that can be used to identify unique controls. Additionally it may contain a subType and a usage. Each type has its own set of possible subTypes. There currently four different control types defined: kIOAudioControlTypeLevel, kIOAudioControlTypeToggle, kIOAudioControlTypeSelector. Each one is represented by a subclass of IOAudioControl: IOAudioLevelControl, IOAudioToggleControl, IOAudioSelectorControl. The level control defines a range of allowed values and has a defined subtype of kIOAudioLevelControlSubTypeVolume used to define a volume control. The toggle control allows for a boolean value and has a defined subtype kIOAudioToggleControlSubTypeMute for a mute control. The selector control has a list of allowed selections with a value and description for each allowed selection and has the following sub types: kIOAudioSelectorControlSubTypeOutput for an output selector and kIOAudioSelectorControlSubTypeInput for an input selector. See the subclass documentation for a more complete description of each\n\nThere are enums for default channel ID values and common channel names in IOAudioTypes.h. The channel ID values are prefixed with 'kIOAudioControlChannelID' and the common channel names are prefixed with 'kIOAudioControlChannelName'. All of the attributes of the IOAudioControl are stored in the registry. The key used for each attribute is defined in IOAudioTypes.h with the define matching the following pattern: 'kIOAudioControl<attribute name>Key'. For example: kIOAudioControlChannelIDKey.\n\nIn addition to the existing defined control types, drivers can define their own as well for other purposes.\n\nChanges to the IOAudioControl's value made by the CoreAudio.framework are done through the IORegistry. When the CoreAudio.framework initiates a value change, the control receives a setProperties() message. The setProperties() implementation looks for the property 'IOAudioControlValue' and if present, calls setValue() on the driver's IOWorkLoop with the new value. The setValue() function first checks to see if the new value is different. If so, it calls performValueChange() to call through to the driver to make the change in the hardware. If that call succeeds the value is changed and the new value is set in the registry. Additionally notifications are sent to all clients that have registered for them.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\ncrawled: 2025-12-07T02:14:47Z\n---\n\n# IOAudioControl\n\n**Class**\n\nRepresents any controllable attribute of an IOAudioDevice.\n\n## Declaration\n\n```swift\nclass IOAudioControl : IOService\n```\n\n## Overview\n\nAn IOAudioControl instance may belong to one IOAudioPort. Additionally, it may associated with an IOAudioEngine as a default control for that IOAudioEngine.\n\nWhen its value changes, it sends a notification to the CoreAudio.framework (HAL). It also makes a call to the ValueChangeHandler.\n\nThe base IOAudioControl class contains a type, a value and a channel ID representing the channel(s) which the control acts on. It may also contain a readable format for the name of the channel as well as a control ID that can be used to identify unique controls. Additionally it may contain a subType and a usage. Each type has its own set of possible subTypes. There currently four different control types defined: kIOAudioControlTypeLevel, kIOAudioControlTypeToggle, kIOAudioControlTypeSelector. Each one is represented by a subclass of IOAudioControl: IOAudioLevelControl, IOAudioToggleControl, IOAudioSelectorControl. The level control defines a range of allowed values and has a defined subtype of kIOAudioLevelControlSubTypeVolume used to define a volume control. The toggle control allows for a boolean value and has a defined subtype kIOAudioToggleControlSubTypeMute for a mute control. The selector control has a list of allowed selections with a value and description for each allowed selection and has the following sub types: kIOAudioSelectorControlSubTypeOutput for an output selector and kIOAudioSelectorControlSubTypeInput for an input selector. See the subclass documentation for a more complete description of each\n\nThere are enums for default channel ID values and common channel names in IOAudioTypes.h. The channel ID values are prefixed with 'kIOAudioControlChannelID' and the common channel names are prefixed with 'kIOAudioControlChannelName'. All of the attributes of the IOAudioControl are stored in the registry. The key used for each attribute is defined in IOAudioTypes.h with the define matching the following pattern: 'kIOAudioControl<attribute name>Key'. For example: kIOAudioControlChannelIDKey.\n\nIn addition to the existing defined control types, drivers can define their own as well for other purposes.\n\nChanges to the IOAudioControl's value made by the CoreAudio.framework are done through the IORegistry. When the CoreAudio.framework initiates a value change, the control receives a setProperties() message. The setProperties() implementation looks for the property 'IOAudioControlValue' and if present, calls setValue() on the driver's IOWorkLoop with the new value. The setValue() function first checks to see if the new value is different. If so, it calls performValueChange() to call through to the driver to make the change in the hardware. If that call succeeds the value is changed and the new value is set in the registry. Additionally notifications are sent to all clients that have registered for them.\n\n## Miscellaneous\n\n- **addUserClient**: Called on the IOWorkLoop to add a new IOAudioControlUserClient.\n- **addUserClientAction**: IOCommandGate Action which calls addUserClient() while holding the IOCommandGate.\n- **clientClosed**: Called automatically by the IOAudioControlUserClient when a user client closes its connection to the control.\n- **createUserClient(task_t, void *, UInt32, IOAudioControlUserClient **)**: Creates a new IOAudioControlUserClient instance.\n- **createUserClient(task_t, void *, UInt32, IOAudioControlUserClient **, OSDictionary *)**: Creates a new IOAudioControlUserClient instance.\n- **detachUserClientsAction**\n- **flushValue**: Forces the control to be flushed out to the hardware.\n- **free**: Frees all of the resources allocated by the IOAudioControl.\n- **getChannelID**: Returns the channel ID for the control.\n- **getCommandGate**: Returns the IOCommandGate for this IOAudioControl.\n- **getControlID**: Returns the control ID for the control.\n- **getIsStarted**: Returns true after start() has been called.\n- **getValue**: Returns the current value of the control.\n- **getWorkLoop**: Returns the IOWorkLoop for the whole audio driver.\n- **hardwareValueChanged**: Updates the value for this control and sends out the value changed notification.\n- **init**: Initializes a newly allocated IOAudioControl with the given attributes.\n- **newUserClient**: Creates a new user client object for this IOAudioControl instance.\n- **performValueChange**: Called by setValue() to make the call to the valueChangeHandler to update the hardware.\n- **removeUserClient**: Called on the IOWorkLoop to remove an IOAudioControlUserClient.\n- **removeUserClientAction**: IOCommandGate Action which calls removeUserClient() while holding the IOCommandGate.\n- **sendValueChangeNotification**: Called when the value has changed for the control.\n- **setChannelID**: Called at init time to set the channel ID for this IOAudioControl.\n- **setChannelName**: Called at init time to set the channel name for this IOAudioControl.\n- **setControlID**: Sets the controlID for this control.\n- **setProperties**: Changes a property of this IOService.\n- **setReadOnlyFlag**: Call this function to say that a control is read only. This call cannot be undone, so if a control is only temporarily unsetable, do not use this call but instead return an error from the control handler.\n- **setSubType(UInt32)**: Called at init time to set the control type.\n- **setType(UInt32)**: Called at init time to set the control type.\n- **setUsage**: Called at init time to set the control usage.\n- **setValue**: Sets the value for this control.\n- **setValueAction**: IOCommandGate Action which calls setValue() while holding the IOCommandGate.\n- **start**: Starts a newly created IOAudioControl.\n- **stop**: Stops the control when the provider is going away.\n- **updateValue**: Called by setValue() in order to update the value and the registry.\n- **validateValue**: Called by setValue() to verify that the value is valid.\n- **withAttributes**: Static function that allocates a new IOAudioControl with the given attributes.\n\n## Callbacks\n\n- **IntValueChangeHandler**: Handler function used to make a notification when a value is to be changed.\n\n## Instance Variables\n\n- **workLoop**\n- **userClients**\n- **isStarted**\n- **controlID**\n- **commandGate**\n- **channelID**\n\n## Instance Methods\n\n- **addUserClient**\n- **attachAndStart**\n- **clientClosed**\n- **createUserClient**\n- **createUserClient**\n- **detachUserClients**\n- **flushValue**\n- **free**\n- **getChannelID**\n- **getCommandGate**\n- **getControlID**\n- **getDataBytes**\n- **getDataLength**\n- **getIntValue**\n- **getIsStarted**\n- **getMetaClass**\n- **getSubType**\n- **getType**\n- **getUsage**\n- **getValue**\n- **getWorkLoop**\n- **hardwareValueChanged**\n- **init**\n- **newUserClient**\n- **newUserClient**\n- **performValueChange**\n- **removeUserClient**\n- **sendChangeNotification**\n- **sendQueuedNotifications**\n- **sendValueChangeNotification**\n- **setChannelID**\n- **setChannelName**\n- **setChannelNumber**\n- **setControlID**\n- **setCoreAudioPropertyID**\n- **setProperties**\n- **setReadOnlyFlag**\n- **setSubType**\n- **setType**\n- **setUsage**\n- **setValue**\n- **setValue**\n- **setValueChangeHandler**\n- **setValueChangeHandler**\n- **setValueChangeHandler**\n- **setValueChangeTarget**\n- **setWorkLoop**\n- **start**\n- **stop**\n- **updateValue**\n- **validateValue**\n\n## Type Methods\n\n- **addUserClientAction**\n- **detachUserClientsAction**\n- **removeUserClientAction**\n- **setCommandGateUsage**\n- **setValueAction**\n- **withAttributes**\n\n## Interfaces\n\n- **IOAudioLevelControl**\n- **IOAudioSelectorControl**\n- **IOAudioToggleControl**\n- **IOAudioEngine**: Abstract base class for a single audio audio \/ I\/O engine.\n- **IOAudioStream**: This class wraps a single sample buffer in an audio driver.\n- **IOAudioPort**: Represents a logical or physical port or functional unit in an audio device.\n\n## Inherits From\n\n- IOService\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Called on the IOWorkLoop to add a new IOAudioControlUserClient.",
+          "name" : "addUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812069-adduserclient"
+        },
+        {
+          "description" : "IOCommandGate Action which calls addUserClient() while holding the IOCommandGate.",
+          "name" : "addUserClientAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812079-adduserclientaction"
+        },
+        {
+          "description" : "Called automatically by the IOAudioControlUserClient when a user client closes its connection to the control.",
+          "name" : "clientClosed",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812087-clientclosed"
+        },
+        {
+          "description" : "Creates a new IOAudioControlUserClient instance.",
+          "name" : "createUserClient(task_t, void *, UInt32, IOAudioControlUserClient **)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812095-createuserclient"
+        },
+        {
+          "description" : "Creates a new IOAudioControlUserClient instance.",
+          "name" : "createUserClient(task_t, void *, UInt32, IOAudioControlUserClient **, OSDictionary *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812104-createuserclient"
+        },
+        {
+          "description" : "",
+          "name" : "detachUserClientsAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812113-detachuserclientsaction"
+        },
+        {
+          "description" : "Forces the control to be flushed out to the hardware.",
+          "name" : "flushValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812123-flushvalue"
+        },
+        {
+          "description" : "Frees all of the resources allocated by the IOAudioControl.",
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812130-free"
+        },
+        {
+          "description" : "Returns the channel ID for the control.",
+          "name" : "getChannelID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812135-getchannelid"
+        },
+        {
+          "description" : "Returns the IOCommandGate for this IOAudioControl.",
+          "name" : "getCommandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812146-getcommandgate"
+        },
+        {
+          "description" : "Returns the control ID for the control.",
+          "name" : "getControlID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812156-getcontrolid"
+        },
+        {
+          "description" : "Returns true after start() has been called.",
+          "name" : "getIsStarted",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812169-getisstarted"
+        },
+        {
+          "description" : "Returns the current value of the control.",
+          "name" : "getValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812181-getvalue"
+        },
+        {
+          "description" : "Returns the IOWorkLoop for the whole audio driver.",
+          "name" : "getWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812197-getworkloop"
+        },
+        {
+          "description" : "Updates the value for this control and sends out the value changed notification.",
+          "name" : "hardwareValueChanged",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812208-hardwarevaluechanged"
+        },
+        {
+          "description" : "Initializes a newly allocated IOAudioControl with the given attributes.",
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812219-init"
+        },
+        {
+          "description" : "Creates a new user client object for this IOAudioControl instance.",
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812229-newuserclient"
+        },
+        {
+          "description" : "Called by setValue() to make the call to the valueChangeHandler to update the hardware.",
+          "name" : "performValueChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812237-performvaluechange"
+        },
+        {
+          "description" : "Called on the IOWorkLoop to remove an IOAudioControlUserClient.",
+          "name" : "removeUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812247-removeuserclient"
+        },
+        {
+          "description" : "IOCommandGate Action which calls removeUserClient() while holding the IOCommandGate.",
+          "name" : "removeUserClientAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812259-removeuserclientaction"
+        },
+        {
+          "description" : "Called when the value has changed for the control.",
+          "name" : "sendValueChangeNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812267-sendvaluechangenotification"
+        },
+        {
+          "description" : "Called at init time to set the channel ID for this IOAudioControl.",
+          "name" : "setChannelID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812275-setchannelid"
+        },
+        {
+          "description" : "Called at init time to set the channel name for this IOAudioControl.",
+          "name" : "setChannelName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812281-setchannelname"
+        },
+        {
+          "description" : "Sets the controlID for this control.",
+          "name" : "setControlID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812283-setcontrolid"
+        },
+        {
+          "description" : "Changes a property of this IOService.",
+          "name" : "setProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812287-setproperties"
+        },
+        {
+          "description" : "Call this function to say that a control is read only. This call cannot be undone, so if a control is only temporarily unsetable, do not use this call but instead return an error from the control handler.",
+          "name" : "setReadOnlyFlag",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812291-setreadonlyflag"
+        },
+        {
+          "description" : "Called at init time to set the control type.",
+          "name" : "setSubType(UInt32)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812293-setsubtype"
+        },
+        {
+          "description" : "Called at init time to set the control type.",
+          "name" : "setType(UInt32)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812300-settype"
+        },
+        {
+          "description" : "Called at init time to set the control usage.",
+          "name" : "setUsage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812305-setusage"
+        },
+        {
+          "description" : "Sets the value for this control.",
+          "name" : "setValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812307-setvalue"
+        },
+        {
+          "description" : "IOCommandGate Action which calls setValue() while holding the IOCommandGate.",
+          "name" : "setValueAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812310-setvalueaction"
+        },
+        {
+          "description" : "Starts a newly created IOAudioControl.",
+          "name" : "start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812313-start"
+        },
+        {
+          "description" : "Stops the control when the provider is going away.",
+          "name" : "stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812316-stop"
+        },
+        {
+          "description" : "Called by setValue() in order to update the value and the registry.",
+          "name" : "updateValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812319-updatevalue"
+        },
+        {
+          "description" : "Called by setValue() to verify that the value is valid.",
+          "name" : "validateValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812322-validatevalue"
+        },
+        {
+          "description" : "Static function that allocates a new IOAudioControl with the given attributes.",
+          "name" : "withAttributes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1812328-withattributes"
+        }
+      ],
+      "title" : "Miscellaneous"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Handler function used to make a notification when a value is to be changed.",
+          "name" : "IntValueChangeHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/intvaluechangehandler"
+        }
+      ],
+      "title" : "Callbacks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "workLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/workloop"
+        },
+        {
+          "description" : "",
+          "name" : "userClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/userclients"
+        },
+        {
+          "description" : "",
+          "name" : "isStarted",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/isstarted"
+        },
+        {
+          "description" : "",
+          "name" : "controlID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/controlid"
+        },
+        {
+          "description" : "",
+          "name" : "commandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/commandgate"
+        },
+        {
+          "description" : "",
+          "name" : "channelID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/channelid"
+        }
+      ],
+      "title" : "Instance Variables"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "addUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485871-adduserclient"
+        },
+        {
+          "name" : "attachAndStart",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485811-attachandstart"
+        },
+        {
+          "name" : "clientClosed",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485815-clientclosed"
+        },
+        {
+          "name" : "createUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485832-createuserclient"
+        },
+        {
+          "name" : "createUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/3516514-createuserclient"
+        },
+        {
+          "name" : "detachUserClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485893-detachuserclients"
+        },
+        {
+          "name" : "flushValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485879-flushvalue"
+        },
+        {
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485856-free"
+        },
+        {
+          "name" : "getChannelID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485850-getchannelid"
+        },
+        {
+          "name" : "getCommandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485859-getcommandgate"
+        },
+        {
+          "name" : "getControlID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485824-getcontrolid"
+        },
+        {
+          "name" : "getDataBytes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485848-getdatabytes"
+        },
+        {
+          "name" : "getDataLength",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485904-getdatalength"
+        },
+        {
+          "name" : "getIntValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485853-getintvalue"
+        },
+        {
+          "name" : "getIsStarted",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485813-getisstarted"
+        },
+        {
+          "name" : "getMetaClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485887-getmetaclass"
+        },
+        {
+          "name" : "getSubType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485910-getsubtype"
+        },
+        {
+          "name" : "getType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485908-gettype"
+        },
+        {
+          "name" : "getUsage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485873-getusage"
+        },
+        {
+          "name" : "getValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485838-getvalue"
+        },
+        {
+          "name" : "getWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485912-getworkloop"
+        },
+        {
+          "name" : "hardwareValueChanged",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485883-hardwarevaluechanged"
+        },
+        {
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485826-init"
+        },
+        {
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485889-newuserclient"
+        },
+        {
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/3516515-newuserclient"
+        },
+        {
+          "name" : "performValueChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485899-performvaluechange"
+        },
+        {
+          "name" : "removeUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485809-removeuserclient"
+        },
+        {
+          "name" : "sendChangeNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485830-sendchangenotification"
+        },
+        {
+          "name" : "sendQueuedNotifications",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485918-sendqueuednotifications"
+        },
+        {
+          "name" : "sendValueChangeNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485819-sendvaluechangenotification"
+        },
+        {
+          "name" : "setChannelID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485917-setchannelid"
+        },
+        {
+          "name" : "setChannelName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485865-setchannelname"
+        },
+        {
+          "name" : "setChannelNumber",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485861-setchannelnumber"
+        },
+        {
+          "name" : "setControlID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485846-setcontrolid"
+        },
+        {
+          "name" : "setCoreAudioPropertyID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485844-setcoreaudiopropertyid"
+        },
+        {
+          "name" : "setProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485840-setproperties"
+        },
+        {
+          "name" : "setReadOnlyFlag",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485875-setreadonlyflag"
+        },
+        {
+          "name" : "setSubType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485916-setsubtype"
+        },
+        {
+          "name" : "setType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485897-settype"
+        },
+        {
+          "name" : "setUsage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485816-setusage"
+        },
+        {
+          "name" : "setValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485842-setvalue"
+        },
+        {
+          "name" : "setValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/3516516-setvalue"
+        },
+        {
+          "name" : "setValueChangeHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485869-setvaluechangehandler"
+        },
+        {
+          "name" : "setValueChangeHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/3516517-setvaluechangehandler"
+        },
+        {
+          "name" : "setValueChangeHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/3516518-setvaluechangehandler"
+        },
+        {
+          "name" : "setValueChangeTarget",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485876-setvaluechangetarget"
+        },
+        {
+          "name" : "setWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485901-setworkloop"
+        },
+        {
+          "name" : "start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485891-start"
+        },
+        {
+          "name" : "stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485836-stop"
+        },
+        {
+          "name" : "updateValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485881-updatevalue"
+        },
+        {
+          "name" : "validateValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485914-validatevalue"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "addUserClientAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485863-adduserclientaction"
+        },
+        {
+          "name" : "detachUserClientsAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485822-detachuserclientsaction"
+        },
+        {
+          "name" : "removeUserClientAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485895-removeuserclientaction"
+        },
+        {
+          "name" : "setCommandGateUsage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485867-setcommandgateusage"
+        },
+        {
+          "name" : "setValueAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485834-setvalueaction"
+        },
+        {
+          "name" : "withAttributes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol\/1485828-withattributes"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "IOAudioLevelControl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiolevelcontrol"
+        },
+        {
+          "name" : "IOAudioSelectorControl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioselectorcontrol"
+        },
+        {
+          "description" : "",
+          "name" : "IOAudioToggleControl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiotogglecontrol"
+        },
+        {
+          "description" : "Abstract base class for a single audio audio \/ I\/O engine.",
+          "name" : "IOAudioEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine"
+        },
+        {
+          "description" : "This class wraps a single sample buffer in an audio driver.",
+          "name" : "IOAudioStream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiostream"
+        },
+        {
+          "description" : "Represents a logical or physical port or functional unit in an audio device.",
+          "name" : "IOAudioPort",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioport"
+        }
+      ],
+      "title" : "Interfaces"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "IOService"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "IOAudioControl",
+  "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol"
+}

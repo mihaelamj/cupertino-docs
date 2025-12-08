@@ -1,0 +1,103 @@
+{
+  "abstract" : "Requests data from a nonlocalized resource file in a kext bundle on disk.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "78a673b3ff271ec667390944d93e2777f13d2b5c1813fa393ca5c10fe8df4311",
+  "crawledAt" : "2025-12-06T14:59:54Z",
+  "declaration" : {
+    "code" : "OSReturn OSKextRequestResource(const char *kextIdentifier, const char *resourceName, OSKextRequestResourceCallback callback, void *context, OSKextRequestTag *requestTagOut);",
+    "language" : "swift"
+  },
+  "id" : "9A0DF025-48DE-4134-A458-C5A18E1DC37B",
+  "kind" : "function",
+  "language" : "occ",
+  "module" : "Kernel",
+  "overview" : "## Return Value\n\n`kOSReturnSuccess` if the request is successfully queued. `kOSKextReturnInvalidArgument` if `kextIdentifier` or `resourceName` or if `callback` is not an address within a loaded kext executable. `kOSKextReturnStopping` if an unload attempt is being made on the kext containing `callback`. Other `OSKextReturn...` errors are possible.\n\n## Discussion\n\nThis function queues an asynchronous request to the user-space kext daemon kextd(8); requests for resources early in system startup will not be fulfilled until that daemon starts. Requests made by a kext while that kext is loading (specifically in the kext's module start routine) will not be fulfilled until after the start routine returns and the kext is completely loaded. Kexts requesting resources should be sure to perform appropriate locking in the callback function.\n\nKext resources are stored in the kext's on-disk bundle under the Resources subdirectory. See [devLink-1696005] for an overview of bundle structure. The localization context of the kext daemon (namely that of the superuser) will be used in retrieving resources; kext resources intended for use in the kernel should generally not be localized.\n\n`callback` is guaranteed to be invoked except when:\n\nKexts with pending requests are not subject to autounload, but requests are subject to timeout after a few minutes. If that amount of time passes with no response from user space, `callback` is invoked with a result of. `kOSKextReturnTimeout`.\n\nKexts that are explicitly unloaded have all pending request callbacks invoked with a result of `kOSKextReturnStopping`. The kext must handle these callbacks, even if its stop routine will prevent unloading. If the kext does prevent unloading, it can reissue resource requests outside of the stop function.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/kernel\/1508294-oskextrequestresource\ncrawled: 2025-12-06T14:59:54Z\n---\n\n# OSKextRequestResource\n\n**Function**\n\nRequests data from a nonlocalized resource file in a kext bundle on disk.\n\n## Declaration\n\n```swift\nOSReturn OSKextRequestResource(const char *kextIdentifier, const char *resourceName, OSKextRequestResourceCallback callback, void *context, OSKextRequestTag *requestTagOut);\n```\n\n## Parameters\n\n- **kextIdentifier**: The CFBundleIdentifier of the kext from which to read the file.\n- **resourceName**: The name of the resource file to read.\n- **callback**: A pointer to a callback function; the address must be within a currently-loaded kext.\n- **context**: A pointer to arbitrary run-time data that will be passed to the callback when it is invoked. May be `NULL`.\n- **requestTagOut**: If non-`NULL`, filled on success with a tag identifying the pending request (or on failure with `kOSKextRequestTagInvalid`; can be used with [doc:\/\/com.apple.documentation\/documentation\/kernel\/1508350-oskextcancelrequest].\n\n## Return Value\n\n`kOSReturnSuccess` if the request is successfully queued. `kOSKextReturnInvalidArgument` if `kextIdentifier` or `resourceName` or if `callback` is not an address within a loaded kext executable. `kOSKextReturnStopping` if an unload attempt is being made on the kext containing `callback`. Other `OSKextReturn...` errors are possible.\n\n## Discussion\n\nThis function queues an asynchronous request to the user-space kext daemon kextd(8); requests for resources early in system startup will not be fulfilled until that daemon starts. Requests made by a kext while that kext is loading (specifically in the kext's module start routine) will not be fulfilled until after the start routine returns and the kext is completely loaded. Kexts requesting resources should be sure to perform appropriate locking in the callback function.\n\nKext resources are stored in the kext's on-disk bundle under the Resources subdirectory. See [devLink-1696005] for an overview of bundle structure. The localization context of the kext daemon (namely that of the superuser) will be used in retrieving resources; kext resources intended for use in the kernel should generally not be localized.\n\n`callback` is guaranteed to be invoked except when:\n\n- [doc:\/\/com.apple.documentation\/documentation\/kernel\/1508350-oskextcancelrequest] is used to cancel the request. In this case the kext gets the `context` pointer and can clean it up.\n- The request is made during a kext's module start routine and the start routine returns an error. In this case, callbacks cannot be safely invoked, so the kext should clean up all request contexts when returning the error from the start routine.\n\nKexts with pending requests are not subject to autounload, but requests are subject to timeout after a few minutes. If that amount of time passes with no response from user space, `callback` is invoked with a result of. `kOSKextReturnTimeout`.\n\nKexts that are explicitly unloaded have all pending request callbacks invoked with a result of `kOSKextReturnStopping`. The kext must handle these callbacks, even if its stop routine will prevent unloading. If the kext does prevent unloading, it can reissue resource requests outside of the stop function.\n\n## kext\n\n- **kext_alloc**\n- **kext_alloc_init**\n- **kext_free**\n- **kext_request**\n- **kextd_ping**\n- **OSKextCancelRequest**: Cancels a pending user-space kext request without invoking the callback.\n- **OSKextGetCurrentIdentifier**: Returns the CFBundleIdentifier for the calling kext as a C string.\n- **OSKextGetCurrentLoadTag**: Returns the run-time load tag for the calling kext as an `OSKextLoadTag`.\n- **OSKextGetCurrentVersionString**: Returns the CFBundleVersion for the calling kext as a C string.\n- **OSKextGrabPgoData**\n- **OSKextLoadKextWithIdentifier**: Request that a kext be loaded.\n- **OSKextReleaseKextWithLoadTag**: Release a loaded kext based on its load tag.\n- **OSKextResetPgoCounters**\n- **OSKextResetPgoCountersLock**\n- **OSKextResetPgoCountersUnlock**\n- **OSKextRetainKextWithLoadTag**: Retain a loaded kext based on its load tag, and enable autounload for that kext.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "kext_alloc",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1577598-kext_alloc"
+        },
+        {
+          "name" : "kext_alloc_init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1577599-kext_alloc_init"
+        },
+        {
+          "name" : "kext_free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1577600-kext_free"
+        },
+        {
+          "name" : "kext_request",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1588829-kext_request"
+        },
+        {
+          "name" : "kextd_ping",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1520989-kextd_ping"
+        },
+        {
+          "description" : "Cancels a pending user-space kext request without invoking the callback.",
+          "name" : "OSKextCancelRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1508350-oskextcancelrequest"
+        },
+        {
+          "description" : "Returns the CFBundleIdentifier for the calling kext as a C string.",
+          "name" : "OSKextGetCurrentIdentifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1508305-oskextgetcurrentidentifier"
+        },
+        {
+          "description" : "Returns the run-time load tag for the calling kext as an `OSKextLoadTag`.",
+          "name" : "OSKextGetCurrentLoadTag",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1508336-oskextgetcurrentloadtag"
+        },
+        {
+          "description" : "Returns the CFBundleVersion for the calling kext as a C string.",
+          "name" : "OSKextGetCurrentVersionString",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1508326-oskextgetcurrentversionstring"
+        },
+        {
+          "name" : "OSKextGrabPgoData",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1508333-oskextgrabpgodata"
+        },
+        {
+          "description" : "Request that a kext be loaded.",
+          "name" : "OSKextLoadKextWithIdentifier",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1508323-oskextloadkextwithidentifier"
+        },
+        {
+          "description" : "Release a loaded kext based on its load tag.",
+          "name" : "OSKextReleaseKextWithLoadTag",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1508339-oskextreleasekextwithloadtag"
+        },
+        {
+          "name" : "OSKextResetPgoCounters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1646298-oskextresetpgocounters"
+        },
+        {
+          "name" : "OSKextResetPgoCountersLock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1646299-oskextresetpgocounterslock"
+        },
+        {
+          "name" : "OSKextResetPgoCountersUnlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1646297-oskextresetpgocountersunlock"
+        },
+        {
+          "description" : "Retain a loaded kext based on its load tag, and enable autounload for that kext.",
+          "name" : "OSKextRetainKextWithLoadTag",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1508272-oskextretainkextwithloadtag"
+        }
+      ],
+      "title" : "kext"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "OSKextRequestResource",
+  "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/1508294-oskextrequestresource"
+}

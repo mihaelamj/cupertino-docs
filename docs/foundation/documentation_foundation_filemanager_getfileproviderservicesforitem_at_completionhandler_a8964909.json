@@ -1,0 +1,49 @@
+{
+  "abstract" : "Returns the services provided by the File Provider extension that manages the item at the given URL.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Get the list of services available for an item at the given URL.\nFileManager.default.getFileProviderServicesForItem(at: url) { (services, error) in\n    \n    \/\/ Check to see if an error occurred.\n    guard error == nil else {\n        \/\/ Handle the error here...\n        return\n    }\n    \n    if let desiredService = services?[desiredServiceName] {\n        \n        \/\/ The named service is available for the item at the provided URL.\n        \/\/ To use the service, get the connection object.\n        desiredService.getFileProviderConnection(completionHandler: { (connectionOrNil, connectionError) in\n            \n            guard connectionError == nil else {\n                \/\/ Handle the error here...\n                return\n            }\n            \n            guard let connection = connectionOrNil else {\n                \/\/ No connection object found.\n                return\n            }\n            \n            \/\/ Set the remote interface.\n            connection.remoteObjectInterface = NSXPCInterface(with: DesiredProtocol.self)\n            \n            \/\/ Start the connection.\n            connection.resume()\n            \n            \/\/ Get the proxy object.\n            let rawProxy = connection.remoteObjectProxyWithErrorHandler({ (errorAccessingRemoteObject) in\n                \/\/ Handle the error here...\n            })\n            \n            \/\/ Cast the proxy object to the interface's protocol.\n            guard let proxy = rawProxy as? DesiredProtocol else {\n                \/\/ If the interface is set up properly, this should never fail.\n                fatalError(\"*** Unable to cast \\(rawProxy) to a DesiredProtocol instance ***\")\n            }\n            \n            \/\/ You can now use the proxy to call the service's custom actions.\n            \n        })\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "a97b9d7b2e121aeb9791264fa2fa3a90df5169644d006ab870953fd7f83d892b",
+  "crawledAt" : "2025-12-06T02:51:10Z",
+  "declaration" : {
+    "code" : "func getFileProviderServicesForItem(at url: URL, completionHandler: @escaping ([NSFileProviderServiceName : NSFileProviderService]?, (any Error)?) -> Void)",
+    "language" : "swift"
+  },
+  "id" : "415D8755-56C2-4D91-B857-B715A2ECDC85",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Discussion\n\nUse the returned services to perform custom actions defined by the services’ protocol.\n\nTo access the service:\n\nThe listing below shows a sample implementation for accessing a File Provider service’s remote proxy object.\n\nFor more information, see [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileProviderService#Defining-the-Services-Protocol].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/FileManager\/getFileProviderServicesForItem(at:completionHandler:)\ncrawled: 2025-12-06T02:51:10Z\n---\n\n# getFileProviderServicesForItem(at:completionHandler:)\n\n**Instance Method**\n\nReturns the services provided by the File Provider extension that manages the item at the given URL.\n\n## Declaration\n\n```swift\nfunc getFileProviderServicesForItem(at url: URL, completionHandler: @escaping ([NSFileProviderServiceName : NSFileProviderService]?, (any Error)?) -> Void)\n```\n\n```swift\nfunc fileProviderServicesForItem(at url: URL) async throws -> [NSFileProviderServiceName : NSFileProviderService]\n```\n\n## Parameters\n\n- **url**: The file URL of a document or directory.\n- **completionHandler**: A block that is called on an anonymous background queue. The system passes this block the following parameters:\n\n\n\n## Discussion\n\nUse the returned services to perform custom actions defined by the services’ protocol.\n\nTo access the service:\n\n1. Use the desired service’s name to get the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileProviderService] object for the service. This object can only be used to operate on the item specified by the `url` parameter.\n2. Get the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSXPCConnection] object from the service.\n3. Set the connection’s [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSXPCConnection\/remoteObjectInterface] property, using the service’s protocol.\n4. (Optional) Provide any additional configuration for the connection.\n5. Call [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSXPCConnection\/resume()] on the connection.\n6. Get the proxy from the connection’s [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSXPCConnection\/remoteObjectProxy] property.\n7. Call the custom action methods on the proxy object.\n\nThe listing below shows a sample implementation for accessing a File Provider service’s remote proxy object.\n\n```swift\n\/\/ Get the list of services available for an item at the given URL.\nFileManager.default.getFileProviderServicesForItem(at: url) { (services, error) in\n    \n    \/\/ Check to see if an error occurred.\n    guard error == nil else {\n        \/\/ Handle the error here...\n        return\n    }\n    \n    if let desiredService = services?[desiredServiceName] {\n        \n        \/\/ The named service is available for the item at the provided URL.\n        \/\/ To use the service, get the connection object.\n        desiredService.getFileProviderConnection(completionHandler: { (connectionOrNil, connectionError) in\n            \n            guard connectionError == nil else {\n                \/\/ Handle the error here...\n                return\n            }\n            \n            guard let connection = connectionOrNil else {\n                \/\/ No connection object found.\n                return\n            }\n            \n            \/\/ Set the remote interface.\n            connection.remoteObjectInterface = NSXPCInterface(with: DesiredProtocol.self)\n            \n            \/\/ Start the connection.\n            connection.resume()\n            \n            \/\/ Get the proxy object.\n            let rawProxy = connection.remoteObjectProxyWithErrorHandler({ (errorAccessingRemoteObject) in\n                \/\/ Handle the error here...\n            })\n            \n            \/\/ Cast the proxy object to the interface's protocol.\n            guard let proxy = rawProxy as? DesiredProtocol else {\n                \/\/ If the interface is set up properly, this should never fail.\n                fatalError(\"*** Unable to cast \\(rawProxy) to a DesiredProtocol instance ***\")\n            }\n            \n            \/\/ You can now use the proxy to call the service's custom actions.\n            \n        })\n    }\n}\n```\n\nFor more information, see [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileProviderService#Defining-the-Services-Protocol].\n\n## Accessing file provider services\n\n- **NSFileProviderService**: A service that provides a custom communication channel between your app and a File Provider extension.\n- **NSFileProviderServiceName**: The name used to identify a File Provider service.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A service that provides a custom communication channel between your app and a File Provider extension.",
+          "name" : "NSFileProviderService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileProviderService"
+        },
+        {
+          "description" : "The name used to identify a File Provider service.",
+          "name" : "NSFileProviderServiceName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileProviderServiceName"
+        }
+      ],
+      "title" : "Accessing file provider services"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "getFileProviderServicesForItem(at:completionHandler:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/FileManager\/getFileProviderServicesForItem(at:completionHandler:)"
+}

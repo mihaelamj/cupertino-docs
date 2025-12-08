@@ -1,0 +1,127 @@
+{
+  "abstract" : "A delegate protocol that describes the methods that the associated fetched results controller calls when the fetch results change.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Find out when the fetched results controller is about to start making changes.\nfunc controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {\n    \/\/ Start animating table view changes simultaneously.\n    tableView.beginUpdates()\n}\n\n\/\/ Find out when the fetched results controller finishes making changes.\nfunc controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {\n    \/\/ Stop animating table view changes simultaneously.\n    tableView.endUpdates()\n}\n\n\/\/ Find out when the fetched results controller adds or removes a section.\nfunc controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,\n                didChange sectionInfo: NSFetchedResultsSectionInfo,\n                atSectionIndex sectionIndex: Int,\n                for type: NSFetchedResultsChangeType) {\n    switch type {\n    case .insert:\n        \/\/ Insert a new section with fade animation.\n        tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)\n    case .delete:\n        \/\/ Delete a section with fade animation.\n        tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)\n    default:\n        break\n    }\n}\n\n\/\/ Find out when the fetched results controller adds, removes, moves, or\n\/\/ updates a fetched object.\nfunc controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,\n                didChange anObject: Any,\n                at indexPath: IndexPath?,\n                for type: NSFetchedResultsChangeType,\n                newIndexPath: IndexPath?) {\n    switch type {\n    case .insert:\n        guard let newIndexPath else { return }\n        \/\/ Insert a new row with fade animation when the fetched results\n        \/\/ controller adds or moves an object to the specified index path.\n        tableView.insertRows(at: [newIndexPath], with: .fade)\n    case .delete:\n        guard let indexPath else { return }\n        \/\/ Delete the row with animation at the old index path when the fetched\n        \/\/ results controller deletes or moves the associated object.\n        tableView.deleteRows(at: [indexPath], with: .fade)\n    case .update:\n        guard let indexPath else { return }\n        \/\/ Update the cell as the specified indexPath.\n        if let cell = tableView.cellForRow(at: indexPath) {\n            cell.textLabel?.text = fetchedResultsController?.object(at: indexPath).name\n        }\n    case .move:\n        guard let indexPath, let newIndexPath else { return }\n        \/\/ Move a row from the specified index path to the new index path.\n        tableView.moveRow(at: indexPath, to: newIndexPath)\n    @unknown default:\n        break\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,\n                didChange anObject: Any,\n                at indexPath: IndexPath?,\n                for type: NSFetchedResultsChangeType,\n                newIndexPath: IndexPath?) {\n    \/\/ If you allow users to reorder table rows, bypass automated handling\n    \/\/ of the change because the model layer already handles it.\n    guard changeIsUserDriven == false else { return }\n    \n    switch type {\n    case .insert:\n        guard let newIndexPath else { return }\n    \/\/ Remaining implementation.\n}",
+      "language" : "objc"
+    }
+  ],
+  "contentHash" : "c73cbf4c48b02eb7f625d5ce4598e783645f6fd41a908389561eeeaf1f683c9d",
+  "crawledAt" : "2025-12-06T04:35:52Z",
+  "declaration" : {
+    "code" : "protocol NSFetchedResultsControllerDelegate : NSObjectProtocol",
+    "language" : "swift"
+  },
+  "id" : "6A78E3B8-1E4B-4A9E-919D-177C4C75854A",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "Core Data",
+  "overview" : "## Overview\n\nConsider whether to update the table view for each change. For a large number of simultaneous modifications simultaneously, such as if your app reads data on a background thread, it may be computationally expensive to animate all the changes. Rather than respond to changes individually (as illustrated in [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate#Typical-use]), implement [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controllerDidChangeContent(_:)] to reload the table view after the system processes all pending changes.\n\n### Typical use\n\nWhen a fetched results controller provides the content to a table view, you can use [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controllerWillChangeContent(_:)] and [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controllerDidChangeContent(_:)] to bracket updates to the table view, as shown in the following example:\n\n### User-driven updates\n\nIn general, [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate] responds to changes at the model layer. If you allow a user to reorder table rows, then your implementation of the delegate methods needs to take this into account.\n\nTypically, if you allow the user to reorder table rows, your model object has an attribute that specifies its index. When the user moves a row, you update this attribute accordingly. This, however, has the side effect of causing the fetched results controller to also notice the change, which causes it to inform its delegate of the update (using [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controller(_:didChange:at:for:newIndexPath:)]). If you use the implementation of this method shown in the section above, then the delegate attempts to update the table view. However, the table view is already in the appropriate state because of the user’s action.\n\nTherefore, if you support user-driven updates, you should check if the user intitiated a move, such as by setting a flag. In the implementation of your delegate methods, bypass the method implementation if the user initiated the move, for example:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\ncrawled: 2025-12-06T04:35:52Z\n---\n\n# NSFetchedResultsControllerDelegate\n\n**Protocol**\n\nA delegate protocol that describes the methods that the associated fetched results controller calls when the fetch results change.\n\n## Declaration\n\n```swift\nprotocol NSFetchedResultsControllerDelegate : NSObjectProtocol\n```\n\n## Overview\n\nConsider whether to update the table view for each change. For a large number of simultaneous modifications simultaneously, such as if your app reads data on a background thread, it may be computationally expensive to animate all the changes. Rather than respond to changes individually (as illustrated in [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate#Typical-use]), implement [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controllerDidChangeContent(_:)] to reload the table view after the system processes all pending changes.\n\n\n\n### Typical use\n\nWhen a fetched results controller provides the content to a table view, you can use [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controllerWillChangeContent(_:)] and [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controllerDidChangeContent(_:)] to bracket updates to the table view, as shown in the following example:\n\n```swift\n\/\/ Find out when the fetched results controller is about to start making changes.\nfunc controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {\n    \/\/ Start animating table view changes simultaneously.\n    tableView.beginUpdates()\n}\n\n\/\/ Find out when the fetched results controller finishes making changes.\nfunc controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {\n    \/\/ Stop animating table view changes simultaneously.\n    tableView.endUpdates()\n}\n\n\/\/ Find out when the fetched results controller adds or removes a section.\nfunc controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,\n                didChange sectionInfo: NSFetchedResultsSectionInfo,\n                atSectionIndex sectionIndex: Int,\n                for type: NSFetchedResultsChangeType) {\n    switch type {\n    case .insert:\n        \/\/ Insert a new section with fade animation.\n        tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)\n    case .delete:\n        \/\/ Delete a section with fade animation.\n        tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)\n    default:\n        break\n    }\n}\n\n\/\/ Find out when the fetched results controller adds, removes, moves, or\n\/\/ updates a fetched object.\nfunc controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,\n                didChange anObject: Any,\n                at indexPath: IndexPath?,\n                for type: NSFetchedResultsChangeType,\n                newIndexPath: IndexPath?) {\n    switch type {\n    case .insert:\n        guard let newIndexPath else { return }\n        \/\/ Insert a new row with fade animation when the fetched results\n        \/\/ controller adds or moves an object to the specified index path.\n        tableView.insertRows(at: [newIndexPath], with: .fade)\n    case .delete:\n        guard let indexPath else { return }\n        \/\/ Delete the row with animation at the old index path when the fetched\n        \/\/ results controller deletes or moves the associated object.\n        tableView.deleteRows(at: [indexPath], with: .fade)\n    case .update:\n        guard let indexPath else { return }\n        \/\/ Update the cell as the specified indexPath.\n        if let cell = tableView.cellForRow(at: indexPath) {\n            cell.textLabel?.text = fetchedResultsController?.object(at: indexPath).name\n        }\n    case .move:\n        guard let indexPath, let newIndexPath else { return }\n        \/\/ Move a row from the specified index path to the new index path.\n        tableView.moveRow(at: indexPath, to: newIndexPath)\n    @unknown default:\n        break\n    }\n}\n```\n\n### User-driven updates\n\nIn general, [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate] responds to changes at the model layer. If you allow a user to reorder table rows, then your implementation of the delegate methods needs to take this into account.\n\nTypically, if you allow the user to reorder table rows, your model object has an attribute that specifies its index. When the user moves a row, you update this attribute accordingly. This, however, has the side effect of causing the fetched results controller to also notice the change, which causes it to inform its delegate of the update (using [doc:\/\/com.apple.coredata\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controller(_:didChange:at:for:newIndexPath:)]). If you use the implementation of this method shown in the section above, then the delegate attempts to update the table view. However, the table view is already in the appropriate state because of the user’s action.\n\nTherefore, if you support user-driven updates, you should check if the user intitiated a move, such as by setting a flag. In the implementation of your delegate methods, bypass the method implementation if the user initiated the move, for example:\n\n```objc\nfunc controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,\n                didChange anObject: Any,\n                at indexPath: IndexPath?,\n                for type: NSFetchedResultsChangeType,\n                newIndexPath: IndexPath?) {\n    \/\/ If you allow users to reorder table rows, bypass automated handling\n    \/\/ of the change because the model layer already handles it.\n    guard changeIsUserDriven == false else { return }\n    \n    switch type {\n    case .insert:\n        guard let newIndexPath else { return }\n    \/\/ Remaining implementation.\n}\n```\n\n\n\n## Responding to Changes\n\n- **controller(_:didChangeContentWith:)**: Notifies the receiver about changes to the content in the fetched results controller, by using a diffable data source snapshot.\n- **controller(_:didChangeContentWith:)**: Notifies the receiver about changes to the content in the fetched results controller, by using a collection difference.\n- **controllerWillChangeContent(_:)**: Notifies the receiver that the fetched results controller is about to start processing of one or more changes due to an add, remove, move, or update.\n- **controller(_:didChange:at:for:newIndexPath:)**: Notifies the receiver that a fetched object has been changed due to an add, remove, move, or update.\n- **controller(_:didChange:atSectionIndex:for:)**: Notifies the receiver of the addition or removal of a section.\n- **controllerDidChangeContent(_:)**: Notifies the receiver that the fetched results controller has completed processing of one or more changes due to an add, remove, move, or update.\n\n## Customizing Section Names\n\n- **controller(_:sectionIndexTitleForSectionName:)**: Returns the name for a given section.\n\n## Constants\n\n- **NSFetchedResultsChangeType**: Constants that specify the possible types of changes that are reported.\n\n## Responding to Changes\n\n- **NSFetchedResultsSectionInfo**: A protocol that defines the interface for section objects vended by a fetched results controller.\n- **NSFetchRequestResultType**: Constants that specify the possible result types a fetch request can return.\n- **NSFetchedResultsChangeType**: Constants that specify the possible types of changes that are reported.\n\n## Inherits From\n\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Notifies the receiver about changes to the content in the fetched results controller, by using a diffable data source snapshot.",
+          "name" : "controller(_:didChangeContentWith:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controller(_:didChangeContentWith:)-4kezq"
+        },
+        {
+          "description" : "Notifies the receiver about changes to the content in the fetched results controller, by using a collection difference.",
+          "name" : "controller(_:didChangeContentWith:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controller(_:didChangeContentWith:)-5ullb"
+        },
+        {
+          "description" : "Notifies the receiver that the fetched results controller is about to start processing of one or more changes due to an add, remove, move, or update.",
+          "name" : "controllerWillChangeContent(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controllerWillChangeContent(_:)"
+        },
+        {
+          "description" : "Notifies the receiver that a fetched object has been changed due to an add, remove, move, or update.",
+          "name" : "controller(_:didChange:at:for:newIndexPath:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controller(_:didChange:at:for:newIndexPath:)"
+        },
+        {
+          "description" : "Notifies the receiver of the addition or removal of a section.",
+          "name" : "controller(_:didChange:atSectionIndex:for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controller(_:didChange:atSectionIndex:for:)"
+        },
+        {
+          "description" : "Notifies the receiver that the fetched results controller has completed processing of one or more changes due to an add, remove, move, or update.",
+          "name" : "controllerDidChangeContent(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controllerDidChangeContent(_:)"
+        }
+      ],
+      "title" : "Responding to Changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the name for a given section.",
+          "name" : "controller(_:sectionIndexTitleForSectionName:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsControllerDelegate\/controller(_:sectionIndexTitleForSectionName:)"
+        }
+      ],
+      "title" : "Customizing Section Names"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Constants that specify the possible types of changes that are reported.",
+          "name" : "NSFetchedResultsChangeType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsChangeType"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A protocol that defines the interface for section objects vended by a fetched results controller.",
+          "name" : "NSFetchedResultsSectionInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsSectionInfo"
+        },
+        {
+          "description" : "Constants that specify the possible result types a fetch request can return.",
+          "name" : "NSFetchRequestResultType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchRequestResultType"
+        },
+        {
+          "description" : "Constants that specify the possible types of changes that are reported.",
+          "name" : "NSFetchedResultsChangeType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsChangeType"
+        }
+      ],
+      "title" : "Responding to Changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObjectProtocol"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "NSFetchedResultsControllerDelegate",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CoreData\/NSFetchedResultsControllerDelegate"
+}

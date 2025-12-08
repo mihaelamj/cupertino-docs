@@ -1,0 +1,84 @@
+{
+  "abstract" : "Prepare to read or write from multiple files in a single batch operation.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "7b302d7f25399d531c22046fa19e37042b40f91c90c2c0855623d3ad8c00119f",
+  "crawledAt" : "2025-12-06T02:52:46Z",
+  "declaration" : {
+    "code" : "func prepare(forReadingItemsAt readingURLs: [URL], options readingOptions: NSFileCoordinator.ReadingOptions = [], writingItemsAt writingURLs: [URL], options writingOptions: NSFileCoordinator.WritingOptions = [], error outError: NSErrorPointer, byAccessor batchAccessor: (@escaping () -> Void) -> Void)",
+    "language" : "swift"
+  },
+  "id" : "37B4BA8A-3636-4444-BFBC-6AB037015154",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Foundation",
+  "overview" : "## Discussion\n\nUse this method to prepare the file coordinator for multiple read and write operations. Because file coordination requires interprocess communication, it is much more efficient to batch changes to large numbers of files and directories than to change each item individually. The file coordinator uses the values in the `readingURLs` and `writingURLs` parameters, together with reading and writing options, to prepare any relevant file presenters for the upcoming operations. Specifically, it uses these parameters in the same way as the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/coordinate(readingItemAt:options:error:byAccessor:)] and [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/coordinate(writingItemAt:options:error:byAccessor:)] methods to determine which file presenter methods to call.\n\nThis method executes synchronously, blocking the current thread until the `batchAccessor` block finishes executing. The block you provide for the `batchAccessor` parameter does not perform the actual operations itself. Instead, you must call the individual coordinated read and write methods from inside the `batchAccessor` block. You must then call the completion handler after all the coordinated reads and writes have completed. You can call the completion handler from any thread.\n\nDon’t simply pass this method all the URLs that are passed into the nested coordinate methods. Instead pass only the top-level files and directories involved in the operation. This method triggers messages to the file presenters of those items and to the file presenters of any items contained by those items.\n\nIn most cases, passing the same reading and writing options to both this method and the contained coordination operations is redundant. For example, it is often appropriate to pass [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/ReadingOptions\/withoutChanges] to nested read operations. This method has already triggered a call to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter\/savePresentedItemChanges(completionHandler:)]. The individual read operations do not need to trigger additional calls.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/prepare(forReadingItemsAt:options:writingItemsAt:options:error:byAccessor:)\ncrawled: 2025-12-06T02:52:46Z\n---\n\n# prepare(forReadingItemsAt:options:writingItemsAt:options:error:byAccessor:)\n\n**Instance Method**\n\nPrepare to read or write from multiple files in a single batch operation.\n\n## Declaration\n\n```swift\nfunc prepare(forReadingItemsAt readingURLs: [URL], options readingOptions: NSFileCoordinator.ReadingOptions = [], writingItemsAt writingURLs: [URL], options writingOptions: NSFileCoordinator.WritingOptions = [], error outError: NSErrorPointer, byAccessor batchAccessor: (@escaping () -> Void) -> Void)\n```\n\n## Parameters\n\n- **readingURLs**: An array of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSURL] objects identifying the items you want to read.\n- **readingOptions**: One of the reading options described in [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/ReadingOptions]. If you pass `0` for this parameter, the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter\/savePresentedItemChanges(completionHandler:)] method of relevant file presenters is called before your block executes.\n- **writingURLs**: An array of [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSURL] objects identifying the items you want to write.\n- **writingOptions**: One of the writing options described in [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/WritingOptions]. The options you specify partially determine how file presenters are notified and how this file coordinator object waits to execute your block.\n- **outError**: On input, a pointer to a pointer for an error object. If a file presenter encounters an error while preparing for this operation, that error is returned in this parameter and the block in the `writer` parameter is not executed. If you cancel this operation before the `batchAccessor` block is executed, this parameter contains an error object on output.\n- **batchAccessor**: A [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/DevPedia-CocoaCore\/Block.html#\/\/apple_ref\/doc\/uid\/TP40008195-CH3] containing additional calls to methods of this class.\n\nThe block takes the following parameter:\n\n\n\n## Discussion\n\nUse this method to prepare the file coordinator for multiple read and write operations. Because file coordination requires interprocess communication, it is much more efficient to batch changes to large numbers of files and directories than to change each item individually. The file coordinator uses the values in the `readingURLs` and `writingURLs` parameters, together with reading and writing options, to prepare any relevant file presenters for the upcoming operations. Specifically, it uses these parameters in the same way as the [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/coordinate(readingItemAt:options:error:byAccessor:)] and [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/coordinate(writingItemAt:options:error:byAccessor:)] methods to determine which file presenter methods to call.\n\nThis method executes synchronously, blocking the current thread until the `batchAccessor` block finishes executing. The block you provide for the `batchAccessor` parameter does not perform the actual operations itself. Instead, you must call the individual coordinated read and write methods from inside the `batchAccessor` block. You must then call the completion handler after all the coordinated reads and writes have completed. You can call the completion handler from any thread.\n\nDon’t simply pass this method all the URLs that are passed into the nested coordinate methods. Instead pass only the top-level files and directories involved in the operation. This method triggers messages to the file presenters of those items and to the file presenters of any items contained by those items.\n\nIn most cases, passing the same reading and writing options to both this method and the contained coordination operations is redundant. For example, it is often appropriate to pass [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFileCoordinator\/ReadingOptions\/withoutChanges] to nested read operations. This method has already triggered a call to [doc:\/\/com.apple.foundation\/documentation\/Foundation\/NSFilePresenter\/savePresentedItemChanges(completionHandler:)]. The individual read operations do not need to trigger additional calls.\n\n## Related Documentation\n\n- **coordinate(with:queue:byAccessor:)**: Performs a number of coordinated-read or -write operations asynchronously.\n\n## Coordinating File Operations Synchronously\n\n- **coordinate(readingItemAt:options:error:byAccessor:)**: Initiates a read operation on a single file or directory using the specified options.\n- **coordinate(writingItemAt:options:error:byAccessor:)**: Initiates a write operation on a single file or directory using the specified options.\n- **coordinate(readingItemAt:options:writingItemAt:options:error:byAccessor:)**: Initiates a read operation that contains a follow-up write operation.\n- **coordinate(writingItemAt:options:writingItemAt:options:error:byAccessor:)**: Initiates a write operation that involves a secondary write operation.\n- **item(at:willMoveTo:)**: Announces that your app is moving a file to a new URL.\n- **item(at:didMoveTo:)**: Notifies relevant file presenters that the location of a file or directory changed.\n- **cancel()**: Cancels any active file coordination calls.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Performs a number of coordinated-read or -write operations asynchronously.",
+          "name" : "coordinate(with:queue:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/coordinate(with:queue:byAccessor:)"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initiates a read operation on a single file or directory using the specified options.",
+          "name" : "coordinate(readingItemAt:options:error:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/coordinate(readingItemAt:options:error:byAccessor:)"
+        },
+        {
+          "description" : "Initiates a write operation on a single file or directory using the specified options.",
+          "name" : "coordinate(writingItemAt:options:error:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/coordinate(writingItemAt:options:error:byAccessor:)"
+        },
+        {
+          "description" : "Initiates a read operation that contains a follow-up write operation.",
+          "name" : "coordinate(readingItemAt:options:writingItemAt:options:error:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/coordinate(readingItemAt:options:writingItemAt:options:error:byAccessor:)"
+        },
+        {
+          "description" : "Initiates a write operation that involves a secondary write operation.",
+          "name" : "coordinate(writingItemAt:options:writingItemAt:options:error:byAccessor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/coordinate(writingItemAt:options:writingItemAt:options:error:byAccessor:)"
+        },
+        {
+          "description" : "Announces that your app is moving a file to a new URL.",
+          "name" : "item(at:willMoveTo:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/item(at:willMoveTo:)"
+        },
+        {
+          "description" : "Notifies relevant file presenters that the location of a file or directory changed.",
+          "name" : "item(at:didMoveTo:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/item(at:didMoveTo:)"
+        },
+        {
+          "description" : "Cancels any active file coordination calls.",
+          "name" : "cancel()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/cancel()"
+        }
+      ],
+      "title" : "Coordinating File Operations Synchronously"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "prepare(forReadingItemsAt:options:writingItemsAt:options:error:byAccessor:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Foundation\/NSFileCoordinator\/prepare(forReadingItemsAt:options:writingItemsAt:options:error:byAccessor:)"
+}

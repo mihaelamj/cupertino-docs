@@ -1,0 +1,306 @@
+{
+  "abstract" : "Abstract class for all work-loop event sources.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "00e7728f89eacd048c21317a881c6341a676ef607c26a75ef137e0da0b3431bd",
+  "crawledAt" : "2025-12-07T00:43:35Z",
+  "declaration" : {
+    "code" : "class IOEventSource : OSObject",
+    "language" : "swift"
+  },
+  "id" : "0EAAFE33-AE85-47C9-8E5F-073CAF4DE7BD",
+  "kind" : "class",
+  "language" : "occ",
+  "module" : "Kernel",
+  "overview" : "## Overview\n\nThe IOEventSource declares the abstract super class that all event sources must inherit from if an IOWorkLoop is to receive events from them.\n\nAn event source can represent any event that should cause the work-loop of a device to wake up and perform work. Two examples of event sources are the IOInterruptEventSource which delivers interrupt notifications and IOCommandGate which delivers command requests.\n\nA kernel module can always use the work-loop model for serialising access to anything at all. The IOEventSource is used for communicating events to the work-loop, and the chain of event sources should be used to walk the possible event sources and demultipex them. Note a particular instance of an event source may only be a member of 1 linked list chain. If you need to move it between chains than make sure it is removed from the original chain before attempting to move it.\n\nThe IOEventSource makes no attempt to maintain the consistency of its internal data across multi-threading. It is assumed that the user of these basic tools will protect the data that these objects represent in some sort of device wide instance lock. For example the IOWorkLoop maintains the event chain by using an IOCommandGate and thus single threading access to its state.\n\nAll subclasses of IOEventSource that wish to perform work on the work-loop thread are expected to implement the checkForWork() member function. As of macOS, 10.7 (Darwin 11), checkForWork is no longer pure virtual, and should not be overridden if there is no work to be done.\n\ncheckForWork() is the key method in this class. It is called by some work-loop when convienient and is expected to evaluate its internal state and determine if an event has occurred since the last call. In the case of an event having occurred then the instance defined target(owner)\/action will be called. The action is stored as an ordinary C function pointer but the first parameter is always the owner. This means that a C++ member function can be used as an action function though this depends on the ABI.\n\nAlthough the eventChainNext variable contains a reference to the next event source in the chain this reference is not retained. The list 'owner' i.e. the client that creates the event, not the work-loop, is expected to retain the source.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\ncrawled: 2025-12-07T00:43:35Z\n---\n\n# IOEventSource\n\n**Class**\n\nAbstract class for all work-loop event sources.\n\n## Declaration\n\n```swift\nclass IOEventSource : OSObject\n```\n\n## Overview\n\nThe IOEventSource declares the abstract super class that all event sources must inherit from if an IOWorkLoop is to receive events from them.\n\nAn event source can represent any event that should cause the work-loop of a device to wake up and perform work. Two examples of event sources are the IOInterruptEventSource which delivers interrupt notifications and IOCommandGate which delivers command requests.\n\nA kernel module can always use the work-loop model for serialising access to anything at all. The IOEventSource is used for communicating events to the work-loop, and the chain of event sources should be used to walk the possible event sources and demultipex them. Note a particular instance of an event source may only be a member of 1 linked list chain. If you need to move it between chains than make sure it is removed from the original chain before attempting to move it.\n\nThe IOEventSource makes no attempt to maintain the consistency of its internal data across multi-threading. It is assumed that the user of these basic tools will protect the data that these objects represent in some sort of device wide instance lock. For example the IOWorkLoop maintains the event chain by using an IOCommandGate and thus single threading access to its state.\n\nAll subclasses of IOEventSource that wish to perform work on the work-loop thread are expected to implement the checkForWork() member function. As of macOS, 10.7 (Darwin 11), checkForWork is no longer pure virtual, and should not be overridden if there is no work to be done.\n\ncheckForWork() is the key method in this class. It is called by some work-loop when convienient and is expected to evaluate its internal state and determine if an event has occurred since the last call. In the case of an event having occurred then the instance defined target(owner)\/action will be called. The action is stored as an ordinary C function pointer but the first parameter is always the owner. This means that a C++ member function can be used as an action function though this depends on the ABI.\n\nAlthough the eventChainNext variable contains a reference to the next event source in the chain this reference is not retained. The list 'owner' i.e. the client that creates the event, not the work-loop, is expected to retain the source.\n\n## Miscellaneous\n\n- **checkForWork**: Virtual member function used by IOWorkLoop for work scheduling.\n- **disable**: Disable event source.\n- **enable**: Enable event source.\n- **getAction**: Get'ter for $link action variable.\n- **getNext**: Get'ter for $link eventChainNext variable.\n- **getWorkLoop**: Get'ter for $link workLoop variable.\n- **init**: Primary initialiser for the IOEventSource class.\n- **isEnabled**: Get'ter for $link enable variable.\n- **onThread**: Convenience function for workLoop->onThread.\n- **setAction**: Set'ter for $link action variable.\n- **setNext**: Set'ter for $link eventChainNext variable.\n- **setWorkLoop**: Set'ter for $link workLoop variable.\n\n## Callbacks\n\n- **Action**\n\n## Constants\n\n- **Miscellaneous Defines**\n\n## DataTypes\n\n- **ExpansionData**\n\n## Instance Variables\n\n- **workLoop**\n- **reserved**\n- **refcon**\n- **owner**\n- **eventChainNext**\n- **enabled**\n- **action**\n\n## Instance Methods\n\n- **checkForWork**\n- **closeGate**\n- **disable**\n- **enable**\n- **free**\n- **getAction**\n- **getActionBlock**\n- **getMetaClass**\n- **getNext**\n- **getRefcon**\n- **getWorkLoop**\n- **init**\n- **isEnabled**\n- **onThread**\n- **openGate**\n- **setAction**\n- **setActionBlock**\n- **setNext**\n- **setRefcon**\n- **setWorkLoop**\n- **signalWorkAvailable**\n- **sleepGate**\n- **sleepGate**\n- **tryCloseGate**\n- **wakeupGate**\n\n## Base Types\n\n- **IOCommandPool**: Manipulates a pool of commands which inherit from IOCommand.\n- **IOCommandGate**: Single-threaded work-loop client request mechanism.\n- **IOCommand**: This class is an abstract class which represents an I\/O command.\n- **IODispatchSource**\n\n## Inherits From\n\n- OSObject\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Virtual member function used by IOWorkLoop for work scheduling.",
+          "name" : "checkForWork",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810760-checkforwork"
+        },
+        {
+          "description" : "Disable event source.",
+          "name" : "disable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810784-disable"
+        },
+        {
+          "description" : "Enable event source.",
+          "name" : "enable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810807-enable"
+        },
+        {
+          "description" : "Get'ter for $link action variable.",
+          "name" : "getAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810828-getaction"
+        },
+        {
+          "description" : "Get'ter for $link eventChainNext variable.",
+          "name" : "getNext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810847-getnext"
+        },
+        {
+          "description" : "Get'ter for $link workLoop variable.",
+          "name" : "getWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810872-getworkloop"
+        },
+        {
+          "description" : "Primary initialiser for the IOEventSource class.",
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810895-init"
+        },
+        {
+          "description" : "Get'ter for $link enable variable.",
+          "name" : "isEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810913-isenabled"
+        },
+        {
+          "description" : "Convenience function for workLoop->onThread.",
+          "name" : "onThread",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810935-onthread"
+        },
+        {
+          "description" : "Set'ter for $link action variable.",
+          "name" : "setAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810952-setaction"
+        },
+        {
+          "description" : "Set'ter for $link eventChainNext variable.",
+          "name" : "setNext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810967-setnext"
+        },
+        {
+          "description" : "Set'ter for $link workLoop variable.",
+          "name" : "setWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1810984-setworkloop"
+        }
+      ],
+      "title" : "Miscellaneous"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Action",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioworkloop\/action"
+        }
+      ],
+      "title" : "Callbacks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Miscellaneous Defines",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/miscellaneous_defines"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "ExpansionData",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioservice\/expansiondata"
+        }
+      ],
+      "title" : "DataTypes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "workLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/workloop"
+        },
+        {
+          "description" : "",
+          "name" : "reserved",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/reserved"
+        },
+        {
+          "description" : "",
+          "name" : "refcon",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/refcon"
+        },
+        {
+          "description" : "",
+          "name" : "owner",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/owner"
+        },
+        {
+          "description" : "",
+          "name" : "eventChainNext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/eventchainnext"
+        },
+        {
+          "description" : "",
+          "name" : "enabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/enabled"
+        },
+        {
+          "description" : "",
+          "name" : "action",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/action-8l7"
+        }
+      ],
+      "title" : "Instance Variables"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "checkForWork",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520975-checkforwork"
+        },
+        {
+          "name" : "closeGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520952-closegate"
+        },
+        {
+          "name" : "disable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520972-disable"
+        },
+        {
+          "name" : "enable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520958-enable"
+        },
+        {
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520964-free"
+        },
+        {
+          "name" : "getAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520956-getaction"
+        },
+        {
+          "name" : "getActionBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/2967267-getactionblock"
+        },
+        {
+          "name" : "getMetaClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520955-getmetaclass"
+        },
+        {
+          "name" : "getNext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520966-getnext"
+        },
+        {
+          "name" : "getRefcon",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/2967268-getrefcon"
+        },
+        {
+          "name" : "getWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520961-getworkloop"
+        },
+        {
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520960-init"
+        },
+        {
+          "name" : "isEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520957-isenabled"
+        },
+        {
+          "name" : "onThread",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520968-onthread"
+        },
+        {
+          "name" : "openGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520969-opengate"
+        },
+        {
+          "name" : "setAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520974-setaction"
+        },
+        {
+          "name" : "setActionBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/2967269-setactionblock"
+        },
+        {
+          "name" : "setNext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520962-setnext"
+        },
+        {
+          "name" : "setRefcon",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/2967270-setrefcon"
+        },
+        {
+          "name" : "setWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520953-setworkloop"
+        },
+        {
+          "name" : "signalWorkAvailable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520948-signalworkavailable"
+        },
+        {
+          "name" : "sleepGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520954-sleepgate"
+        },
+        {
+          "name" : "sleepGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/3516453-sleepgate"
+        },
+        {
+          "name" : "tryCloseGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520976-tryclosegate"
+        },
+        {
+          "name" : "wakeupGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource\/1520950-wakeupgate"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Manipulates a pool of commands which inherit from IOCommand.",
+          "name" : "IOCommandPool",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iocommandpool"
+        },
+        {
+          "description" : "Single-threaded work-loop client request mechanism.",
+          "name" : "IOCommandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iocommandgate"
+        },
+        {
+          "description" : "This class is an abstract class which represents an I\/O command.",
+          "name" : "IOCommand",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iocommand"
+        },
+        {
+          "name" : "IODispatchSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/iodispatchsource"
+        }
+      ],
+      "title" : "Base Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "OSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "IOEventSource",
+  "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioeventsource"
+}

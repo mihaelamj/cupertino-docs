@@ -1,0 +1,873 @@
+{
+  "abstract" : "Abstract base class for a single audio audio \/ I\/O engine.",
+  "codeExamples" : [
+    {
+      "code" : " \n  <t>  fCurrentLoopCount - the number of times the sample buffer has wrapped around to the beginning\n  <t>  fLastLoopTime - timestamp of the most recent time that the I\/O engine looped back to the\n  beginning of the sample buffer\n ",
+      "language" : "occ"
+    }
+  ],
+  "contentHash" : "3934f9efe26ec479ed871c0fec977992342df93d5eea9e4ad6681af5236975fc",
+  "crawledAt" : "2025-12-07T02:14:48Z",
+  "declaration" : {
+    "code" : "class IOAudioEngine : IOService",
+    "language" : "swift"
+  },
+  "id" : "49EE9D24-673E-4F9A-B945-5B7C083CCB70",
+  "kind" : "class",
+  "language" : "occ",
+  "module" : "Kernel",
+  "overview" : "## Overview\n\nAn IOAudioEngine is defined by a single I\/O engine to transfer data to or from one or more sample buffers. Each sample buffer is represented by a single IOAudioStream instance. A single IOAudioEngine must contain at least one IOAudioStream, but has no upper limit on the number of IOAudioStreams it may contain. An IOAudioEngine instance may contain both input and output IOAudioStreams.\n\nAn audio driver must subclass IOAudioEngine in order to provide certain services. An IOAudioEngine subclass must start and stop the I\/O engine when requested. The I\/O engine should be continuously running and loop around from end to beginning. While the audio engine is running, it must take a timestamp as the sample buffer(s) wrap around and start at the beginning. The CoreAudio.framework uses the timestamp to calculate the exact position of the audio engine. An IOAudioEngine subclass must implement getCurrentSampleFrame() to provide a sample position on demand. Finally, an IOAudioEngine subclass must provide clipping and format conversion routines to go to\/from the CoreAudio.framework's native float format.\n\nIf multiple stream formats or sample rates are allowed, the IOAudioEngine subclass must provide support for changing the hardware when a format or sample rate is changed.\n\nThere are several attributes associated with a single IOAudioEngine:\n\nThe IOAudioEngine superclass provides a shared status buffer that contains all of the dynamic pieces of information about the audio engine (type IOAudioEngineStatus). It runs an erase process on all of the output streams. The erase head is used to zero out the mix and sample buffers after the samples have been played. Additionally, the IOAudioEngine superclass handles the communication with the CoreAudio.framework and makes the decision to start and stop the audio engine when it detects it is in use.\n\nIn order for an audio device to play back or record sound, an IOAudioEngine subclass must be created. The subclass must initialize all of the necessary hardware resources to prepare for starting the audio I\/O engine. It typically will perform these tasks in the initHardware() method. A subclass may also implement a stop() method which is called as the driver is being torn down. This is typically called in preparation of removing the device from the system for removable devices.\n\nIn addition to initializing the necessary hardware, there are a number of other tasks an IOAudioEngine must do during initHardware(). It must create the necessary IOAudioStream objects to match the device capabilities. Each IOAudioStream must be added using addAudioStream(). It also should create the IOAudioControls needed to control the various attributes of the audio engine: output volume, mute, input gain, input selection, analog passthru. To do that, addDefaultAudioControl() should be called with each IOAudioControl to be attached to the IOAudioEngine. In order to provide for proper synchronization, the latency of the audio engine should be specified with setSampleLatency(). This value represents the latency between the timestamp taken at the beginning of the buffer and when the audio is actually played (or recorded) by the device. If a device is block based or if there is a need to keep the CoreAudio.framework a certain number of samples ahead of (or behind for input) the I\/O head, that value should be specified using setSampleOffset(). If this is not specified the CoreAudio.framework may attempt to get as close to the I\/O head as possible.\n\nThe following fields in the shared IOAudioEngineStatus struct must be maintained by the subclass implementation:\n\nIt is critically important that the fLastLoopTime field be as accurate as possible. It is the basis for the entire timer and synchronization mechanism used by the audio system.\n\nAt init time, the IOAudioEngine subclass must call setNumSampleFramesPerBuffer() to indicate how large each of the sample buffers are (measured in sample frames). Within a single IOAudioEngine, all sample buffers must be the same size and be running at the same sample rate. If different buffers\/streams can be run at different rates, separate IOAudioEngines should be used. The IOAudioEngine subclass must also call setSampleRate() at init time to indicate the starting sample rate of the device.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\ncrawled: 2025-12-07T02:14:48Z\n---\n\n# IOAudioEngine\n\n**Class**\n\nAbstract base class for a single audio audio \/ I\/O engine.\n\n## Declaration\n\n```swift\nclass IOAudioEngine : IOService\n```\n\n## Overview\n\nAn IOAudioEngine is defined by a single I\/O engine to transfer data to or from one or more sample buffers. Each sample buffer is represented by a single IOAudioStream instance. A single IOAudioEngine must contain at least one IOAudioStream, but has no upper limit on the number of IOAudioStreams it may contain. An IOAudioEngine instance may contain both input and output IOAudioStreams.\n\nAn audio driver must subclass IOAudioEngine in order to provide certain services. An IOAudioEngine subclass must start and stop the I\/O engine when requested. The I\/O engine should be continuously running and loop around from end to beginning. While the audio engine is running, it must take a timestamp as the sample buffer(s) wrap around and start at the beginning. The CoreAudio.framework uses the timestamp to calculate the exact position of the audio engine. An IOAudioEngine subclass must implement getCurrentSampleFrame() to provide a sample position on demand. Finally, an IOAudioEngine subclass must provide clipping and format conversion routines to go to\/from the CoreAudio.framework's native float format.\n\nIf multiple stream formats or sample rates are allowed, the IOAudioEngine subclass must provide support for changing the hardware when a format or sample rate is changed.\n\nThere are several attributes associated with a single IOAudioEngine:\n\nThe IOAudioEngine superclass provides a shared status buffer that contains all of the dynamic pieces of information about the audio engine (type IOAudioEngineStatus). It runs an erase process on all of the output streams. The erase head is used to zero out the mix and sample buffers after the samples have been played. Additionally, the IOAudioEngine superclass handles the communication with the CoreAudio.framework and makes the decision to start and stop the audio engine when it detects it is in use.\n\nIn order for an audio device to play back or record sound, an IOAudioEngine subclass must be created. The subclass must initialize all of the necessary hardware resources to prepare for starting the audio I\/O engine. It typically will perform these tasks in the initHardware() method. A subclass may also implement a stop() method which is called as the driver is being torn down. This is typically called in preparation of removing the device from the system for removable devices.\n\nIn addition to initializing the necessary hardware, there are a number of other tasks an IOAudioEngine must do during initHardware(). It must create the necessary IOAudioStream objects to match the device capabilities. Each IOAudioStream must be added using addAudioStream(). It also should create the IOAudioControls needed to control the various attributes of the audio engine: output volume, mute, input gain, input selection, analog passthru. To do that, addDefaultAudioControl() should be called with each IOAudioControl to be attached to the IOAudioEngine. In order to provide for proper synchronization, the latency of the audio engine should be specified with setSampleLatency(). This value represents the latency between the timestamp taken at the beginning of the buffer and when the audio is actually played (or recorded) by the device. If a device is block based or if there is a need to keep the CoreAudio.framework a certain number of samples ahead of (or behind for input) the I\/O head, that value should be specified using setSampleOffset(). If this is not specified the CoreAudio.framework may attempt to get as close to the I\/O head as possible.\n\nThe following fields in the shared IOAudioEngineStatus struct must be maintained by the subclass implementation:\n\n```occ\n \n  <t>  fCurrentLoopCount - the number of times the sample buffer has wrapped around to the beginning\n  <t>  fLastLoopTime - timestamp of the most recent time that the I\/O engine looped back to the\n  beginning of the sample buffer\n \n```\n\nIt is critically important that the fLastLoopTime field be as accurate as possible. It is the basis for the entire timer and synchronization mechanism used by the audio system.\n\nAt init time, the IOAudioEngine subclass must call setNumSampleFramesPerBuffer() to indicate how large each of the sample buffers are (measured in sample frames). Within a single IOAudioEngine, all sample buffers must be the same size and be running at the same sample rate. If different buffers\/streams can be run at different rates, separate IOAudioEngines should be used. The IOAudioEngine subclass must also call setSampleRate() at init time to indicate the starting sample rate of the device.\n\n## Miscellaneous\n\n- **addAudioStream**: Adds an IOAudioStream to the audio engine.\n- **addTimer**: Enables the timer event for the audio engine.\n- **clearAllSampleBuffers**: Zeros out all of the sample and mix buffers associated with the IOAudioEngine\n- **clientClosed**: Called automatically when a user client closes its connection to the audio engine.\n- **convertInputSamplesVBR**: Override this method if you want to return a different number of sample frames than was requested.\n- **createDictionaryFromSampleRate**: Generates a dictionary matching the given sample rate.\n- **createSampleRateFromDictionary**: Generates a sample rate from an OSDictionary.\n- **eraseOutputSamples**: This function allows for the actual erasing of the mix and sample buffer to be overridden by a child class.\n- **free**: Frees all of the resources allocated by the IOAudioEngine.\n- **getAttributeForConnection**: Generic method to retrieve some attribute of the audio engine, specific to one connection.\n- **getCommandGate**: Returns the IOCommandGate for this IOAudioEngine.\n- **getCurrentSampleFrame**: Gets the current sample frame from the IOAudioEngine subclass.\n- **getRunEraseHead**: Returns true if the audio engine will run the erase head when the audio engine is running.\n- **getSampleRate**: Returns the sample rate of the IOAudioEngine in samples per second.\n- **getState**: Returns the current state of the IOAudioEngine.\n- **getStatus**: Returns a pointer to the shared status buffer.\n- **getTimerInterval**: Gets the timer interval for use by the timer event.\n- **getWorkLoop**: Returns the IOWorkLoop for the driver.\n- **init**: Performs initialization of a newly allocated IOAudioEngine.\n- **initHardware**: This function is called by start() to provide a convenient place for the subclass to perform its hardware initialization.\n- **initKeys**: Generates the OSSymbols with the keys.\n- **newUserClient**: Requests a new user client object for this service.\n- **performAudioEngineStart**: Called to start the audio I\/O engine\n- **performAudioEngineStop**: Called to stop the audio I\/O engine\n- **performErase**: Performs erase head processing.\n- **performFlush**: Performs the flush operation.\n- **registerService**: Called when this audio engine is ready to begin vending services.\n- **removeTimer**: Disables the timer event for the audio engine.\n- **resetStatusBuffer**: Resets the status buffer to its default values.\n- **setAttributeForConnection**: Generic method to set some attribute of the audio engine, specific to one connection.\n- **setClockDomain**: Sets a property that CoreAudio uses to determine how devices are synchronized. If an audio device can tell that it is synchronized to another engine, it should set this value to that engine's clock domain. If an audio device can be a primary clock, it may publish its own clock domain for other devices to use.\n- **setClockIsStable**: This function sets a flag that CoreAudio uses to select its sample rate tracking algorithm. Set this to TRUE unless that results in dropped audio. If the driver is experiencing unexplained dropouts setting this FALSE might help.\n- **setInputSampleOffset**: set the offset CoreAudio will read from off the current read pointer\n- **setMixClipOverhead**: Used to tell IOAudioFamily when the watchdog timer must fire by.\n- **setOutputSampleOffset**: set the offset CoreAudio will write at off the current write pointer\n- **setRunEraseHead**: Tells the audio engine whether or not to run the erase head.\n- **setSampleLatency**: Sets the sample latency for the audio engine.\n- **setSampleRate**: Records the sample rate of the audio engine.\n- **setState**: Indicates that the audio engine is in the specified state.\n- **start(IOService *)**: A simple cover function for start(IOService *, IOAudioDevice *) that assumes the provider is the IOAudioDevice.\n- **start(IOService *, IOAudioDevice *)**: Standard IOKit start() routine called to start an IOService.\n- **startAudioEngine**: Starts the audio I\/O engine.\n- **stop**: Stops the service and prepares for the driver to be terminated.\n- **stopAudioEngine**: Stops the audio I\/O engine.\n- **timerCallback**: A static method used as a callback for the IOAudioDevice timer services.\n- **timerFired**: Indicates the timer has fired.\n\n## Constants\n\n- **gSampleRateWholeNumberKey**\n- **gSampleRateFractionKey**\n\n## Instance Variables\n\n- **workLoop**\n- **userClients**\n- **status**\n- **state**\n- **sampleRate**\n- **runEraseHead**\n- **outputStreams**\n- **numSampleFramesPerBuffer**\n- **numErasesPerBuffer**\n- **numActiveUserClients**\n- **isRegistered**\n- **inputStreams**\n- **deviceStartedAudioEngine**\n- **defaultAudioControls**\n- **configurationChangeInProgress**\n- **commandGate**\n- **audioEngineStopPosition**\n- **audioDevice**\n\n## Instance Methods\n\n- **addAudioStream**\n- **addDefaultAudioControl**\n- **addTimer**\n- **addUserClient**\n- **beginConfigurationChange**\n- **calculateSampleTimeout**\n- **calculateSampleTimeoutHiRes**\n- **cancelConfigurationChange**\n- **clearAllSampleBuffers**\n- **clientClosed**\n- **clipOutputSamples**\n- **completeConfigurationChange**\n- **convertInputSamples**\n- **convertInputSamplesVBR**\n- **createUserClient**\n- **createUserClient**\n- **decrementActiveUserClients**\n- **detachAudioStreams**\n- **detachUserClients**\n- **driverDesiresHiResSampleIntervals**\n- **eraseOutputSamples**\n- **free**\n- **getAttributeForConnection**\n- **getAudioStream**\n- **getBytesInInputBufferArrayDescriptor**\n- **getBytesInOutputBufferArrayDescriptor**\n- **getCommandGate**\n- **getCurrentSampleFrame**\n- **getGlobalUniqueID**\n- **getLocalUniqueID**\n- **getLoopCountAndTimeStamp**\n- **getMetaClass**\n- **getNearestStartTime**\n- **getNextStreamID**\n- **getNumSampleFramesPerBuffer**\n- **getRunEraseHead**\n- **getSampleRate**\n- **getState**\n- **getStatus**\n- **getStatusDescriptor**\n- **getStreamForID**\n- **getTimerInterval**\n- **getWorkLoop**\n- **hardwareSampleRateChanged**\n- **incrementActiveUserClients**\n- **init**\n- **initHardware**\n- **lockAllStreams**\n- **mixOutputSamples**\n- **newUserClient**\n- **newUserClient**\n- **pauseAudioEngine**\n- **performAudioEngineStart**\n- **performAudioEngineStop**\n- **performErase**\n- **performFlush**\n- **performFormatChange**\n- **performFormatChange**\n- **registerService**\n- **removeAllDefaultAudioControls**\n- **removeDefaultAudioControl**\n- **removeTimer**\n- **removeUserClient**\n- **resetClipPosition**\n- **resetStatusBuffer**\n- **resumeAudioEngine**\n- **sendFormatChangeNotification**\n- **sendNotification**\n- **setAttributeForConnection**\n- **setAudioDevice**\n- **setClockDomain**\n- **setClockIsStable**\n- **setDescription**\n- **setIndex**\n- **setInputSampleLatency**\n- **setInputSampleOffset**\n- **setMixClipOverhead**\n- **setNumSampleFramesPerBuffer**\n- **setOutputSampleLatency**\n- **setOutputSampleOffset**\n- **setRunEraseHead**\n- **setSampleLatency**\n- **setSampleOffset**\n- **setSampleRate**\n- **setState**\n- **setWorkLoopOnAllAudioControls**\n- **start**\n- **start**\n- **startAudioEngine**\n- **startClient**\n- **stop**\n- **stopAudioEngine**\n- **stopClient**\n- **stopEngineAtPosition**\n- **takeTimeStamp**\n- **timerFired**\n- **unlockAllStreams**\n- **updateChannelNumbers**\n- **useHiResSampleInterval**\n- **waitForEngineResume**\n\n## Type Methods\n\n- **addUserClientAction**\n- **createDictionaryFromSampleRate**\n- **createSampleRateFromDictionary**\n- **detachUserClientsAction**\n- **initKeys**\n- **lockStreamForIO**\n- **removeUserClientAction**\n- **setCommandGateUsage**\n- **timerCallback**\n- **unlockStreamForIO**\n\n## Interfaces\n\n- **IOAudioLevelControl**\n- **IOAudioSelectorControl**\n- **IOAudioToggleControl**\n- **IOAudioControl**: Represents any controllable attribute of an IOAudioDevice.\n- **IOAudioStream**: This class wraps a single sample buffer in an audio driver.\n- **IOAudioPort**: Represents a logical or physical port or functional unit in an audio device.\n\n## Inherits From\n\n- IOService\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds an IOAudioStream to the audio engine.",
+          "name" : "addAudioStream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812081-addaudiostream"
+        },
+        {
+          "description" : "Enables the timer event for the audio engine.",
+          "name" : "addTimer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812084-addtimer"
+        },
+        {
+          "description" : "Zeros out all of the sample and mix buffers associated with the IOAudioEngine",
+          "name" : "clearAllSampleBuffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812089-clearallsamplebuffers"
+        },
+        {
+          "description" : "Called automatically when a user client closes its connection to the audio engine.",
+          "name" : "clientClosed",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812093-clientclosed"
+        },
+        {
+          "description" : "Override this method if you want to return a different number of sample frames than was requested.",
+          "name" : "convertInputSamplesVBR",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812098-convertinputsamplesvbr"
+        },
+        {
+          "description" : "Generates a dictionary matching the given sample rate.",
+          "name" : "createDictionaryFromSampleRate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812105-createdictionaryfromsamplerate"
+        },
+        {
+          "description" : "Generates a sample rate from an OSDictionary.",
+          "name" : "createSampleRateFromDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812109-createsampleratefromdictionary"
+        },
+        {
+          "description" : "This function allows for the actual erasing of the mix and sample buffer to be overridden by a child class.",
+          "name" : "eraseOutputSamples",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812115-eraseoutputsamples"
+        },
+        {
+          "description" : "Frees all of the resources allocated by the IOAudioEngine.",
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812122-free"
+        },
+        {
+          "description" : "Generic method to retrieve some attribute of the audio engine, specific to one connection.",
+          "name" : "getAttributeForConnection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812127-getattributeforconnection"
+        },
+        {
+          "description" : "Returns the IOCommandGate for this IOAudioEngine.",
+          "name" : "getCommandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812131-getcommandgate"
+        },
+        {
+          "description" : "Gets the current sample frame from the IOAudioEngine subclass.",
+          "name" : "getCurrentSampleFrame",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812136-getcurrentsampleframe"
+        },
+        {
+          "description" : "Returns true if the audio engine will run the erase head when the audio engine is running.",
+          "name" : "getRunEraseHead",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812140-getrunerasehead"
+        },
+        {
+          "description" : "Returns the sample rate of the IOAudioEngine in samples per second.",
+          "name" : "getSampleRate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812148-getsamplerate"
+        },
+        {
+          "description" : "Returns the current state of the IOAudioEngine.",
+          "name" : "getState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812155-getstate"
+        },
+        {
+          "description" : "Returns a pointer to the shared status buffer.",
+          "name" : "getStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812164-getstatus"
+        },
+        {
+          "description" : "Gets the timer interval for use by the timer event.",
+          "name" : "getTimerInterval",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812174-gettimerinterval"
+        },
+        {
+          "description" : "Returns the IOWorkLoop for the driver.",
+          "name" : "getWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812185-getworkloop"
+        },
+        {
+          "description" : "Performs initialization of a newly allocated IOAudioEngine.",
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812194-init"
+        },
+        {
+          "description" : "This function is called by start() to provide a convenient place for the subclass to perform its hardware initialization.",
+          "name" : "initHardware",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812206-inithardware"
+        },
+        {
+          "description" : "Generates the OSSymbols with the keys.",
+          "name" : "initKeys",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812218-initkeys"
+        },
+        {
+          "description" : "Requests a new user client object for this service.",
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812227-newuserclient"
+        },
+        {
+          "description" : "Called to start the audio I\/O engine",
+          "name" : "performAudioEngineStart",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812238-performaudioenginestart"
+        },
+        {
+          "description" : "Called to stop the audio I\/O engine",
+          "name" : "performAudioEngineStop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812251-performaudioenginestop"
+        },
+        {
+          "description" : "Performs erase head processing.",
+          "name" : "performErase",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812263-performerase"
+        },
+        {
+          "description" : "Performs the flush operation.",
+          "name" : "performFlush",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812272-performflush"
+        },
+        {
+          "description" : "Called when this audio engine is ready to begin vending services.",
+          "name" : "registerService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812282-registerservice"
+        },
+        {
+          "description" : "Disables the timer event for the audio engine.",
+          "name" : "removeTimer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812286-removetimer"
+        },
+        {
+          "description" : "Resets the status buffer to its default values.",
+          "name" : "resetStatusBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812290-resetstatusbuffer"
+        },
+        {
+          "description" : "Generic method to set some attribute of the audio engine, specific to one connection.",
+          "name" : "setAttributeForConnection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812296-setattributeforconnection"
+        },
+        {
+          "description" : "Sets a property that CoreAudio uses to determine how devices are synchronized. If an audio device can tell that it is synchronized to another engine, it should set this value to that engine's clock domain. If an audio device can be a primary clock, it may publish its own clock domain for other devices to use.",
+          "name" : "setClockDomain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812301-setclockdomain"
+        },
+        {
+          "description" : "This function sets a flag that CoreAudio uses to select its sample rate tracking algorithm. Set this to TRUE unless that results in dropped audio. If the driver is experiencing unexplained dropouts setting this FALSE might help.",
+          "name" : "setClockIsStable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812306-setclockisstable"
+        },
+        {
+          "description" : "set the offset CoreAudio will read from off the current read pointer",
+          "name" : "setInputSampleOffset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812309-setinputsampleoffset"
+        },
+        {
+          "description" : "Used to tell IOAudioFamily when the watchdog timer must fire by.",
+          "name" : "setMixClipOverhead",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812312-setmixclipoverhead"
+        },
+        {
+          "description" : "set the offset CoreAudio will write at off the current write pointer",
+          "name" : "setOutputSampleOffset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812315-setoutputsampleoffset"
+        },
+        {
+          "description" : "Tells the audio engine whether or not to run the erase head.",
+          "name" : "setRunEraseHead",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812317-setrunerasehead"
+        },
+        {
+          "description" : "Sets the sample latency for the audio engine.",
+          "name" : "setSampleLatency",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812320-setsamplelatency"
+        },
+        {
+          "description" : "Records the sample rate of the audio engine.",
+          "name" : "setSampleRate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812325-setsamplerate"
+        },
+        {
+          "description" : "Indicates that the audio engine is in the specified state.",
+          "name" : "setState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812329-setstate"
+        },
+        {
+          "description" : "A simple cover function for start(IOService *, IOAudioDevice *) that assumes the provider is the IOAudioDevice.",
+          "name" : "start(IOService *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812338-start"
+        },
+        {
+          "description" : "Standard IOKit start() routine called to start an IOService.",
+          "name" : "start(IOService *, IOAudioDevice *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812342-start"
+        },
+        {
+          "description" : "Starts the audio I\/O engine.",
+          "name" : "startAudioEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812346-startaudioengine"
+        },
+        {
+          "description" : "Stops the service and prepares for the driver to be terminated.",
+          "name" : "stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812350-stop"
+        },
+        {
+          "description" : "Stops the audio I\/O engine.",
+          "name" : "stopAudioEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812359-stopaudioengine"
+        },
+        {
+          "description" : "A static method used as a callback for the IOAudioDevice timer services.",
+          "name" : "timerCallback",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812365-timercallback"
+        },
+        {
+          "description" : "Indicates the timer has fired.",
+          "name" : "timerFired",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1812371-timerfired"
+        }
+      ],
+      "title" : "Miscellaneous"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "gSampleRateWholeNumberKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/gsampleratewholenumberkey"
+        },
+        {
+          "description" : "",
+          "name" : "gSampleRateFractionKey",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/gsampleratefractionkey"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "workLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/workloop"
+        },
+        {
+          "description" : "",
+          "name" : "userClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/userclients"
+        },
+        {
+          "description" : "",
+          "name" : "status",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/status"
+        },
+        {
+          "description" : "",
+          "name" : "state",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/state"
+        },
+        {
+          "description" : "",
+          "name" : "sampleRate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/samplerate"
+        },
+        {
+          "description" : "",
+          "name" : "runEraseHead",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/runerasehead"
+        },
+        {
+          "description" : "",
+          "name" : "outputStreams",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/outputstreams"
+        },
+        {
+          "description" : "",
+          "name" : "numSampleFramesPerBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/numsampleframesperbuffer"
+        },
+        {
+          "description" : "",
+          "name" : "numErasesPerBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/numerasesperbuffer"
+        },
+        {
+          "description" : "",
+          "name" : "numActiveUserClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/numactiveuserclients"
+        },
+        {
+          "description" : "",
+          "name" : "isRegistered",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/isregistered"
+        },
+        {
+          "description" : "",
+          "name" : "inputStreams",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/inputstreams"
+        },
+        {
+          "description" : "",
+          "name" : "deviceStartedAudioEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/devicestartedaudioengine"
+        },
+        {
+          "description" : "",
+          "name" : "defaultAudioControls",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/defaultaudiocontrols"
+        },
+        {
+          "description" : "",
+          "name" : "configurationChangeInProgress",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/configurationchangeinprogress"
+        },
+        {
+          "description" : "",
+          "name" : "commandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/commandgate"
+        },
+        {
+          "description" : "",
+          "name" : "audioEngineStopPosition",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/audioenginestopposition"
+        },
+        {
+          "description" : "",
+          "name" : "audioDevice",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/audiodevice"
+        }
+      ],
+      "title" : "Instance Variables"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "addAudioStream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561604-addaudiostream"
+        },
+        {
+          "name" : "addDefaultAudioControl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561639-adddefaultaudiocontrol"
+        },
+        {
+          "name" : "addTimer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561573-addtimer"
+        },
+        {
+          "name" : "addUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561618-adduserclient"
+        },
+        {
+          "name" : "beginConfigurationChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561614-beginconfigurationchange"
+        },
+        {
+          "name" : "calculateSampleTimeout",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561552-calculatesampletimeout"
+        },
+        {
+          "name" : "calculateSampleTimeoutHiRes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/3593108-calculatesampletimeouthires"
+        },
+        {
+          "name" : "cancelConfigurationChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561568-cancelconfigurationchange"
+        },
+        {
+          "name" : "clearAllSampleBuffers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561620-clearallsamplebuffers"
+        },
+        {
+          "name" : "clientClosed",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561641-clientclosed"
+        },
+        {
+          "name" : "clipOutputSamples",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561556-clipoutputsamples"
+        },
+        {
+          "name" : "completeConfigurationChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561553-completeconfigurationchange"
+        },
+        {
+          "name" : "convertInputSamples",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561631-convertinputsamples"
+        },
+        {
+          "name" : "convertInputSamplesVBR",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561551-convertinputsamplesvbr"
+        },
+        {
+          "name" : "createUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561622-createuserclient"
+        },
+        {
+          "name" : "createUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/3516522-createuserclient"
+        },
+        {
+          "name" : "decrementActiveUserClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561611-decrementactiveuserclients"
+        },
+        {
+          "name" : "detachAudioStreams",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561554-detachaudiostreams"
+        },
+        {
+          "name" : "detachUserClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561605-detachuserclients"
+        },
+        {
+          "name" : "driverDesiresHiResSampleIntervals",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/3608701-driverdesireshiressampleinterval"
+        },
+        {
+          "name" : "eraseOutputSamples",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561630-eraseoutputsamples"
+        },
+        {
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561575-free"
+        },
+        {
+          "name" : "getAttributeForConnection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561623-getattributeforconnection"
+        },
+        {
+          "name" : "getAudioStream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561548-getaudiostream"
+        },
+        {
+          "name" : "getBytesInInputBufferArrayDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561626-getbytesininputbufferarraydescri"
+        },
+        {
+          "name" : "getBytesInOutputBufferArrayDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561560-getbytesinoutputbufferarraydescr"
+        },
+        {
+          "name" : "getCommandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561646-getcommandgate"
+        },
+        {
+          "name" : "getCurrentSampleFrame",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561636-getcurrentsampleframe"
+        },
+        {
+          "name" : "getGlobalUniqueID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561594-getglobaluniqueid"
+        },
+        {
+          "name" : "getLocalUniqueID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561588-getlocaluniqueid"
+        },
+        {
+          "name" : "getLoopCountAndTimeStamp",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561592-getloopcountandtimestamp"
+        },
+        {
+          "name" : "getMetaClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561593-getmetaclass"
+        },
+        {
+          "name" : "getNearestStartTime",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561621-getneareststarttime"
+        },
+        {
+          "name" : "getNextStreamID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561564-getnextstreamid"
+        },
+        {
+          "name" : "getNumSampleFramesPerBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561546-getnumsampleframesperbuffer"
+        },
+        {
+          "name" : "getRunEraseHead",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561571-getrunerasehead"
+        },
+        {
+          "name" : "getSampleRate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561644-getsamplerate"
+        },
+        {
+          "name" : "getState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561574-getstate"
+        },
+        {
+          "name" : "getStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561549-getstatus"
+        },
+        {
+          "name" : "getStatusDescriptor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561627-getstatusdescriptor"
+        },
+        {
+          "name" : "getStreamForID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561581-getstreamforid"
+        },
+        {
+          "name" : "getTimerInterval",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561634-gettimerinterval"
+        },
+        {
+          "name" : "getWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561635-getworkloop"
+        },
+        {
+          "name" : "hardwareSampleRateChanged",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561637-hardwaresampleratechanged"
+        },
+        {
+          "name" : "incrementActiveUserClients",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561606-incrementactiveuserclients"
+        },
+        {
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561651-init"
+        },
+        {
+          "name" : "initHardware",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561610-inithardware"
+        },
+        {
+          "name" : "lockAllStreams",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561580-lockallstreams"
+        },
+        {
+          "name" : "mixOutputSamples",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561609-mixoutputsamples"
+        },
+        {
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561570-newuserclient"
+        },
+        {
+          "name" : "newUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/3516523-newuserclient"
+        },
+        {
+          "name" : "pauseAudioEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561597-pauseaudioengine"
+        },
+        {
+          "name" : "performAudioEngineStart",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561628-performaudioenginestart"
+        },
+        {
+          "name" : "performAudioEngineStop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561589-performaudioenginestop"
+        },
+        {
+          "name" : "performErase",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561557-performerase"
+        },
+        {
+          "name" : "performFlush",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561558-performflush"
+        },
+        {
+          "name" : "performFormatChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561599-performformatchange"
+        },
+        {
+          "name" : "performFormatChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/3516524-performformatchange"
+        },
+        {
+          "name" : "registerService",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561638-registerservice"
+        },
+        {
+          "name" : "removeAllDefaultAudioControls",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561555-removealldefaultaudiocontrols"
+        },
+        {
+          "name" : "removeDefaultAudioControl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561648-removedefaultaudiocontrol"
+        },
+        {
+          "name" : "removeTimer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561585-removetimer"
+        },
+        {
+          "name" : "removeUserClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561598-removeuserclient"
+        },
+        {
+          "name" : "resetClipPosition",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561578-resetclipposition"
+        },
+        {
+          "name" : "resetStatusBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561569-resetstatusbuffer"
+        },
+        {
+          "name" : "resumeAudioEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561596-resumeaudioengine"
+        },
+        {
+          "name" : "sendFormatChangeNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561619-sendformatchangenotification"
+        },
+        {
+          "name" : "sendNotification",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561550-sendnotification"
+        },
+        {
+          "name" : "setAttributeForConnection",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561601-setattributeforconnection"
+        },
+        {
+          "name" : "setAudioDevice",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561587-setaudiodevice"
+        },
+        {
+          "name" : "setClockDomain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561613-setclockdomain"
+        },
+        {
+          "name" : "setClockIsStable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561545-setclockisstable"
+        },
+        {
+          "name" : "setDescription",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561591-setdescription"
+        },
+        {
+          "name" : "setIndex",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561584-setindex"
+        },
+        {
+          "name" : "setInputSampleLatency",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561640-setinputsamplelatency"
+        },
+        {
+          "name" : "setInputSampleOffset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561603-setinputsampleoffset"
+        },
+        {
+          "name" : "setMixClipOverhead",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561577-setmixclipoverhead"
+        },
+        {
+          "name" : "setNumSampleFramesPerBuffer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561579-setnumsampleframesperbuffer"
+        },
+        {
+          "name" : "setOutputSampleLatency",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561544-setoutputsamplelatency"
+        },
+        {
+          "name" : "setOutputSampleOffset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561617-setoutputsampleoffset"
+        },
+        {
+          "name" : "setRunEraseHead",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561625-setrunerasehead"
+        },
+        {
+          "name" : "setSampleLatency",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561600-setsamplelatency"
+        },
+        {
+          "name" : "setSampleOffset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561616-setsampleoffset"
+        },
+        {
+          "name" : "setSampleRate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561649-setsamplerate"
+        },
+        {
+          "name" : "setState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561576-setstate"
+        },
+        {
+          "name" : "setWorkLoopOnAllAudioControls",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561643-setworklooponallaudiocontrols"
+        },
+        {
+          "name" : "start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561582-start"
+        },
+        {
+          "name" : "start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/3516525-start"
+        },
+        {
+          "name" : "startAudioEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561547-startaudioengine"
+        },
+        {
+          "name" : "startClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561612-startclient"
+        },
+        {
+          "name" : "stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561583-stop"
+        },
+        {
+          "name" : "stopAudioEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561633-stopaudioengine"
+        },
+        {
+          "name" : "stopClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561563-stopclient"
+        },
+        {
+          "name" : "stopEngineAtPosition",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561595-stopengineatposition"
+        },
+        {
+          "name" : "takeTimeStamp",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561629-taketimestamp"
+        },
+        {
+          "name" : "timerFired",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561652-timerfired"
+        },
+        {
+          "name" : "unlockAllStreams",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561561-unlockallstreams"
+        },
+        {
+          "name" : "updateChannelNumbers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561615-updatechannelnumbers"
+        },
+        {
+          "name" : "useHiResSampleInterval",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/3593109-usehiressampleinterval"
+        },
+        {
+          "name" : "waitForEngineResume",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561642-waitforengineresume"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "addUserClientAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561566-adduserclientaction"
+        },
+        {
+          "name" : "createDictionaryFromSampleRate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561602-createdictionaryfromsamplerate"
+        },
+        {
+          "name" : "createSampleRateFromDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561647-createsampleratefromdictionary"
+        },
+        {
+          "name" : "detachUserClientsAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561567-detachuserclientsaction"
+        },
+        {
+          "name" : "initKeys",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561586-initkeys"
+        },
+        {
+          "name" : "lockStreamForIO",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561632-lockstreamforio"
+        },
+        {
+          "name" : "removeUserClientAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561565-removeuserclientaction"
+        },
+        {
+          "name" : "setCommandGateUsage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561608-setcommandgateusage"
+        },
+        {
+          "name" : "timerCallback",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561624-timercallback"
+        },
+        {
+          "name" : "unlockStreamForIO",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine\/1561572-unlockstreamforio"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "IOAudioLevelControl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiolevelcontrol"
+        },
+        {
+          "name" : "IOAudioSelectorControl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioselectorcontrol"
+        },
+        {
+          "description" : "",
+          "name" : "IOAudioToggleControl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiotogglecontrol"
+        },
+        {
+          "description" : "Represents any controllable attribute of an IOAudioDevice.",
+          "name" : "IOAudioControl",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiocontrol"
+        },
+        {
+          "description" : "This class wraps a single sample buffer in an audio driver.",
+          "name" : "IOAudioStream",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiostream"
+        },
+        {
+          "description" : "Represents a logical or physical port or functional unit in an audio device.",
+          "name" : "IOAudioPort",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioport"
+        }
+      ],
+      "title" : "Interfaces"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "IOService"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "IOAudioEngine",
+  "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudioengine"
+}

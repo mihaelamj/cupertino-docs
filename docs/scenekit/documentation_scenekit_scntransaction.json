@@ -1,0 +1,143 @@
+{
+  "abstract" : "A mechanism for creating implicit animations and combining scene graph changes into atomic updates.",
+  "codeExamples" : [
+    {
+      "code" : "[SCNTransaction setAnimationDuration:1.0];    \n_textNode.position = SCNVector3Make(0.0, -10.0, 0.0);\n_textNode.opacity = 0.0;\n_heroNode.opacity = 1.0;\nview.pointOfView = _heroCamera;\n_heroCamera.camera.yFov = 20.0;\n_lightNode.light.spotInnerAngle = 30.0;",
+      "language" : "objc"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "0cbd4219ce4c6782a6b839ea356fc8f95eb4991d0ce2920c5d5756556ae4192c",
+  "crawledAt" : "2025-12-06T10:54:05Z",
+  "declaration" : {
+    "code" : "class SCNTransaction",
+    "language" : "swift"
+  },
+  "id" : "B9C7E194-586A-4ACF-8F59-EE2DCFE6C025",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "SceneKit",
+  "overview" : "## Overview\n\nYou use [doc:\/\/com.apple.scenekit\/documentation\/SceneKit\/SCNTransaction] class methods to control the animation that results from changing animatable properties in the scene graph and to combine sets of changes into nested transactions.\n\n### Adding Animation with Automatic Transaction\n\nSceneKit creates a transaction automatically whenever you modify the objects in a scene graph. This transaction groups any additional changes you make from the same thread during the current iteration of that thread’s run loop. When the run loop next iterates, SceneKit automatically commits the transaction, atomically applying all changes made during the transaction to the presentation scene graph (that is, the, version of the scene graph currently being displayed).\n\nBecause an automatic transaction has a default duration of zero, any changes it contains appear instantly when SceneKit automatically commits the transaction. By using the `setAnimationDuration(_:)` method in Swift, `setAnimationDuration:` in Objective-C, to change the duration, you *implicitly animate* all changes made to animatable properties during the transaction. You can use implicit animation to add animation to a scene quickly and easily. For example, the code in Listing 1 fades out and moves one node, fades in another, moves and zooms the point of view camera, and focuses a spotlight, all in a single one-second animation.\n\nListing 1. Implicitly animating several property changes\n\n### Creating Advanced Animations with Custom Transactions\n\nYou can also use [doc:\/\/com.apple.scenekit\/documentation\/SceneKit\/SCNTransaction] class methods to create and manage a hierarchy of your own transactions. By nesting custom transactions, you can group sets of scene graph changes, applying different animation parameters to each group. Use the [doc:\/\/com.apple.scenekit\/documentation\/SceneKit\/SCNTransaction\/begin()] method to create a custom transaction, nested within the current transaction if one exists. Use the [doc:\/\/com.apple.scenekit\/documentation\/SceneKit\/SCNTransaction\/commit()] method to end a transaction, applying all scene graph changes made within.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\ncrawled: 2025-12-06T10:54:05Z\n---\n\n# SCNTransaction\n\n**Class**\n\nA mechanism for creating implicit animations and combining scene graph changes into atomic updates.\n\n## Declaration\n\n```swift\nclass SCNTransaction\n```\n\n## Overview\n\nYou use [doc:\/\/com.apple.scenekit\/documentation\/SceneKit\/SCNTransaction] class methods to control the animation that results from changing animatable properties in the scene graph and to combine sets of changes into nested transactions.\n\n### Adding Animation with Automatic Transaction\n\nSceneKit creates a transaction automatically whenever you modify the objects in a scene graph. This transaction groups any additional changes you make from the same thread during the current iteration of that thread’s run loop. When the run loop next iterates, SceneKit automatically commits the transaction, atomically applying all changes made during the transaction to the presentation scene graph (that is, the, version of the scene graph currently being displayed).\n\nBecause an automatic transaction has a default duration of zero, any changes it contains appear instantly when SceneKit automatically commits the transaction. By using the `setAnimationDuration(_:)` method in Swift, `setAnimationDuration:` in Objective-C, to change the duration, you *implicitly animate* all changes made to animatable properties during the transaction. You can use implicit animation to add animation to a scene quickly and easily. For example, the code in Listing 1 fades out and moves one node, fades in another, moves and zooms the point of view camera, and focuses a spotlight, all in a single one-second animation.\n\nListing 1. Implicitly animating several property changes\n\n```objc\n[SCNTransaction setAnimationDuration:1.0];    \n_textNode.position = SCNVector3Make(0.0, -10.0, 0.0);\n_textNode.opacity = 0.0;\n_heroNode.opacity = 1.0;\nview.pointOfView = _heroCamera;\n_heroCamera.camera.yFov = 20.0;\n_lightNode.light.spotInnerAngle = 30.0;\n```\n\n### Creating Advanced Animations with Custom Transactions\n\nYou can also use [doc:\/\/com.apple.scenekit\/documentation\/SceneKit\/SCNTransaction] class methods to create and manage a hierarchy of your own transactions. By nesting custom transactions, you can group sets of scene graph changes, applying different animation parameters to each group. Use the [doc:\/\/com.apple.scenekit\/documentation\/SceneKit\/SCNTransaction\/begin()] method to create a custom transaction, nested within the current transaction if one exists. Use the [doc:\/\/com.apple.scenekit\/documentation\/SceneKit\/SCNTransaction\/commit()] method to end a transaction, applying all scene graph changes made within.\n\n## Creating and Committing Transactions\n\n- **begin()**: Begins a new transaction for the current thread.\n- **commit()**: Commits all changes made during the current transaction.\n- **flush()**: Applies all changes from the current automatic transaction.\n\n## Overriding Animation Duration and Timing\n\n- **animationDuration**: Returns the duration, in seconds, of all animations within the current transaction.\n- **animationTimingFunction**: Returns the timing function that SceneKit uses for all animations within this transaction group.\n\n## Temporarily Disabling Property Animations\n\n- **disableActions**: Returns a Boolean value indicating whether changes to animatable properties during the transaction are implicitly animated.\n\n## Getting and Setting Completion Block Objects\n\n- **completionBlock**: Returns the block previously associated with the current transaction.\n\n## Managing Concurrency\n\n- **lock()**: Attempts to acquire a recursive spinlock to ensure the validity of values you retrieve during the transaction.\n- **unlock()**: Relinquishes a previously acquired transaction lock.\n\n## Getting and Setting Transaction Properties\n\n- **setValue(_:forKey:)**: Associates an arbitrary object with the current transaction using the specified key.\n- **value(forKey:)**: Returns the object previously associated with the current transaction using the specified key.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Begins a new transaction for the current thread.",
+          "name" : "begin()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/begin()"
+        },
+        {
+          "description" : "Commits all changes made during the current transaction.",
+          "name" : "commit()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/commit()"
+        },
+        {
+          "description" : "Applies all changes from the current automatic transaction.",
+          "name" : "flush()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/flush()"
+        }
+      ],
+      "title" : "Creating and Committing Transactions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the duration, in seconds, of all animations within the current transaction.",
+          "name" : "animationDuration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/animationDuration"
+        },
+        {
+          "description" : "Returns the timing function that SceneKit uses for all animations within this transaction group.",
+          "name" : "animationTimingFunction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/animationTimingFunction"
+        }
+      ],
+      "title" : "Overriding Animation Duration and Timing"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value indicating whether changes to animatable properties during the transaction are implicitly animated.",
+          "name" : "disableActions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/disableActions"
+        }
+      ],
+      "title" : "Temporarily Disabling Property Animations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the block previously associated with the current transaction.",
+          "name" : "completionBlock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/completionBlock"
+        }
+      ],
+      "title" : "Getting and Setting Completion Block Objects"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Attempts to acquire a recursive spinlock to ensure the validity of values you retrieve during the transaction.",
+          "name" : "lock()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/lock()"
+        },
+        {
+          "description" : "Relinquishes a previously acquired transaction lock.",
+          "name" : "unlock()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/unlock()"
+        }
+      ],
+      "title" : "Managing Concurrency"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Associates an arbitrary object with the current transaction using the specified key.",
+          "name" : "setValue(_:forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/setValue(_:forKey:)"
+        },
+        {
+          "description" : "Returns the object previously associated with the current transaction using the specified key.",
+          "name" : "value(forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction\/value(forKey:)"
+        }
+      ],
+      "title" : "Getting and Setting Transaction Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "SCNTransaction",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SceneKit\/SCNTransaction"
+}

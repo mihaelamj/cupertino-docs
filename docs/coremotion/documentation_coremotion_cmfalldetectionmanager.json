@@ -1,0 +1,119 @@
+{
+  "abstract" : "An object for managing fall detection events.",
+  "codeExamples" : [
+    {
+      "code" : "if CMFallDetectionManager.isAvailable  {\n    \n    \/\/ Create the manager.\n    let manager = CMFallDetectionManager()\n    \n    \/\/ Assign a delegate that adopts the CMFallDetectionDelegte protocol.\n    manager.delegate = myDelegate\n    \n    \/\/ Keep a reference to the manager.\n    myManager = manager\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Check to see if you have already asked the user to\n\/\/ authorize fall detection event notifications.\nif myManager?.authorizationStatus == .notDetermined {\n    \n    \/\/ Request Authorization.\n    myManager?.requestAuthorization { (authorizationStatus) in\n        \n        \/\/ Respond to the authorization status.\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "74d1a44ab8843d8482147b8c015c94da85adc1b71aaacce516faca2bd4345538",
+  "crawledAt" : "2025-12-06T08:08:09Z",
+  "declaration" : {
+    "code" : "class CMFallDetectionManager",
+    "language" : "swift"
+  },
+  "id" : "92BF3759-76C3-4C48-AFD0-0456559D51FD",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Core Motion",
+  "overview" : "## Overview\n\nIn Series 4 and later, Apple Watch can detect when a wearer falls, and contact emergency services if necessary. Using the `CMFallDetectionManager`, your app can request the user’s authorization, and set up a delegate to receive notifications about these *fall detection events*. For more information, see [https:\/\/support.apple.com\/en-us\/HT208944].\n\n`CMFallDetectionManager` requires an entitlement from Apple. To apply for the entitlement, see [https:\/\/developer.apple.com\/contact\/request\/fall-detection-api]. This entitlement allows the app to run in the background without requiring any additional capabilities. However, you can add capabilities for other background modes, as needed by your app.\n\nThere are two approaches to detecting falls in your app. You can either query for [doc:\/\/com.apple.documentation\/documentation\/HealthKit\/HKQuantityTypeIdentifier\/numberOfTimesFallen] samples in HealthKit, or you can use Core Motion’s `CMFallDetectionManager`.\n\n### Detect and Respond to Falls\n\nThe Core Motion fall detection manager is particularly useful for apps that need to respond to falls in a timely manner so that the app can provide help to the person who fell.\n\nThe fall detection manager:\n\n### Detect and Monitor Falls Over Time\n\nThe HealthKit sample is particularly useful for apps that monitor falls over longer time periods, because there can be a delay between the fall event and HealthKit updating its samples.\n\nHealthKit provides:\n\n### Create the Manager\n\nTo receive fall detection notifications, ensure that the feature is available on the current device. If the feature is available, create the manager and set its delegate.\n\nSet the delegate as early as possible, ideally in your extension delegate’s [doc:\/\/com.apple.documentation\/documentation\/WatchKit\/WKExtensionDelegate\/applicationDidFinishLaunching()] method. The system may not instantiate your app’s user interface when launching your app in the background, so you can’t set the delegate from your user interface code, such as when an interface controller activates, or in response to a change in SwiftUI’s [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/ScenePhase] state.\n\n### Request User Authorization\n\nAfter your user interface loads, check if you previously requested approval. If you haven’t, call [doc:\/\/com.apple.coremotion\/documentation\/CoreMotion\/CMFallDetectionManager\/requestAuthorization(handler:)] to initiate a request.\n\nYour delegate only receives fall detection event notifications if the user authorizes your app. The user can change your app’s authorization state at any time from Settings > Privacy > Fall Detection.\n\nAfter you set the delegate and the user grants authorization, your app checks for recent fall events. If the system finds an event, it calls your delegate’s [doc:\/\/com.apple.coremotion\/documentation\/CoreMotion\/CMFallDetectionDelegate\/fallDetectionManager(_:didDetect:completionHandler:)] method and passes the most recent event. On subsequent launches, as long as your app remains authorized and the system has detected a recent fall event, the system calls `fallDetectionManager(_:didDetect:completionHandler:)` as soon as you set the delegate.\n\nThe system also wakes your app in the background to respond to any new fall detection events. The system only gives your app a short amount of time to respond to the event and call the completion handler. If the app exceeds the allotted time, the system may suspend it.",
+  "platforms" : [
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMFallDetectionManager\ncrawled: 2025-12-06T08:08:09Z\n---\n\n# CMFallDetectionManager\n\n**Class**\n\nAn object for managing fall detection events.\n\n## Declaration\n\n```swift\nclass CMFallDetectionManager\n```\n\n## Overview\n\nIn Series 4 and later, Apple Watch can detect when a wearer falls, and contact emergency services if necessary. Using the `CMFallDetectionManager`, your app can request the user’s authorization, and set up a delegate to receive notifications about these *fall detection events*. For more information, see [https:\/\/support.apple.com\/en-us\/HT208944].\n\n\n\n`CMFallDetectionManager` requires an entitlement from Apple. To apply for the entitlement, see [https:\/\/developer.apple.com\/contact\/request\/fall-detection-api]. This entitlement allows the app to run in the background without requiring any additional capabilities. However, you can add capabilities for other background modes, as needed by your app.\n\nThere are two approaches to detecting falls in your app. You can either query for [doc:\/\/com.apple.documentation\/documentation\/HealthKit\/HKQuantityTypeIdentifier\/numberOfTimesFallen] samples in HealthKit, or you can use Core Motion’s `CMFallDetectionManager`.\n\n### Detect and Respond to Falls\n\nThe Core Motion fall detection manager is particularly useful for apps that need to respond to falls in a timely manner so that the app can provide help to the person who fell.\n\nThe fall detection manager:\n\n- Notifies the app in real time\n- Notifies the app of all fall events\n- Provides background runtime so that your app can respond to the fall\n\n### Detect and Monitor Falls Over Time\n\nThe HealthKit sample is particularly useful for apps that monitor falls over longer time periods, because there can be a delay between the fall event and HealthKit updating its samples.\n\nHealthKit provides:\n\n- Samples that are available on all devices that can access the person’s HealthKit data—not just the device that detected the fall\n- Samples for falls where the person who fell confirmed the fall, or the system escalated the fall to emergency services. If the person who fell dismisses the fall alert, HealthKit doesn’t record the fall.\n\n### Create the Manager\n\nTo receive fall detection notifications, ensure that the feature is available on the current device. If the feature is available, create the manager and set its delegate.\n\n```swift\nif CMFallDetectionManager.isAvailable  {\n    \n    \/\/ Create the manager.\n    let manager = CMFallDetectionManager()\n    \n    \/\/ Assign a delegate that adopts the CMFallDetectionDelegte protocol.\n    manager.delegate = myDelegate\n    \n    \/\/ Keep a reference to the manager.\n    myManager = manager\n}\n```\n\nSet the delegate as early as possible, ideally in your extension delegate’s [doc:\/\/com.apple.documentation\/documentation\/WatchKit\/WKExtensionDelegate\/applicationDidFinishLaunching()] method. The system may not instantiate your app’s user interface when launching your app in the background, so you can’t set the delegate from your user interface code, such as when an interface controller activates, or in response to a change in SwiftUI’s [doc:\/\/com.apple.documentation\/documentation\/SwiftUI\/ScenePhase] state.\n\n\n\n### Request User Authorization\n\nAfter your user interface loads, check if you previously requested approval. If you haven’t, call [doc:\/\/com.apple.coremotion\/documentation\/CoreMotion\/CMFallDetectionManager\/requestAuthorization(handler:)] to initiate a request.\n\n```swift\n\/\/ Check to see if you have already asked the user to\n\/\/ authorize fall detection event notifications.\nif myManager?.authorizationStatus == .notDetermined {\n    \n    \/\/ Request Authorization.\n    myManager?.requestAuthorization { (authorizationStatus) in\n        \n        \/\/ Respond to the authorization status.\n    }\n}\n```\n\nYour delegate only receives fall detection event notifications if the user authorizes your app. The user can change your app’s authorization state at any time from Settings > Privacy > Fall Detection.\n\nAfter you set the delegate and the user grants authorization, your app checks for recent fall events. If the system finds an event, it calls your delegate’s [doc:\/\/com.apple.coremotion\/documentation\/CoreMotion\/CMFallDetectionDelegate\/fallDetectionManager(_:didDetect:completionHandler:)] method and passes the most recent event. On subsequent launches, as long as your app remains authorized and the system has detected a recent fall event, the system calls `fallDetectionManager(_:didDetect:completionHandler:)` as soon as you set the delegate.\n\nThe system also wakes your app in the background to respond to any new fall detection events. The system only gives your app a short amount of time to respond to the event and call the completion handler. If the app exceeds the allotted time, the system may suspend it.\n\n## Checking Availability\n\n- **isAvailable**: A Boolean value that indicates whether the current device supports fall detection.\n\n## Requesting Authorization\n\n- **requestAuthorization(handler:)**: Requests authorization to receive notifications about fall detection events.\n- **authorizationStatus**: The authorization status for receiving fall detection event notifications.\n- **CMAuthorizationStatus**: The authorization status for motion-related features.\n\n## Handling Events\n\n- **delegate**: A delegate that can receive notifications about fall detection events.\n- **CMFallDetectionDelegate**: A delegate that receives information about fall detection events and authorization status changes.\n\n## Fall detection\n\n- **CMFallDetectionDelegate**: A delegate that receives information about fall detection events and authorization status changes.\n- **CMFallDetectionEvent**: An object that contains data about a fall detection event.\n- **NSFallDetectionUsageDescription**: A message to the user that explains the app’s request for permission to access fall detection event data.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the current device supports fall detection.",
+          "name" : "isAvailable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMFallDetectionManager\/isAvailable"
+        }
+      ],
+      "title" : "Checking Availability"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Requests authorization to receive notifications about fall detection events.",
+          "name" : "requestAuthorization(handler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMFallDetectionManager\/requestAuthorization(handler:)"
+        },
+        {
+          "description" : "The authorization status for receiving fall detection event notifications.",
+          "name" : "authorizationStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMFallDetectionManager\/authorizationStatus"
+        },
+        {
+          "description" : "The authorization status for motion-related features.",
+          "name" : "CMAuthorizationStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMAuthorizationStatus"
+        }
+      ],
+      "title" : "Requesting Authorization"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A delegate that can receive notifications about fall detection events.",
+          "name" : "delegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMFallDetectionManager\/delegate"
+        },
+        {
+          "description" : "A delegate that receives information about fall detection events and authorization status changes.",
+          "name" : "CMFallDetectionDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMFallDetectionDelegate"
+        }
+      ],
+      "title" : "Handling Events"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A delegate that receives information about fall detection events and authorization status changes.",
+          "name" : "CMFallDetectionDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMFallDetectionDelegate"
+        },
+        {
+          "description" : "An object that contains data about a fall detection event.",
+          "name" : "CMFallDetectionEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMFallDetectionEvent"
+        },
+        {
+          "description" : "A message to the user that explains the app’s request for permission to access fall detection event data.",
+          "name" : "NSFallDetectionUsageDescription",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BundleResources\/Information-Property-List\/NSFallDetectionUsageDescription"
+        }
+      ],
+      "title" : "Fall detection"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "CMFallDetectionManager",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMFallDetectionManager"
+}

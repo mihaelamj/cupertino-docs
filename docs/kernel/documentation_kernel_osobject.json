@@ -1,0 +1,212 @@
+{
+  "abstract" : "OSObject is the concrete root class of the Libkern and I\/O Kit C++ class hierarchy.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "5510d36ea3d9bfa4220a1cbbb9839c5e6c1fd7273fad99832d509fef9e3d40bd",
+  "crawledAt" : "2025-12-06T09:19:43Z",
+  "declaration" : {
+    "code" : "class OSObject : OSMetaClassBase",
+    "language" : "swift"
+  },
+  "id" : "338B1905-888C-43C3-883E-E089CEBCF816",
+  "kind" : "class",
+  "language" : "occ",
+  "module" : "Kernel",
+  "overview" : "## Overview\n\nOSObject defines the minimal functionality required of Libkern and I\/O Kit C++ classes: tie-in to the run-time type information facility, the dynamic allocation\/initialization paradigm, and reference counting. While kernel extensions are free to use their own C++ classes internally, any interaction they have with Libkern or the I\/O Kit will require classes ultimately derived from OSObject.\n\n**Run-Time Type Information**\n\nOSObject is derived from the abstract root class OSMetaClassBase, which declares (and defines many of) the primitives on which the run-time type information facility is based. A parallel inheritance hierarchy of metaclass objects provides run-time introspection, including access to class names, inheritance, and safe type-casting. See OSMetaClass for more information.\n\n**Dynamic Allocation\/Initialization**\n\nThe kernel-resident C++ runtime does not support exceptions, so Libkern classes cannot use standard C++ object constructors and destructors, which use exceptions to report errors. To support error-handling during instance creation, then, OSObject separates object allocation from initialization. You can create a new OSObject-derived instance with the `new` operator, but this does nothing more than allocate memory and initialize the reference count to 1. Following this, you must call a designated initialization function and check its `bool` return value. If the initialization fails, you must immediately call release on the instance and handle the failure in whatever way is appropriate. Many Libkern and I\/O Kit classes define static instance-creation functions (beginning with the word \"with\") to make construction a one-step process for clients.\n\n**Reference Counting**\n\nOSObject provides reference counting services using the retain, release(), release(int freeWhen) and free functions. The public interface to the reference counting is retain, and release; release(int freeWhen) is provided for objects that have internal retain cycles.\n\nIn general, a subclass is expected to only override free. It may also choose to override release(int freeWhen) if the object has a circular retain count, as noted above.\n\n**Use Restrictions**\n\nWith very few exceptions in the I\/O Kit, all Libkern-based C++ classes, functions, and macros are **unsafe** to use in a primary interrupt context. Consult the I\/O Kit documentation related to primary interrupts for more information.\n\n**Concurrency Protection**\n\nThe basic features of OSObject are thread-safe. Most Libkern subclasses are not, and require locking or other protection if instances are shared between threads. I\/O Kit driver objects are either designed for use within thread-safe contexts or designed to inherently be thread-safe. Always check the individual class documentation to see what steps are necessary for concurrent use of instances.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/kernel\/osobject\ncrawled: 2025-12-06T09:19:43Z\n---\n\n# OSObject\n\n**Class**\n\nOSObject is the concrete root class of the Libkern and I\/O Kit C++ class hierarchy.\n\n## Declaration\n\n```swift\nclass OSObject : OSMetaClassBase\n```\n\n## Overview\n\nOSObject defines the minimal functionality required of Libkern and I\/O Kit C++ classes: tie-in to the run-time type information facility, the dynamic allocation\/initialization paradigm, and reference counting. While kernel extensions are free to use their own C++ classes internally, any interaction they have with Libkern or the I\/O Kit will require classes ultimately derived from OSObject.\n\n**Run-Time Type Information**\n\nOSObject is derived from the abstract root class OSMetaClassBase, which declares (and defines many of) the primitives on which the run-time type information facility is based. A parallel inheritance hierarchy of metaclass objects provides run-time introspection, including access to class names, inheritance, and safe type-casting. See OSMetaClass for more information.\n\n**Dynamic Allocation\/Initialization**\n\nThe kernel-resident C++ runtime does not support exceptions, so Libkern classes cannot use standard C++ object constructors and destructors, which use exceptions to report errors. To support error-handling during instance creation, then, OSObject separates object allocation from initialization. You can create a new OSObject-derived instance with the `new` operator, but this does nothing more than allocate memory and initialize the reference count to 1. Following this, you must call a designated initialization function and check its `bool` return value. If the initialization fails, you must immediately call release on the instance and handle the failure in whatever way is appropriate. Many Libkern and I\/O Kit classes define static instance-creation functions (beginning with the word \"with\") to make construction a one-step process for clients.\n\n**Reference Counting**\n\nOSObject provides reference counting services using the retain, release(), release(int freeWhen) and free functions. The public interface to the reference counting is retain, and release; release(int freeWhen) is provided for objects that have internal retain cycles.\n\nIn general, a subclass is expected to only override free. It may also choose to override release(int freeWhen) if the object has a circular retain count, as noted above.\n\n**Use Restrictions**\n\nWith very few exceptions in the I\/O Kit, all Libkern-based C++ classes, functions, and macros are **unsafe** to use in a primary interrupt context. Consult the I\/O Kit documentation related to primary interrupts for more information.\n\n**Concurrency Protection**\n\nThe basic features of OSObject are thread-safe. Most Libkern subclasses are not, and require locking or other protection if instances are shared between threads. I\/O Kit driver objects are either designed for use within thread-safe contexts or designed to inherently be thread-safe. Always check the individual class documentation to see what steps are necessary for concurrent use of instances.\n\n## Miscellaneous\n\n- **free**: Deallocates\/releases resources held by the object.\n- **getRetainCount**: Returns the reference count of the object.\n- **init**: Initializes a newly-allocated object.\n- **operator delete**: Frees the memory of the object itself.\n- **operator new**: Allocates memory for an instance of the class.\n- **release()**: Releases a reference to the object, freeing it immediately if the reference count drops to zero.\n- **release(int)**: Releases a reference to an object, freeing it immediately if the reference count drops below the specified threshold.\n- **retain**: Retains a reference to the object.\n- **serialize**: Overridden by subclasses to archive the receiver into the provided OSSerialize object.\n- **taggedRelease(const void *)**: Releases a tagged reference to an object, freeing it immediately if the reference count drops to zero.\n- **taggedRelease(const void *, const int)**: Releases a tagged reference to an object, freeing it immediately if the reference count drops below the specified threshold.\n- **taggedRetain**: Retains a reference to the object with an optional tag used for reference-tracking.\n\n## Instance Methods\n\n- **CopyDispatchQueue**\n- **Dispatch**\n- **SetDispatchQueue**\n- **free**\n- **getMetaClass**\n- **getRetainCount**\n- **init**\n- **release**\n- **release**: Releases the OSObject instance\n- **retain**: Retains the OSObject instance\n- **serialize**\n- **taggedRelease**\n- **taggedRelease**\n- **taggedRetain**\n\n## Type Methods\n\n- **CopyDispatchQueue_Invoke**\n- **SetDispatchQueue_Invoke**\n\n## Base Types\n\n- **OSSymbol**: OSSymbol wraps a C string in a unique C++ object for use as keys in Libkern collections.\n- **OSMetaClass**\n- **OSMetaClassBase**: OSMetaClassBase is the abstract bootstrap class for the Libkern and I\/O Kit run-time type information system.\n- **OSObjectPtr**\n- **OSObjectRef**\n- **Additional Types**: Find custom type definitions and pointer types for standard classes. \n\n## Inherits From\n\n- OSMetaClassBase\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Deallocates\/releases resources held by the object.",
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941146-free"
+        },
+        {
+          "description" : "Returns the reference count of the object.",
+          "name" : "getRetainCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941147-getretaincount"
+        },
+        {
+          "description" : "Initializes a newly-allocated object.",
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941148-init"
+        },
+        {
+          "description" : "Frees the memory of the object itself.",
+          "name" : "operator delete",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941149-operator_delete"
+        },
+        {
+          "description" : "Allocates memory for an instance of the class.",
+          "name" : "operator new",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941150-operator_new"
+        },
+        {
+          "description" : "Releases a reference to the object, freeing it immediately if the reference count drops to zero.",
+          "name" : "release()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941151-release"
+        },
+        {
+          "description" : "Releases a reference to an object, freeing it immediately if the reference count drops below the specified threshold.",
+          "name" : "release(int)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941153-release"
+        },
+        {
+          "description" : "Retains a reference to the object.",
+          "name" : "retain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941154-retain"
+        },
+        {
+          "description" : "Overridden by subclasses to archive the receiver into the provided OSSerialize object.",
+          "name" : "serialize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941155-serialize"
+        },
+        {
+          "description" : "Releases a tagged reference to an object, freeing it immediately if the reference count drops to zero.",
+          "name" : "taggedRelease(const void *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941156-taggedrelease"
+        },
+        {
+          "description" : "Releases a tagged reference to an object, freeing it immediately if the reference count drops below the specified threshold.",
+          "name" : "taggedRelease(const void *, const int)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941157-taggedrelease"
+        },
+        {
+          "description" : "Retains a reference to the object with an optional tag used for reference-tracking.",
+          "name" : "taggedRetain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1941158-taggedretain"
+        }
+      ],
+      "title" : "Miscellaneous"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "CopyDispatchQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/osobject\/copydispatchqueue"
+        },
+        {
+          "name" : "Dispatch",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/3180941-dispatch"
+        },
+        {
+          "name" : "SetDispatchQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/osobject\/setdispatchqueue"
+        },
+        {
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/osobject\/free"
+        },
+        {
+          "name" : "getMetaClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1546718-getmetaclass"
+        },
+        {
+          "name" : "getRetainCount",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1546715-getretaincount"
+        },
+        {
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/osobject\/init"
+        },
+        {
+          "name" : "release",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1546709-release"
+        },
+        {
+          "description" : "Releases the OSObject instance",
+          "name" : "release",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/osobject\/release"
+        },
+        {
+          "description" : "Retains the OSObject instance",
+          "name" : "retain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/driverkit\/osobject\/retain"
+        },
+        {
+          "name" : "serialize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1546714-serialize"
+        },
+        {
+          "name" : "taggedRelease",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1546712-taggedrelease"
+        },
+        {
+          "name" : "taggedRelease",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/3516839-taggedrelease"
+        },
+        {
+          "name" : "taggedRetain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/1546708-taggedretain"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "CopyDispatchQueue_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/3075311-copydispatchqueue_invoke"
+        },
+        {
+          "name" : "SetDispatchQueue_Invoke",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject\/3075323-setdispatchqueue_invoke"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "OSSymbol wraps a C string in a unique C++ object for use as keys in Libkern collections.",
+          "name" : "OSSymbol",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ossymbol"
+        },
+        {
+          "name" : "OSMetaClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osmetaclass"
+        },
+        {
+          "description" : "OSMetaClassBase is the abstract bootstrap class for the Libkern and I\/O Kit run-time type information system.",
+          "name" : "OSMetaClassBase",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osmetaclassbase"
+        },
+        {
+          "name" : "OSObjectPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobjectptr"
+        },
+        {
+          "name" : "OSObjectRef",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobjectref"
+        },
+        {
+          "description" : "Find custom type definitions and pointer types for standard classes. ",
+          "name" : "Additional Types",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/libkern\/data_types\/additional_types"
+        }
+      ],
+      "title" : "Base Types"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "OSMetaClassBase"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "OSObject",
+  "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/osobject"
+}

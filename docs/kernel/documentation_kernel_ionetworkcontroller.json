@@ -1,0 +1,780 @@
+{
+  "abstract" : "Implements the framework for a generic network controller.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "a5d0e7f041a122483faee683def2422e4efc7739c0cc4d6aa5cec51db6b2ab8a",
+  "crawledAt" : "2025-12-07T02:38:38Z",
+  "declaration" : {
+    "code" : "class IONetworkController : IOService",
+    "language" : "swift"
+  },
+  "id" : "57EE6C54-DD2A-4C02-A769-AD02F9278590",
+  "kind" : "class",
+  "language" : "occ",
+  "module" : "Kernel",
+  "overview" : "## Overview\n\nA subclass of IONetworkController must provide additional functionality specific for a particular networking type. In addition, the driver must implement (override) a basic set of hardware dependent methods to create a working driver.\n\nIONetworkController attaches itself to the data link layer (DLIL) via an IONetworkInterface object. A controller object without a companion interface is not accessible to the networking system. The controller interacts with DLIL by calling methods defined by the interface object. And conversely, DLIL will issue commands and packets to the controller through the interface object.\n\nIONetworkController will create an IOCommandGate and attach this event source to an IOWorkLoop object. All commands sent from the interface object are handled through the IOCommandGate object, which will serialize access to the controller. Outbound packets sent from the interface to the controller have no implicit serialization. Drivers must implement an output function that is thread safe, or use an IOOutputQueue object which will provide a serialization model.\n\nNote: IONetworkController internally uses some private messaging constants in the sys_iokit | sub_iokit_networking range defined in \"IONetworkControllerPrivate.h\". If you create a client for your controller (for example an IOUserClient), and it overrides the IOService::message method, your client may receive these messages. It should ignore these messages and pass them to super::message()",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\ncrawled: 2025-12-07T02:38:38Z\n---\n\n# IONetworkController\n\n**Class**\n\nImplements the framework for a generic network controller.\n\n## Declaration\n\n```swift\nclass IONetworkController : IOService\n```\n\n## Overview\n\nA subclass of IONetworkController must provide additional functionality specific for a particular networking type. In addition, the driver must implement (override) a basic set of hardware dependent methods to create a working driver.\n\nIONetworkController attaches itself to the data link layer (DLIL) via an IONetworkInterface object. A controller object without a companion interface is not accessible to the networking system. The controller interacts with DLIL by calling methods defined by the interface object. And conversely, DLIL will issue commands and packets to the controller through the interface object.\n\nIONetworkController will create an IOCommandGate and attach this event source to an IOWorkLoop object. All commands sent from the interface object are handled through the IOCommandGate object, which will serialize access to the controller. Outbound packets sent from the interface to the controller have no implicit serialization. Drivers must implement an output function that is thread safe, or use an IOOutputQueue object which will provide a serialization model.\n\nNote: IONetworkController internally uses some private messaging constants in the sys_iokit | sub_iokit_networking range defined in \"IONetworkControllerPrivate.h\". If you create a client for your controller (for example an IOUserClient), and it overrides the IOService::message method, your client may receive these messages. It should ignore these messages and pass them to super::message()\n\n## Miscellaneous\n\n- **allocatePacket**: Allocates a packet with a data buffer that is larger than or equal to the size specified.\n- **attachDebuggerClient**: Attaches a new IOKernelDebugger client object.\n- **attachInterface**: Attaches a new network interface client object.\n- **configureInterface**: Configures a newly created network interface object.\n- **copyMediumDictionary**: Returns a copy of the medium dictionary published by the driver.\n- **copyPacket**: Allocates a new packet, containing data copied from an existing source packet.\n- **createInterface**: Creates a new network interface object.\n- **createOutputQueue**: Creates an IOOutputQueue to handle output packet queueing, and also to resolve contention for the controller's transmitter from multiple client threads.\n- **createWorkLoop**: Method called by IONetworkController prior to the initial getWorkLoop() call.\n- **detachDebuggerClient**: Detaches an IOKernelDebugger client object.\n- **detachInterface**: Detaches an interface client object.\n- **disable**: A disable request from an IOKernelDebugger client.\n- **disable(IONetworkInterface *)**: A request from an interface client to disable the controller.\n- **disable(IOService *)**: Handles a disable request from a client.\n- **disablePacketFilter**: Disables a packet filter that is currently enabled from the given filter group.\n- **doDisable**: Makes a synchronized call to disable() through executeCommand().\n- **doEnable**: Makes a synchronized call to enable() through executeCommand().\n- **enable**: An enable request from an IOKernelDebugger client.\n- **enable(IONetworkInterface *)**: A request from an interface client to enable the controller.\n- **enable(IOService *)**: Handles an enable request from a client.\n- **enablePacketFilter**: Enables one of the supported packet filters from the given filter group.\n- **executeCommand**: Makes a C function call through the command gate.\n- **free**: Frees the IONetworkController object.\n- **freePacket**: Releases the packet given back to the free pool.\n- **getChecksumDemand**: Fetches the demand for hardware checksum computation and insertion for the given packet before it is transmitted on the network.\n- **getChecksumSupport**: Gets checksums that are supported by the network controller for the given checksum family.\n- **getCommandClient**: Gets the command client object.\n- **getCommandGate**: Gets the IOCommandGate object created by IONetworkController.\n- **getDebuggerLinkStatus**: Debugger polled-mode link status handler.\n- **getFeatures**: Reports generic features supported by the controller and\/or the driver.\n- **getHardwareAddress**: Gets the network controller's permanent hardware\/station address.\n- **getMaxPacketSize**: Gets the maximum packet size supported by the controller.\n- **getMediumDictionary**: Returns the medium dictionary published by the driver.\n- **getMinPacketSize**: Gets the minimum packet size supported by the controller.\n- **getOutputHandler**: Gets the address of the method designated to handle output packets for the network controller.\n- **getOutputQueue**: Gets the IOOutputQueue object created by createOutputQueue().\n- **getPacketBufferConstraints**: Gets the controller's packet buffer constraints.\n- **getPacketFilters**: Gets the set of packet filters supported by the network controller for the given filter group.\n- **getSelectedMedium**: Gets the current selected medium.\n- **handleClose**: Handles a client close.\n- **handleIsOpen**: Queries whether a client has an open on the controller.\n- **handleOpen**: Handles a client open.\n- **init**: Initializes the IONetworkController object.\n- **message**: Receives messages delivered from an attached provider.\n- **newModelString**\n- **newRevisionString**\n- **newVendorString**\n- **outputPacket**: Transmits an output packet.\n- **prepare**: Prepares the controller before an IOService is created and attached as a client.\n- **publishMediumDictionary**: Publishes a dictionary of IONetworkMedium objects to advertise the media selection supported by the network controller.\n- **publishProperties**: Publishes controller properties and capabilities.\n- **receivePacket**: Debugger polled-mode receive handler.\n- **registerWithPolicyMaker**: Implemented by controller drivers to register with the power management policy-maker.\n- **releaseDebuggerLock**: Releases the global debugger lock.\n- **releaseFreePackets**: Releases all packets held in the free packet queue.\n- **replaceOrCopyPacket**: A helper method that combines the functionality of copyPacket() and replacePacket() to process a packet containing a received frame.\n- **replacePacket**: Allocates a new packet to replace an existing packet, the existing packet is then returned.\n- **reserveDebuggerLock**: Takes the global debugger lock.\n- **selectMedium**: A client request to change the medium selection.\n- **selectMediumWithName**: A client request to change the medium selection.\n- **sendPacket**: Debugger polled-mode transmit handler.\n- **setChecksumResult**: Encodes a received packet with the checksum result reported by the hardware.\n- **setDebuggerMode**: Set debugger mode for network drivers.\n- **setHardwareAddress**: Sets or changes the station address used by the network controller.\n- **setLinkStatus**: Reports the link status and the active medium.\n- **setMaxPacketSize**: A client request to change the maximum packet size.\n- **setSelectedMedium**: Designates an entry in the published medium dictionary as the current selected medium.\n- **start**: Starts the network controller.\n- **stop**: Stops the network controller.\n- **systemWillShutdown**: Handles system shutdown and restart notifications.\n\n## Callbacks\n\n- **Action**\n- **IONetworkController::Action**\n\n## Constants\n\n- **TCP\/IP**: TCP\/IP checksums that may be supported by the hardware.\n\n## Instance Variables\n\n- **_reserved**\n\n## Instance Methods\n\n- **allocatePacket**\n- **allocatePacketNoWait**\n- **attachDebuggerClient**\n- **attachInterface**\n- **configureInterface**\n- **copyMediumDictionary**\n- **copyPacket**\n- **createInterface**\n- **createOutputQueue**\n- **createWorkLoop**\n- **detachDebuggerClient**\n- **detachInterface**\n- **disable**\n- **disable**\n- **disable**\n- **disablePacketFilter**\n- **doDisable**\n- **doEnable**\n- **enable**\n- **enable**\n- **enable**\n- **enablePacketFilter**\n- **executeCommand**\n- **free**\n- **freePacket**\n- **getChecksumDemand**\n- **getChecksumSupport**\n- **getCommandClient**\n- **getCommandGate**\n- **getCurrentMedium**\n- **getDebuggerLinkStatus**\n- **getFeatures**\n- **getHardwareAddress**\n- **getMaxPacketSize**\n- **getMediumDictionary**\n- **getMetaClass**\n- **getMinPacketSize**\n- **getOutputHandler**\n- **getOutputQueue**\n- **getPacketBufferConstraints**\n- **getPacketFilters**\n- **getSelectedMedium**\n- **handleClose**\n- **handleIsOpen**\n- **handleOpen**\n- **init**\n- **message**\n- **newModelString**\n- **newRevisionString**\n- **newVendorString**\n- **outputPacket**\n- **prepare**\n- **publishMediumDictionary**\n- **publishProperties**\n- **receivePacket**\n- **registerWithPolicyMaker**\n- **releaseDebuggerLock**\n- **releaseFreePackets**\n- **replaceOrCopyPacket**\n- **replacePacket**\n- **reserveDebuggerLock**\n- **selectMedium**\n- **selectMediumWithName**\n- **sendPacket**\n- **setAggressiveness**\n- **setChecksumResult**\n- **setCurrentMedium**\n- **setDebuggerMode**\n- **setHardwareAddress**\n- **setHardwareAssists**\n- **setLinkStatus**\n- **setMaxPacketSize**\n- **setSelectedMedium**\n- **start**\n- **stop**\n- **systemWillShutdown**\n\n## Type Methods\n\n- **debugLinkStatusHandler**\n- **debugRxHandler**\n- **debugSetModeHandler**\n- **debugTxHandler**\n- **executeCommandAction**\n- **handleCommand**\n\n## Interfaces\n\n- **IONetworkInterface**: Abstract class that manages the connection between an IONetworkController and the data link interface layer.\n\n## Inherits From\n\n- IOService\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Allocates a packet with a data buffer that is larger than or equal to the size specified.",
+          "name" : "allocatePacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813917-allocatepacket"
+        },
+        {
+          "description" : "Attaches a new IOKernelDebugger client object.",
+          "name" : "attachDebuggerClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813919-attachdebuggerclient"
+        },
+        {
+          "description" : "Attaches a new network interface client object.",
+          "name" : "attachInterface",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813921-attachinterface"
+        },
+        {
+          "description" : "Configures a newly created network interface object.",
+          "name" : "configureInterface",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813923-configureinterface"
+        },
+        {
+          "description" : "Returns a copy of the medium dictionary published by the driver.",
+          "name" : "copyMediumDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813924-copymediumdictionary"
+        },
+        {
+          "description" : "Allocates a new packet, containing data copied from an existing source packet.",
+          "name" : "copyPacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813925-copypacket"
+        },
+        {
+          "description" : "Creates a new network interface object.",
+          "name" : "createInterface",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813926-createinterface"
+        },
+        {
+          "description" : "Creates an IOOutputQueue to handle output packet queueing, and also to resolve contention for the controller's transmitter from multiple client threads.",
+          "name" : "createOutputQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813927-createoutputqueue"
+        },
+        {
+          "description" : "Method called by IONetworkController prior to the initial getWorkLoop() call.",
+          "name" : "createWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813928-createworkloop"
+        },
+        {
+          "description" : "Detaches an IOKernelDebugger client object.",
+          "name" : "detachDebuggerClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813929-detachdebuggerclient"
+        },
+        {
+          "description" : "Detaches an interface client object.",
+          "name" : "detachInterface",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813930-detachinterface"
+        },
+        {
+          "description" : "A disable request from an IOKernelDebugger client.",
+          "name" : "disable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813931-disable"
+        },
+        {
+          "description" : "A request from an interface client to disable the controller.",
+          "name" : "disable(IONetworkInterface *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813932-disable"
+        },
+        {
+          "description" : "Handles a disable request from a client.",
+          "name" : "disable(IOService *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813933-disable"
+        },
+        {
+          "description" : "Disables a packet filter that is currently enabled from the given filter group.",
+          "name" : "disablePacketFilter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813934-disablepacketfilter"
+        },
+        {
+          "description" : "Makes a synchronized call to disable() through executeCommand().",
+          "name" : "doDisable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813935-dodisable"
+        },
+        {
+          "description" : "Makes a synchronized call to enable() through executeCommand().",
+          "name" : "doEnable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813936-doenable"
+        },
+        {
+          "description" : "An enable request from an IOKernelDebugger client.",
+          "name" : "enable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813937-enable"
+        },
+        {
+          "description" : "A request from an interface client to enable the controller.",
+          "name" : "enable(IONetworkInterface *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813938-enable"
+        },
+        {
+          "description" : "Handles an enable request from a client.",
+          "name" : "enable(IOService *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813939-enable"
+        },
+        {
+          "description" : "Enables one of the supported packet filters from the given filter group.",
+          "name" : "enablePacketFilter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813940-enablepacketfilter"
+        },
+        {
+          "description" : "Makes a C function call through the command gate.",
+          "name" : "executeCommand",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813941-executecommand"
+        },
+        {
+          "description" : "Frees the IONetworkController object.",
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813942-free"
+        },
+        {
+          "description" : "Releases the packet given back to the free pool.",
+          "name" : "freePacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813943-freepacket"
+        },
+        {
+          "description" : "Fetches the demand for hardware checksum computation and insertion for the given packet before it is transmitted on the network.",
+          "name" : "getChecksumDemand",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813944-getchecksumdemand"
+        },
+        {
+          "description" : "Gets checksums that are supported by the network controller for the given checksum family.",
+          "name" : "getChecksumSupport",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813945-getchecksumsupport"
+        },
+        {
+          "description" : "Gets the command client object.",
+          "name" : "getCommandClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813946-getcommandclient"
+        },
+        {
+          "description" : "Gets the IOCommandGate object created by IONetworkController.",
+          "name" : "getCommandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813947-getcommandgate"
+        },
+        {
+          "description" : "Debugger polled-mode link status handler.",
+          "name" : "getDebuggerLinkStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813949-getdebuggerlinkstatus"
+        },
+        {
+          "description" : "Reports generic features supported by the controller and\/or the driver.",
+          "name" : "getFeatures",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813951-getfeatures"
+        },
+        {
+          "description" : "Gets the network controller's permanent hardware\/station address.",
+          "name" : "getHardwareAddress",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813953-gethardwareaddress"
+        },
+        {
+          "description" : "Gets the maximum packet size supported by the controller.",
+          "name" : "getMaxPacketSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813954-getmaxpacketsize"
+        },
+        {
+          "description" : "Returns the medium dictionary published by the driver.",
+          "name" : "getMediumDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813956-getmediumdictionary"
+        },
+        {
+          "description" : "Gets the minimum packet size supported by the controller.",
+          "name" : "getMinPacketSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813957-getminpacketsize"
+        },
+        {
+          "description" : "Gets the address of the method designated to handle output packets for the network controller.",
+          "name" : "getOutputHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813959-getoutputhandler"
+        },
+        {
+          "description" : "Gets the IOOutputQueue object created by createOutputQueue().",
+          "name" : "getOutputQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813960-getoutputqueue"
+        },
+        {
+          "description" : "Gets the controller's packet buffer constraints.",
+          "name" : "getPacketBufferConstraints",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813962-getpacketbufferconstraints"
+        },
+        {
+          "description" : "Gets the set of packet filters supported by the network controller for the given filter group.",
+          "name" : "getPacketFilters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813964-getpacketfilters"
+        },
+        {
+          "description" : "Gets the current selected medium.",
+          "name" : "getSelectedMedium",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813966-getselectedmedium"
+        },
+        {
+          "description" : "Handles a client close.",
+          "name" : "handleClose",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813967-handleclose"
+        },
+        {
+          "description" : "Queries whether a client has an open on the controller.",
+          "name" : "handleIsOpen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813968-handleisopen"
+        },
+        {
+          "description" : "Handles a client open.",
+          "name" : "handleOpen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813969-handleopen"
+        },
+        {
+          "description" : "Initializes the IONetworkController object.",
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813970-init"
+        },
+        {
+          "description" : "Receives messages delivered from an attached provider.",
+          "name" : "message",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813971-message"
+        },
+        {
+          "description" : "",
+          "name" : "newModelString",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813972-newmodelstring"
+        },
+        {
+          "description" : "",
+          "name" : "newRevisionString",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813973-newrevisionstring"
+        },
+        {
+          "description" : "",
+          "name" : "newVendorString",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813974-newvendorstring"
+        },
+        {
+          "description" : "Transmits an output packet.",
+          "name" : "outputPacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813975-outputpacket"
+        },
+        {
+          "description" : "Prepares the controller before an IOService is created and attached as a client.",
+          "name" : "prepare",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813976-prepare"
+        },
+        {
+          "description" : "Publishes a dictionary of IONetworkMedium objects to advertise the media selection supported by the network controller.",
+          "name" : "publishMediumDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813977-publishmediumdictionary"
+        },
+        {
+          "description" : "Publishes controller properties and capabilities.",
+          "name" : "publishProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813978-publishproperties"
+        },
+        {
+          "description" : "Debugger polled-mode receive handler.",
+          "name" : "receivePacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813979-receivepacket"
+        },
+        {
+          "description" : "Implemented by controller drivers to register with the power management policy-maker.",
+          "name" : "registerWithPolicyMaker",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813980-registerwithpolicymaker"
+        },
+        {
+          "description" : "Releases the global debugger lock.",
+          "name" : "releaseDebuggerLock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813981-releasedebuggerlock"
+        },
+        {
+          "description" : "Releases all packets held in the free packet queue.",
+          "name" : "releaseFreePackets",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813982-releasefreepackets"
+        },
+        {
+          "description" : "A helper method that combines the functionality of copyPacket() and replacePacket() to process a packet containing a received frame.",
+          "name" : "replaceOrCopyPacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813983-replaceorcopypacket"
+        },
+        {
+          "description" : "Allocates a new packet to replace an existing packet, the existing packet is then returned.",
+          "name" : "replacePacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813984-replacepacket"
+        },
+        {
+          "description" : "Takes the global debugger lock.",
+          "name" : "reserveDebuggerLock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813985-reservedebuggerlock"
+        },
+        {
+          "description" : "A client request to change the medium selection.",
+          "name" : "selectMedium",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813986-selectmedium"
+        },
+        {
+          "description" : "A client request to change the medium selection.",
+          "name" : "selectMediumWithName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813987-selectmediumwithname"
+        },
+        {
+          "description" : "Debugger polled-mode transmit handler.",
+          "name" : "sendPacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813988-sendpacket"
+        },
+        {
+          "description" : "Encodes a received packet with the checksum result reported by the hardware.",
+          "name" : "setChecksumResult",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813989-setchecksumresult"
+        },
+        {
+          "description" : "Set debugger mode for network drivers.",
+          "name" : "setDebuggerMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813990-setdebuggermode"
+        },
+        {
+          "description" : "Sets or changes the station address used by the network controller.",
+          "name" : "setHardwareAddress",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813991-sethardwareaddress"
+        },
+        {
+          "description" : "Reports the link status and the active medium.",
+          "name" : "setLinkStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813992-setlinkstatus"
+        },
+        {
+          "description" : "A client request to change the maximum packet size.",
+          "name" : "setMaxPacketSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813993-setmaxpacketsize"
+        },
+        {
+          "description" : "Designates an entry in the published medium dictionary as the current selected medium.",
+          "name" : "setSelectedMedium",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813994-setselectedmedium"
+        },
+        {
+          "description" : "Starts the network controller.",
+          "name" : "start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813995-start"
+        },
+        {
+          "description" : "Stops the network controller.",
+          "name" : "stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813996-stop"
+        },
+        {
+          "description" : "Handles system shutdown and restart notifications.",
+          "name" : "systemWillShutdown",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1813997-systemwillshutdown"
+        }
+      ],
+      "title" : "Miscellaneous"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "Action",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioworkloop\/action"
+        },
+        {
+          "description" : "",
+          "name" : "IONetworkController::Action",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/ionetworkcontroller_action"
+        }
+      ],
+      "title" : "Callbacks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "TCP\/IP checksums that may be supported by the hardware.",
+          "name" : "TCP\/IP",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/tcp_ip"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "_reserved",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/reserved"
+        }
+      ],
+      "title" : "Instance Variables"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "allocatePacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393480-allocatepacket"
+        },
+        {
+          "name" : "allocatePacketNoWait",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/4077798-allocatepacketnowait"
+        },
+        {
+          "name" : "attachDebuggerClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393516-attachdebuggerclient"
+        },
+        {
+          "name" : "attachInterface",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393375-attachinterface"
+        },
+        {
+          "name" : "configureInterface",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393437-configureinterface"
+        },
+        {
+          "name" : "copyMediumDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393394-copymediumdictionary"
+        },
+        {
+          "name" : "copyPacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393532-copypacket"
+        },
+        {
+          "name" : "createInterface",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393472-createinterface"
+        },
+        {
+          "name" : "createOutputQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393444-createoutputqueue"
+        },
+        {
+          "name" : "createWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393565-createworkloop"
+        },
+        {
+          "name" : "detachDebuggerClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393496-detachdebuggerclient"
+        },
+        {
+          "name" : "detachInterface",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393559-detachinterface"
+        },
+        {
+          "name" : "disable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393413-disable"
+        },
+        {
+          "name" : "disable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/3516610-disable"
+        },
+        {
+          "name" : "disable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/3516611-disable"
+        },
+        {
+          "name" : "disablePacketFilter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393357-disablepacketfilter"
+        },
+        {
+          "name" : "doDisable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393400-dodisable"
+        },
+        {
+          "name" : "doEnable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393406-doenable"
+        },
+        {
+          "name" : "enable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393474-enable"
+        },
+        {
+          "name" : "enable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/3516612-enable"
+        },
+        {
+          "name" : "enable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/3516613-enable"
+        },
+        {
+          "name" : "enablePacketFilter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393391-enablepacketfilter"
+        },
+        {
+          "name" : "executeCommand",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393419-executecommand"
+        },
+        {
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393352-free"
+        },
+        {
+          "name" : "freePacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393500-freepacket"
+        },
+        {
+          "name" : "getChecksumDemand",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393433-getchecksumdemand"
+        },
+        {
+          "name" : "getChecksumSupport",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393514-getchecksumsupport"
+        },
+        {
+          "name" : "getCommandClient",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393429-getcommandclient"
+        },
+        {
+          "name" : "getCommandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393539-getcommandgate"
+        },
+        {
+          "name" : "getCurrentMedium",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393383-getcurrentmedium"
+        },
+        {
+          "name" : "getDebuggerLinkStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393365-getdebuggerlinkstatus"
+        },
+        {
+          "name" : "getFeatures",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393551-getfeatures"
+        },
+        {
+          "name" : "getHardwareAddress",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393512-gethardwareaddress"
+        },
+        {
+          "name" : "getMaxPacketSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393425-getmaxpacketsize"
+        },
+        {
+          "name" : "getMediumDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393561-getmediumdictionary"
+        },
+        {
+          "name" : "getMetaClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393510-getmetaclass"
+        },
+        {
+          "name" : "getMinPacketSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393543-getminpacketsize"
+        },
+        {
+          "name" : "getOutputHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393525-getoutputhandler"
+        },
+        {
+          "name" : "getOutputQueue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393421-getoutputqueue"
+        },
+        {
+          "name" : "getPacketBufferConstraints",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393381-getpacketbufferconstraints"
+        },
+        {
+          "name" : "getPacketFilters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393465-getpacketfilters"
+        },
+        {
+          "name" : "getSelectedMedium",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393482-getselectedmedium"
+        },
+        {
+          "name" : "handleClose",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393458-handleclose"
+        },
+        {
+          "name" : "handleIsOpen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393346-handleisopen"
+        },
+        {
+          "name" : "handleOpen",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393547-handleopen"
+        },
+        {
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393333-init"
+        },
+        {
+          "name" : "message",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393387-message"
+        },
+        {
+          "name" : "newModelString",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393336-newmodelstring"
+        },
+        {
+          "name" : "newRevisionString",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393467-newrevisionstring"
+        },
+        {
+          "name" : "newVendorString",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393520-newvendorstring"
+        },
+        {
+          "name" : "outputPacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393415-outputpacket"
+        },
+        {
+          "name" : "prepare",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393567-prepare"
+        },
+        {
+          "name" : "publishMediumDictionary",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393569-publishmediumdictionary"
+        },
+        {
+          "name" : "publishProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393369-publishproperties"
+        },
+        {
+          "name" : "receivePacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393363-receivepacket"
+        },
+        {
+          "name" : "registerWithPolicyMaker",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393530-registerwithpolicymaker"
+        },
+        {
+          "name" : "releaseDebuggerLock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393545-releasedebuggerlock"
+        },
+        {
+          "name" : "releaseFreePackets",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393450-releasefreepackets"
+        },
+        {
+          "name" : "replaceOrCopyPacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393340-replaceorcopypacket"
+        },
+        {
+          "name" : "replacePacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393361-replacepacket"
+        },
+        {
+          "name" : "reserveDebuggerLock",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393529-reservedebuggerlock"
+        },
+        {
+          "name" : "selectMedium",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393563-selectmedium"
+        },
+        {
+          "name" : "selectMediumWithName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393456-selectmediumwithname"
+        },
+        {
+          "name" : "sendPacket",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393476-sendpacket"
+        },
+        {
+          "name" : "setAggressiveness",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393549-setaggressiveness"
+        },
+        {
+          "name" : "setChecksumResult",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393460-setchecksumresult"
+        },
+        {
+          "name" : "setCurrentMedium",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393523-setcurrentmedium"
+        },
+        {
+          "name" : "setDebuggerMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393338-setdebuggermode"
+        },
+        {
+          "name" : "setHardwareAddress",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393463-sethardwareaddress"
+        },
+        {
+          "name" : "setHardwareAssists",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/4155390-sethardwareassists"
+        },
+        {
+          "name" : "setLinkStatus",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393431-setlinkstatus"
+        },
+        {
+          "name" : "setMaxPacketSize",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393398-setmaxpacketsize"
+        },
+        {
+          "name" : "setSelectedMedium",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393411-setselectedmedium"
+        },
+        {
+          "name" : "start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393454-start"
+        },
+        {
+          "name" : "stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393537-stop"
+        },
+        {
+          "name" : "systemWillShutdown",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393502-systemwillshutdown"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "debugLinkStatusHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393541-debuglinkstatushandler"
+        },
+        {
+          "name" : "debugRxHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393498-debugrxhandler"
+        },
+        {
+          "name" : "debugSetModeHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393441-debugsetmodehandler"
+        },
+        {
+          "name" : "debugTxHandler",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393379-debugtxhandler"
+        },
+        {
+          "name" : "executeCommandAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393373-executecommandaction"
+        },
+        {
+          "name" : "handleCommand",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller\/1393423-handlecommand"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Abstract class that manages the connection between an IONetworkController and the data link interface layer.",
+          "name" : "IONetworkInterface",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkinterface"
+        }
+      ],
+      "title" : "Interfaces"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "IOService"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "IONetworkController",
+  "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ionetworkcontroller"
+}

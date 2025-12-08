@@ -1,0 +1,516 @@
+{
+  "abstract" : "Abstract base class for a single piece of audio hardware. The IOAudioDevice provides the central coordination point for an audio driver.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "06780d5c99b4ee2346f6084b88e322921fc6fc5c5542937360862e06ceed70e9",
+  "crawledAt" : "2025-12-07T02:14:51Z",
+  "declaration" : {
+    "code" : "class IOAudioDevice : IOService",
+    "language" : "swift"
+  },
+  "id" : "706CDA36-BB83-4DDB-AC74-BBE064BBFBC1",
+  "kind" : "class",
+  "language" : "occ",
+  "module" : "Kernel",
+  "overview" : "## Overview\n\nAn audio driver is required to subclass IOAudioDevice in order to provide working audio to the system. A single driver instance will contain a single instance of the driver's IOAudioDevice subclass. The subclass is responsible for mapping all hardware device resources from the service provider nub. It must control access to the hardware so that the hardware doesn't get into an inconsistent state. It is possible that different threads may make requests of the hardware at the same time. The IOAudioDevice superclass provides an IOWorkLoop and IOCommandGate on the IOWorkLoop through which all hardware accesses may be synchronized. All entry points to all parts of the driver controlled by the IOAudioFamily will be synchronized through this one IOWorkLoop.\n\nThe IOAudioDevice subclass is responsible for creating the rest of the pieces of the driver. It must identify and create all IOAudioEngines that are not automatically created by the system (i.e. those that are not matched and instantiated by IOKit directly).\n\nThe IOAudioDevice subclass must enumerate and create all IOAudioControls to match the device capabilities.\n\nIt must also execute control value chages when requested by the system (i.e. volume adjustments).\n\nIn order to allow sleep and wake to work on the system, the IOAudioDevice subclass is responsible for performing the necessary actions to sleep and wake its hardware (and restore necessary state on wake).\n\nThe IOAudioDevice class provides timer services that allow different elements in the audio driver to receive timer notifications as needed. These services were designed with the idea that most timed events in a typical audio driver need to be done at least as often as a certain interval. Further, it is designed with the idea that being called more often than the specified interval doesn't hurt anything - and in fact may help. With this in mind, the timer services provided by the IOAudioDevice class allow different targets to register for timer callbacks at least as often as the specified interval. The actual interval will be the smallest of the intervals of all of the callbacks. This way, we avoid the overhead of having many timers in a single audio device. As an example, each output IOAudioEngine has a timer to run the erase head. It doesn't hurt to have the erase head run more often. Also, a typical IOAudioDevice subclass may need to run a timer to check for device state changes (e.g. jack insertions).\n\nThere are a number of strings passed from the driver to the CoreAudio.framework and then into applications. All of those strings should be localized by the driver. In order to do that the kext bundle should have localized string files following the macOS localization instructions. The IOAudioDevice should contain a property with the name of the bundle\/kext that contains the localized string resources. To do that, the driver's personality in the bundle resources could have a property named 'IOAudioDeviceLocalizedBundle' with the path of the bundle\/kext relative to '\/System\/Library\/Extensions'. It could also be set by the IOAudioDevice subclass in its initHardware() function. To do so, call setProperty(kIOAudioDeviceLocalizedBundleKey, \"Driver.kext\").\n\nIn a typical driver, the IOAudioDevice subclass will implement initHardware() to perform the hardware initialization and driver construction. Within that initialization it must create at least one IOAudioEngine instance and activate it. In order to activate a new IOAudioEngine activateAudioEngine() should be called for each one. It must create the IOAudioControls matching the hardware capabilities to allow the system to set volume, mute and input selection. To add those controls to the driver, each control should be attached to the IOAudioEngine to which it applies by calling addDefaultAudioControl() on the IOAudioEngine. During initialization it should also call setDeviceName(), setDeviceShortName() and setManufacturerName() with localized strings representing each of the attributes.\n\nIf the driver is to work properly after sleep\/wake, it must implement performPowerStateChange() and deal with the sleep and wake transitions. It may also deal with the idle state transitions to turn off device power when it isn't in use (especially useful for devices attached to a portable running on battery power).",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\ncrawled: 2025-12-07T02:14:51Z\n---\n\n# IOAudioDevice\n\n**Class**\n\nAbstract base class for a single piece of audio hardware. The IOAudioDevice provides the central coordination point for an audio driver.\n\n## Declaration\n\n```swift\nclass IOAudioDevice : IOService\n```\n\n## Overview\n\nAn audio driver is required to subclass IOAudioDevice in order to provide working audio to the system. A single driver instance will contain a single instance of the driver's IOAudioDevice subclass. The subclass is responsible for mapping all hardware device resources from the service provider nub. It must control access to the hardware so that the hardware doesn't get into an inconsistent state. It is possible that different threads may make requests of the hardware at the same time. The IOAudioDevice superclass provides an IOWorkLoop and IOCommandGate on the IOWorkLoop through which all hardware accesses may be synchronized. All entry points to all parts of the driver controlled by the IOAudioFamily will be synchronized through this one IOWorkLoop.\n\nThe IOAudioDevice subclass is responsible for creating the rest of the pieces of the driver. It must identify and create all IOAudioEngines that are not automatically created by the system (i.e. those that are not matched and instantiated by IOKit directly).\n\nThe IOAudioDevice subclass must enumerate and create all IOAudioControls to match the device capabilities.\n\nIt must also execute control value chages when requested by the system (i.e. volume adjustments).\n\nIn order to allow sleep and wake to work on the system, the IOAudioDevice subclass is responsible for performing the necessary actions to sleep and wake its hardware (and restore necessary state on wake).\n\nThe IOAudioDevice class provides timer services that allow different elements in the audio driver to receive timer notifications as needed. These services were designed with the idea that most timed events in a typical audio driver need to be done at least as often as a certain interval. Further, it is designed with the idea that being called more often than the specified interval doesn't hurt anything - and in fact may help. With this in mind, the timer services provided by the IOAudioDevice class allow different targets to register for timer callbacks at least as often as the specified interval. The actual interval will be the smallest of the intervals of all of the callbacks. This way, we avoid the overhead of having many timers in a single audio device. As an example, each output IOAudioEngine has a timer to run the erase head. It doesn't hurt to have the erase head run more often. Also, a typical IOAudioDevice subclass may need to run a timer to check for device state changes (e.g. jack insertions).\n\nThere are a number of strings passed from the driver to the CoreAudio.framework and then into applications. All of those strings should be localized by the driver. In order to do that the kext bundle should have localized string files following the macOS localization instructions. The IOAudioDevice should contain a property with the name of the bundle\/kext that contains the localized string resources. To do that, the driver's personality in the bundle resources could have a property named 'IOAudioDeviceLocalizedBundle' with the path of the bundle\/kext relative to '\/System\/Library\/Extensions'. It could also be set by the IOAudioDevice subclass in its initHardware() function. To do so, call setProperty(kIOAudioDeviceLocalizedBundleKey, \"Driver.kext\").\n\nIn a typical driver, the IOAudioDevice subclass will implement initHardware() to perform the hardware initialization and driver construction. Within that initialization it must create at least one IOAudioEngine instance and activate it. In order to activate a new IOAudioEngine activateAudioEngine() should be called for each one. It must create the IOAudioControls matching the hardware capabilities to allow the system to set volume, mute and input selection. To add those controls to the driver, each control should be attached to the IOAudioEngine to which it applies by calling addDefaultAudioControl() on the IOAudioEngine. During initialization it should also call setDeviceName(), setDeviceShortName() and setManufacturerName() with localized strings representing each of the attributes.\n\nIf the driver is to work properly after sleep\/wake, it must implement performPowerStateChange() and deal with the sleep and wake transitions. It may also deal with the idle state transitions to turn off device power when it isn't in use (especially useful for devices attached to a portable running on battery power).\n\n## Miscellaneous\n\n- **activateAudioEngine(IOAudioEngine *)**: This simply calls activateAudioEngine(IOAudioEngine *audioEngine, bool shouldStartAudioEngine) with a value of true for shouldStartAudioEngine.\n- **activateAudioEngine(IOAudioEngine *, bool)**: This is called to add a new IOAudioEngine object to the IOAudioDevice.\n- **addTimerEvent**: Adds a TimerEvent callback for the given target called at least as often as specified in interval.\n- **attachAudioPort**: Adds the port to the IOAudioDevice's list of ports and attaches the port to its parent and attaches the child to the port.\n- **audioEngineStarting**: Called by IOAudioEngine when it is starting up\n- **audioEngineStopped**: Called by IOAudioEngine when it has stopped\n- **completePowerStateChange**: Called when a power state change is complete\n- **completePowerStateChangeAction**: IOCommandGate Action which calls protectedCompletePowerStateChange() while holding the IOCommandGate.\n- **deactivateAllAudioEngines**: Deactivates all of the audio engines in the device.\n- **detachAllAudioPorts**: Deactivates all of the ports in the device.\n- **dispatchTimerEvents**: Called by timerFired() to cause the timer event callbacks to be called.\n- **flushAudioControls**: Forces each IOAudioControl in the driver to have its value flushed out to the hardware. That will cause either the IOAudioControl's ValueChangeHandler to be called.\n- **free**: Frees resources used by the IOAudioDevice instance\n- **getCommandGate**: Returns the IOCommandGate for this IOAudioDevice\n- **getPendingPowerState**: Returns the pending power state if a state change is in progress. Otherwise it returns the current power state change.\n- **getPowerState**: Returns the current power state (the old power state if a change is in progress).\n- **getWorkLoop**: Returns the IOWorkLoop for the driver\n- **init**: Initialize a newly created instance of IOAudioDevice.\n- **initHardware**: This function is called by start() to provide a convenient place for the subclass to perform its initialization.\n- **initiatePowerStateChange**: Called internally to execute a power state change\n- **performPowerStateChange**: This function is called by the IOAudioDevice when a power state change is needed.\n- **protectedCompletePowerStateChange**: Called on the IOWorkLoop when a power state change is complete.\n- **protectedSetPowerState**: Called by setPowerStateAction() to deal with a power state change from the IOService power management facility.\n- **removeAllTimerEvents**: Removes all timer events and stops the timer\n- **removeTimerEvent**: Removes the timer event for the given target.\n- **setConfigurationApplicationBundle**: This function is to be called if an external configuration application is available to set which application to launch.\n- **setDeviceCanBeDefault**: This function is to be called to tell CoreAudio if this device shouldn't be a default device.\n- **setDeviceName**: Sets the name of the device\n- **setDeviceShortName**: Sets the short name of the device\n- **setFamilyManagePower**: Called set whether or not the family should manage the device power throught the IOService power management APIs.\n- **setIdleAudioSleepTime**: This function is to be called by a driver that doesn't want to be told about the audio going idle immediately, but at some point in the future.\n- **setManufacturerName**: Sets the manufacturer name of the device\n- **setPowerState**: Called by the power management system in IOService when the power state of this service needs to change.\n- **setPowerStateAction**: IOCommandGate Action which calls protectedSetPowerState() while holding the IOCommandGate\n- **start**: This function is called automatically by the system to tell the driver to start vending services to the rest of the system.\n- **stop**: This is responsible for stopping the device after the system is done with it (or if the device is removed from the system).\n- **timerFired**: Internal static function called when the timer fires.\n- **waitForPendingPowerStateChange**: Called internally to wait until a pending power state change is complete.\n\n## Callbacks\n\n- **TimerEvent**: Generic timer event callback for IOAudioDevice timer targets\n\n## Constants\n\n- **gIOAudioPlane**\n\n## Instance Variables\n\n- **workLoop**\n- **timerEventSource**\n- **timerEvents**: The set of timer events in use by the device.\n- **pendingPowerState**\n- **numRunningAudioEngines**\n- **minimumInterval**\n- **familyManagePower**\n- **duringStartup**\n- **currentPowerState**\n- **commandGate**\n- **audioPorts**\n- **audioEngines**\n- **asyncPowerStateChangeInProgress**\n\n## Instance Methods\n\n- **activateAudioEngine**\n- **activateAudioEngine**\n- **addTimerEvent**\n- **attachAudioPort**\n- **audioEngineStarting**\n- **audioEngineStopped**\n- **completePowerStateChange**\n- **deactivateAllAudioEngines**\n- **detachAllAudioPorts**\n- **dispatchTimerEvents**\n- **flushAudioControls**\n- **free**\n- **getCommandGate**\n- **getMetaClass**\n- **getPendingPowerState**\n- **getPowerState**\n- **getWorkLoop**\n- **init**\n- **initHardware**\n- **initiatePowerStateChange**\n- **performPowerStateChange**\n- **protectedCompletePowerStateChange**\n- **protectedSetPowerState**\n- **removeAllTimerEvents**\n- **removeTimerEvent**\n- **scheduleIdleAudioSleep**\n- **setAggressiveness**\n- **setConfigurationApplicationBundle**\n- **setDeviceCanBeDefault**\n- **setDeviceModelName**\n- **setDeviceName**\n- **setDeviceShortName**\n- **setDeviceTransportType**\n- **setFamilyManagePower**\n- **setIdleAudioSleepTime**\n- **setManufacturerName**\n- **setPowerState**\n- **start**\n- **stop**\n- **waitForPendingPowerStateChange**\n- **willTerminate**\n\n## Type Methods\n\n- **completePowerStateChangeAction**\n- **idleAudioSleepHandlerTimer**\n- **setPowerStateAction**\n- **timerFired**\n\n## Inherits From\n\n- IOService\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "This simply calls activateAudioEngine(IOAudioEngine *audioEngine, bool shouldStartAudioEngine) with a value of true for shouldStartAudioEngine.",
+          "name" : "activateAudioEngine(IOAudioEngine *)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811648-activateaudioengine"
+        },
+        {
+          "description" : "This is called to add a new IOAudioEngine object to the IOAudioDevice.",
+          "name" : "activateAudioEngine(IOAudioEngine *, bool)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811655-activateaudioengine"
+        },
+        {
+          "description" : "Adds a TimerEvent callback for the given target called at least as often as specified in interval.",
+          "name" : "addTimerEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811662-addtimerevent"
+        },
+        {
+          "description" : "Adds the port to the IOAudioDevice's list of ports and attaches the port to its parent and attaches the child to the port.",
+          "name" : "attachAudioPort",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811666-attachaudioport"
+        },
+        {
+          "description" : "Called by IOAudioEngine when it is starting up",
+          "name" : "audioEngineStarting",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811673-audioenginestarting"
+        },
+        {
+          "description" : "Called by IOAudioEngine when it has stopped",
+          "name" : "audioEngineStopped",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811679-audioenginestopped"
+        },
+        {
+          "description" : "Called when a power state change is complete",
+          "name" : "completePowerStateChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811685-completepowerstatechange"
+        },
+        {
+          "description" : "IOCommandGate Action which calls protectedCompletePowerStateChange() while holding the IOCommandGate.",
+          "name" : "completePowerStateChangeAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811692-completepowerstatechangeaction"
+        },
+        {
+          "description" : "Deactivates all of the audio engines in the device.",
+          "name" : "deactivateAllAudioEngines",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811697-deactivateallaudioengines"
+        },
+        {
+          "description" : "Deactivates all of the ports in the device.",
+          "name" : "detachAllAudioPorts",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811704-detachallaudioports"
+        },
+        {
+          "description" : "Called by timerFired() to cause the timer event callbacks to be called.",
+          "name" : "dispatchTimerEvents",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811710-dispatchtimerevents"
+        },
+        {
+          "description" : "Forces each IOAudioControl in the driver to have its value flushed out to the hardware. That will cause either the IOAudioControl's ValueChangeHandler to be called.",
+          "name" : "flushAudioControls",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811716-flushaudiocontrols"
+        },
+        {
+          "description" : "Frees resources used by the IOAudioDevice instance",
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811723-free"
+        },
+        {
+          "description" : "Returns the IOCommandGate for this IOAudioDevice",
+          "name" : "getCommandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811730-getcommandgate"
+        },
+        {
+          "description" : "Returns the pending power state if a state change is in progress. Otherwise it returns the current power state change.",
+          "name" : "getPendingPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811740-getpendingpowerstate"
+        },
+        {
+          "description" : "Returns the current power state (the old power state if a change is in progress).",
+          "name" : "getPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811749-getpowerstate"
+        },
+        {
+          "description" : "Returns the IOWorkLoop for the driver",
+          "name" : "getWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811757-getworkloop"
+        },
+        {
+          "description" : "Initialize a newly created instance of IOAudioDevice.",
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811765-init"
+        },
+        {
+          "description" : "This function is called by start() to provide a convenient place for the subclass to perform its initialization.",
+          "name" : "initHardware",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811773-inithardware"
+        },
+        {
+          "description" : "Called internally to execute a power state change",
+          "name" : "initiatePowerStateChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811782-initiatepowerstatechange"
+        },
+        {
+          "description" : "This function is called by the IOAudioDevice when a power state change is needed.",
+          "name" : "performPowerStateChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811791-performpowerstatechange"
+        },
+        {
+          "description" : "Called on the IOWorkLoop when a power state change is complete.",
+          "name" : "protectedCompletePowerStateChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811798-protectedcompletepowerstatechang"
+        },
+        {
+          "description" : "Called by setPowerStateAction() to deal with a power state change from the IOService power management facility.",
+          "name" : "protectedSetPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811807-protectedsetpowerstate"
+        },
+        {
+          "description" : "Removes all timer events and stops the timer",
+          "name" : "removeAllTimerEvents",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811813-removealltimerevents"
+        },
+        {
+          "description" : "Removes the timer event for the given target.",
+          "name" : "removeTimerEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811823-removetimerevent"
+        },
+        {
+          "description" : "This function is to be called if an external configuration application is available to set which application to launch.",
+          "name" : "setConfigurationApplicationBundle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811829-setconfigurationapplicationbundl"
+        },
+        {
+          "description" : "This function is to be called to tell CoreAudio if this device shouldn't be a default device.",
+          "name" : "setDeviceCanBeDefault",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811833-setdevicecanbedefault"
+        },
+        {
+          "description" : "Sets the name of the device",
+          "name" : "setDeviceName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811841-setdevicename"
+        },
+        {
+          "description" : "Sets the short name of the device",
+          "name" : "setDeviceShortName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811844-setdeviceshortname"
+        },
+        {
+          "description" : "Called set whether or not the family should manage the device power throught the IOService power management APIs.",
+          "name" : "setFamilyManagePower",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811848-setfamilymanagepower"
+        },
+        {
+          "description" : "This function is to be called by a driver that doesn't want to be told about the audio going idle immediately, but at some point in the future.",
+          "name" : "setIdleAudioSleepTime",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811852-setidleaudiosleeptime"
+        },
+        {
+          "description" : "Sets the manufacturer name of the device",
+          "name" : "setManufacturerName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811862-setmanufacturername"
+        },
+        {
+          "description" : "Called by the power management system in IOService when the power state of this service needs to change.",
+          "name" : "setPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811867-setpowerstate"
+        },
+        {
+          "description" : "IOCommandGate Action which calls protectedSetPowerState() while holding the IOCommandGate",
+          "name" : "setPowerStateAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811878-setpowerstateaction"
+        },
+        {
+          "description" : "This function is called automatically by the system to tell the driver to start vending services to the rest of the system.",
+          "name" : "start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811891-start"
+        },
+        {
+          "description" : "This is responsible for stopping the device after the system is done with it (or if the device is removed from the system).",
+          "name" : "stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811898-stop"
+        },
+        {
+          "description" : "Internal static function called when the timer fires.",
+          "name" : "timerFired",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811908-timerfired"
+        },
+        {
+          "description" : "Called internally to wait until a pending power state change is complete.",
+          "name" : "waitForPendingPowerStateChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1811913-waitforpendingpowerstatechange"
+        }
+      ],
+      "title" : "Miscellaneous"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Generic timer event callback for IOAudioDevice timer targets",
+          "name" : "TimerEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/timerevent"
+        }
+      ],
+      "title" : "Callbacks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "gIOAudioPlane",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/gioaudioplane"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "workLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/workloop"
+        },
+        {
+          "description" : "",
+          "name" : "timerEventSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/timereventsource"
+        },
+        {
+          "description" : "The set of timer events in use by the device.",
+          "name" : "timerEvents",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/timerevents"
+        },
+        {
+          "description" : "",
+          "name" : "pendingPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/pendingpowerstate"
+        },
+        {
+          "description" : "",
+          "name" : "numRunningAudioEngines",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/numrunningaudioengines"
+        },
+        {
+          "description" : "",
+          "name" : "minimumInterval",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/minimuminterval"
+        },
+        {
+          "description" : "",
+          "name" : "familyManagePower",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/familymanagepower"
+        },
+        {
+          "description" : "",
+          "name" : "duringStartup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/duringstartup"
+        },
+        {
+          "description" : "",
+          "name" : "currentPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/currentpowerstate"
+        },
+        {
+          "description" : "",
+          "name" : "commandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/commandgate"
+        },
+        {
+          "description" : "",
+          "name" : "audioPorts",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/audioports"
+        },
+        {
+          "description" : "",
+          "name" : "audioEngines",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/audioengines"
+        },
+        {
+          "description" : "",
+          "name" : "asyncPowerStateChangeInProgress",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/asyncpowerstatechangeinprogress"
+        }
+      ],
+      "title" : "Instance Variables"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "activateAudioEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557038-activateaudioengine"
+        },
+        {
+          "name" : "activateAudioEngine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/3516521-activateaudioengine"
+        },
+        {
+          "name" : "addTimerEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557039-addtimerevent"
+        },
+        {
+          "name" : "attachAudioPort",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557022-attachaudioport"
+        },
+        {
+          "name" : "audioEngineStarting",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557054-audioenginestarting"
+        },
+        {
+          "name" : "audioEngineStopped",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557033-audioenginestopped"
+        },
+        {
+          "name" : "completePowerStateChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557032-completepowerstatechange"
+        },
+        {
+          "name" : "deactivateAllAudioEngines",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557057-deactivateallaudioengines"
+        },
+        {
+          "name" : "detachAllAudioPorts",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557020-detachallaudioports"
+        },
+        {
+          "name" : "dispatchTimerEvents",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557025-dispatchtimerevents"
+        },
+        {
+          "name" : "flushAudioControls",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557024-flushaudiocontrols"
+        },
+        {
+          "name" : "free",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557026-free"
+        },
+        {
+          "name" : "getCommandGate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557056-getcommandgate"
+        },
+        {
+          "name" : "getMetaClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557042-getmetaclass"
+        },
+        {
+          "name" : "getPendingPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557015-getpendingpowerstate"
+        },
+        {
+          "name" : "getPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557055-getpowerstate"
+        },
+        {
+          "name" : "getWorkLoop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557016-getworkloop"
+        },
+        {
+          "name" : "init",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557036-init"
+        },
+        {
+          "name" : "initHardware",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557012-inithardware"
+        },
+        {
+          "name" : "initiatePowerStateChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557053-initiatepowerstatechange"
+        },
+        {
+          "name" : "performPowerStateChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557035-performpowerstatechange"
+        },
+        {
+          "name" : "protectedCompletePowerStateChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557045-protectedcompletepowerstatechang"
+        },
+        {
+          "name" : "protectedSetPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557029-protectedsetpowerstate"
+        },
+        {
+          "name" : "removeAllTimerEvents",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557021-removealltimerevents"
+        },
+        {
+          "name" : "removeTimerEvent",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557047-removetimerevent"
+        },
+        {
+          "name" : "scheduleIdleAudioSleep",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557059-scheduleidleaudiosleep"
+        },
+        {
+          "name" : "setAggressiveness",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557048-setaggressiveness"
+        },
+        {
+          "name" : "setConfigurationApplicationBundle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557037-setconfigurationapplicationbundl"
+        },
+        {
+          "name" : "setDeviceCanBeDefault",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557030-setdevicecanbedefault"
+        },
+        {
+          "name" : "setDeviceModelName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557034-setdevicemodelname"
+        },
+        {
+          "name" : "setDeviceName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557041-setdevicename"
+        },
+        {
+          "name" : "setDeviceShortName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557028-setdeviceshortname"
+        },
+        {
+          "name" : "setDeviceTransportType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557051-setdevicetransporttype"
+        },
+        {
+          "name" : "setFamilyManagePower",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557050-setfamilymanagepower"
+        },
+        {
+          "name" : "setIdleAudioSleepTime",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557044-setidleaudiosleeptime"
+        },
+        {
+          "name" : "setManufacturerName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557019-setmanufacturername"
+        },
+        {
+          "name" : "setPowerState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557040-setpowerstate"
+        },
+        {
+          "name" : "start",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557018-start"
+        },
+        {
+          "name" : "stop",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557013-stop"
+        },
+        {
+          "name" : "waitForPendingPowerStateChange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557043-waitforpendingpowerstatechange"
+        },
+        {
+          "name" : "willTerminate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557049-willterminate"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "completePowerStateChangeAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557052-completepowerstatechangeaction"
+        },
+        {
+          "name" : "idleAudioSleepHandlerTimer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557058-idleaudiosleephandlertimer"
+        },
+        {
+          "name" : "setPowerStateAction",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557023-setpowerstateaction"
+        },
+        {
+          "name" : "timerFired",
+          "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice\/1557046-timerfired"
+        }
+      ],
+      "title" : "Type Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "IOService"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "IOAudioDevice",
+  "url" : "https:\/\/developer.apple.com\/documentation\/kernel\/ioaudiodevice"
+}

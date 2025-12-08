@@ -1,0 +1,43 @@
+{
+  "abstract" : "Optimize the performance of real-time audio threads that run in sync with the I\/O thread by adding them to the audio device workgroup.",
+  "codeExamples" : [
+    {
+      "code" : "#import <AudioToolbox\/AudioToolbox.h>\n \n\/\/ Get the workgroup from the AUHal.\nos_workgroup_t _Nonnull workgroup = auHal.osWorkgroup;\n\n\/\/ An opaque join token that the client needs to pass to join and leave a workgroup.\nos_workgroup_join_token_s joinToken;\n\nvoid realtimeThreadFunction(os_workgroup_t workgroup) {\n    \n    \/\/ Join this thread to the workgroup.\n    const int result = os_workgroup_join(workgroup, &joinToken);\n    if (result == 0) {\n        \/\/ Success.\n    }\n    else if (result == EALREADY) {\n        \/\/ The thread is already part of a workgroup that can't be\n        \/\/ nested in the the specified workgroup.\n        return;\n    }\n    else if (result == EINVAL) {\n        \/\/ The workgroup has been canceled.\n        return;\n    }\n    \n    \/\/ Work cycle.\n    while (threadShouldRun) {\n        \/\/ Typically, wait on a semaphore.\n        waitForWork();\n        \/\/ The controlling thread signaled this thread to stop.\n        if (threadShouldRun) {\n            performCustomAudioDSPWorkUnit();\n            \/\/ Typically, signal a semaphore.\n            signalWorkComplete();\n        }\n    }\n    \n    \/\/ Before exiting the thread, leave the workgroup.\n    os_workgroup_leave(workgroup, &joinToken);\n}",
+      "language" : "objc"
+    }
+  ],
+  "contentHash" : "c497d89e6dd761c8ce5cb56820ede1ad93c437d22d89cd92998cf4ceff430051",
+  "crawledAt" : "2025-12-06T07:39:17Z",
+  "id" : "D3E9B9A1-8BA9-453C-8CAF-6CCA28DBBE9B",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Audio Toolbox",
+  "overview" : "## Overview\n\nIf your app creates one or more auxiliary real-time threads that run in sync with the audio server I\/O thread, join them to its audio workgroup. Doing so informs the system that these threads are rendering to the same deadline, which helps it optimize performance.\n\n### Add Your Threads to the Audio Device Workgroup\n\nBegin by retrieving the audio device’s workgroup, so you can join your threads to it. Retrieve it from the I\/O Audio Unit (AUHAL or AURemoteIO) using either the [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/kAudioOutputUnitProperty_OSWorkgroup] property for AUv2, or the [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AUAudioUnit] [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AUAudioUnit\/osWorkgroup] property for AUv3. In macOS, you can also get it directly from the audio device by using the HAL API. Then, in your real-time thread, call [doc:\/\/com.apple.documentation\/documentation\/os\/os_workgroup_join] to join it to the workgroup, and call [doc:\/\/com.apple.documentation\/documentation\/os\/os_workgroup_leave] when you’ve finished your work, as shown in the example below.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AudioToolbox\/adding-parallel-real-time-threads-to-audio-workgroups\ncrawled: 2025-12-06T07:39:17Z\n---\n\n# Adding Parallel Real-Time Threads to Audio Workgroups\n\n**Article**\n\nOptimize the performance of real-time audio threads that run in sync with the I\/O thread by adding them to the audio device workgroup.\n\n## Overview\n\nIf your app creates one or more auxiliary real-time threads that run in sync with the audio server I\/O thread, join them to its audio workgroup. Doing so informs the system that these threads are rendering to the same deadline, which helps it optimize performance.\n\n### Add Your Threads to the Audio Device Workgroup\n\nBegin by retrieving the audio device’s workgroup, so you can join your threads to it. Retrieve it from the I\/O Audio Unit (AUHAL or AURemoteIO) using either the [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/kAudioOutputUnitProperty_OSWorkgroup] property for AUv2, or the [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AUAudioUnit] [doc:\/\/com.apple.audiotoolbox\/documentation\/AudioToolbox\/AUAudioUnit\/osWorkgroup] property for AUv3. In macOS, you can also get it directly from the audio device by using the HAL API. Then, in your real-time thread, call [doc:\/\/com.apple.documentation\/documentation\/os\/os_workgroup_join] to join it to the workgroup, and call [doc:\/\/com.apple.documentation\/documentation\/os\/os_workgroup_leave] when you’ve finished your work, as shown in the example below.\n\n```objc\n#import <AudioToolbox\/AudioToolbox.h>\n \n\/\/ Get the workgroup from the AUHal.\nos_workgroup_t _Nonnull workgroup = auHal.osWorkgroup;\n\n\/\/ An opaque join token that the client needs to pass to join and leave a workgroup.\nos_workgroup_join_token_s joinToken;\n\nvoid realtimeThreadFunction(os_workgroup_t workgroup) {\n    \n    \/\/ Join this thread to the workgroup.\n    const int result = os_workgroup_join(workgroup, &joinToken);\n    if (result == 0) {\n        \/\/ Success.\n    }\n    else if (result == EALREADY) {\n        \/\/ The thread is already part of a workgroup that can't be\n        \/\/ nested in the the specified workgroup.\n        return;\n    }\n    else if (result == EINVAL) {\n        \/\/ The workgroup has been canceled.\n        return;\n    }\n    \n    \/\/ Work cycle.\n    while (threadShouldRun) {\n        \/\/ Typically, wait on a semaphore.\n        waitForWork();\n        \/\/ The controlling thread signaled this thread to stop.\n        if (threadShouldRun) {\n            performCustomAudioDSPWorkUnit();\n            \/\/ Typically, signal a semaphore.\n            signalWorkComplete();\n        }\n    }\n    \n    \/\/ Before exiting the thread, leave the workgroup.\n    os_workgroup_leave(workgroup, &joinToken);\n}\n```\n\n## Essentials\n\n- **Understanding Audio Workgroups**: Learn how to optimize real-time rendering performance with the Audio Workgroups API.\n- **Adding Asynchronous Real-Time Threads to Audio Workgroups**: Optimize system performance by adding real-time audio threads that run asynchronously to the I\/O thread to custom audio workgroups.\n- **Adding Audio Unit Auxiliary Real-Time Threads to Audio Workgroups**: If your Audio Unit plug-in creates auxiliary real-time rendering threads, add them to the host app’s audio workgroup so the system can schedule them appropriately.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how to optimize real-time rendering performance with the Audio Workgroups API.",
+          "name" : "Understanding Audio Workgroups",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/understanding-audio-workgroups"
+        },
+        {
+          "description" : "Optimize system performance by adding real-time audio threads that run asynchronously to the I\/O thread to custom audio workgroups.",
+          "name" : "Adding Asynchronous Real-Time Threads to Audio Workgroups",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/adding-asynchronous-real-time-threads-to-audio-workgroups"
+        },
+        {
+          "description" : "If your Audio Unit plug-in creates auxiliary real-time rendering threads, add them to the host app’s audio workgroup so the system can schedule them appropriately.",
+          "name" : "Adding Audio Unit Auxiliary Real-Time Threads to Audio Workgroups",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/adding-audio-unit-auxiliary-real-time-threads-to-audio-workgroups"
+        }
+      ],
+      "title" : "Essentials"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Adding Parallel Real-Time Threads to Audio Workgroups",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AudioToolbox\/adding-parallel-real-time-threads-to-audio-workgroups"
+}

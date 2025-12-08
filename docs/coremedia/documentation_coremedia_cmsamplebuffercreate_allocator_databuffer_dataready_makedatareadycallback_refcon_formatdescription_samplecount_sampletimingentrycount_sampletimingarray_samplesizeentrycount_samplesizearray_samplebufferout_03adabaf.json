@@ -1,0 +1,89 @@
+{
+  "abstract" : "Creates a sample buffer with a callback to make the data ready for use.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "e0aea537cde04c336bb155daf90e039b3d5b26dc537eb5536f6e47d16fc4c67e",
+  "crawledAt" : "2025-12-08T00:32:49Z",
+  "declaration" : {
+    "code" : "func CMSampleBufferCreate(allocator: CFAllocator?, dataBuffer: CMBlockBuffer?, dataReady: Bool, makeDataReadyCallback: CMSampleBufferMakeDataReadyCallback?, refcon makeDataReadyRefcon: UnsafeMutableRawPointer?, formatDescription: CMFormatDescription?, sampleCount numSamples: CMItemCount, sampleTimingEntryCount numSampleTimingEntries: CMItemCount, sampleTimingArray: UnsafePointer<CMSampleTimingInfo>?, sampleSizeEntryCount numSampleSizeEntries: CMItemCount, sampleSizeArray: UnsafePointer<Int>?, sampleBufferOut: UnsafeMutablePointer<CMSampleBuffer?>) -> OSStatus",
+    "language" : "swift"
+  },
+  "id" : "6024B4C1-BFB4-4126-AA73-8F598518122E",
+  "kind" : "function",
+  "language" : "swift",
+  "module" : "Core Media",
+  "overview" : "## Return Value\n\nA result code. See [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/sample-buffer-errors].\n\n## Discussion\n\nArray parameters (`sampleSizeArray`, `sampleTimingArray`) should have only one element if that same element applies to all samples. All parameters are copied. On return, the caller can release them, free them or reuse them. On return, the caller owns the returned `CMSampleBuffer`, and must release it when done with it.\n\nExample of usage for in-display-order video frames:\n\nExample of usage for video frames in out-of-display-order :\n\nExample of usage for compressed audio:\n\nExample of usage for uncompressed interleaved audio:\n\nExample of usage for uncompressed non-interleaved audio:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreate(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)\ncrawled: 2025-12-08T00:32:49Z\n---\n\n# CMSampleBufferCreate(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)\n\n**Function**\n\nCreates a sample buffer with a callback to make the data ready for use.\n\n## Declaration\n\n```swift\nfunc CMSampleBufferCreate(allocator: CFAllocator?, dataBuffer: CMBlockBuffer?, dataReady: Bool, makeDataReadyCallback: CMSampleBufferMakeDataReadyCallback?, refcon makeDataReadyRefcon: UnsafeMutableRawPointer?, formatDescription: CMFormatDescription?, sampleCount numSamples: CMItemCount, sampleTimingEntryCount numSampleTimingEntries: CMItemCount, sampleTimingArray: UnsafePointer<CMSampleTimingInfo>?, sampleSizeEntryCount numSampleSizeEntries: CMItemCount, sampleSizeArray: UnsafePointer<Int>?, sampleBufferOut: UnsafeMutablePointer<CMSampleBuffer?>) -> OSStatus\n```\n\n## Parameters\n\n- **allocator**: The allocator to use for allocating the `CMSampleBuffer` object. Pass `kCFAllocatorDefault` to use the default allocator.\n- **dataBuffer**: `CMBlockBuffer` for the media data. This can be `NULL`, a `CMBlockBuffer` with no backing memory, a `CMBlockBuffer` with backing memory but no data yet, or a `CMBlockBuffer` that already contains the media data. If `CMBlockBuffer` contains the media data, `dataReady` should be `true`. The Boolean `dataReady` should also be `true` if the `dataBuffer` is `Null` and `numSamples` is 0.\n- **dataReady**: Indicates whether or not the block buffer already contains the media data.\n- **makeDataReadyCallback**: Callback that `CMSampleBufferMakeDataReady` should call to make the data ready. Can be `NULL`.\n- **makeDataReadyRefcon**: Refcon `CMSampleBufferMakeDataReady` should pass to the callback.\n- **formatDescription**: A description of the media data’s format. Can be `NULL`.\n- **numSamples**: Number of samples in the `CMSampleBuffer`. Can be zero.\n- **numSampleTimingEntries**: Number of entries in `sampleTimingArray`. Must be 0, 1, or `numSamples`.\n- **sampleTimingArray**: Array of `CMSampleTimingInfo` structs, one struct per sample. If all samples have the same duration and are in presentation order, you can pass a single `CMSampleTimingInfo` struct with duration set to the duration of one sample, `presentationTimeStamp` set to the presentation time of the numerically earliest sample, and `decodeTimeStamp` set to `kCMTimeInvalid`. Behavior is undefined if samples in a `CMSampleBuffer` (or even in multiple buffers in the same stream) have the same `presentationTimeStamp`. Can be `NULL`.\n- **numSampleSizeEntries**: Number of entries in `sampleSizeArray`. Must be 0, 1, or `numSamples`.\n- **sampleSizeArray**: Array of size entries, one entry per sample. If all samples have the same size, you can pass a single size entry containing the size of one sample. Can be `NULL`. Must be `NULL` if the samples are non-contiguous in the buffer (for example, non-interleaved audio, where the channel values for a single sample are scattered through the buffer).\n- **sampleBufferOut**: On output, points to the newly created `CMSampleBuffer`.\n\n## Return Value\n\nA result code. See [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/sample-buffer-errors].\n\n## Discussion\n\nArray parameters (`sampleSizeArray`, `sampleTimingArray`) should have only one element if that same element applies to all samples. All parameters are copied. On return, the caller can release them, free them or reuse them. On return, the caller owns the returned `CMSampleBuffer`, and must release it when done with it.\n\nExample of usage for in-display-order video frames:\n\n- dataBuffer: contains 7 Motion JPEG frames\n- dataFormatDescription: describes Motion JPEG video\n- dataFormatDescription: describes Motion JPEG video\n- numSamples: 7\n- numSampleTimingEntries: 1\n- sampleTimingArray: one entry = {duration = 1001\/30000, presentationTimeStamp = 0\/30000, decodeTimeStamp = invalid }\n- numSampleSizeEntries: 7\n- sampleSizeArray: [105840, 104456, 103464, 116460, 100412, 94808, 120400]\n\nExample of usage for video frames in out-of-display-order :\n\n- dataBuffer: contains 6 H.264 frames in decode order (P2,B0,B1,I5,B3,B4)\n- dataFormatDescription: describes H.264 video\n- numSamples: 6\n- numSampleTimingEntries: 6\n- sampleTimingArray: 6 entries = {\n- {duration = 1001\/30000, presentationTimeStamp = 12012\/30000, decodeTimeStamp = 10010\/30000},\n- {duration = 1001\/30000, presentationTimeStamp = 10010\/30000, decodeTimeStamp = 11011\/30000},\n- {duration = 1001\/30000, presentationTimeStamp = 11011\/30000, decodeTimeStamp = 12012\/30000},\n- {duration = 1001\/30000, presentationTimeStamp = 15015\/30000, decodeTimeStamp = 13013\/30000},\n- {duration = 1001\/30000, presentationTimeStamp = 13013\/30000, decodeTimeStamp = 14014\/30000},\n- {duration = 1001\/30000, presentationTimeStamp = 13013\/30000, decodeTimeStamp = 14014\/30000}}\n- numSampleSizeEntries: 6\n- sampleSizeArray: [10580, 1234, 1364, 75660, 1012, 988]\n\nExample of usage for compressed audio:\n\n- dataBuffer: contains 24 compressed AAC packets\n- dataFormatDescription: describes 44.1kHz AAC audio\n- numSamples: 24\n- numSampleTimingEntries: 1\n- sampleTimingArray: one entry = {{duration = 1024\/44100, presentationTimeStamp = 0\/44100, decodeTimeStamp = invalid }}\n- numSampleSizeEntries: 24\n- sampleSizeArray:[191, 183, 208, 213, 202, 206, 209, 206, 204, 192, 202, 277, 282, 240, 209, 194, 193, 197, 196, 198, 168, 199, 171, 194]\n\nExample of usage for uncompressed interleaved audio:\n\n- dataBuffer: contains 24000 uncompressed interleaved stereo frames, each containing 2 Float32s =\n- {{L,R},\n- {L,R},\n- {L,R}, …}\n- dataFormatDescription: describes 48kHz Float32 interleaved audio\n- numSamples: 24000\n- numSampleTimingEntries: 1\n- sampleTimingArray: one entry = {{duration = 1\/48000, presentationTimeStamp = 0\/48000, decodeTimeStamp = invalid }}\n- numSampleSizeEntries: 1\n- sampleSizeArray: {8}\n\nExample of usage for uncompressed non-interleaved audio:\n\n- dataBuffer: contains 24000 uncompressed non-interleaved stereo frames, each containing 2 (non-contiguous) Float32s =\n- {{L,L,L,L,L,…},\n- {R,R,R,R,R,…}}\n- dataFormatDescription: describes 48kHz Float32 non-interleaved audio\n- numSamples: 24000\n- numSampleTimingEntries: 1\n- sampleTimingArray: one entry = {duration = 1\/48000, presentationTimeStamp = 0\/48000, decodeTimeStamp = invalid }\n- numSampleSizeEntries: 0\n- sampleSizeArray: `NULL` (because the samples aren’t contiguous)\n\n## Callbacks\n\n- **CMSampleBufferMakeDataReadyCallback**: Client callback called by [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/CMSampleBufferMakeDataReady(_:)].\n\n## Creating Sample Buffers\n\n- **CMSampleBufferCreateReady(allocator:dataBuffer:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)**: Creates a sample buffer with media data.\n- **CMSampleBufferCreateReadyWithImageBuffer(allocator:imageBuffer:formatDescription:sampleTiming:sampleBufferOut:)**: Creates a sample buffer with image data.\n- **CMAudioSampleBufferCreateReadyWithPacketDescriptions(allocator:dataBuffer:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)**: Creates a sample buffer with packet descriptions.\n- **CMSampleBufferCreateWithMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:_:_:)**: Creates a sample buffer with a handler to make the data ready for use.\n- **CMSampleBufferCreateForImageBufferWithMakeDataReadyHandler(_:_:_:_:_:_:_:)**: Creates a sample buffer with an image buffer and a handler to make the data ready for use.\n- **CMAudioSampleBufferCreateWithPacketDescriptionsAndMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:)**: Creates a sample buffer with packet descriptions and a handler to make the data ready for use.\n- **CMSampleBufferCreateForImageBuffer(allocator:imageBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleTiming:sampleBufferOut:)**: Creates a sample buffer with an image buffer and a callback to make the data ready for use.\n- **CMAudioSampleBufferCreateWithPacketDescriptions(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)**: Creates a sample buffer with packet descriptions and a callback to make the data ready for use.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Client callback called by [doc:\/\/com.apple.coremedia\/documentation\/CoreMedia\/CMSampleBufferMakeDataReady(_:)].",
+          "name" : "CMSampleBufferMakeDataReadyCallback",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferMakeDataReadyCallback"
+        }
+      ],
+      "title" : "Callbacks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a sample buffer with media data.",
+          "name" : "CMSampleBufferCreateReady(allocator:dataBuffer:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateReady(allocator:dataBuffer:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a sample buffer with image data.",
+          "name" : "CMSampleBufferCreateReadyWithImageBuffer(allocator:imageBuffer:formatDescription:sampleTiming:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateReadyWithImageBuffer(allocator:imageBuffer:formatDescription:sampleTiming:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a sample buffer with packet descriptions.",
+          "name" : "CMAudioSampleBufferCreateReadyWithPacketDescriptions(allocator:dataBuffer:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMAudioSampleBufferCreateReadyWithPacketDescriptions(allocator:dataBuffer:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a sample buffer with a handler to make the data ready for use.",
+          "name" : "CMSampleBufferCreateWithMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateWithMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Creates a sample buffer with an image buffer and a handler to make the data ready for use.",
+          "name" : "CMSampleBufferCreateForImageBufferWithMakeDataReadyHandler(_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateForImageBufferWithMakeDataReadyHandler(_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Creates a sample buffer with packet descriptions and a handler to make the data ready for use.",
+          "name" : "CMAudioSampleBufferCreateWithPacketDescriptionsAndMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMAudioSampleBufferCreateWithPacketDescriptionsAndMakeDataReadyHandler(_:_:_:_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Creates a sample buffer with an image buffer and a callback to make the data ready for use.",
+          "name" : "CMSampleBufferCreateForImageBuffer(allocator:imageBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleTiming:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreateForImageBuffer(allocator:imageBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleTiming:sampleBufferOut:)"
+        },
+        {
+          "description" : "Creates a sample buffer with packet descriptions and a callback to make the data ready for use.",
+          "name" : "CMAudioSampleBufferCreateWithPacketDescriptions(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMAudioSampleBufferCreateWithPacketDescriptions(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:presentationTimeStamp:packetDescriptions:sampleBufferOut:)"
+        }
+      ],
+      "title" : "Creating Sample Buffers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "CMSampleBufferCreate(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CoreMedia\/CMSampleBufferCreate(allocator:dataBuffer:dataReady:makeDataReadyCallback:refcon:formatDescription:sampleCount:sampleTimingEntryCount:sampleTimingArray:sampleSizeEntryCount:sampleSizeArray:sampleBufferOut:)"
+}

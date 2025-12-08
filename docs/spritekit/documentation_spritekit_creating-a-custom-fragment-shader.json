@@ -1,0 +1,51 @@
+{
+  "abstract" : "Write a fragment shader using the set of SpriteKit-exposed symbols, and supply it with custom data.",
+  "codeExamples" : [
+    {
+      "code" : "let uniformBasedShader = SKShader(fileNamed: \"UsingUniform.fsh\")\n \nlet sprite = SKSpriteNode()\nsprite.shader = uniformBasedShader\n \t \nlet spriteSize = vector_float2(Float(sprite.frame.size.width),\n                               Float(sprite.frame.size.height))\nuniformBasedShader.uniforms = [    \n    SKUniform(name: \"u_sprite_size\", vectorFloat2: spriteSize)\n]",
+      "language" : "swift"
+    },
+    {
+      "code" : "let attributeBasedShader = SKShader(fileNamed: \"UsingAttributes.fsh\")\nattributeBasedShader.attributes = [\n    SKAttribute(name: \"a_sprite_size\", type: .vectorFloat2)\n]\n \nlet sprite = SKSpriteNode()\nsprite.shader = attributeBasedShader\n \nlet spriteSize = vector_float2(Float(sprite.frame.size.width),\n                               Float(sprite.frame.size.height))\nsprite.setValue(SKAttributeValue(vectorFloat2: spriteSize),\n                forAttribute: \"a_sprite_size\")",
+      "language" : "swift"
+    },
+    {
+      "code" : "void main()\n{\n   gl_FragColor = SKDefaultShading();\n}",
+      "language" : "objc"
+    }
+  ],
+  "contentHash" : "265dea71b4980f9bb0a69149a098381c480f0df844158365f3d0fb238d0a637f",
+  "crawledAt" : "2025-12-08T01:07:55Z",
+  "id" : "83A5A57E-E249-4E99-8C82-D017FC0FEE69",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "SpriteKit",
+  "overview" : "## Overview\n\nYour fragment shader should be written in the OpenGL ES 2.0 shading language. SpriteKit automatically does the necessary work to make sure this shader compiles correctly in both iOS and macOS. The shader object compiles your shader by appending the source code you provide to a preamble created by SpriteKit. This preamble declares all of the standard SpriteKit variables and functions, including declarations for any uniforms you have associated with the shader object.\n\n### Use SpriteKit-Provided Data in a Shader\n\nThe following table describes the SpriteKit symbols made available to your shader.\n\n### Provide Custom Per-Frame Data to a Shader\n\nTo make a global variable available to your shader, you create an [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKUniform] and add it to the shader’s [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKShader\/uniforms] array. Uniforms can be modified at any time on the CPU, but they’re constant on the GPU. Therefore, uniforms are the way to provide your shader with per-frame data.\n\nThe following code shows how to pass a size value to a shader by using a uniform.\n\nBecause uniforms are shared across executions in a given frame, every node that executes `uniformBasedShader` in the example above will read the same value for `u_sprite_size`.\n\n### Provide Custom Per-Primitive Data to a Shader\n\nTo associate shader variables with specific nodes, you use [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKAttribute]. Using attributes rather than uniforms allows a single [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKShader] to be shared between nodes, each one defining their own value for a shader variable. The following code demonstrates attributes by passing the size of a sprite to a shader as an attribute.\n\nBecause an attribute defines a shader variable on the sprite node and not the shader object, every execution of `attributeBasedShader` will read its own value of `a_sprite_size`.\n\n### Define a Function Body\n\nYour shader should define a `main()` function. This function must set the `gl_FragColor` variable to a color value to use in the blend stage. Typically, the color value you return in this variable should already be premultiplied by the fragment’s alpha value.\n\nThe following code shows a very simple fragment shader that provides the default shading behavior.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SpriteKit\/creating-a-custom-fragment-shader\ncrawled: 2025-12-08T01:07:55Z\n---\n\n# Creating a Custom Fragment Shader\n\n**Article**\n\nWrite a fragment shader using the set of SpriteKit-exposed symbols, and supply it with custom data.\n\n## Overview\n\nYour fragment shader should be written in the OpenGL ES 2.0 shading language. SpriteKit automatically does the necessary work to make sure this shader compiles correctly in both iOS and macOS. The shader object compiles your shader by appending the source code you provide to a preamble created by SpriteKit. This preamble declares all of the standard SpriteKit variables and functions, including declarations for any uniforms you have associated with the shader object.\n\n### Use SpriteKit-Provided Data in a Shader\n\nThe following table describes the SpriteKit symbols made available to your shader.\n\n\n\n### Provide Custom Per-Frame Data to a Shader\n\nTo make a global variable available to your shader, you create an [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKUniform] and add it to the shader’s [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKShader\/uniforms] array. Uniforms can be modified at any time on the CPU, but they’re constant on the GPU. Therefore, uniforms are the way to provide your shader with per-frame data.\n\nThe following code shows how to pass a size value to a shader by using a uniform.\n\n```swift\nlet uniformBasedShader = SKShader(fileNamed: \"UsingUniform.fsh\")\n \nlet sprite = SKSpriteNode()\nsprite.shader = uniformBasedShader\n \t \nlet spriteSize = vector_float2(Float(sprite.frame.size.width),\n                               Float(sprite.frame.size.height))\nuniformBasedShader.uniforms = [    \n    SKUniform(name: \"u_sprite_size\", vectorFloat2: spriteSize)\n]\n```\n\nBecause uniforms are shared across executions in a given frame, every node that executes `uniformBasedShader` in the example above will read the same value for `u_sprite_size`.\n\n### Provide Custom Per-Primitive Data to a Shader\n\nTo associate shader variables with specific nodes, you use [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKAttribute]. Using attributes rather than uniforms allows a single [doc:\/\/com.apple.spritekit\/documentation\/SpriteKit\/SKShader] to be shared between nodes, each one defining their own value for a shader variable. The following code demonstrates attributes by passing the size of a sprite to a shader as an attribute.\n\n```swift\nlet attributeBasedShader = SKShader(fileNamed: \"UsingAttributes.fsh\")\nattributeBasedShader.attributes = [\n    SKAttribute(name: \"a_sprite_size\", type: .vectorFloat2)\n]\n \nlet sprite = SKSpriteNode()\nsprite.shader = attributeBasedShader\n \nlet spriteSize = vector_float2(Float(sprite.frame.size.width),\n                               Float(sprite.frame.size.height))\nsprite.setValue(SKAttributeValue(vectorFloat2: spriteSize),\n                forAttribute: \"a_sprite_size\")\n```\n\nBecause an attribute defines a shader variable on the sprite node and not the shader object, every execution of `attributeBasedShader` will read its own value of `a_sprite_size`.\n\n### Define a Function Body\n\nYour shader should define a `main()` function. This function must set the `gl_FragColor` variable to a color value to use in the blend stage. Typically, the color value you return in this variable should already be premultiplied by the fragment’s alpha value.\n\nThe following code shows a very simple fragment shader that provides the default shading behavior.\n\n```objc\nvoid main()\n{\n   gl_FragColor = SKDefaultShading();\n}\n```\n\n## Creating a Shader\n\n- **init(fileNamed:)**: Creates a new shader object by loading the source for a fragment shader from a file stored in the app’s bundle.\n- **init(source:uniforms:)**: Initializes a new shader object using the specified source and uniform data.\n- **init(source:)**: Initializes a new shader object using the specified source code.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new shader object by loading the source for a fragment shader from a file stored in the app’s bundle.",
+          "name" : "init(fileNamed:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SpriteKit\/SKShader\/init(fileNamed:)"
+        },
+        {
+          "description" : "Initializes a new shader object using the specified source and uniform data.",
+          "name" : "init(source:uniforms:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SpriteKit\/SKShader\/init(source:uniforms:)"
+        },
+        {
+          "description" : "Initializes a new shader object using the specified source code.",
+          "name" : "init(source:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SpriteKit\/SKShader\/init(source:)"
+        }
+      ],
+      "title" : "Creating a Shader"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Creating a Custom Fragment Shader",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SpriteKit\/creating-a-custom-fragment-shader"
+}

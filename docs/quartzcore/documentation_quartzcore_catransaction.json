@@ -1,0 +1,184 @@
+{
+  "abstract" : "A mechanism for grouping multiple layer-tree operations into atomic updates to the render tree.",
+  "codeExamples" : [
+    {
+      "code" : "let transitioningLayer = CALayer()\n     \n\/\/ Outer transaction animates `opacity` to 0 over 2 seconds\nCATransaction.begin()\nCATransaction.setAnimationDuration(2)\nCATransaction.setCompletionBlock {\n    transitioningLayer.removeFromSuperlayer()\n}\n    \ntransitioningLayer.opacity = 0\n     \n\/\/ Inner transaction animates scale to (3, 3, 3) over 1 second\nCATransaction.begin()\nCATransaction.setAnimationDuration(1)\n     \ntransitioningLayer.transform = CATransform3DMakeScale(3, 3, 3)\n     \nCATransaction.commit() \/\/ Commits inner transaction\nCATransaction.commit() \/\/ Commits outer transaction",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "fcf697c276ab862a70c582e08ba92d986ca1e3acbe60f97601cfbf8447290c25",
+  "crawledAt" : "2025-12-06T02:01:55Z",
+  "declaration" : {
+    "code" : "class CATransaction",
+    "language" : "swift"
+  },
+  "id" : "8CB092F9-BCB7-41E8-9B01-E45D021C8576",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Core Animation",
+  "overview" : "## Overview\n\n`CATransaction` is the Core Animation mechanism for batching multiple layer-tree operations into atomic updates to the render tree. Every modification to a layer tree must be part of a transaction. Nested transactions are supported.\n\nCore Animation supports two types of transactions: *implicit* transactions and *explicit* transactions. Implicit transactions are created automatically when the layer tree is modified by a thread without an active transaction and are committed automatically when the thread’s runloop next iterates. Explicit transactions occur when the the application sends the [doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction] class a [doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction\/begin()] message before modifying the layer tree, and a [doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction\/commit()] message afterwards.\n\n[doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction] allows you to override default animation properties that are set for animatable properties. You can customize duration, timing function, whether changes to properties trigger animations, and provide a handler that informs you when all animations from the transaction group are completed.\n\nDuring a transaction you can temporarily acquire a recursive spin lock for managing property atomicity.\n\n[doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction] supports nested transactions. The following code shows how you can fade out a layer (named `transitioningLayer`) over a 2 second duration while scaling it to three times its original size. The scale animation is within a nested transaction with its own duration of 1 second. After the outer transaction completes, a completion block removes `transitioningLayer` from its parent layer.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\ncrawled: 2025-12-06T02:01:55Z\n---\n\n# CATransaction\n\n**Class**\n\nA mechanism for grouping multiple layer-tree operations into atomic updates to the render tree.\n\n## Declaration\n\n```swift\nclass CATransaction\n```\n\n## Overview\n\n`CATransaction` is the Core Animation mechanism for batching multiple layer-tree operations into atomic updates to the render tree. Every modification to a layer tree must be part of a transaction. Nested transactions are supported.\n\nCore Animation supports two types of transactions: *implicit* transactions and *explicit* transactions. Implicit transactions are created automatically when the layer tree is modified by a thread without an active transaction and are committed automatically when the thread’s runloop next iterates. Explicit transactions occur when the the application sends the [doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction] class a [doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction\/begin()] message before modifying the layer tree, and a [doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction\/commit()] message afterwards.\n\n[doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction] allows you to override default animation properties that are set for animatable properties. You can customize duration, timing function, whether changes to properties trigger animations, and provide a handler that informs you when all animations from the transaction group are completed.\n\nDuring a transaction you can temporarily acquire a recursive spin lock for managing property atomicity.\n\n[doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction] supports nested transactions. The following code shows how you can fade out a layer (named `transitioningLayer`) over a 2 second duration while scaling it to three times its original size. The scale animation is within a nested transaction with its own duration of 1 second. After the outer transaction completes, a completion block removes `transitioningLayer` from its parent layer.\n\n```swift\nlet transitioningLayer = CALayer()\n     \n\/\/ Outer transaction animates `opacity` to 0 over 2 seconds\nCATransaction.begin()\nCATransaction.setAnimationDuration(2)\nCATransaction.setCompletionBlock {\n    transitioningLayer.removeFromSuperlayer()\n}\n    \ntransitioningLayer.opacity = 0\n     \n\/\/ Inner transaction animates scale to (3, 3, 3) over 1 second\nCATransaction.begin()\nCATransaction.setAnimationDuration(1)\n     \ntransitioningLayer.transform = CATransform3DMakeScale(3, 3, 3)\n     \nCATransaction.commit() \/\/ Commits inner transaction\nCATransaction.commit() \/\/ Commits outer transaction\n```\n\n## Creating and Committing Transactions\n\n- **begin()**: Begin a new transaction for the current thread.\n- **commit()**: Commit all changes made during the current transaction.\n- **flush()**: Flushes any extant implicit transaction.\n\n## Overriding Animation Duration and Timing\n\n- **animationDuration()**: Returns the animation duration used by all animations within this transaction group.\n- **setAnimationDuration(_:)**: Sets the animation duration used by all animations within this transaction group.\n- **animationTimingFunction()**: Returns the timing function used for all animations within this transaction group.\n- **setAnimationTimingFunction(_:)**: Sets the timing function used for all animations within this transaction group.\n\n## Temporarily Disabling Property Animations\n\n- **disableActions()**: Returns whether actions triggered as a result of property changes made within this transaction group are suppressed.\n- **setDisableActions(_:)**: Sets whether actions triggered as a result of property changes made within this transaction group are suppressed.\n\n## Getting and Setting Completion Block Objects\n\n- **completionBlock()**: Returns the completion block object.\n- **setCompletionBlock(_:)**: Sets the completion block object.\n\n## Managing Concurrency\n\n- **lock()**: Attempts to acquire a recursive spin-lock lock, ensuring that returned layer values are valid until unlocked.\n- **unlock()**: Relinquishes a previously acquired transaction lock.\n\n## Getting and Setting Transaction Properties\n\n- **setValue(_:forKey:)**: Sets the arbitrary keyed-data for the specified key.\n- **value(forKey:)**: Returns the arbitrary keyed-data specified by the given key.\n\n## Constants\n\n- **Transaction properties**: These constants define the property keys used by [doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction\/value(forKey:)] and [doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction\/setValue(_:forKey:)].\n\n## Animation Groups\n\n- **CAAnimationGroup**: An object that allows multiple animations to be grouped and run concurrently.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Begin a new transaction for the current thread.",
+          "name" : "begin()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/begin()"
+        },
+        {
+          "description" : "Commit all changes made during the current transaction.",
+          "name" : "commit()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/commit()"
+        },
+        {
+          "description" : "Flushes any extant implicit transaction.",
+          "name" : "flush()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/flush()"
+        }
+      ],
+      "title" : "Creating and Committing Transactions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the animation duration used by all animations within this transaction group.",
+          "name" : "animationDuration()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/animationDuration()"
+        },
+        {
+          "description" : "Sets the animation duration used by all animations within this transaction group.",
+          "name" : "setAnimationDuration(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/setAnimationDuration(_:)"
+        },
+        {
+          "description" : "Returns the timing function used for all animations within this transaction group.",
+          "name" : "animationTimingFunction()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/animationTimingFunction()"
+        },
+        {
+          "description" : "Sets the timing function used for all animations within this transaction group.",
+          "name" : "setAnimationTimingFunction(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/setAnimationTimingFunction(_:)"
+        }
+      ],
+      "title" : "Overriding Animation Duration and Timing"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns whether actions triggered as a result of property changes made within this transaction group are suppressed.",
+          "name" : "disableActions()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/disableActions()"
+        },
+        {
+          "description" : "Sets whether actions triggered as a result of property changes made within this transaction group are suppressed.",
+          "name" : "setDisableActions(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/setDisableActions(_:)"
+        }
+      ],
+      "title" : "Temporarily Disabling Property Animations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the completion block object.",
+          "name" : "completionBlock()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/completionBlock()"
+        },
+        {
+          "description" : "Sets the completion block object.",
+          "name" : "setCompletionBlock(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/setCompletionBlock(_:)"
+        }
+      ],
+      "title" : "Getting and Setting Completion Block Objects"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Attempts to acquire a recursive spin-lock lock, ensuring that returned layer values are valid until unlocked.",
+          "name" : "lock()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/lock()"
+        },
+        {
+          "description" : "Relinquishes a previously acquired transaction lock.",
+          "name" : "unlock()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/unlock()"
+        }
+      ],
+      "title" : "Managing Concurrency"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sets the arbitrary keyed-data for the specified key.",
+          "name" : "setValue(_:forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/setValue(_:forKey:)"
+        },
+        {
+          "description" : "Returns the arbitrary keyed-data specified by the given key.",
+          "name" : "value(forKey:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction\/value(forKey:)"
+        }
+      ],
+      "title" : "Getting and Setting Transaction Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "These constants define the property keys used by [doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction\/value(forKey:)] and [doc:\/\/com.apple.quartzcore\/documentation\/QuartzCore\/CATransaction\/setValue(_:forKey:)].",
+          "name" : "Transaction properties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/transaction-properties"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that allows multiple animations to be grouped and run concurrently.",
+          "name" : "CAAnimationGroup",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CAAnimationGroup"
+        }
+      ],
+      "title" : "Animation Groups"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "CATransaction",
+  "url" : "https:\/\/developer.apple.com\/documentation\/QuartzCore\/CATransaction"
+}

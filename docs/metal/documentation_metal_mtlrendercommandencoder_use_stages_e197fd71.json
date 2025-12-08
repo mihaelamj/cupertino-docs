@@ -1,0 +1,77 @@
+{
+  "abstract" : "Ensures the shaders in the render pass’s subsequent draw commands have access to the resources you allocate from a heap.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "a26b54aecdea8053ec6b69c02cab27bea8838db78b8cb9960be5dd120de98f4d",
+  "crawledAt" : "2025-12-06T11:08:55Z",
+  "declaration" : {
+    "code" : "func use(_ heap: any MTLHeap, stages: MTLRenderStages)",
+    "language" : "swift"
+  },
+  "id" : "5E0E0221-0D73-43B5-8718-52E24A708BDA",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Metal",
+  "overview" : "## Discussion\n\nYou can make the resources in `heap` *resident* (available in GPU memory) for the remaining duration of the render pass by calling this method. Call the method before encoding draw calls that may access resources within `heap` through an argument buffer. The method ensures each resource is in a format that’s compatible with the shaders that depend on it.\n\nThe method’s applies the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResourceUsage\/read] resource usage option to all of the resources within `heap`, except for textures. The method ignores any texture that has [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTextureUsage\/renderTarget], [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTextureUsage\/shaderWrite], or both in its [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTexture\/usage] property. For all other textures in `heap`, the method optimizes each texture’s memory layout for rendering with a sampler. However, your shaders can’t read from those textures by calling this method because the texture needs a different memory layout that’s suitable for reading.\n\nMethods that apply a usage option for resources (see [doc:\/\/com.apple.metal\/documentation\/Metal\/argument-buffer-resource-preparation-commands]) override any previous calls that apply to a resource. For example, you can change the usage option for buffer in `heap` to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResourceUsage\/write] by passing it to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderCommandEncoder\/useResource(_:usage:stages:)] after calling this method. However, you can’t reverse the call order because this method resets the usage for all resources within `heap` to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResourceUsage\/read], overriding previous calls to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderCommandEncoder\/useResource(_:usage:stages:)].\n\nThe method instructs Metal to apply hazard tracking for resources you allocate from a heap that you create with [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHazardTrackingMode\/tracked]. However, for untracked resources — which come from heaps you create with [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHazardTrackingMode\/untracked] — you need to account for hazards by applying [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLFence] or [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLEvent] instances.\n\nApps typically call the method for heaps that have resources in argument buffers for a *bindless* implementation. For more information about argument buffers and bindless implementations, see [doc:\/\/com.apple.metal\/documentation\/Metal\/improving-cpu-performance-by-using-argument-buffers] and [https:\/\/developer.apple.com\/videos\/play\/wwdc2022\/10101\/], respectively.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderCommandEncoder\/use(_:stages:)\ncrawled: 2025-12-06T11:08:55Z\n---\n\n# use(_:stages:)\n\n**Instance Method**\n\nEnsures the shaders in the render pass’s subsequent draw commands have access to the resources you allocate from a heap.\n\n## Declaration\n\n```swift\nfunc use(_ heap: any MTLHeap, stages: MTLRenderStages)\n```\n\n## Parameters\n\n- **heap**: An [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHeap] instance with resources that subsequent draw commands depend on.\n- **stages**: All the render stages that depend on resources within `heap`, including [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderStages\/object], [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderStages\/mesh], [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderStages\/vertex], [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderStages\/fragment], and [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderStages\/tile].\n\n## Discussion\n\nYou can make the resources in `heap` *resident* (available in GPU memory) for the remaining duration of the render pass by calling this method. Call the method before encoding draw calls that may access resources within `heap` through an argument buffer. The method ensures each resource is in a format that’s compatible with the shaders that depend on it.\n\nThe method’s applies the [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResourceUsage\/read] resource usage option to all of the resources within `heap`, except for textures. The method ignores any texture that has [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTextureUsage\/renderTarget], [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTextureUsage\/shaderWrite], or both in its [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLTexture\/usage] property. For all other textures in `heap`, the method optimizes each texture’s memory layout for rendering with a sampler. However, your shaders can’t read from those textures by calling this method because the texture needs a different memory layout that’s suitable for reading.\n\n\n\nMethods that apply a usage option for resources (see [doc:\/\/com.apple.metal\/documentation\/Metal\/argument-buffer-resource-preparation-commands]) override any previous calls that apply to a resource. For example, you can change the usage option for buffer in `heap` to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResourceUsage\/write] by passing it to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderCommandEncoder\/useResource(_:usage:stages:)] after calling this method. However, you can’t reverse the call order because this method resets the usage for all resources within `heap` to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLResourceUsage\/read], overriding previous calls to [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLRenderCommandEncoder\/useResource(_:usage:stages:)].\n\nThe method instructs Metal to apply hazard tracking for resources you allocate from a heap that you create with [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHazardTrackingMode\/tracked]. However, for untracked resources — which come from heaps you create with [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLHazardTrackingMode\/untracked] — you need to account for hazards by applying [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLFence] or [doc:\/\/com.apple.metal\/documentation\/Metal\/MTLEvent] instances.\n\n\n\nApps typically call the method for heaps that have resources in argument buffers for a *bindless* implementation. For more information about argument buffers and bindless implementations, see [doc:\/\/com.apple.metal\/documentation\/Metal\/improving-cpu-performance-by-using-argument-buffers] and [https:\/\/developer.apple.com\/videos\/play\/wwdc2022\/10101\/], respectively.\n\n## Deprecated methods\n\n- **useResource(_:usage:)**: Ensures the shaders in the render pass’s subsequent draw commands have access to a resource.\n- **use(_:usage:stages:)**: Ensures the shaders in the render pass’s subsequent draw commands have access to a resource.\n- **useResources(_:usage:)**: Ensures the shaders in the render pass’s subsequent draw commands have access to multiple resources.\n- **use(_:count:usage:stages:)**: Ensures the shaders in the render pass’s subsequent draw commands have access to multiple resources.\n- **useHeap(_:)**: Ensures the shaders in the render pass’s subsequent draw commands have access to the resources you allocate from a heap.\n- **useHeaps(_:)**: Ensures the shaders in the render pass’s subsequent draw commands have access to the resources you allocate from multiple heaps.\n- **use(_:count:stages:)**: Ensures the shaders in the render pass’s subsequent draw commands have access to the resources you allocate from multiple heaps.\n- **textureBarrier()**: Adds a barrier, which forces any texture read operations to wait until write operations to the same texture finish.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Ensures the shaders in the render pass’s subsequent draw commands have access to a resource.",
+          "name" : "useResource(_:usage:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderCommandEncoder\/useResource(_:usage:)"
+        },
+        {
+          "description" : "Ensures the shaders in the render pass’s subsequent draw commands have access to a resource.",
+          "name" : "use(_:usage:stages:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderCommandEncoder\/use(_:usage:stages:)"
+        },
+        {
+          "description" : "Ensures the shaders in the render pass’s subsequent draw commands have access to multiple resources.",
+          "name" : "useResources(_:usage:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderCommandEncoder\/useResources(_:usage:)"
+        },
+        {
+          "description" : "Ensures the shaders in the render pass’s subsequent draw commands have access to multiple resources.",
+          "name" : "use(_:count:usage:stages:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderCommandEncoder\/use(_:count:usage:stages:)"
+        },
+        {
+          "description" : "Ensures the shaders in the render pass’s subsequent draw commands have access to the resources you allocate from a heap.",
+          "name" : "useHeap(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderCommandEncoder\/useHeap(_:)"
+        },
+        {
+          "description" : "Ensures the shaders in the render pass’s subsequent draw commands have access to the resources you allocate from multiple heaps.",
+          "name" : "useHeaps(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderCommandEncoder\/useHeaps(_:)"
+        },
+        {
+          "description" : "Ensures the shaders in the render pass’s subsequent draw commands have access to the resources you allocate from multiple heaps.",
+          "name" : "use(_:count:stages:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderCommandEncoder\/use(_:count:stages:)"
+        },
+        {
+          "description" : "Adds a barrier, which forces any texture read operations to wait until write operations to the same texture finish.",
+          "name" : "textureBarrier()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderCommandEncoder\/textureBarrier()"
+        }
+      ],
+      "title" : "Deprecated methods"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "use(_:stages:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Metal\/MTLRenderCommandEncoder\/use(_:stages:)"
+}
