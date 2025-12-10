@@ -1,0 +1,54 @@
+{
+  "abstract" : "Provides the delegate with a new set of pressure and depth measurements.",
+  "codeExamples" : [
+    {
+      "code" : "nonisolated func manager(_ manager: CMWaterSubmersionManager, didUpdate measurement: CMWaterSubmersionMeasurement) {\n\n    logger.info(\"*** Received a depth measurement ***\")\n\n    let currentDepth: String\n    if let depth = measurement.depth {\n        currentDepth = \"\\(depth.value) \\(depth.unit)\"\n    } else {\n        currentDepth = \"None\"\n    }\n\n    let currentSurfacePressure: String\n    let surfacePressure = measurement.surfacePressure\n    currentSurfacePressure = \"\\(surfacePressure.value) \\(surfacePressure.unit)\"\n\n    let currentPressure: String\n    if let pressure = measurement.pressure {\n        currentPressure = \"\\(pressure.value) \\(pressure.unit)\"\n    } else {\n        currentPressure = \"None\"\n    }\n\n    logger.info(\"*** Depth: \\(currentDepth) ***\")\n    logger.info(\"*** Surface Pressure: \\(currentSurfacePressure) ***\")\n    logger.info(\"*** Pressure: \\(currentPressure) ***\")\n\n    let submerged: Bool?\n    switch measurement.submersionState {\n    case .unknown:\n        logger.info(\"*** Unknown Depth ***\")\n        submerged = nil\n    case .notSubmerged:\n        logger.info(\"*** Not Submerged ***\")\n        submerged = false\n    case .submergedShallow:\n        logger.info(\"*** Shallow Depth ***\")\n        submerged = true\n    case .submergedDeep:\n        logger.info(\"*** Deep Depth ***\")\n        submerged = true\n    case .approachingMaxDepth:\n        logger.info(\"*** Approaching Max Depth ***\")\n        submerged = true\n    case .pastMaxDepth:\n        logger.info(\"*** Past Max Depth ***\")\n        submerged = true\n    case .sensorDepthError:\n        logger.info(\"*** A depth error has occurred. ***\")\n        submerged = nil\n    @unknown default:\n        fatalError(\"*** An unknown measurement depth state: \\(measurement.submersionState)\")\n    }\n\n    Task {\n        await myAdd(measurement: measurement)\n        if let submerged {\n            await mySet(submerged: submerged)\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "2557da2c06d130ba5c10ab8fc0af632fd481c8e7566dbe80ed411363cd99cefa",
+  "crawledAt" : "2025-12-09T16:22:23Z",
+  "declaration" : {
+    "code" : "func manager(_ manager: CMWaterSubmersionManager, didUpdate measurement: CMWaterSubmersionMeasurement)",
+    "language" : "swift"
+  },
+  "id" : "710A5CF5-E87D-4372-B924-5647B2DED07C",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Core Motion",
+  "overview" : "## Discussion\n\nImplement this method to receive updated surface pressure, water pressure, and depth data. The system sends measurement updates three times a second while submerged. When on the surface, the system provides updates at a slower rate, and may stop providing updates if the device isn’t moving.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMWaterSubmersionManagerDelegate\/manager(_:didUpdate:)-7nhjb\ncrawled: 2025-12-09T16:22:23Z\n---\n\n# manager(_:didUpdate:)\n\n**Instance Method**\n\nProvides the delegate with a new set of pressure and depth measurements.\n\n## Declaration\n\n```swift\nfunc manager(_ manager: CMWaterSubmersionManager, didUpdate measurement: CMWaterSubmersionMeasurement)\n```\n\n## Parameters\n\n- **manager**: The manager for water submersion data.\n- **measurement**: A data object that contains information about the pressure and depth.\n\n## Discussion\n\nImplement this method to receive updated surface pressure, water pressure, and depth data. The system sends measurement updates three times a second while submerged. When on the surface, the system provides updates at a slower rate, and may stop providing updates if the device isn’t moving.\n\n```swift\nnonisolated func manager(_ manager: CMWaterSubmersionManager, didUpdate measurement: CMWaterSubmersionMeasurement) {\n\n    logger.info(\"*** Received a depth measurement ***\")\n\n    let currentDepth: String\n    if let depth = measurement.depth {\n        currentDepth = \"\\(depth.value) \\(depth.unit)\"\n    } else {\n        currentDepth = \"None\"\n    }\n\n    let currentSurfacePressure: String\n    let surfacePressure = measurement.surfacePressure\n    currentSurfacePressure = \"\\(surfacePressure.value) \\(surfacePressure.unit)\"\n\n    let currentPressure: String\n    if let pressure = measurement.pressure {\n        currentPressure = \"\\(pressure.value) \\(pressure.unit)\"\n    } else {\n        currentPressure = \"None\"\n    }\n\n    logger.info(\"*** Depth: \\(currentDepth) ***\")\n    logger.info(\"*** Surface Pressure: \\(currentSurfacePressure) ***\")\n    logger.info(\"*** Pressure: \\(currentPressure) ***\")\n\n    let submerged: Bool?\n    switch measurement.submersionState {\n    case .unknown:\n        logger.info(\"*** Unknown Depth ***\")\n        submerged = nil\n    case .notSubmerged:\n        logger.info(\"*** Not Submerged ***\")\n        submerged = false\n    case .submergedShallow:\n        logger.info(\"*** Shallow Depth ***\")\n        submerged = true\n    case .submergedDeep:\n        logger.info(\"*** Deep Depth ***\")\n        submerged = true\n    case .approachingMaxDepth:\n        logger.info(\"*** Approaching Max Depth ***\")\n        submerged = true\n    case .pastMaxDepth:\n        logger.info(\"*** Past Max Depth ***\")\n        submerged = true\n    case .sensorDepthError:\n        logger.info(\"*** A depth error has occurred. ***\")\n        submerged = nil\n    @unknown default:\n        fatalError(\"*** An unknown measurement depth state: \\(measurement.submersionState)\")\n    }\n\n    Task {\n        await myAdd(measurement: measurement)\n        if let submerged {\n            await mySet(submerged: submerged)\n        }\n    }\n}\n```\n\n## Receiving updates\n\n- **manager(_:didUpdate:)**: Tells the delegate when a water submersion event occurs.\n- **manager(_:didUpdate:)**: Provides the delegate with updated water temperature data.\n- **manager(_:errorOccurred:)**: Tells the delegate when an error occurs.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tells the delegate when a water submersion event occurs.",
+          "name" : "manager(_:didUpdate:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMWaterSubmersionManagerDelegate\/manager(_:didUpdate:)-6qux6"
+        },
+        {
+          "description" : "Provides the delegate with updated water temperature data.",
+          "name" : "manager(_:didUpdate:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMWaterSubmersionManagerDelegate\/manager(_:didUpdate:)-18wua"
+        },
+        {
+          "description" : "Tells the delegate when an error occurs.",
+          "name" : "manager(_:errorOccurred:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMWaterSubmersionManagerDelegate\/manager(_:errorOccurred:)"
+        }
+      ],
+      "title" : "Receiving updates"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "manager(_:didUpdate:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CoreMotion\/CMWaterSubmersionManagerDelegate\/manager(_:didUpdate:)-7nhjb"
+}
