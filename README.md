@@ -2,16 +2,28 @@
 
 Pre-crawled Apple and Swift documentation for use with [Cupertino](https://github.com/mihaelamj/cupertino) - an MCP server providing Apple Developer documentation for AI assistants.
 
+**Current Release:** v0.5.0 — **234,331 documents** across **287 frameworks**
+
 ## Contents
 
 | Folder | Description | Source |
 |--------|-------------|--------|
-| `docs/` | Apple Developer Documentation | developer.apple.com |
+| `docs/` | Apple Developer Documentation (287 frameworks) | developer.apple.com |
 | `swift-evolution/` | Swift Evolution Proposals | github.com/swiftlang/swift-evolution |
 | `swift-org/` | Swift.org Documentation | swift.org |
 | `packages/` | Swift Package Documentation | swiftpackageindex.com |
 | `sample-code/` | Apple Sample Code Projects | developer.apple.com |
 | `archive/` | Apple Legacy Archive Guides | developer.apple.com/library/archive |
+
+### Top Frameworks by Document Count
+
+| Framework | Documents |
+|-----------|-----------|
+| Kernel | 24,747 |
+| Matter | 22,013 |
+| Swift | 17,466 |
+| AppKit | 14,066 |
+| Foundation | 10,988 |
 
 ## Quick Start
 
@@ -21,7 +33,7 @@ Clone directly to the default Cupertino location:
 git clone https://github.com/mihaelamj/cupertino-docs.git ~/.cupertino
 ```
 
-Or download from [Releases](https://github.com/mihaelamj/cupertino-docs/releases) for a smaller download.
+Or download pre-built databases from [Releases](https://github.com/mihaelamj/cupertino-docs/releases) (~320 MB zip).
 
 ## Updates
 
