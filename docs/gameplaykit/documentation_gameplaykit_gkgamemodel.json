@@ -1,0 +1,148 @@
+{
+  "abstract" : "Implement this protocol to describe your gameplay model so that a strategist object can plan game moves.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "7406864dd28e694dd750979740443d6ecf1745578013d1281c3a31e791f575bb",
+  "crawledAt" : "2025-12-14T18:43:56Z",
+  "declaration" : {
+    "code" : "protocol GKGameModel : NSCopying, NSObjectProtocol",
+    "language" : "swift"
+  },
+  "id" : "A249A580-56BA-44EB-80AD-300145E3325E",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "GameplayKit",
+  "overview" : "## Overview\n\nYou adopt this protocol to describe the gameplay of your turn-based game for use by a [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKStrategist] object. The strategist uses your game model class (that is, the class you create to adopt this protocol), along with other custom classes you create (adopting the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModelPlayer] and [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModelUpdate] protocols), to find optimal moves.\n\nGameplayKit relies on your game model class for several parts of its strategy algorithm.\n\nWhen you use a strategist to plan moves in your game, it uses your game model to combine these parts into a strategy: By identifying, performing, and rating the success of possible future moves, the strategist can choose a move most likely to result in a future win. This process involves using the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSCopying\/copy(with:)] and [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModel\/setGameModel(_:)] methods to evaluate many possible states of a game model—for best results, ensure that your game model class contains only the information critical to describing your game and that it can copy that state quickly.\n\nFor more information about describing your gameplay model and using a strategist, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/GameplayKit_Guide\/Minmax.html#\/\/apple_ref\/doc\/uid\/TP40015172-CH2] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/GameplayKit_Guide\/index.html#\/\/apple_ref\/doc\/uid\/TP40015172].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel\ncrawled: 2025-12-14T18:43:56Z\n---\n\n# GKGameModel\n\n**Protocol**\n\nImplement this protocol to describe your gameplay model so that a strategist object can plan game moves.\n\n## Declaration\n\n```swift\nprotocol GKGameModel : NSCopying, NSObjectProtocol\n```\n\n## Overview\n\nYou adopt this protocol to describe the gameplay of your turn-based game for use by a [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKStrategist] object. The strategist uses your game model class (that is, the class you create to adopt this protocol), along with other custom classes you create (adopting the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModelPlayer] and [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModelUpdate] protocols), to find optimal moves.\n\nGameplayKit relies on your game model class for several parts of its strategy algorithm.\n\n- Identifying possible changes to the game state. Your [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModel\/gameModelUpdates(for:)] method and your move class (a custom class implementing the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModelUpdate] protocol) describe the set of moves available during a given player’s turn.\n- Simulating future moves on a copy of the game. Your [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModel\/setGameModel(_:)] method allows GameplayKit to work with a separate instance of the game model—that is, not the one representing the actual game in play—and your [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModel\/apply(_:)] uses the information in your move class to perform hypothetical moves on that separate copy of the game.\n- Rating the desirability of possible future states of the game. Each time GameplayKit performs a hypothetical move in its copy of the game model, it calls your [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModel\/isWin(for:)], [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModel\/isLoss(for:)], or [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModel\/score(for:)] method to evaluate that state of the game from the perspective of a particular player.\n\nWhen you use a strategist to plan moves in your game, it uses your game model to combine these parts into a strategy: By identifying, performing, and rating the success of possible future moves, the strategist can choose a move most likely to result in a future win. This process involves using the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSCopying\/copy(with:)] and [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModel\/setGameModel(_:)] methods to evaluate many possible states of a game model—for best results, ensure that your game model class contains only the information critical to describing your game and that it can copy that state quickly.\n\nFor more information about describing your gameplay model and using a strategist, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/GameplayKit_Guide\/Minmax.html#\/\/apple_ref\/doc\/uid\/TP40015172-CH2] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/GameplayKit_Guide\/index.html#\/\/apple_ref\/doc\/uid\/TP40015172].\n\n## Keeping Track of Players\n\n- **players**: The players currently in the game.\n- **activePlayer**: The player whose turn it currently is in the game.\n\n## Evaluating a Game Model\n\n- **gameModelUpdates(for:)**: Returns the set of moves available to the specified player.\n- **score(for:)**: Returns a number rating the desirability of the game model’s current state from the perspective of the specified player.\n- **isLoss(for:)**: Returns a Boolean value indicating whether the specified player has lost the game.\n- **isWin(for:)**: Returns a Boolean value indicating whether the current state of the game model reflects a win for the specified player.\n\n## Modifying a Game Model\n\n- **apply(_:)**: Updates the internal state of the game model to reflect the specified changes.\n- **unapplyGameModelUpdate(_:)**: Updates the internal state of the game model to remove the effect of the specified changes.\n- **setGameModel(_:)**: Sets the game model’s internal state to that of the specified game model.\n\n## Constants\n\n- **Game Model Score Limits**: Limits to values returned by the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModel\/score(for:)] method.\n\n## Strategists\n\n- **GKStrategist**: A general interface for objects that provide artificial intelligence for use in turn-based (and similar) games.\n- **GKMinmaxStrategist**: An AI that chooses moves in turn-based games using a *deterministic* strategy.\n- **GKMonteCarloStrategist**: An AI that chooses moves in turn-based games using a *probabilistic* strategy.\n- **GKGameModelPlayer**: Implement this protocol to describe a player in your turn-based game so that a strategist object can plan game moves.\n- **GKGameModelUpdate**: Implement this protocol to describe a move in your turn-based game so that a strategist object can plan game moves.\n\n## Inherits From\n\n- NSCopying\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The players currently in the game.",
+          "name" : "players",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel\/players"
+        },
+        {
+          "description" : "The player whose turn it currently is in the game.",
+          "name" : "activePlayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel\/activePlayer"
+        }
+      ],
+      "title" : "Keeping Track of Players"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the set of moves available to the specified player.",
+          "name" : "gameModelUpdates(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel\/gameModelUpdates(for:)"
+        },
+        {
+          "description" : "Returns a number rating the desirability of the game model’s current state from the perspective of the specified player.",
+          "name" : "score(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel\/score(for:)"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the specified player has lost the game.",
+          "name" : "isLoss(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel\/isLoss(for:)"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the current state of the game model reflects a win for the specified player.",
+          "name" : "isWin(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel\/isWin(for:)"
+        }
+      ],
+      "title" : "Evaluating a Game Model"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Updates the internal state of the game model to reflect the specified changes.",
+          "name" : "apply(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel\/apply(_:)"
+        },
+        {
+          "description" : "Updates the internal state of the game model to remove the effect of the specified changes.",
+          "name" : "unapplyGameModelUpdate(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel\/unapplyGameModelUpdate(_:)"
+        },
+        {
+          "description" : "Sets the game model’s internal state to that of the specified game model.",
+          "name" : "setGameModel(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel\/setGameModel(_:)"
+        }
+      ],
+      "title" : "Modifying a Game Model"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Limits to values returned by the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGameModel\/score(for:)] method.",
+          "name" : "Game Model Score Limits",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/game-model-score-limits"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A general interface for objects that provide artificial intelligence for use in turn-based (and similar) games.",
+          "name" : "GKStrategist",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKStrategist"
+        },
+        {
+          "description" : "An AI that chooses moves in turn-based games using a *deterministic* strategy.",
+          "name" : "GKMinmaxStrategist",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKMinmaxStrategist"
+        },
+        {
+          "description" : "An AI that chooses moves in turn-based games using a *probabilistic* strategy.",
+          "name" : "GKMonteCarloStrategist",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKMonteCarloStrategist"
+        },
+        {
+          "description" : "Implement this protocol to describe a player in your turn-based game so that a strategist object can plan game moves.",
+          "name" : "GKGameModelPlayer",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModelPlayer"
+        },
+        {
+          "description" : "Implement this protocol to describe a move in your turn-based game so that a strategist object can plan game moves.",
+          "name" : "GKGameModelUpdate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModelUpdate"
+        }
+      ],
+      "title" : "Strategists"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSCopying"
+        },
+        {
+          "name" : "NSObjectProtocol"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "GKGameModel",
+  "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGameModel"
+}

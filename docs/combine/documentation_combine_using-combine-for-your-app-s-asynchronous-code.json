@@ -1,0 +1,71 @@
+{
+  "abstract" : "Apply common patterns to migrate your closure-based, event-handling code.",
+  "codeExamples" : [
+    {
+      "code" : "func performAsyncAction(completionHandler: @escaping () -> Void) {\n    DispatchQueue.main.asyncAfter(deadline:.now() + 2) {\n        completionHandler()\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func performAsyncActionAsFuture() -> Future <Void, Never> {\n    return Future() { promise in\n        DispatchQueue.main.asyncAfter(deadline:.now() + 2) {\n            promise(Result.success(()))\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "cancellable = performAsyncActionAsFuture()\n    .sink() { _ in print(\"Future succeeded.\") }",
+      "language" : "swift"
+    },
+    {
+      "code" : "func performAsyncActionAsFutureWithParameter() -> Future <Int, Never> {\n    return Future() { promise in\n        DispatchQueue.main.asyncAfter(deadline:.now() + 2) {\n            let rn = Int.random(in: 1...10)\n            promise(Result.success(rn))\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "cancellable = performAsyncActionAsFutureWithParameter()\n    .sink() { rn in print(\"Got random number \\(rn).\") }",
+      "language" : "swift"
+    },
+    {
+      "code" : "vc.onDoSomething = { print(\"Did something.\") }",
+      "language" : "swift"
+    },
+    {
+      "code" : "private lazy var myDoSomethingSubject = PassthroughSubject<Void, Never>()\nlazy var doSomethingSubject = myDoSomethingSubject.eraseToAnyPublisher()",
+      "language" : "swift"
+    },
+    {
+      "code" : "cancellable = vc.doSomethingSubject\n    .sink() { print(\"Did something with Combine.\") }",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "785c9e5368296c47c4b981f0d67a21022dbc0a47a09fa435ed9d430c9bb58a2b",
+  "crawledAt" : "2025-12-12T19:05:00Z",
+  "id" : "984573CF-F894-4E17-B892-6FA4CDA5E1D2",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Combine",
+  "overview" : "## Overview\n\nYour app may use common patterns to handle asynchronous events, such as:\n\nCombine provides compelling equivalents to these patterns, which allow you to eliminate boilerplate implementations, and leverage its many operators. As you adopt Combine elsewhere in your app, converting your asynchronous call points to Combine improves your code’s consistency and readability.\n\n### Replace Completion-Handler Closures with Futures\n\nA completion handler is a closure accepted by a function that executes after the function completes its work. You typically implement this by invoking the completion handler directly when the function finishes its work, storing the closure outside the function if necessary. For example, the following function accepts a closure and then executes it after a two-second delay:\n\nYou can replace this pattern with a Combine [doc:\/\/com.apple.Combine\/documentation\/Combine\/Future], a publisher that performs some work and then asynchronously signals success or failure. If it succeeds, the future executes a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Future\/Promise], a closure that receives the element produced by the future. You can replace the previous function as follows:\n\nRather than explicitly invoking a closure when the work completes, the future invokes the promise passed to it, passing in a [doc:\/\/com.apple.documentation\/documentation\/Swift\/Result] that indicates success or failure. The caller receives this result asynchronously from the future. Because [doc:\/\/com.apple.Combine\/documentation\/Combine\/Future] is a Combine [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher], the caller attaches it to an optional chain of operators, ending with a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber], like [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/sink(receiveValue:)]:\n\n### Use Output Types to Represent a Future’s Parameters\n\nSometimes, a long-running task generates a value that it passes to a completion handler as a parameter. To replicate this functionality in Combine, declare the parameter as the output type published by the future. The following example produces a randomly-generated integer, and passes it to the promise by declaring `Int` as the future’s output type:\n\nBy declaring that the future produces `Int` elements, the future can use the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Result] type to pass an `Int` value to the promise. When the promise executes, the future publishes the value, which a caller can receive with a subscriber like [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/sink(receiveValue:)]:\n\n### Replace Repeatedly Invoked Closures with Subjects\n\nYour app may also have the common pattern of using a closure as a property to invoke when certain events happen. These properties often have names starting with `on`, and their call points look like the following:\n\nWith Combine, you can replace this pattern by using a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subject]. A subject allows you to imperatively publish a new element at any time by calling the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subject\/send()] method. Adopt this pattern by using a `private` [doc:\/\/com.apple.Combine\/documentation\/Combine\/PassthroughSubject] or [doc:\/\/com.apple.Combine\/documentation\/Combine\/CurrentValueSubject], then expose this publicly as an [doc:\/\/com.apple.Combine\/documentation\/Combine\/AnyPublisher]:\n\nWith this arrangement, instead of setting a closure property, callers perform their work in a subscriber, such as [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/sink(receiveValue:)]:\n\nOne advantage to using Combine is that the subject can call [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subject\/send(completion:)] to tell the subscriber that no further events are forthcoming, or that an error occurred.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/using-combine-for-your-app-s-asynchronous-code\ncrawled: 2025-12-12T19:05:00Z\n---\n\n# Using Combine for Your App’s Asynchronous Code\n\n**Article**\n\nApply common patterns to migrate your closure-based, event-handling code.\n\n## Overview\n\nYour app may use common patterns to handle asynchronous events, such as:\n\n- Completion handlers, in which a caller provides a closure to execute once, after a potentially long-running task completes.\n- Closure properties, in which a caller provides a closure to invoke every time a given asynchronous event occurs.\n\nCombine provides compelling equivalents to these patterns, which allow you to eliminate boilerplate implementations, and leverage its many operators. As you adopt Combine elsewhere in your app, converting your asynchronous call points to Combine improves your code’s consistency and readability.\n\n\n\n### Replace Completion-Handler Closures with Futures\n\nA completion handler is a closure accepted by a function that executes after the function completes its work. You typically implement this by invoking the completion handler directly when the function finishes its work, storing the closure outside the function if necessary. For example, the following function accepts a closure and then executes it after a two-second delay:\n\n```swift\nfunc performAsyncAction(completionHandler: @escaping () -> Void) {\n    DispatchQueue.main.asyncAfter(deadline:.now() + 2) {\n        completionHandler()\n    }\n}\n```\n\nYou can replace this pattern with a Combine [doc:\/\/com.apple.Combine\/documentation\/Combine\/Future], a publisher that performs some work and then asynchronously signals success or failure. If it succeeds, the future executes a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Future\/Promise], a closure that receives the element produced by the future. You can replace the previous function as follows:\n\n```swift\nfunc performAsyncActionAsFuture() -> Future <Void, Never> {\n    return Future() { promise in\n        DispatchQueue.main.asyncAfter(deadline:.now() + 2) {\n            promise(Result.success(()))\n        }\n    }\n}\n```\n\nRather than explicitly invoking a closure when the work completes, the future invokes the promise passed to it, passing in a [doc:\/\/com.apple.documentation\/documentation\/Swift\/Result] that indicates success or failure. The caller receives this result asynchronously from the future. Because [doc:\/\/com.apple.Combine\/documentation\/Combine\/Future] is a Combine [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher], the caller attaches it to an optional chain of operators, ending with a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subscriber], like [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/sink(receiveValue:)]:\n\n```swift\ncancellable = performAsyncActionAsFuture()\n    .sink() { _ in print(\"Future succeeded.\") }\n```\n\n### Use Output Types to Represent a Future’s Parameters\n\nSometimes, a long-running task generates a value that it passes to a completion handler as a parameter. To replicate this functionality in Combine, declare the parameter as the output type published by the future. The following example produces a randomly-generated integer, and passes it to the promise by declaring `Int` as the future’s output type:\n\n```swift\nfunc performAsyncActionAsFutureWithParameter() -> Future <Int, Never> {\n    return Future() { promise in\n        DispatchQueue.main.asyncAfter(deadline:.now() + 2) {\n            let rn = Int.random(in: 1...10)\n            promise(Result.success(rn))\n        }\n    }\n}\n```\n\nBy declaring that the future produces `Int` elements, the future can use the [doc:\/\/com.apple.documentation\/documentation\/Swift\/Result] type to pass an `Int` value to the promise. When the promise executes, the future publishes the value, which a caller can receive with a subscriber like [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/sink(receiveValue:)]:\n\n```swift\ncancellable = performAsyncActionAsFutureWithParameter()\n    .sink() { rn in print(\"Got random number \\(rn).\") }\n```\n\n### Replace Repeatedly Invoked Closures with Subjects\n\nYour app may also have the common pattern of using a closure as a property to invoke when certain events happen. These properties often have names starting with `on`, and their call points look like the following:\n\n```swift\nvc.onDoSomething = { print(\"Did something.\") }\n```\n\nWith Combine, you can replace this pattern by using a [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subject]. A subject allows you to imperatively publish a new element at any time by calling the [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subject\/send()] method. Adopt this pattern by using a `private` [doc:\/\/com.apple.Combine\/documentation\/Combine\/PassthroughSubject] or [doc:\/\/com.apple.Combine\/documentation\/Combine\/CurrentValueSubject], then expose this publicly as an [doc:\/\/com.apple.Combine\/documentation\/Combine\/AnyPublisher]:\n\n```swift\nprivate lazy var myDoSomethingSubject = PassthroughSubject<Void, Never>()\nlazy var doSomethingSubject = myDoSomethingSubject.eraseToAnyPublisher()\n```\n\nWith this arrangement, instead of setting a closure property, callers perform their work in a subscriber, such as [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/sink(receiveValue:)]:\n\n```swift\ncancellable = vc.doSomethingSubject\n    .sink() { print(\"Did something with Combine.\") }\n```\n\nOne advantage to using Combine is that the subject can call [doc:\/\/com.apple.Combine\/documentation\/Combine\/Subject\/send(completion:)] to tell the subscriber that no further events are forthcoming, or that an error occurred.\n\n\n\n## Combine Migration\n\n- **Routing Notifications to Combine Subscribers**: Deliver notifications to subscribers by using notification centers’ publishers.\n- **Replacing Foundation Timers with Timer Publishers**: Publish elements periodically by using a timer.\n- **Performing Key-Value Observing with Combine**: Expose KVO changes with a Combine publisher.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Deliver notifications to subscribers by using notification centers’ publishers.",
+          "name" : "Routing Notifications to Combine Subscribers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/routing-notifications-to-combine-subscribers"
+        },
+        {
+          "description" : "Publish elements periodically by using a timer.",
+          "name" : "Replacing Foundation Timers with Timer Publishers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/replacing-foundation-timers-with-timer-publishers"
+        },
+        {
+          "description" : "Expose KVO changes with a Combine publisher.",
+          "name" : "Performing Key-Value Observing with Combine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/performing-key-value-observing-with-combine"
+        }
+      ],
+      "title" : "Combine Migration"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Using Combine for Your App’s Asynchronous Code",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/using-combine-for-your-app-s-asynchronous-code"
+}

@@ -1,0 +1,145 @@
+{
+  "abstract" : "A collection of nodes that describes the navigability of a game world and provides *pathfinding* methods to search for routes through that space.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSCoding",
+    "NSCopying",
+    "NSObjectProtocol",
+    "NSSecureCoding"
+  ],
+  "contentHash" : "578075c866049478dd21e4e88249c42562fedc7fff8069da8ddf6a0033bf7d4b",
+  "crawledAt" : "2025-12-14T21:16:27Z",
+  "declaration" : {
+    "code" : "class GKGraph",
+    "language" : "swift"
+  },
+  "id" : "1E324D4A-3384-47EC-AF3C-2771CEC993D7",
+  "inheritedBy" : [
+    "GKGridGraph",
+    "GKMeshGraph",
+    "GKObstacleGraph"
+  ],
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "GameplayKit",
+  "overview" : "## Overview\n\nIndividual nodes in a graph represent discrete locations that a character or other object in your game can occupy, and the connections between adjacent nodes represent the ability of a game entity to travel from one location to another. Use the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGraph] class to create a general graph, or the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGridGraph], [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKObstacleGraph], or [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKMeshGraph] subclass to generate specialized graphs that contain more information about the geometry of your game world.\n\nEach set of graph and node classes can generate graphs for different kinds of spaces:\n\nThe graphs modeled by this class are always *directed*—that is, a connection between two nodes describes one direction of travel between them. To enable travel between two nodes in either direction, you must create a connection in each direction. You can choose to connect both directions at once with the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGraph\/connectToLowestCostNode(node:bidirectional:)] method (for graphs) or the addConnection:bidirectional: method (for nodes).\n\nUsing a graph for pathfinding typically involves three major steps:\n\nTo learn more about graphs and pathfinding, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/GameplayKit_Guide\/Pathfinding.html#\/\/apple_ref\/doc\/uid\/TP40015172-CH3] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/GameplayKit_Guide\/index.html#\/\/apple_ref\/doc\/uid\/TP40015172].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/gameplaykit\/gkgraph\ncrawled: 2025-12-14T21:16:27Z\n---\n\n# GKGraph\n\n**Class**\n\nA collection of nodes that describes the navigability of a game world and provides *pathfinding* methods to search for routes through that space.\n\n## Declaration\n\n```swift\nclass GKGraph\n```\n\n## Overview\n\nIndividual nodes in a graph represent discrete locations that a character or other object in your game can occupy, and the connections between adjacent nodes represent the ability of a game entity to travel from one location to another. Use the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGraph] class to create a general graph, or the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGridGraph], [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKObstacleGraph], or [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKMeshGraph] subclass to generate specialized graphs that contain more information about the geometry of your game world.\n\nEach set of graph and node classes can generate graphs for different kinds of spaces:\n\n- The base classes [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGraph] and [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGraphNode] contain functionality general to all graphs and nodes. You can also use these classes on their own to construct graphs that contain no geometry information. This option is useful for games where the connections between spaces are more important than their physical locations, such as board games.\n- Use the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGridGraph] and [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGridGraphNode] classes to describe game worlds that constrain movement to an integer grid, such as tactical role-playing games.\n- Use the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKObstacleGraph] or [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKMeshGraph] class to describe 2D game worlds that allow continuous movement in open spaces that are interrupted by impassable obstacles ([doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKPolygonObstacle] objects). Obstacle graphs automatically generate nodes containing 2D point information ([doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGraphNode2D] objects), and you can also add your own such nodes representing locations of interest.\n\nThe graphs modeled by this class are always *directed*—that is, a connection between two nodes describes one direction of travel between them. To enable travel between two nodes in either direction, you must create a connection in each direction. You can choose to connect both directions at once with the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGraph\/connectToLowestCostNode(node:bidirectional:)] method (for graphs) or the addConnection:bidirectional: method (for nodes).\n\nUsing a graph for pathfinding typically involves three major steps:\n\n1. Create a graph once (for example, when initializing a game level class) with static information about your game world.\n2. When you need to find a route between points, connect temporary nodes to the graph at those points. Use the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGraph\/connectToLowestCostNode(node:bidirectional:)] method to connect nodes using their own geometry information, or the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKObstacleGraph\/connectUsingObstacles(node:)] or [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGridGraph\/connectToAdjacentNodes(node:)] method to use the additional constraints of obstacle and grid graphs.\n3. Call the [doc:\/\/com.apple.gameplaykit\/documentation\/GameplayKit\/GKGraph\/findPath(from:to:)] method to find a route between locations in the graph. This method returns an array of graph nodes, starting with the requested start point of the path, and proceeding to adjacent nodes in order until it reaches the requested end point. Use the geometry information contained in each node to make use of the route—for example, in a SpriteKit game you might create a sequence of move actions to move a character from point to point along the path.\n4. The temporary nodes you created for finding a path typically have little usefulness after a path has been found. Remove those nodes before reusing the graph for future searches.\n\nTo learn more about graphs and pathfinding, see [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/GameplayKit_Guide\/Pathfinding.html#\/\/apple_ref\/doc\/uid\/TP40015172-CH3] in [https:\/\/developer.apple.com\/library\/archive\/documentation\/General\/Conceptual\/GameplayKit_Guide\/index.html#\/\/apple_ref\/doc\/uid\/TP40015172].\n\n## Creating a Graph\n\n- **init(_:)**: Initializes a graph with the specified list of nodes.\n\n## Working with Nodes in a Graph\n\n- **add(_:)**: Adds the specified nodes to the graph.\n- **connectToLowestCostNode(node:bidirectional:)**: Adds a node to the graph, connecting it to the node already in the graph for which the connection has the lowest cost.\n- **remove(_:)**: Removes the specified nodes from the graph.\n- **nodes**: The list of nodes in the graph.\n\n## Pathfinding with a Graph\n\n- **findPath(from:to:)**: Computes and returns a sequence of nodes that represents the shortest traversal of the graph between the specified nodes.\n\n## Pathfinding\n\n- **GKObstacleGraph**: A navigation graph for 2D game worlds that creates a minimal network for precise pathfinding around obstacles.\n- **GKMeshGraph**: A navigation graph for 2D game worlds that creates a space-filling network for smooth pathfinding around obstacles.\n- **GKGridGraph**: A navigation graph for 2D game worlds where movement is constrained to an integer grid.\n- **GKGraphNode**: A single node in a navigation graph for use in pathfinding.\n- **GKGraphNode2D**: A node in a navigation graph, associated with a point in continuous 2D space.\n- **GKGraphNode3D**: A node in a navigation graph, associated with a point in continuous 3D space.\n- **GKGridGraphNode**: A node in a navigation graph, associated with a position on a discrete two-dimensional grid.\n\n## Inherits From\n\n- NSObject\n\n## Inherited By\n\n- GKGridGraph\n- GKMeshGraph\n- GKObstacleGraph\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSCoding\n- NSCopying\n- NSObjectProtocol\n- NSSecureCoding\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a graph with the specified list of nodes.",
+          "name" : "init(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGraph\/init(_:)"
+        }
+      ],
+      "title" : "Creating a Graph"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Adds the specified nodes to the graph.",
+          "name" : "add(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGraph\/add(_:)"
+        },
+        {
+          "description" : "Adds a node to the graph, connecting it to the node already in the graph for which the connection has the lowest cost.",
+          "name" : "connectToLowestCostNode(node:bidirectional:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGraph\/connectToLowestCostNode(node:bidirectional:)"
+        },
+        {
+          "description" : "Removes the specified nodes from the graph.",
+          "name" : "remove(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGraph\/remove(_:)"
+        },
+        {
+          "description" : "The list of nodes in the graph.",
+          "name" : "nodes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGraph\/nodes"
+        }
+      ],
+      "title" : "Working with Nodes in a Graph"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Computes and returns a sequence of nodes that represents the shortest traversal of the graph between the specified nodes.",
+          "name" : "findPath(from:to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGraph\/findPath(from:to:)"
+        }
+      ],
+      "title" : "Pathfinding with a Graph"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A navigation graph for 2D game worlds that creates a minimal network for precise pathfinding around obstacles.",
+          "name" : "GKObstacleGraph",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKObstacleGraph"
+        },
+        {
+          "description" : "A navigation graph for 2D game worlds that creates a space-filling network for smooth pathfinding around obstacles.",
+          "name" : "GKMeshGraph",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKMeshGraph"
+        },
+        {
+          "description" : "A navigation graph for 2D game worlds where movement is constrained to an integer grid.",
+          "name" : "GKGridGraph",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGridGraph"
+        },
+        {
+          "description" : "A single node in a navigation graph for use in pathfinding.",
+          "name" : "GKGraphNode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGraphNode"
+        },
+        {
+          "description" : "A node in a navigation graph, associated with a point in continuous 2D space.",
+          "name" : "GKGraphNode2D",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGraphNode2D"
+        },
+        {
+          "description" : "A node in a navigation graph, associated with a point in continuous 3D space.",
+          "name" : "GKGraphNode3D",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGraphNode3D"
+        },
+        {
+          "description" : "A node in a navigation graph, associated with a position on a discrete two-dimensional grid.",
+          "name" : "GKGridGraphNode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GameplayKit\/GKGridGraphNode"
+        }
+      ],
+      "title" : "Pathfinding"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "GKGraph",
+  "url" : "https:\/\/developer.apple.com\/documentation\/gameplaykit\/gkgraph"
+}

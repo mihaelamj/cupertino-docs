@@ -1,0 +1,516 @@
+{
+  "abstract" : "A protocol to which text views conform to asynchronously integrate with the text system.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "3d3f0ae8a262623a6a5cd3b618a8bc5e96a63ed707381a0104b9d5cc593e2dd2",
+  "crawledAt" : "2025-12-14T20:05:28Z",
+  "declaration" : {
+    "code" : "protocol BETextInput : BEResponderEditActions, BETextSelectionDirectionNavigation, UIKeyInput",
+    "language" : "swift"
+  },
+  "id" : "040CFFD1-F1AB-4BB5-A8B2-602932D262C3",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "BrowserEngineKit",
+  "overview" : "## Overview\n\nYou adopt `BETextInput` in your text field when you need to perform asynchronous actions to provide information for the text system, for example, making an XPC request to a web content extension. For more information, see [doc:\/\/com.apple.BrowserEngineKit\/documentation\/BrowserEngineKit\/integrating-custom-browser-text-views-with-uikit].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/browserenginekit\/betextinput\ncrawled: 2025-12-14T20:05:28Z\n---\n\n# BETextInput\n\n**Protocol**\n\nA protocol to which text views conform to asynchronously integrate with the text system.\n\n## Declaration\n\n```swift\nprotocol BETextInput : BEResponderEditActions, BETextSelectionDirectionNavigation, UIKeyInput\n```\n\n## Overview\n\nYou adopt `BETextInput` in your text field when you need to perform asynchronous actions to provide information for the text system, for example, making an XPC request to a web content extension. For more information, see [doc:\/\/com.apple.BrowserEngineKit\/documentation\/BrowserEngineKit\/integrating-custom-browser-text-views-with-uikit].\n\n## Updating the text system\n\n- **asyncInputDelegate**: A system-provided input delegate is assigned when the system is interested in input changes.\n- **canPerformAction(_:withSender:)**: Returns whether text related actions, such those included in UIResponderStandardEditActions, can be handled\n\n## Handling text input\n\n- **isEditable**: Reflects the ability to modify text\n- **handleKeyEntry(_:completionHandler:)**: Accepts key-entry events from the text system for the text view to process.\n- **shiftKeyStateChanged(fromState:toState:)**: Indicates a transition in shift state\n- **text(in:)**: Returns the text in the specified range.\n- **offset(from:to:)**: Returns the number of UTF-16 characters between one text position and another text position.\n- **setBaseWritingDirection(_:for:)**: Sets the base writing direction for a specified range of text in a document.\n- **delete(in:to:)**: Deletes text by the specified direction and granularity.  Current supported combinations include:\n\n## Editing and correcting text\n\n- **transposeCharactersAroundSelection()**: Transposes the characters on either side of the caret in response to the key command, ctrl + T\n- **replaceText(_:withText:options:completionHandler:)**: Replace the specified text preceding the current selection.\n- **requestTextContextForAutocorrection(completionHandler:)**: Invoked by the system to gather context around the current selection.  Clients should generally include the setence that contains the current selection and include the previous sentence if the current selection is at a boundary.\n- **requestTextRects(for:withCompletionHandler:)**: Invoked by the system to gather context for the presentation of various text related UI’s. Completion handler should be invoked with the `UITextSelectionRect`s for the substring nearest to the caret that matches the given `input`\n- **automaticallyPresentEditMenu**: Controls whether the edit menu is allowed to be presented or should be suppressed.\n- **requestPreferredArrowDirectionForEditMenu(completionHandler:)**: Invoked by the system to gather context, including the client’s preference for how the edit menu should be positioned relative to the selected text.\n- **systemWillPresentEditMenu(withAnimator:)**: Invoked by the system when it is about to present an edit menu with an animator.\n- **systemWillDismissEditMenu(withAnimator:)**: Invoked by the system when it is about to dismiss an edit menu with an animator.\n\n## Input traits\n\n- **extendedTextInputTraits**: Object from which the BEExtendedTextInputTraits will be gathered.\n- **textStyling(at:in:)**: Returns a dictionary containing NSAttributedString keys represeting appearance customizations.\n\n## Replacing text\n\n- **isReplaceAllowed**: Returns whether replacement should be allowed for an editable element.\n- **replaceSelectedText(_:withText:)**: Replaces the specified `text` with `replacementText`\n\n## Handling text gestures\n\n- **updateCurrentSelection(to:from:in:)**: Indicates the `point` the text interaction gesture is tracking has changed\n- **setSelection(from:to:gesture:state:)**: Notifies the text view that its selection needs to change to the text between the given points.\n- **adjustSelectionBoundary(to:touchPhase:baseIsStart:flags:)**: Adjusts the selection’s start or end boundary specified by `boundaryIsStart` to the `point`\n- **textInteractionGesture(_:shouldBeginAt:)**: Returns whether a gesture with the given `gestureType` should begin for the given `point`\n\n## Selecting text\n\n- **selectedText**: String representing the selected text.\n- **selectedTextRange**: Range representing the selected text.\n- **isSelectionAtDocumentStart**: Represents whether the current selection is at the beginning of the document\n- **caretRect(for:)**: Returns a rectangle to draw the caret at a specified insertion point.\n- **selectionRects(for:)**: Returns an array of selection rects corresponding to the range of text.\n- **selectWordForReplacement()**: Selects a word with autocorrect replacement suggestions when it is tapped\n- **updateSelection(extent:boundary:completionHandler:)**: Includes the text up to the given point in the current text selection.\n- **selectText(in:at:completionHandler:)**: Selects the text within the given granularity at the given point in the text view.\n- **selectPosition(at:completionHandler:)**: Sets the selection caret to the given point\n- **selectPosition(at:for:completionHandler:)**: Sets the selection caret to the given point.  Also includes a convenience document context request.\n- **adjustSelection(by:completionHandler:)**: Adjusts the selection by the moving the selected range by the given `range`, in character granularity units.\n- **move(byOffset:)**: Adjusts the current selection by `offset` in character granularity units\n- **moveSelection(atBoundary:in:completionHandler:)**: Moves the caret to relative to the current position in the `direction` to the given `granularity`. The `direction` is “forward” or “backward” in accordance with the directionality of the language.\n- **selectTextForEditMenuWithLocation(inView:completionHandler:)**: Indicates the edit menu is being shown at the given location in the text input view’s coordinate space.\n\n## Marking text\n\n- **markedText**: String for the text that has been marked as part of an active input session\n- **attributedMarkedText**: Attributed string for the text that has been marked as part of an active input session\n- **markedTextRange**: Range representing the position of the markedText.\n- **hasMarkedText**: Indicates whether there any text is currently marked as part of an active input session\n- **setMarkedText(_:selectedRange:)**: Inserts the provided text and marks it to indicate that it is part of an active input session.\n- **setAttributedMarkedText(_:selectedRange:)**: Inserts the provided styled text and marks it to indicate that it is part of an active input session.\n- **unmarkText()**: Unmarks the currently marked text\n- **isPointNearMarkedText(_:)**: Returns whether a point should be considered “near” the marked text. Used to determine whether text interaction gestures near marked text should begin.\n\n## Document context\n\n- **requestDocumentContext(_:completionHandler:)**: Gathers context about the current document for the system\n\n## Dictation\n\n- **willInsertFinalDictationResult()**: Indicates the system is about to insert the final dictation result.\n- **replaceDictatedText(_:withText:)**: Inserts\/replaces text for a dictation.\n- **didInsertFinalDictationResult()**: Indicates system has inserted the final dictation result\n\n## Text alternatives\n\n- **alternativesForSelectedText()**: Returns the text alternatives that are available to the text input object.\n- **add(_:)**: Adds text alternatives to the text input object for the current selection\n- **insert(_:)**: Inserts the given `text` or one of it’s alternative texts available on `alternatives`\n\n## Text placeholders\n\n- **insertTextPlaceholder(size:completionHandler:)**: Inserts a placeholder object to reserve visual space during text input. If `size.height` is less than or equal to zero, then the placeholder is inline and line height. If `size.height` is greather than zero, then the placeholder is treated as a paragraph of height `size.height`.\n- **remove(_:willInsertText:completionHandler:)**: Removes a placeholder object from the text input view.\n\n## Text suggestions\n\n- **insert(_:)**: Inserts a `textSuggestion` in response to a user suggestion selection\n\n## Geometry\n\n- **textInputView**: An affiliated view that provides a coordinate system for all geometric values in this protocol.\n- **textFirstRect**: Returns a rect representing the bounds of the first line of marked text, if marked text is set.\n- **textLastRect**: Returns a rect representing the bounds of the last line of marked text, if marked text is set.\n- **unobscuredContentRect**: Rect used to place UI (such as selection handles) in a location that isn’t obscurred by app UI.\n- **unscaledView**: View representing the web content that is agnostic of zoom state. Used to draw zoom agnostic system UI elements, such as the selection handles\n- **selectionClipRect**: Rect representing the bounds of editable elements, used to ensure and UI don’t overflow outside them\n- **autoscroll(to:)**: Indicates autoscrolling has been triggered by a text interaction gesture.\n- **cancelAutoscroll()**: Indicates autoscrolling is complete.\n\n## Instance Properties\n\n- **selectionContainerViewAboveText**: If different than the text input view, one can return a container view here for selection views that draw *above* text. Includes selection range adjustment handles. If this is unimplemented or nil is returned, views are to be installed onto the text input view.\n- **selectionContainerViewBelowText**: If different than the text input view, one can return a container view here for selection views that draw *below* text. Includes the selection highlight view. If this is unimplemented or nil is returned, views are to be installed onto the text input view.\n\n## Instance Methods\n\n- **keyboardWillDismiss()**: Called when the user has requested the keyboard to dismiss itself.\n- **removeTextAlternatives()**: Removes text alternatives from the text input object for the current selection\n\n## Custom text views\n\n- **Integrating custom browser text views with UIKit**: Process keyboard interactions asynchronously in your iOS browser app’s text view.\n- **Supporting extended text interactions**: Share content, add replacement shortcuts, and perform other rich actions in browser text views.\n- **BETextInputDelegate**: A delegate protocol that a browser text view uses to notify the text system of changes.\n\n## Inherits From\n\n- BEResponderEditActions\n- BETextSelectionDirectionNavigation\n- NSObjectProtocol\n- UIKeyInput\n- UIResponderStandardEditActions\n- UITextInputTraits\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A system-provided input delegate is assigned when the system is interested in input changes.",
+          "name" : "asyncInputDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/asyncInputDelegate"
+        },
+        {
+          "description" : "Returns whether text related actions, such those included in UIResponderStandardEditActions, can be handled",
+          "name" : "canPerformAction(_:withSender:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/canPerformAction(_:withSender:)"
+        }
+      ],
+      "title" : "Updating the text system"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Reflects the ability to modify text",
+          "name" : "isEditable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/isEditable"
+        },
+        {
+          "description" : "Accepts key-entry events from the text system for the text view to process.",
+          "name" : "handleKeyEntry(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/handleKeyEntry(_:completionHandler:)"
+        },
+        {
+          "description" : "Indicates a transition in shift state",
+          "name" : "shiftKeyStateChanged(fromState:toState:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/shiftKeyStateChanged(fromState:toState:)"
+        },
+        {
+          "description" : "Returns the text in the specified range.",
+          "name" : "text(in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/text(in:)"
+        },
+        {
+          "description" : "Returns the number of UTF-16 characters between one text position and another text position.",
+          "name" : "offset(from:to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/offset(from:to:)"
+        },
+        {
+          "description" : "Sets the base writing direction for a specified range of text in a document.",
+          "name" : "setBaseWritingDirection(_:for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/setBaseWritingDirection(_:for:)"
+        },
+        {
+          "description" : "Deletes text by the specified direction and granularity.  Current supported combinations include:",
+          "name" : "delete(in:to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/delete(in:to:)"
+        }
+      ],
+      "title" : "Handling text input"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Transposes the characters on either side of the caret in response to the key command, ctrl + T",
+          "name" : "transposeCharactersAroundSelection()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/transposeCharactersAroundSelection()"
+        },
+        {
+          "description" : "Replace the specified text preceding the current selection.",
+          "name" : "replaceText(_:withText:options:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/replaceText(_:withText:options:completionHandler:)"
+        },
+        {
+          "description" : "Invoked by the system to gather context around the current selection.  Clients should generally include the setence that contains the current selection and include the previous sentence if the current selection is at a boundary.",
+          "name" : "requestTextContextForAutocorrection(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/requestTextContextForAutocorrection(completionHandler:)"
+        },
+        {
+          "description" : "Invoked by the system to gather context for the presentation of various text related UI’s. Completion handler should be invoked with the `UITextSelectionRect`s for the substring nearest to the caret that matches the given `input`",
+          "name" : "requestTextRects(for:withCompletionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/requestTextRects(for:withCompletionHandler:)"
+        },
+        {
+          "description" : "Controls whether the edit menu is allowed to be presented or should be suppressed.",
+          "name" : "automaticallyPresentEditMenu",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/automaticallyPresentEditMenu"
+        },
+        {
+          "description" : "Invoked by the system to gather context, including the client’s preference for how the edit menu should be positioned relative to the selected text.",
+          "name" : "requestPreferredArrowDirectionForEditMenu(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/requestPreferredArrowDirectionForEditMenu(completionHandler:)"
+        },
+        {
+          "description" : "Invoked by the system when it is about to present an edit menu with an animator.",
+          "name" : "systemWillPresentEditMenu(withAnimator:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/systemWillPresentEditMenu(withAnimator:)"
+        },
+        {
+          "description" : "Invoked by the system when it is about to dismiss an edit menu with an animator.",
+          "name" : "systemWillDismissEditMenu(withAnimator:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/systemWillDismissEditMenu(withAnimator:)"
+        }
+      ],
+      "title" : "Editing and correcting text"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Object from which the BEExtendedTextInputTraits will be gathered.",
+          "name" : "extendedTextInputTraits",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/extendedTextInputTraits"
+        },
+        {
+          "description" : "Returns a dictionary containing NSAttributedString keys represeting appearance customizations.",
+          "name" : "textStyling(at:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/textStyling(at:in:)"
+        }
+      ],
+      "title" : "Input traits"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns whether replacement should be allowed for an editable element.",
+          "name" : "isReplaceAllowed",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/isReplaceAllowed"
+        },
+        {
+          "description" : "Replaces the specified `text` with `replacementText`",
+          "name" : "replaceSelectedText(_:withText:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/replaceSelectedText(_:withText:)"
+        }
+      ],
+      "title" : "Replacing text"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Indicates the `point` the text interaction gesture is tracking has changed",
+          "name" : "updateCurrentSelection(to:from:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/updateCurrentSelection(to:from:in:)"
+        },
+        {
+          "description" : "Notifies the text view that its selection needs to change to the text between the given points.",
+          "name" : "setSelection(from:to:gesture:state:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/setSelection(from:to:gesture:state:)"
+        },
+        {
+          "description" : "Adjusts the selection’s start or end boundary specified by `boundaryIsStart` to the `point`",
+          "name" : "adjustSelectionBoundary(to:touchPhase:baseIsStart:flags:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/adjustSelectionBoundary(to:touchPhase:baseIsStart:flags:)"
+        },
+        {
+          "description" : "Returns whether a gesture with the given `gestureType` should begin for the given `point`",
+          "name" : "textInteractionGesture(_:shouldBeginAt:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/textInteractionGesture(_:shouldBeginAt:)"
+        }
+      ],
+      "title" : "Handling text gestures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "String representing the selected text.",
+          "name" : "selectedText",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectedText"
+        },
+        {
+          "description" : "Range representing the selected text.",
+          "name" : "selectedTextRange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectedTextRange"
+        },
+        {
+          "description" : "Represents whether the current selection is at the beginning of the document",
+          "name" : "isSelectionAtDocumentStart",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/isSelectionAtDocumentStart"
+        },
+        {
+          "description" : "Returns a rectangle to draw the caret at a specified insertion point.",
+          "name" : "caretRect(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/caretRect(for:)"
+        },
+        {
+          "description" : "Returns an array of selection rects corresponding to the range of text.",
+          "name" : "selectionRects(for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectionRects(for:)"
+        },
+        {
+          "description" : "Selects a word with autocorrect replacement suggestions when it is tapped",
+          "name" : "selectWordForReplacement()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectWordForReplacement()"
+        },
+        {
+          "description" : "Includes the text up to the given point in the current text selection.",
+          "name" : "updateSelection(extent:boundary:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/updateSelection(extent:boundary:completionHandler:)"
+        },
+        {
+          "description" : "Selects the text within the given granularity at the given point in the text view.",
+          "name" : "selectText(in:at:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectText(in:at:completionHandler:)"
+        },
+        {
+          "description" : "Sets the selection caret to the given point",
+          "name" : "selectPosition(at:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectPosition(at:completionHandler:)"
+        },
+        {
+          "description" : "Sets the selection caret to the given point.  Also includes a convenience document context request.",
+          "name" : "selectPosition(at:for:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectPosition(at:for:completionHandler:)"
+        },
+        {
+          "description" : "Adjusts the selection by the moving the selected range by the given `range`, in character granularity units.",
+          "name" : "adjustSelection(by:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/adjustSelection(by:completionHandler:)"
+        },
+        {
+          "description" : "Adjusts the current selection by `offset` in character granularity units",
+          "name" : "move(byOffset:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/move(byOffset:)"
+        },
+        {
+          "description" : "Moves the caret to relative to the current position in the `direction` to the given `granularity`. The `direction` is “forward” or “backward” in accordance with the directionality of the language.",
+          "name" : "moveSelection(atBoundary:in:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/moveSelection(atBoundary:in:completionHandler:)"
+        },
+        {
+          "description" : "Indicates the edit menu is being shown at the given location in the text input view’s coordinate space.",
+          "name" : "selectTextForEditMenuWithLocation(inView:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectTextForEditMenuWithLocation(inView:completionHandler:)"
+        }
+      ],
+      "title" : "Selecting text"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "String for the text that has been marked as part of an active input session",
+          "name" : "markedText",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/markedText"
+        },
+        {
+          "description" : "Attributed string for the text that has been marked as part of an active input session",
+          "name" : "attributedMarkedText",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/attributedMarkedText"
+        },
+        {
+          "description" : "Range representing the position of the markedText.",
+          "name" : "markedTextRange",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/markedTextRange"
+        },
+        {
+          "description" : "Indicates whether there any text is currently marked as part of an active input session",
+          "name" : "hasMarkedText",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/hasMarkedText"
+        },
+        {
+          "description" : "Inserts the provided text and marks it to indicate that it is part of an active input session.",
+          "name" : "setMarkedText(_:selectedRange:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/setMarkedText(_:selectedRange:)"
+        },
+        {
+          "description" : "Inserts the provided styled text and marks it to indicate that it is part of an active input session.",
+          "name" : "setAttributedMarkedText(_:selectedRange:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/setAttributedMarkedText(_:selectedRange:)"
+        },
+        {
+          "description" : "Unmarks the currently marked text",
+          "name" : "unmarkText()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/unmarkText()"
+        },
+        {
+          "description" : "Returns whether a point should be considered “near” the marked text. Used to determine whether text interaction gestures near marked text should begin.",
+          "name" : "isPointNearMarkedText(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/isPointNearMarkedText(_:)"
+        }
+      ],
+      "title" : "Marking text"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Gathers context about the current document for the system",
+          "name" : "requestDocumentContext(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/requestDocumentContext(_:completionHandler:)"
+        }
+      ],
+      "title" : "Document context"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Indicates the system is about to insert the final dictation result.",
+          "name" : "willInsertFinalDictationResult()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/willInsertFinalDictationResult()"
+        },
+        {
+          "description" : "Inserts\/replaces text for a dictation.",
+          "name" : "replaceDictatedText(_:withText:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/replaceDictatedText(_:withText:)"
+        },
+        {
+          "description" : "Indicates system has inserted the final dictation result",
+          "name" : "didInsertFinalDictationResult()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/didInsertFinalDictationResult()"
+        }
+      ],
+      "title" : "Dictation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the text alternatives that are available to the text input object.",
+          "name" : "alternativesForSelectedText()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/alternativesForSelectedText()"
+        },
+        {
+          "description" : "Adds text alternatives to the text input object for the current selection",
+          "name" : "add(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/add(_:)"
+        },
+        {
+          "description" : "Inserts the given `text` or one of it’s alternative texts available on `alternatives`",
+          "name" : "insert(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/insert(_:)-6x7hd"
+        }
+      ],
+      "title" : "Text alternatives"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Inserts a placeholder object to reserve visual space during text input. If `size.height` is less than or equal to zero, then the placeholder is inline and line height. If `size.height` is greather than zero, then the placeholder is treated as a paragraph of height `size.height`.",
+          "name" : "insertTextPlaceholder(size:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/insertTextPlaceholder(size:completionHandler:)"
+        },
+        {
+          "description" : "Removes a placeholder object from the text input view.",
+          "name" : "remove(_:willInsertText:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/remove(_:willInsertText:completionHandler:)"
+        }
+      ],
+      "title" : "Text placeholders"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Inserts a `textSuggestion` in response to a user suggestion selection",
+          "name" : "insert(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/insert(_:)-5iryn"
+        }
+      ],
+      "title" : "Text suggestions"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An affiliated view that provides a coordinate system for all geometric values in this protocol.",
+          "name" : "textInputView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/textInputView"
+        },
+        {
+          "description" : "Returns a rect representing the bounds of the first line of marked text, if marked text is set.",
+          "name" : "textFirstRect",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/textFirstRect"
+        },
+        {
+          "description" : "Returns a rect representing the bounds of the last line of marked text, if marked text is set.",
+          "name" : "textLastRect",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/textLastRect"
+        },
+        {
+          "description" : "Rect used to place UI (such as selection handles) in a location that isn’t obscurred by app UI.",
+          "name" : "unobscuredContentRect",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/unobscuredContentRect"
+        },
+        {
+          "description" : "View representing the web content that is agnostic of zoom state. Used to draw zoom agnostic system UI elements, such as the selection handles",
+          "name" : "unscaledView",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/unscaledView"
+        },
+        {
+          "description" : "Rect representing the bounds of editable elements, used to ensure and UI don’t overflow outside them",
+          "name" : "selectionClipRect",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectionClipRect"
+        },
+        {
+          "description" : "Indicates autoscrolling has been triggered by a text interaction gesture.",
+          "name" : "autoscroll(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/autoscroll(to:)"
+        },
+        {
+          "description" : "Indicates autoscrolling is complete.",
+          "name" : "cancelAutoscroll()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/cancelAutoscroll()"
+        }
+      ],
+      "title" : "Geometry"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "If different than the text input view, one can return a container view here for selection views that draw *above* text. Includes selection range adjustment handles. If this is unimplemented or nil is returned, views are to be installed onto the text input view.",
+          "name" : "selectionContainerViewAboveText",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectionContainerViewAboveText"
+        },
+        {
+          "description" : "If different than the text input view, one can return a container view here for selection views that draw *below* text. Includes the selection highlight view. If this is unimplemented or nil is returned, views are to be installed onto the text input view.",
+          "name" : "selectionContainerViewBelowText",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/selectionContainerViewBelowText"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Called when the user has requested the keyboard to dismiss itself.",
+          "name" : "keyboardWillDismiss()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/keyboardWillDismiss()"
+        },
+        {
+          "description" : "Removes text alternatives from the text input object for the current selection",
+          "name" : "removeTextAlternatives()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInput\/removeTextAlternatives()"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Process keyboard interactions asynchronously in your iOS browser app’s text view.",
+          "name" : "Integrating custom browser text views with UIKit",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/integrating-custom-browser-text-views-with-uikit"
+        },
+        {
+          "description" : "Share content, add replacement shortcuts, and perform other rich actions in browser text views.",
+          "name" : "Supporting extended text interactions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/support-extended-text-interactions"
+        },
+        {
+          "description" : "A delegate protocol that a browser text view uses to notify the text system of changes.",
+          "name" : "BETextInputDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/BrowserEngineKit\/BETextInputDelegate"
+        }
+      ],
+      "title" : "Custom text views"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "BEResponderEditActions"
+        },
+        {
+          "name" : "BETextSelectionDirectionNavigation"
+        },
+        {
+          "name" : "NSObjectProtocol"
+        },
+        {
+          "name" : "UIKeyInput"
+        },
+        {
+          "name" : "UIResponderStandardEditActions"
+        },
+        {
+          "name" : "UITextInputTraits"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "BETextInput",
+  "url" : "https:\/\/developer.apple.com\/documentation\/browserenginekit\/betextinput"
+}

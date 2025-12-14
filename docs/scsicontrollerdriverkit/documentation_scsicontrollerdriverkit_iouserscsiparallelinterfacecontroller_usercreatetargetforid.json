@@ -1,0 +1,68 @@
+{
+  "abstract" : "Creates the specified target.",
+  "codeExamples" : [
+    {
+      "code" : "virtual void AsyncEventHandler ( OSAction *  action TARGET,                                 uint32_t    targetID ) = 0;\n\nvirtual void AsyncCreateTargetForID ( OSAction *  action,\n                                    uint32_t    targetID )\n                                    TYPE ( ExampleSCSIDext::AsyncEventHandler ) QUEUENAME ( AuxiliaryQueue );",
+      "language" : "objc"
+    },
+    {
+      "code" : "void\nIMPL ( MyCustomService, AsyncCreateTargetForID )\n{\n     kern_return_t ret;\n     …\n     ret = UserCreateTargetForID (targetID, NULL);\n     …\n}",
+      "language" : "objc"
+    },
+    {
+      "code" : "kern_return_t\nIMPL ( MyCustomService, UserStartController )\n{\n    …\n    ret = CreateActionAsyncCreateTargetForID ( sizeof ( void * ), &ivars->fAsyncEventHandler );\n    assert ( kIOReturnSuccess == ret );\n\n    AsyncEventHandler ( ivars->fAsyncEventHandler, targetID );\n    …\n}",
+      "language" : "objc"
+    }
+  ],
+  "contentHash" : "354a251480a8bcee3b8300f8d4bc432d226fa667b793cd1f590c4e05bcaf7533",
+  "crawledAt" : "2025-12-14T19:32:51Z",
+  "declaration" : {
+    "code" : "kern_return_t UserCreateTargetForID(SCSIDeviceIdentifier targetID, OSDictionary * targetDict);",
+    "language" : "swift"
+  },
+  "id" : "5256478B-5314-4E47-9E92-F94ECF41AD61",
+  "kind" : "method",
+  "language" : "occ",
+  "module" : "SCSIControllerDriverKit",
+  "overview" : "## Return Value\n\nA value that indicates the result of target creation. [doc:\/\/com.apple.documentation\/documentation\/DriverKit\/kIOReturnSuccess] indicates success. For error definitions, see [doc:\/\/com.apple.documentation\/documentation\/iokit\/iokit_constants].\n\n## Discussion\n\nYour driver extension class calls this method to create a new target for the `targetID`. The framework creates the new target before the call returns.\n\nAs part of the [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID] call, the kernel calls several APIs like [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserInitializeTargetForID] which run on the default dispatch queue of the dext. Synchronously calling [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID] from the default dispatch queue blocks the default dispatch queue until [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID] finishes. Subsequent calls from the kernel like [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserInitializeTargetForID] won’t have a chance to run on the default queue, leading to a deadlock.\n\nYou can avoid this problem by calling [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID] from an asynchronous handler function. Start by creating an async handler function for your custom dext class in its `iig` file, as shown below:\n\nThis handler function can then call [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID]:\n\nThen you can call this handler in [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserStartController]:\n\nThis implementation ensures [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserStartController] calls the event handler asynchronously, which frees up the default dispatch queue for subsequent calls.",
+  "platforms" : [
+    "Unsupported OS: driverkit"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID\ncrawled: 2025-12-14T19:32:51Z\n---\n\n# UserCreateTargetForID\n\n**Instance Method**\n\nCreates the specified target.\n\n## Declaration\n\n```swift\nkern_return_t UserCreateTargetForID(SCSIDeviceIdentifier targetID, OSDictionary * targetDict);\n```\n\n## Parameters\n\n- **targetID**: The ID of the target to create.\n- **targetDict**: An [doc:\/\/com.apple.documentation\/documentation\/DriverKit\/OSDictionary] containing all of the target properties.\n\n## Return Value\n\nA value that indicates the result of target creation. [doc:\/\/com.apple.documentation\/documentation\/DriverKit\/kIOReturnSuccess] indicates success. For error definitions, see [doc:\/\/com.apple.documentation\/documentation\/iokit\/iokit_constants].\n\n## Discussion\n\nYour driver extension class calls this method to create a new target for the `targetID`. The framework creates the new target before the call returns.\n\nAs part of the [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID] call, the kernel calls several APIs like [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserInitializeTargetForID] which run on the default dispatch queue of the dext. Synchronously calling [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID] from the default dispatch queue blocks the default dispatch queue until [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID] finishes. Subsequent calls from the kernel like [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserInitializeTargetForID] won’t have a chance to run on the default queue, leading to a deadlock.\n\nYou can avoid this problem by calling [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID] from an asynchronous handler function. Start by creating an async handler function for your custom dext class in its `iig` file, as shown below:\n\n```objc\nvirtual void AsyncEventHandler ( OSAction *  action TARGET,                                 uint32_t    targetID ) = 0;\n\nvirtual void AsyncCreateTargetForID ( OSAction *  action,\n                                    uint32_t    targetID )\n                                    TYPE ( ExampleSCSIDext::AsyncEventHandler ) QUEUENAME ( AuxiliaryQueue );\n```\n\nThis handler function can then call [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID]:\n\n```objc\nvoid\nIMPL ( MyCustomService, AsyncCreateTargetForID )\n{\n     kern_return_t ret;\n     …\n     ret = UserCreateTargetForID (targetID, NULL);\n     …\n}\n```\n\nThen you can call this handler in [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserStartController]:\n\n```objc\nkern_return_t\nIMPL ( MyCustomService, UserStartController )\n{\n    …\n    ret = CreateActionAsyncCreateTargetForID ( sizeof ( void * ), &ivars->fAsyncEventHandler );\n    assert ( kIOReturnSuccess == ret );\n\n    AsyncEventHandler ( ivars->fAsyncEventHandler, targetID );\n    …\n}\n```\n\nThis implementation ensures [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserStartController] calls the event handler asynchronously, which frees up the default dispatch queue for subsequent calls.\n\n## Managing Targets\n\n- **UserInitializeTargetForID**: Initializes a target device in response to a call from the framework.\n- **UserDestroyTargetForID**: Destroys the specified target.\n- **UserTargetPresentForID**: Checks if a specific target is present.\n- **UserSetTargetProperties**: Sets properties on the target.\n- **UserRemoveTargetProperties**: Removes properties from a target.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Initializes a target device in response to a call from the framework.",
+          "name" : "UserInitializeTargetForID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserInitializeTargetForID"
+        },
+        {
+          "description" : "Destroys the specified target.",
+          "name" : "UserDestroyTargetForID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserDestroyTargetForID"
+        },
+        {
+          "description" : "Checks if a specific target is present.",
+          "name" : "UserTargetPresentForID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserTargetPresentForID"
+        },
+        {
+          "description" : "Sets properties on the target.",
+          "name" : "UserSetTargetProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserSetTargetProperties"
+        },
+        {
+          "description" : "Removes properties from a target.",
+          "name" : "UserRemoveTargetProperties",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserRemoveTargetProperties"
+        }
+      ],
+      "title" : "Managing Targets"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "UserCreateTargetForID",
+  "url" : "https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserCreateTargetForID"
+}

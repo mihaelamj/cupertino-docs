@@ -1,0 +1,197 @@
+{
+  "abstract" : "A structure that creates an unfair lock.",
+  "codeExamples" : [
+    {
+      "code" : "enum MyState {\n    case idle\n    case loading\n    case complete(MyAsset)\n    case error(Error)\n}\nlet protectedState = OSAllocatedUnfairLock(initialState: MyState.idle)",
+      "language" : "swift"
+    },
+    {
+      "code" : "func myLoadMethod() {\n    protectedState.withLock { state in\n        state = .loading\n    }\n    var (resource, error) = loadMyResources()\n    if resource != nil {\n        protectedState.withLock { state in\n            state = .complete(resource)\n        }\n    } else {\n        protectedState.withLock { state in\n            state = .error(error!)\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let myLock = OSAllocatedUnfairLock()\nmyLock.withLock {\n    \/\/ Code that needs protection.\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "myLock.lock()\n\/\/ Code that needs protection.\nmyLock.unlock()",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "6fd6d362cff992b45e40e3b0ded4692bcb8002202191ddb157179b7f6606cfc7",
+  "crawledAt" : "2025-12-14T13:53:26Z",
+  "declaration" : {
+    "code" : "@frozen struct OSAllocatedUnfairLock<State>",
+    "language" : "swift"
+  },
+  "id" : "05AF3766-715B-4004-9BB7-0D6892D8160A",
+  "kind" : "struct",
+  "language" : "swift",
+  "module" : "os",
+  "overview" : "## Overview\n\nUnfair locks are low-level locks that block efficiently on contention. They’re useful for protecting code that loads stored resources. However, it’s unsafe to use [doc:\/\/com.apple.os\/documentation\/os\/os_unfair_lock] from Swift because it’s a value type and, therefore, doesn’t have a stable memory address. That means when you call [doc:\/\/com.apple.os\/documentation\/os\/os_unfair_lock_lock] or [doc:\/\/com.apple.os\/documentation\/os\/os_unfair_lock_unlock] and pass a lock object using the `&` operator, the system may lock or unlock the wrong object.\n\nInstead, use [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock], which avoids that pitfall because it doesn’t function as a value type, despite being a structure. All copied instances of an [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock] control the same underlying lock allocation.\n\nTo create a lock that protects operation state, create an enumeration that contains the possible states, then create a lock object, passing the initial state. Here’s an example of what that looks like for an asset load operation:\n\nStoring the state inside the lock helps track what the lock is protecting, and provides a way to safely access the state. To begin using the lock, call `withLock(_:)` or `withLockIfAvailable(_:)`, passing a closure that contains the code for the lock to protect, like in the following example:\n\nTo protect an operation with an externally defined state or no state, create a lock object without specifying an initial state. Nonscoped locking is more flexible, but offers no assistance in tracking the state of the operation the lock protects. To use a nonscoped lock, use `withLock(_:)` or `withLockIfAvailable(_:)`.\n\nYou can also use [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock] with the more traditional lock\/unlock approach by calling [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock\/lock()] before executing code that needs protection, and [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock\/unlock()] upon completion, like this:\n\nWhen using this approach, you must call [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock\/unlock()] from the same thread you use to call [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock\/lock()]. Because of this, it’s unsafe to use this approach across an `await` suspension point. When using a lock with asynchronous code, lock using a closure or, even better, consider using an [doc:\/\/com.apple.documentation\/documentation\/Swift\/Actor].",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/os\/osallocatedunfairlock\ncrawled: 2025-12-14T13:53:26Z\n---\n\n# OSAllocatedUnfairLock\n\n**Structure**\n\nA structure that creates an unfair lock.\n\n## Declaration\n\n```swift\n@frozen struct OSAllocatedUnfairLock<State>\n```\n\n## Overview\n\nUnfair locks are low-level locks that block efficiently on contention. They’re useful for protecting code that loads stored resources. However, it’s unsafe to use [doc:\/\/com.apple.os\/documentation\/os\/os_unfair_lock] from Swift because it’s a value type and, therefore, doesn’t have a stable memory address. That means when you call [doc:\/\/com.apple.os\/documentation\/os\/os_unfair_lock_lock] or [doc:\/\/com.apple.os\/documentation\/os\/os_unfair_lock_unlock] and pass a lock object using the `&` operator, the system may lock or unlock the wrong object.\n\nInstead, use [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock], which avoids that pitfall because it doesn’t function as a value type, despite being a structure. All copied instances of an [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock] control the same underlying lock allocation.\n\n\n\nTo create a lock that protects operation state, create an enumeration that contains the possible states, then create a lock object, passing the initial state. Here’s an example of what that looks like for an asset load operation:\n\n```swift\nenum MyState {\n    case idle\n    case loading\n    case complete(MyAsset)\n    case error(Error)\n}\nlet protectedState = OSAllocatedUnfairLock(initialState: MyState.idle)\n```\n\nStoring the state inside the lock helps track what the lock is protecting, and provides a way to safely access the state. To begin using the lock, call `withLock(_:)` or `withLockIfAvailable(_:)`, passing a closure that contains the code for the lock to protect, like in the following example:\n\n```swift\nfunc myLoadMethod() {\n    protectedState.withLock { state in\n        state = .loading\n    }\n    var (resource, error) = loadMyResources()\n    if resource != nil {\n        protectedState.withLock { state in\n            state = .complete(resource)\n        }\n    } else {\n        protectedState.withLock { state in\n            state = .error(error!)\n        }\n    }\n}\n```\n\nTo protect an operation with an externally defined state or no state, create a lock object without specifying an initial state. Nonscoped locking is more flexible, but offers no assistance in tracking the state of the operation the lock protects. To use a nonscoped lock, use `withLock(_:)` or `withLockIfAvailable(_:)`.\n\n```swift\nlet myLock = OSAllocatedUnfairLock()\nmyLock.withLock {\n    \/\/ Code that needs protection.\n}\n```\n\nYou can also use [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock] with the more traditional lock\/unlock approach by calling [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock\/lock()] before executing code that needs protection, and [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock\/unlock()] upon completion, like this:\n\n```swift\nmyLock.lock()\n\/\/ Code that needs protection.\nmyLock.unlock()\n```\n\nWhen using this approach, you must call [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock\/unlock()] from the same thread you use to call [doc:\/\/com.apple.os\/documentation\/os\/OSAllocatedUnfairLock\/lock()]. Because of this, it’s unsafe to use this approach across an `await` suspension point. When using a lock with asynchronous code, lock using a closure or, even better, consider using an [doc:\/\/com.apple.documentation\/documentation\/Swift\/Actor].\n\n\n\n## Creating a lock object\n\n- **init()**: Creates a lock object that doesn’t protect state data.\n- **init(initialState:)**: Creates a lock object that maintains and protects state data.\n\n## Using locks\n\n- **lock()**: Acquires a lock.\n- **lockIfAvailable()**: Attempts to acquire a lock.\n- **unlock()**: Ends the lock.\n\n## Determining lock ownership\n\n- **OSAllocatedUnfairLock.Ownership**: An enumeration that represents the ownership status of an unfair lock.\n- **precondition(_:)**: Asserts if the lock object fails to meet specified ownership requirements.\n\n## Initializers\n\n- **init(uncheckedState:)**\n\n## Instance Methods\n\n- **lock(flags:)**\n- **withLock(_:)**\n- **withLock(_:)**\n- **withLock(flags:_:)**\n- **withLock(flags:_:)**\n- **withLockIfAvailable(_:)**\n- **withLockIfAvailable(_:)**\n- **withLockIfAvailableUnchecked(_:)**\n- **withLockIfAvailableUnchecked(_:)**\n- **withLockUnchecked(_:)**\n- **withLockUnchecked(_:)**\n- **withLockUnchecked(flags:_:)**\n- **withLockUnchecked(flags:_:)**\n\n## Swift Wrappers\n\n- **OSAllocatedUnfairLockFlags**\n\n## Conforms To\n\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a lock object that doesn’t protect state data.",
+          "name" : "init()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/init()"
+        },
+        {
+          "description" : "Creates a lock object that maintains and protects state data.",
+          "name" : "init(initialState:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/init(initialState:)"
+        }
+      ],
+      "title" : "Creating a lock object"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Acquires a lock.",
+          "name" : "lock()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/lock()"
+        },
+        {
+          "description" : "Attempts to acquire a lock.",
+          "name" : "lockIfAvailable()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/lockIfAvailable()"
+        },
+        {
+          "description" : "Ends the lock.",
+          "name" : "unlock()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/unlock()"
+        }
+      ],
+      "title" : "Using locks"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An enumeration that represents the ownership status of an unfair lock.",
+          "name" : "OSAllocatedUnfairLock.Ownership",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/Ownership"
+        },
+        {
+          "description" : "Asserts if the lock object fails to meet specified ownership requirements.",
+          "name" : "precondition(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/precondition(_:)"
+        }
+      ],
+      "title" : "Determining lock ownership"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "init(uncheckedState:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/init(uncheckedState:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "lock(flags:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/lock(flags:)"
+        },
+        {
+          "description" : "",
+          "name" : "withLock(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLock(_:)-1uy7m"
+        },
+        {
+          "description" : "",
+          "name" : "withLock(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLock(_:)-hple"
+        },
+        {
+          "description" : "",
+          "name" : "withLock(flags:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLock(flags:_:)-1ub4c"
+        },
+        {
+          "description" : "",
+          "name" : "withLock(flags:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLock(flags:_:)-u2xj"
+        },
+        {
+          "description" : "",
+          "name" : "withLockIfAvailable(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLockIfAvailable(_:)-1rp3w"
+        },
+        {
+          "description" : "",
+          "name" : "withLockIfAvailable(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLockIfAvailable(_:)-3kw0o"
+        },
+        {
+          "description" : "",
+          "name" : "withLockIfAvailableUnchecked(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLockIfAvailableUnchecked(_:)-15q0y"
+        },
+        {
+          "description" : "",
+          "name" : "withLockIfAvailableUnchecked(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLockIfAvailableUnchecked(_:)-6gji7"
+        },
+        {
+          "description" : "",
+          "name" : "withLockUnchecked(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLockUnchecked(_:)-7qywq"
+        },
+        {
+          "description" : "",
+          "name" : "withLockUnchecked(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLockUnchecked(_:)-9v03m"
+        },
+        {
+          "description" : "",
+          "name" : "withLockUnchecked(flags:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLockUnchecked(flags:_:)-8cv64"
+        },
+        {
+          "description" : "",
+          "name" : "withLockUnchecked(flags:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLock\/withLockUnchecked(flags:_:)-9iq8s"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "OSAllocatedUnfairLockFlags",
+          "url" : "https:\/\/developer.apple.com\/documentation\/os\/OSAllocatedUnfairLockFlags"
+        }
+      ],
+      "title" : "Swift Wrappers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "OSAllocatedUnfairLock",
+  "url" : "https:\/\/developer.apple.com\/documentation\/os\/osallocatedunfairlock"
+}
