@@ -1,0 +1,129 @@
+{
+  "abstract" : "A manager that provides network-slicing capabilities for controlling and monitoring cellular network traffic routing.",
+  "codeExamples" : [
+    {
+      "code" : "let manager = CTSlicingManager.shared\ndo {\n    let categories = try await manager.availableSliceAppCategories\n    if categories.contains(.gaming) {\n        \/\/ The gaming slice is available.\n    }\n} catch {\n    \/\/ Handle the error.\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "do {\n    try await manager.activatePreferredSliceForCategory(.gaming)\n    \/\/ Establish your network connections.\n} catch POSIXError.ENOTSUP {\n    \/\/ Network slicing isn't available.\n} catch {\n    \/\/ Handle other errors.\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "do {\n    let slices = try await manager.activeSlices\n    for slice in slices {\n        print(\"Category: \\(slice.appCategory)\")\n        print(\"Traffic Class: \\(slice.trafficClass)\")\n        print(\"Interface: \\(slice.networkInterfaceName)\")\n    }\n} catch {\n    \/\/ Handle the error.\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "do {\n    try await manager.disableSlicing()\n    \/\/ New connections use the default cellular internet.\n} catch {\n    \/\/ Handle the error.\n}",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "Sendable",
+    "SendableMetatype"
+  ],
+  "contentHash" : "5d628a6a06f271b273e5276ef304321da41a62eb045e6e5be73882517c3b4bc7",
+  "crawledAt" : "2026-03-10T14:32:30Z",
+  "declaration" : {
+    "code" : "final class CTSlicingManager",
+    "language" : "swift"
+  },
+  "id" : "0360AE96-EBE3-4223-B98F-34CC0B0C743A",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Core Telephony",
+  "overview" : "## Overview\n\nUse `CTSlicingManager` to control how your app’s network traffic routes through cellular network slices. Network slicing allows carriers to partition their network resources to provide different levels of service quality for specific types of apps. For example, a gaming slice might prioritize low latency, and a streaming slice might focus on consistent bandwidth. Your app can activate a preferred slice to ensure its traffic receives the appropriate quality of service.\n\nQuery [doc:\/\/com.apple.coretelephony\/documentation\/CoreTelephony\/CTSlicingManager\/availableSliceAppCategories] to discover which slice categories your app can use.\n\nActivate your preferred slice before creating network connections. New connections automatically route through the activated slice. Call [doc:\/\/com.apple.coretelephony\/documentation\/CoreTelephony\/CTSlicingManager\/activatePreferredSliceForCategory(_:)] before establishing network connections.\n\nQuery [doc:\/\/com.apple.coretelephony\/documentation\/CoreTelephony\/CTSlicingManager\/activeSlices] to verify activation and monitor network slice usage.\n\nCall [doc:\/\/com.apple.coretelephony\/documentation\/CoreTelephony\/CTSlicingManager\/disableSlicing()] to return to the default cellular connection when you no longer need slice-specific routing.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/CoreTelephony\/CTSlicingManager\ncrawled: 2026-03-10T14:32:30Z\n---\n\n# CTSlicingManager\n\n**Class**\n\nA manager that provides network-slicing capabilities for controlling and monitoring cellular network traffic routing.\n\n## Declaration\n\n```swift\nfinal class CTSlicingManager\n```\n\n## Overview\n\nUse `CTSlicingManager` to control how your app’s network traffic routes through cellular network slices. Network slicing allows carriers to partition their network resources to provide different levels of service quality for specific types of apps. For example, a gaming slice might prioritize low latency, and a streaming slice might focus on consistent bandwidth. Your app can activate a preferred slice to ensure its traffic receives the appropriate quality of service.\n\n\n\nQuery [doc:\/\/com.apple.coretelephony\/documentation\/CoreTelephony\/CTSlicingManager\/availableSliceAppCategories] to discover which slice categories your app can use.\n\n```swift\nlet manager = CTSlicingManager.shared\ndo {\n    let categories = try await manager.availableSliceAppCategories\n    if categories.contains(.gaming) {\n        \/\/ The gaming slice is available.\n    }\n} catch {\n    \/\/ Handle the error.\n}\n```\n\nActivate your preferred slice before creating network connections. New connections automatically route through the activated slice. Call [doc:\/\/com.apple.coretelephony\/documentation\/CoreTelephony\/CTSlicingManager\/activatePreferredSliceForCategory(_:)] before establishing network connections.\n\n```swift\ndo {\n    try await manager.activatePreferredSliceForCategory(.gaming)\n    \/\/ Establish your network connections.\n} catch POSIXError.ENOTSUP {\n    \/\/ Network slicing isn't available.\n} catch {\n    \/\/ Handle other errors.\n}\n```\n\nQuery [doc:\/\/com.apple.coretelephony\/documentation\/CoreTelephony\/CTSlicingManager\/activeSlices] to verify activation and monitor network slice usage.\n\n```swift\ndo {\n    let slices = try await manager.activeSlices\n    for slice in slices {\n        print(\"Category: \\(slice.appCategory)\")\n        print(\"Traffic Class: \\(slice.trafficClass)\")\n        print(\"Interface: \\(slice.networkInterfaceName)\")\n    }\n} catch {\n    \/\/ Handle the error.\n}\n```\n\nCall [doc:\/\/com.apple.coretelephony\/documentation\/CoreTelephony\/CTSlicingManager\/disableSlicing()] to return to the default cellular connection when you no longer need slice-specific routing.\n\n```swift\ndo {\n    try await manager.disableSlicing()\n    \/\/ New connections use the default cellular internet.\n} catch {\n    \/\/ Handle the error.\n}\n```\n\n## Getting the shared instance\n\n- **shared**: A shared singleton instance for accessing network slicing functionality.\n\n## Querying available slices\n\n- **availableSliceAppCategories**: Network-slicing app categories available to your app.\n\n## Managing network slicing\n\n- **activatePreferredSliceForCategory(_:)**: Activates a preferred network slice for new connections.\n- **disableSlicing()**: Disables network slicing for new connections.\n\n## Monitoring active slices\n\n- **activeSlices**: Information about currently active network slices on the device.\n\n## Representing slice information\n\n- **CTSlicingManager.Slice**: Information about an active network slice.\n\n## Representing app categories\n\n- **CTSlicingManager.AppCategory**: App categories for network slicing.\n\n## Representing traffic classification\n\n- **CTSlicingManager.TrafficClass**: Quality-of-service classes for routing network traffic.\n\n## Conforms To\n\n- Sendable\n- SendableMetatype\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A shared singleton instance for accessing network slicing functionality.",
+          "name" : "shared",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreTelephony\/CTSlicingManager\/shared"
+        }
+      ],
+      "title" : "Getting the shared instance"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Network-slicing app categories available to your app.",
+          "name" : "availableSliceAppCategories",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreTelephony\/CTSlicingManager\/availableSliceAppCategories"
+        }
+      ],
+      "title" : "Querying available slices"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Activates a preferred network slice for new connections.",
+          "name" : "activatePreferredSliceForCategory(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreTelephony\/CTSlicingManager\/activatePreferredSliceForCategory(_:)"
+        },
+        {
+          "description" : "Disables network slicing for new connections.",
+          "name" : "disableSlicing()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreTelephony\/CTSlicingManager\/disableSlicing()"
+        }
+      ],
+      "title" : "Managing network slicing"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Information about currently active network slices on the device.",
+          "name" : "activeSlices",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreTelephony\/CTSlicingManager\/activeSlices"
+        }
+      ],
+      "title" : "Monitoring active slices"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Information about an active network slice.",
+          "name" : "CTSlicingManager.Slice",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreTelephony\/CTSlicingManager\/Slice"
+        }
+      ],
+      "title" : "Representing slice information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "App categories for network slicing.",
+          "name" : "CTSlicingManager.AppCategory",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreTelephony\/CTSlicingManager\/AppCategory"
+        }
+      ],
+      "title" : "Representing app categories"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Quality-of-service classes for routing network traffic.",
+          "name" : "CTSlicingManager.TrafficClass",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CoreTelephony\/CTSlicingManager\/TrafficClass"
+        }
+      ],
+      "title" : "Representing traffic classification"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "CTSlicingManager",
+  "url" : "https:\/\/developer.apple.com\/documentation\/CoreTelephony\/CTSlicingManager"
+}

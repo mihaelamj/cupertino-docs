@@ -1,0 +1,96 @@
+{
+  "abstract" : "Defines a pointer to an adjust marks callback function. Your adjust marks function unmarks objects previously marked by a call to your marking function.",
+  "codeExamples" : [
+    {
+      "code" : "OSLAdjustMarksUPP MyAdjustMarksUPP;\nMyAdjustMarksUPP = NewOSLAdjustMarksUPP (&MyAdjustMarksCallback)",
+      "language" : "occ"
+    }
+  ],
+  "contentHash" : "3b871dc670b7698848a936b1bd9e0450cb2251c4babf7128376a2c3ad3aa8c06",
+  "crawledAt" : "2026-03-10T13:44:33Z",
+  "declaration" : {
+    "code" : "typealias OSLAdjustMarksProcPtr = (Int, Int, UnsafePointer<AEDesc>?) -> OSErr",
+    "language" : "swift"
+  },
+  "id" : "B590D4E9-D008-443A-9A4D-1724205E37E1",
+  "kind" : "typealias",
+  "language" : "swift",
+  "module" : "Core Services",
+  "overview" : "## Return Value\n\nA result code. See [doc:\/\/com.apple.documentation\/documentation\/applicationservices\/apple_event_manager#1656145]. Your adjust marks function should return `noErr` if it successfully adjusted the marks and `errAEEventNotHandled` if it could not locate the object. When the Apple Event Manager gets an error result of `errAEEventNotHandled`, it attempts to adjust the marks by calling the equivalent system mark-adjusting function.\n\n## Discussion\n\nWhen the Apple Event Manager needs to identify either a range of elements or the absolute position of an element in a group of Apple event objects that pass a test, it can use your application’s mark-adjusting function to unmark objects previously marked by a call to your marking function.\n\nFor example, suppose an object specifier specifies `any row in the table \"MyCustomers\" for which the City column is \"San Francisco\"`. The Apple Event Manager first uses the appropriate object accessor function to locate all the rows in the table for which the City column is `\"San Francisco\"` and calls the application’s marking function repeatedly to mark them. It then generates a random number between 1 and the number of rows it found that passed the test and calls the application’s mark-adjusting function to unmark all the rows whose mark count does not match the randomly generated number. If the randomly chosen row has a mark count value of 5, the Apple Event Manager passes the value 5 to the mark-adjusting function in both the `newStart` parameter and the `newStop `parameter, and passes the current mark token in the `markToken` parameter.\n\nWhen the Apple Event Manager calls your `MyAdjustMarksCallback `function, your application must dispose of any data structures that it created to mark the previously marked objects.\n\nTo provide a pointer to your adjust marks callback function, you create a universal procedure pointer (UPP) of type [doc:\/\/com.apple.documentation\/documentation\/coreservices\/osladjustmarksupp], using the function [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1443347-newosladjustmarksupp]. You can do so with code like the following:\n\nYou can then pass the UPP `MyAdjustMarksUPP` as a parameter to the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1447756-aesetobjectcallbacks] function or the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1445532-aeinstallspecialhandler] function.\n\nIf you wish to call your adjust marks callback function directly, you can use the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1448506-invokeosladjustmarksupp] function.\n\nAfter you are finished with your adjust marks callback function, you can dispose of the UPP with the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1443940-disposeosladjustmarksupp] function. However, if you will use the same adjust marks function in subsequent calls to the function `AESetObjectCallbacks` or the function `AEInstallSpecialHandler`, you can reuse the same UPP, rather than dispose of it and later create a new UPP. ",
+  "platforms" : [
+    "Mac Catalyst",
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/coreservices\/osladjustmarksprocptr\ncrawled: 2026-03-10T13:44:33Z\n---\n\n# OSLAdjustMarksProcPtr\n\n**Type Alias**\n\nDefines a pointer to an adjust marks callback function. Your adjust marks function unmarks objects previously marked by a call to your marking function.\n\n## Declaration\n\n```swift\ntypealias OSLAdjustMarksProcPtr = (Int, Int, UnsafePointer<AEDesc>?) -> OSErr\n```\n\n## Parameters\n\n- **newStart**: The mark count value (provided when the `MyAdjustMarksCallback` callback function was called to mark the object) for the first object in the new set of marked objects.\n- **newStop**: The mark count value (provided when the `MyAdjustMarksCallback` callback function was called to mark the object) for the last object in the new set of marked objects.\n- **markToken**: A pointer to the mark token for the marked objects. (Token is defined in [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1446783-aedisposetoken]. See [doc:\/\/com.apple.documentation\/documentation\/coreservices\/aedesc].\n\n## Return Value\n\nA result code. See [doc:\/\/com.apple.documentation\/documentation\/applicationservices\/apple_event_manager#1656145]. Your adjust marks function should return `noErr` if it successfully adjusted the marks and `errAEEventNotHandled` if it could not locate the object. When the Apple Event Manager gets an error result of `errAEEventNotHandled`, it attempts to adjust the marks by calling the equivalent system mark-adjusting function.\n\n## Discussion\n\nWhen the Apple Event Manager needs to identify either a range of elements or the absolute position of an element in a group of Apple event objects that pass a test, it can use your application’s mark-adjusting function to unmark objects previously marked by a call to your marking function.\n\nFor example, suppose an object specifier specifies `any row in the table \"MyCustomers\" for which the City column is \"San Francisco\"`. The Apple Event Manager first uses the appropriate object accessor function to locate all the rows in the table for which the City column is `\"San Francisco\"` and calls the application’s marking function repeatedly to mark them. It then generates a random number between 1 and the number of rows it found that passed the test and calls the application’s mark-adjusting function to unmark all the rows whose mark count does not match the randomly generated number. If the randomly chosen row has a mark count value of 5, the Apple Event Manager passes the value 5 to the mark-adjusting function in both the `newStart` parameter and the `newStop `parameter, and passes the current mark token in the `markToken` parameter.\n\nWhen the Apple Event Manager calls your `MyAdjustMarksCallback `function, your application must dispose of any data structures that it created to mark the previously marked objects.\n\nTo provide a pointer to your adjust marks callback function, you create a universal procedure pointer (UPP) of type [doc:\/\/com.apple.documentation\/documentation\/coreservices\/osladjustmarksupp], using the function [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1443347-newosladjustmarksupp]. You can do so with code like the following:\n\n```occ\nOSLAdjustMarksUPP MyAdjustMarksUPP;\nMyAdjustMarksUPP = NewOSLAdjustMarksUPP (&MyAdjustMarksCallback)\n```\n\nYou can then pass the UPP `MyAdjustMarksUPP` as a parameter to the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1447756-aesetobjectcallbacks] function or the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1445532-aeinstallspecialhandler] function.\n\nIf you wish to call your adjust marks callback function directly, you can use the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1448506-invokeosladjustmarksupp] function.\n\nAfter you are finished with your adjust marks callback function, you can dispose of the UPP with the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1443940-disposeosladjustmarksupp] function. However, if you will use the same adjust marks function in subsequent calls to the function `AESetObjectCallbacks` or the function `AEInstallSpecialHandler`, you can reuse the same UPP, rather than dispose of it and later create a new UPP. \n\n## Callbacks\n\n- **AERemoteProcessResolverCallback**: Defines a pointer to a function the Apple Event Manager calls when the asynchronous execution of a remote process resolver completes, either due to success or failure, after a call to the `AERemoteProcessResolverScheduleWithRunLoop` function. Your callback function can use the reference passed to it to get the remote process information.\n- **AEDisposeExternalProcPtr**: Defines a pointer to a function the Apple Event Manager calls to dispose of a descriptor created by the `AECreateDescFromExternalPtr` function. Your callback function disposes of the buffer you originally passed to that function.\n- **AECoerceDescProcPtr**: Defines a pointer to a function that coerces data stored in a descriptor. Your descriptor coercion callback function coerces the data from the passed descriptor to the specified type, returning the coerced data in a second descriptor.\n- **AECoercePtrProcPtr**: Defines a pointer to a function that coerces data stored in a buffer. Your pointer coercion callback routine coerces the data from the passed buffer to the specified type, returning the coerced data in a descriptor.\n- **AEEventHandlerProcPtr**: Defines a pointer to a function that handles one or more Apple events. Your Apple event handler function performs any action requested by the Apple event, adds parameters to the reply Apple event if appropriate (possibly including error information), and returns a result code.\n- **OSLAccessorProcPtr**: Your object accessor function either finds elements or properties of an Apple event object.\n- **OSLCompareProcPtr**: Defines a pointer to an object comparison callback function. Your object comparison function compares one Apple event object to another or to the data for a descriptor.\n- **OSLCountProcPtr**: Defines a pointer to an object counting callback function. Your object counting function counts the number of Apple event objects of a specified class in a specified container object.\n- **OSLDisposeTokenProcPtr**: Defines a pointer to a dispose token callback function. Your dispose token function, required only if you use a complex token format, disposes of the specified token.\n- **OSLGetErrDescProcPtr**: Defines a pointer to an error descriptor callback function. Your error descriptor callback function supplies a pointer to an address where the Apple Event Manager can store the current descriptor if an error occurs during a call to the `AEResolve` function.\n- **OSLGetMarkTokenProcPtr**: Defines a pointer to a mark token callback function. Your mark token function returns a mark token.\n- **OSLMarkProcPtr**: Defines a pointer to an object marking callback function. Your object-marking function marks a specific Apple event object.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Defines a pointer to a function the Apple Event Manager calls when the asynchronous execution of a remote process resolver completes, either due to success or failure, after a call to the `AERemoteProcessResolverScheduleWithRunLoop` function. Your callback function can use the reference passed to it to get the remote process information.",
+          "name" : "AERemoteProcessResolverCallback",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aeremoteprocessresolvercallback"
+        },
+        {
+          "description" : "Defines a pointer to a function the Apple Event Manager calls to dispose of a descriptor created by the `AECreateDescFromExternalPtr` function. Your callback function disposes of the buffer you originally passed to that function.",
+          "name" : "AEDisposeExternalProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aedisposeexternalprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a function that coerces data stored in a descriptor. Your descriptor coercion callback function coerces the data from the passed descriptor to the specified type, returning the coerced data in a second descriptor.",
+          "name" : "AECoerceDescProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aecoercedescprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a function that coerces data stored in a buffer. Your pointer coercion callback routine coerces the data from the passed buffer to the specified type, returning the coerced data in a descriptor.",
+          "name" : "AECoercePtrProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aecoerceptrprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a function that handles one or more Apple events. Your Apple event handler function performs any action requested by the Apple event, adds parameters to the reply Apple event if appropriate (possibly including error information), and returns a result code.",
+          "name" : "AEEventHandlerProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aeeventhandlerprocptr"
+        },
+        {
+          "description" : "Your object accessor function either finds elements or properties of an Apple event object.",
+          "name" : "OSLAccessorProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslaccessorprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an object comparison callback function. Your object comparison function compares one Apple event object to another or to the data for a descriptor.",
+          "name" : "OSLCompareProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslcompareprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an object counting callback function. Your object counting function counts the number of Apple event objects of a specified class in a specified container object.",
+          "name" : "OSLCountProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslcountprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a dispose token callback function. Your dispose token function, required only if you use a complex token format, disposes of the specified token.",
+          "name" : "OSLDisposeTokenProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/osldisposetokenprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an error descriptor callback function. Your error descriptor callback function supplies a pointer to an address where the Apple Event Manager can store the current descriptor if an error occurs during a call to the `AEResolve` function.",
+          "name" : "OSLGetErrDescProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslgeterrdescprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a mark token callback function. Your mark token function returns a mark token.",
+          "name" : "OSLGetMarkTokenProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslgetmarktokenprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an object marking callback function. Your object-marking function marks a specific Apple event object.",
+          "name" : "OSLMarkProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslmarkprocptr"
+        }
+      ],
+      "title" : "Callbacks"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "OSLAdjustMarksProcPtr",
+  "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/osladjustmarksprocptr"
+}

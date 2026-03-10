@@ -1,0 +1,96 @@
+{
+  "abstract" : "Defines a pointer to an error descriptor callback function. Your error descriptor callback function supplies a pointer to an address where the Apple Event Manager can store the current descriptor if an error occurs during a call to the `AEResolve` function.",
+  "codeExamples" : [
+    {
+      "code" : "OSLGetErrorDescUPP MyGetErrorDescUPP;\nMyGetErrorDescUPP = NewOSLGetErrorDescUPP (&MyGetErrorDescCallback)",
+      "language" : "occ"
+    }
+  ],
+  "contentHash" : "dd881bdf6116c5a2d132b92cc437e9e1be6d64e108e39d091d2436cbd9d1494b",
+  "crawledAt" : "2026-03-10T13:44:34Z",
+  "declaration" : {
+    "code" : "typealias OSLGetErrDescProcPtr = (UnsafeMutablePointer<UnsafeMutablePointer<AEDesc>?>?) -> OSErr",
+    "language" : "swift"
+  },
+  "id" : "21796C22-215E-4152-9F58-0F79429F01FB",
+  "kind" : "typealias",
+  "language" : "swift",
+  "module" : "Core Services",
+  "overview" : "## Return Value\n\nA result code. See [doc:\/\/com.apple.documentation\/documentation\/applicationservices\/apple_event_manager#1656145]. Your error descriptor function should return `noErr` if it completes successfully and a nonzero error value if it is unsuccessful. If it returns a nonzero value, the Apple Event Manager continues to resolve the object specifier as if it had never called the error callback function.\n\n## Discussion\n\nYour get error descriptor callback function simply supplies a pointer to an address. Shortly after your application calls the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1449720-aeresolve] function, the Apple Event Manager calls your get error descriptor callback function and writes a null descriptor to the address supplied by your callback, overwriting whatever was there previously.\n\nIf an error occurs during the resolution of the object specifier, the Apple Event Manager calls your get error descriptor callback function again and writes the descriptor it is currently working with—often an object specifier—to the address supplied by your callback. If `AEResolve` returns an error during the resolution of an object specifier, this address contains the descriptor responsible for the error.\n\nYou should always write a null descriptor at the address provided by your get error descriptor callback function before calling `AEResolve`. When recovering from an error, the Apple Event Manager, never writes to the address you provide unless it already contains a null descriptor. You may wish to maintain a single global variable of type `AEDesc` and have your get error descriptor callback function always provide the address of that variable.\n\nAfter `AEResolve` returns, if your error descriptor is not the null descriptor, you are responsible for disposing of it.\n\nTo provide a pointer to your get error descriptor callback function, you create a universal procedure pointer (UPP) of type [doc:\/\/com.apple.documentation\/documentation\/coreservices\/oslgeterrdescupp], using the function [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1447934-newoslgeterrdescupp]. You can do so with code like the following:\n\nYou can then pass the UPP `MyGetErrorDescUPP` as a parameter to the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1447756-aesetobjectcallbacks] function or the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1445532-aeinstallspecialhandler] function.\n\nIf you wish to call your get error descriptor callback function directly, you can use the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1448420-invokeoslgeterrdescupp] function.\n\nAfter you are finished with your get error descriptor callback function, you can dispose of the UPP with the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1446061-disposeoslgeterrdescupp] function. However, if you will use the same get error descriptor callback function in subsequent calls to the function `AESetObjectCallbacks` or the function `AEInstallSpecialHandler`, you can reuse the same UPP, rather than dispose of it and later create a new UPP. ",
+  "platforms" : [
+    "Mac Catalyst",
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/coreservices\/oslgeterrdescprocptr\ncrawled: 2026-03-10T13:44:34Z\n---\n\n# OSLGetErrDescProcPtr\n\n**Type Alias**\n\nDefines a pointer to an error descriptor callback function. Your error descriptor callback function supplies a pointer to an address where the Apple Event Manager can store the current descriptor if an error occurs during a call to the `AEResolve` function.\n\n## Declaration\n\n```swift\ntypealias OSLGetErrDescProcPtr = (UnsafeMutablePointer<UnsafeMutablePointer<AEDesc>?>?) -> OSErr\n```\n\n## Parameters\n\n- **appDescPtr**: A pointer to a pointer to a descriptor address. Your error descriptor callback function supplies a pointer to an address of a descriptor where the Apple Event Manager can store the current descriptor if an error occurs. See [doc:\/\/com.apple.documentation\/documentation\/coreservices\/aedesc].\n\n## Return Value\n\nA result code. See [doc:\/\/com.apple.documentation\/documentation\/applicationservices\/apple_event_manager#1656145]. Your error descriptor function should return `noErr` if it completes successfully and a nonzero error value if it is unsuccessful. If it returns a nonzero value, the Apple Event Manager continues to resolve the object specifier as if it had never called the error callback function.\n\n## Discussion\n\nYour get error descriptor callback function simply supplies a pointer to an address. Shortly after your application calls the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1449720-aeresolve] function, the Apple Event Manager calls your get error descriptor callback function and writes a null descriptor to the address supplied by your callback, overwriting whatever was there previously.\n\nIf an error occurs during the resolution of the object specifier, the Apple Event Manager calls your get error descriptor callback function again and writes the descriptor it is currently working with—often an object specifier—to the address supplied by your callback. If `AEResolve` returns an error during the resolution of an object specifier, this address contains the descriptor responsible for the error.\n\nYou should always write a null descriptor at the address provided by your get error descriptor callback function before calling `AEResolve`. When recovering from an error, the Apple Event Manager, never writes to the address you provide unless it already contains a null descriptor. You may wish to maintain a single global variable of type `AEDesc` and have your get error descriptor callback function always provide the address of that variable.\n\nAfter `AEResolve` returns, if your error descriptor is not the null descriptor, you are responsible for disposing of it.\n\nTo provide a pointer to your get error descriptor callback function, you create a universal procedure pointer (UPP) of type [doc:\/\/com.apple.documentation\/documentation\/coreservices\/oslgeterrdescupp], using the function [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1447934-newoslgeterrdescupp]. You can do so with code like the following:\n\n```occ\nOSLGetErrorDescUPP MyGetErrorDescUPP;\nMyGetErrorDescUPP = NewOSLGetErrorDescUPP (&MyGetErrorDescCallback)\n```\n\nYou can then pass the UPP `MyGetErrorDescUPP` as a parameter to the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1447756-aesetobjectcallbacks] function or the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1445532-aeinstallspecialhandler] function.\n\nIf you wish to call your get error descriptor callback function directly, you can use the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1448420-invokeoslgeterrdescupp] function.\n\nAfter you are finished with your get error descriptor callback function, you can dispose of the UPP with the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1446061-disposeoslgeterrdescupp] function. However, if you will use the same get error descriptor callback function in subsequent calls to the function `AESetObjectCallbacks` or the function `AEInstallSpecialHandler`, you can reuse the same UPP, rather than dispose of it and later create a new UPP. \n\n## Callbacks\n\n- **AERemoteProcessResolverCallback**: Defines a pointer to a function the Apple Event Manager calls when the asynchronous execution of a remote process resolver completes, either due to success or failure, after a call to the `AERemoteProcessResolverScheduleWithRunLoop` function. Your callback function can use the reference passed to it to get the remote process information.\n- **AEDisposeExternalProcPtr**: Defines a pointer to a function the Apple Event Manager calls to dispose of a descriptor created by the `AECreateDescFromExternalPtr` function. Your callback function disposes of the buffer you originally passed to that function.\n- **AECoerceDescProcPtr**: Defines a pointer to a function that coerces data stored in a descriptor. Your descriptor coercion callback function coerces the data from the passed descriptor to the specified type, returning the coerced data in a second descriptor.\n- **AECoercePtrProcPtr**: Defines a pointer to a function that coerces data stored in a buffer. Your pointer coercion callback routine coerces the data from the passed buffer to the specified type, returning the coerced data in a descriptor.\n- **AEEventHandlerProcPtr**: Defines a pointer to a function that handles one or more Apple events. Your Apple event handler function performs any action requested by the Apple event, adds parameters to the reply Apple event if appropriate (possibly including error information), and returns a result code.\n- **OSLAccessorProcPtr**: Your object accessor function either finds elements or properties of an Apple event object.\n- **OSLAdjustMarksProcPtr**: Defines a pointer to an adjust marks callback function. Your adjust marks function unmarks objects previously marked by a call to your marking function.\n- **OSLCompareProcPtr**: Defines a pointer to an object comparison callback function. Your object comparison function compares one Apple event object to another or to the data for a descriptor.\n- **OSLCountProcPtr**: Defines a pointer to an object counting callback function. Your object counting function counts the number of Apple event objects of a specified class in a specified container object.\n- **OSLDisposeTokenProcPtr**: Defines a pointer to a dispose token callback function. Your dispose token function, required only if you use a complex token format, disposes of the specified token.\n- **OSLGetMarkTokenProcPtr**: Defines a pointer to a mark token callback function. Your mark token function returns a mark token.\n- **OSLMarkProcPtr**: Defines a pointer to an object marking callback function. Your object-marking function marks a specific Apple event object.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Defines a pointer to a function the Apple Event Manager calls when the asynchronous execution of a remote process resolver completes, either due to success or failure, after a call to the `AERemoteProcessResolverScheduleWithRunLoop` function. Your callback function can use the reference passed to it to get the remote process information.",
+          "name" : "AERemoteProcessResolverCallback",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aeremoteprocessresolvercallback"
+        },
+        {
+          "description" : "Defines a pointer to a function the Apple Event Manager calls to dispose of a descriptor created by the `AECreateDescFromExternalPtr` function. Your callback function disposes of the buffer you originally passed to that function.",
+          "name" : "AEDisposeExternalProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aedisposeexternalprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a function that coerces data stored in a descriptor. Your descriptor coercion callback function coerces the data from the passed descriptor to the specified type, returning the coerced data in a second descriptor.",
+          "name" : "AECoerceDescProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aecoercedescprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a function that coerces data stored in a buffer. Your pointer coercion callback routine coerces the data from the passed buffer to the specified type, returning the coerced data in a descriptor.",
+          "name" : "AECoercePtrProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aecoerceptrprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a function that handles one or more Apple events. Your Apple event handler function performs any action requested by the Apple event, adds parameters to the reply Apple event if appropriate (possibly including error information), and returns a result code.",
+          "name" : "AEEventHandlerProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aeeventhandlerprocptr"
+        },
+        {
+          "description" : "Your object accessor function either finds elements or properties of an Apple event object.",
+          "name" : "OSLAccessorProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslaccessorprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an adjust marks callback function. Your adjust marks function unmarks objects previously marked by a call to your marking function.",
+          "name" : "OSLAdjustMarksProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/osladjustmarksprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an object comparison callback function. Your object comparison function compares one Apple event object to another or to the data for a descriptor.",
+          "name" : "OSLCompareProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslcompareprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an object counting callback function. Your object counting function counts the number of Apple event objects of a specified class in a specified container object.",
+          "name" : "OSLCountProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslcountprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a dispose token callback function. Your dispose token function, required only if you use a complex token format, disposes of the specified token.",
+          "name" : "OSLDisposeTokenProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/osldisposetokenprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a mark token callback function. Your mark token function returns a mark token.",
+          "name" : "OSLGetMarkTokenProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslgetmarktokenprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an object marking callback function. Your object-marking function marks a specific Apple event object.",
+          "name" : "OSLMarkProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslmarkprocptr"
+        }
+      ],
+      "title" : "Callbacks"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "OSLGetErrDescProcPtr",
+  "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslgeterrdescprocptr"
+}

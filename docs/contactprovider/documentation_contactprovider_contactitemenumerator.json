@@ -1,0 +1,100 @@
+{
+  "abstract" : "A protocol to provide enumerations of all contact items and changed contact items.",
+  "codeExamples" : [
+    {
+      "code" : "import ContactProvider\n\nclass RootContainerEnumerator: ContactItemEnumerator {\n\n    func configure(for domain: ContactProviderDomain) {\n        \/\/ Configure your enumerator here.\n    }\n    \n    func enumerateContent(in page: ContactItemPage, \n                          for observer: any ContactItemContentObserver) {\n\n        \/\/ TODO: Get the database generation for the content enumeration, which is used for the first call to `enumerateChanges`.\n        let generationMarker = (page == .initialPage) ? currentGenerationMarker() : page.generationMarker\n\n        do {\n            \/\/ TODO: Get your batch of items to enumerate.\n            let content = try fetchContent(startingAt: generationMarker,\n                                           offset: page.offset,\n                                           count: observer.suggestedPageSize)\n            \n            \/\/ Send the items to the observer.\n            observer.didEnumerate(content.items)\n\n            if content.moreComing {\n                \/\/ Need to enumerate more items.\n            \n                \/\/ TODO: Create your next `ItemPage` that starts the next batch of items.\n                \/\/\n                \/\/ Note: If `page.generationMarker` is empty, you must provide a non-empty `nextPage.generationMarker`.\n                \/\/       If `page.generationMarker` is non-empty, `nextPage.generationMarker` must be the same value.\n                let nextPage = ContactItemPage(generationMarker: generationMarker,\n                                               offset: page.offset + content.items.count)\n\n                \/\/ Send the observer to the next page.\n                observer.didFinishEnumeratingPage(upTo: nextPage)\n            } else {\n                \/\/ All items have been enumerated.\n                \n                \/\/ Tell the observer the next sync should be a change enumeration.\n                observer.didFinishEnumeratingContent(upTo: generationMarker)\n            }\n\n        } catch {\n            \/\/ Tell the observer an error occurred.\n            \/\/\n            \/\/ Note: The system resumes the enumeration from the last `ContactItemPage` that was enumerated successfully, if the error is resumable.\n            observer.didFinishEnumeratingContentWithError(error)\n        }\n        \n        func currentGenerationMarker() -> Data {\n            \/\/ TODO: Get the value specific to your data source identifying the current database generation.\n            \/\/\n            \/\/ Note: Don't call `didFinishEnumeratingPage(upTo:)` with an empty `ContactItemPage.generationMarker`; this results in an error.\n            let generationMarker: Data = \"<currentDatabaseGenerationMarker>\".data(using: .utf8)!\n            return generationMarker\n        }\n\n        func fetchContent(startingAt generationMarker: Data, offset: Int, count: Int) throws -> ContentFetchResult {\n            \/\/ TODO: Fetch up to `count` items from the database, starting at `offset` items for the database generation specified by `generationMarker`.\n            let items: [ContactItem] = []\n            let moreComing: Bool = false\n\n            return ContentFetchResult(items: items, moreComing: moreComing)\n        }\n\n        struct ContentFetchResult {\n            let items: [ContactItem]\n            let moreComing: Bool\n        }\n\n    }\n    \n    func enumerateChanges(startingAt syncAnchor: ContactItemSyncAnchor, \n                          for observer: any ContactItemChangeObserver) {\n        do {\n            \/\/ TODO: Get your batch of changed items to enumerate.\n            let changes = try fetchChanges(startingAt: syncAnchor.generationMarker,\n                                           offset: syncAnchor.offset,\n                                           count: observer.suggestedBatchSize)\n\n            \/\/ Send the changes to the observer.\n            observer.didUpdate(changes.updatedItems)\n            observer.didDelete(changes.deletedItemIdentifiers)\n            observer.didFinishEnumeratingChanges(upTo: changes.nextSyncAnchor,\n                                                 moreComing: changes.moreComing)\n        } catch {\n            \/\/ Tell the observer an error occurred.\n            \/\/\n            \/\/ Note: The system resumes the enumeration from the last `ItemChangeAnchor` that was enumerated successfully, if the error is resumable.\n            observer.didFinishEnumeratingChangesWithError(error)\n        }\n\n        func fetchChanges(startingAt generationMarker: Data, offset: Int, count: Int) throws -> ChangeFetchResult {\n            \/\/ TODO: Fetch up to `count` changes from the database, starting at `offset` changes after the database generation specified by `generationMarker`.\n            let updatedItems: [ContactItem] = []\n            let deletedItemIdentifiers: [ContactItem.Identifier] = []\n            let moreComing: Bool = false\n\n            \/\/ TODO: Generate the next `ContactItemSyncAnchor`, using the `generationMarker` and offset of the last change that was fetched.\n            let lastChangeGenerationMarker: Data = \"<lastChangeGenerationMarker>\".data(using: .utf8)!\n            let lastChangeOffset: Int = 0\n            let nextSyncAnchor = ContactItemSyncAnchor(generationMarker: lastChangeGenerationMarker, offset: lastChangeOffset)\n\n            return ChangeFetchResult(updatedItems: updatedItems,\n                                     deletedItemIdentifiers: deletedItemIdentifiers,\n                                     moreComing: moreComing,\n                                     nextSyncAnchor: nextSyncAnchor)\n        }\n\n        struct ChangeFetchResult {\n            let updatedItems: [ContactItem]\n            let deletedItemIdentifiers: [ContactItem.Identifier]\n            let moreComing: Bool\n            let nextSyncAnchor: ContactItemSyncAnchor\n        }\n    }\n    \n    func invalidate() async {\n        \/\/ Invalidate here.\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "1ec8c5caa2beea797179faa1144e4121067bb235525c349b2364ef00ca13a5b3",
+  "crawledAt" : "2026-03-10T14:32:29Z",
+  "declaration" : {
+    "code" : "protocol ContactItemEnumerator",
+    "language" : "swift"
+  },
+  "id" : "37CA9955-565E-43CB-9999-07E2D9BC9750",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "ContactProvider",
+  "overview" : "## Overview\n\nImplement this protocol to fetch contact items from your data store in a consistent, predictable order when the system requests contact item enumeration. The [doc:\/\/com.apple.ContactProvider\/documentation\/ContactProvider\/ContactItemEnumerating] protocol, typically implemented by the app extension, returns an instance of this type when the system requests contacts.\n\nThe enumerator has two main methods to implement:\n\nThe following `RootContainerEnumerator` outlines how to implement a `ContactItemEnumerator`. The listing shows `TODO` in places where the implementation depends on the specifics of your app’s data store.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItemEnumerator\ncrawled: 2026-03-10T14:32:29Z\n---\n\n# ContactItemEnumerator\n\n**Protocol**\n\nA protocol to provide enumerations of all contact items and changed contact items.\n\n## Declaration\n\n```swift\nprotocol ContactItemEnumerator\n```\n\n## Overview\n\nImplement this protocol to fetch contact items from your data store in a consistent, predictable order when the system requests contact item enumeration. The [doc:\/\/com.apple.ContactProvider\/documentation\/ContactProvider\/ContactItemEnumerating] protocol, typically implemented by the app extension, returns an instance of this type when the system requests contacts.\n\nThe enumerator has two main methods to implement:\n\n- [doc:\/\/com.apple.ContactProvider\/documentation\/ContactProvider\/ContactItemEnumerator\/enumerateContent(in:for:)] – Enumerates all of your contacts that you want to provide to the system-wide Contacts ecosystem, sending arrays of [doc:\/\/com.apple.ContactProvider\/documentation\/ContactProvider\/ContactItem] instances to a [doc:\/\/com.apple.ContactProvider\/documentation\/ContactProvider\/ContactItemContentObserver].\n- [doc:\/\/com.apple.ContactProvider\/documentation\/ContactProvider\/ContactItemEnumerator\/enumerateChanges(startingAt:for:)] – Enumerates changed contacts, sending updates and deletions to a [doc:\/\/com.apple.ContactProvider\/documentation\/ContactProvider\/ContactItemChangeObserver], as arrays of [doc:\/\/com.apple.ContactProvider\/documentation\/ContactProvider\/ContactItem] and [doc:\/\/com.apple.ContactProvider\/documentation\/ContactProvider\/ContactItem\/Identifier] instances, respectively.\n\nThe following `RootContainerEnumerator` outlines how to implement a `ContactItemEnumerator`. The listing shows `TODO` in places where the implementation depends on the specifics of your app’s data store.\n\n```swift\nimport ContactProvider\n\nclass RootContainerEnumerator: ContactItemEnumerator {\n\n    func configure(for domain: ContactProviderDomain) {\n        \/\/ Configure your enumerator here.\n    }\n    \n    func enumerateContent(in page: ContactItemPage, \n                          for observer: any ContactItemContentObserver) {\n\n        \/\/ TODO: Get the database generation for the content enumeration, which is used for the first call to `enumerateChanges`.\n        let generationMarker = (page == .initialPage) ? currentGenerationMarker() : page.generationMarker\n\n        do {\n            \/\/ TODO: Get your batch of items to enumerate.\n            let content = try fetchContent(startingAt: generationMarker,\n                                           offset: page.offset,\n                                           count: observer.suggestedPageSize)\n            \n            \/\/ Send the items to the observer.\n            observer.didEnumerate(content.items)\n\n            if content.moreComing {\n                \/\/ Need to enumerate more items.\n            \n                \/\/ TODO: Create your next `ItemPage` that starts the next batch of items.\n                \/\/\n                \/\/ Note: If `page.generationMarker` is empty, you must provide a non-empty `nextPage.generationMarker`.\n                \/\/       If `page.generationMarker` is non-empty, `nextPage.generationMarker` must be the same value.\n                let nextPage = ContactItemPage(generationMarker: generationMarker,\n                                               offset: page.offset + content.items.count)\n\n                \/\/ Send the observer to the next page.\n                observer.didFinishEnumeratingPage(upTo: nextPage)\n            } else {\n                \/\/ All items have been enumerated.\n                \n                \/\/ Tell the observer the next sync should be a change enumeration.\n                observer.didFinishEnumeratingContent(upTo: generationMarker)\n            }\n\n        } catch {\n            \/\/ Tell the observer an error occurred.\n            \/\/\n            \/\/ Note: The system resumes the enumeration from the last `ContactItemPage` that was enumerated successfully, if the error is resumable.\n            observer.didFinishEnumeratingContentWithError(error)\n        }\n        \n        func currentGenerationMarker() -> Data {\n            \/\/ TODO: Get the value specific to your data source identifying the current database generation.\n            \/\/\n            \/\/ Note: Don't call `didFinishEnumeratingPage(upTo:)` with an empty `ContactItemPage.generationMarker`; this results in an error.\n            let generationMarker: Data = \"<currentDatabaseGenerationMarker>\".data(using: .utf8)!\n            return generationMarker\n        }\n\n        func fetchContent(startingAt generationMarker: Data, offset: Int, count: Int) throws -> ContentFetchResult {\n            \/\/ TODO: Fetch up to `count` items from the database, starting at `offset` items for the database generation specified by `generationMarker`.\n            let items: [ContactItem] = []\n            let moreComing: Bool = false\n\n            return ContentFetchResult(items: items, moreComing: moreComing)\n        }\n\n        struct ContentFetchResult {\n            let items: [ContactItem]\n            let moreComing: Bool\n        }\n\n    }\n    \n    func enumerateChanges(startingAt syncAnchor: ContactItemSyncAnchor, \n                          for observer: any ContactItemChangeObserver) {\n        do {\n            \/\/ TODO: Get your batch of changed items to enumerate.\n            let changes = try fetchChanges(startingAt: syncAnchor.generationMarker,\n                                           offset: syncAnchor.offset,\n                                           count: observer.suggestedBatchSize)\n\n            \/\/ Send the changes to the observer.\n            observer.didUpdate(changes.updatedItems)\n            observer.didDelete(changes.deletedItemIdentifiers)\n            observer.didFinishEnumeratingChanges(upTo: changes.nextSyncAnchor,\n                                                 moreComing: changes.moreComing)\n        } catch {\n            \/\/ Tell the observer an error occurred.\n            \/\/\n            \/\/ Note: The system resumes the enumeration from the last `ItemChangeAnchor` that was enumerated successfully, if the error is resumable.\n            observer.didFinishEnumeratingChangesWithError(error)\n        }\n\n        func fetchChanges(startingAt generationMarker: Data, offset: Int, count: Int) throws -> ChangeFetchResult {\n            \/\/ TODO: Fetch up to `count` changes from the database, starting at `offset` changes after the database generation specified by `generationMarker`.\n            let updatedItems: [ContactItem] = []\n            let deletedItemIdentifiers: [ContactItem.Identifier] = []\n            let moreComing: Bool = false\n\n            \/\/ TODO: Generate the next `ContactItemSyncAnchor`, using the `generationMarker` and offset of the last change that was fetched.\n            let lastChangeGenerationMarker: Data = \"<lastChangeGenerationMarker>\".data(using: .utf8)!\n            let lastChangeOffset: Int = 0\n            let nextSyncAnchor = ContactItemSyncAnchor(generationMarker: lastChangeGenerationMarker, offset: lastChangeOffset)\n\n            return ChangeFetchResult(updatedItems: updatedItems,\n                                     deletedItemIdentifiers: deletedItemIdentifiers,\n                                     moreComing: moreComing,\n                                     nextSyncAnchor: nextSyncAnchor)\n        }\n\n        struct ChangeFetchResult {\n            let updatedItems: [ContactItem]\n            let deletedItemIdentifiers: [ContactItem.Identifier]\n            let moreComing: Bool\n            let nextSyncAnchor: ContactItemSyncAnchor\n        }\n    }\n    \n    func invalidate() async {\n        \/\/ Invalidate here.\n    }\n}\n```\n\n## Enumerating contact items\n\n- **enumerateContent(in:for:)**: Enumerates all items, batched in pages.\n- **ContactItemPage**: A fixed offset into enumerating all contact items.\n- **ContactItemContentObserver**: A protocol that defines a system observer that receives a resumable enumeration of all items.\n\n## Enumerating item changes\n\n- **enumerateChanges(startingAt:for:)**: Enumerates items changed since the last sync.\n- **ContactItemSyncAnchor**: A snapshot point into enumerating changed contact items.\n- **ContactItemChangeObserver**: A protocol that defines a system observer that receives a resumable enumeration of changed contact items.\n\n## Managing enumerator life cycle\n\n- **invalidate()**: Invalidates the enumerator.\n\n## Providing contacts\n\n- **ContactItem**: An item in the contact database.\n- **ContactItemEnumerating**: A protocol to provide enumerators for collections of contact items.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Enumerates all items, batched in pages.",
+          "name" : "enumerateContent(in:for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItemEnumerator\/enumerateContent(in:for:)"
+        },
+        {
+          "description" : "A fixed offset into enumerating all contact items.",
+          "name" : "ContactItemPage",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItemPage"
+        },
+        {
+          "description" : "A protocol that defines a system observer that receives a resumable enumeration of all items.",
+          "name" : "ContactItemContentObserver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItemContentObserver"
+        }
+      ],
+      "title" : "Enumerating contact items"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Enumerates items changed since the last sync.",
+          "name" : "enumerateChanges(startingAt:for:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItemEnumerator\/enumerateChanges(startingAt:for:)"
+        },
+        {
+          "description" : "A snapshot point into enumerating changed contact items.",
+          "name" : "ContactItemSyncAnchor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItemSyncAnchor"
+        },
+        {
+          "description" : "A protocol that defines a system observer that receives a resumable enumeration of changed contact items.",
+          "name" : "ContactItemChangeObserver",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItemChangeObserver"
+        }
+      ],
+      "title" : "Enumerating item changes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Invalidates the enumerator.",
+          "name" : "invalidate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItemEnumerator\/invalidate()"
+        }
+      ],
+      "title" : "Managing enumerator life cycle"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An item in the contact database.",
+          "name" : "ContactItem",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItem"
+        },
+        {
+          "description" : "A protocol to provide enumerators for collections of contact items.",
+          "name" : "ContactItemEnumerating",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItemEnumerating"
+        }
+      ],
+      "title" : "Providing contacts"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "ContactItemEnumerator",
+  "url" : "https:\/\/developer.apple.com\/documentation\/ContactProvider\/ContactItemEnumerator"
+}

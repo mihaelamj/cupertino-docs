@@ -1,0 +1,99 @@
+{
+  "abstract" : "Package your app-specific data into a template and create a timeline entry for that template.",
+  "codeExamples" : [
+    {
+      "code" : "switch complication.identifier {\ncase complicationConditionIdentifier:\n    templateOrNil = myGetConditionTemplate(for: family, date: date)\n    \ncase complicationTemperatureIdentifier:\n    templateOrNil = myGetTemperatureTemplate(for: family, date: date)\n    \ncase complicationPrecipitationIdentifier:\n    templateOrNil = myGetPrecipitationPercentageTemplate(for: family, date: date)",
+      "language" : "swift"
+    },
+    {
+      "code" : "switch complication.family {\ncase .circularSmall:\n    \/\/ Create a template from the circular small family.\n    \ncase .modularSmall:\n    \/\/ Create a template from the modular small family.\n    \ncase .modularLarge:\n    \/\/ Create a template from the modular large family.\n    \n\/\/ Continue with all the templates supported by the specified type.\n    \n@unknown default:\n    print(\"*** Unknown Complication Family: \\(complication.family) ***\")\n    \/\/ Handle the error here.\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let temperature = myCity.temperature(date)\n\nlet nameProvider = CLKSimpleTextProvider(\n    text: myCity.name,\n    shortText: myCity.abbreviation)\n\nlet temperatureProvider = CLKSimpleTextProvider(\n    text: \"\\(longNumberFormatter.string(from: NSNumber(value: temperature)) ?? \"Unknown\")º F\",\n    shortText: shortNumberFormatter.string(from: NSNumber(value: temperature)) ?? \"??\")",
+      "language" : "swift"
+    },
+    {
+      "code" : "let template = CLKComplicationTemplateModularSmallStackText(\n    line1TextProvider: temperatureProvider,\n    line2TextProvider: nameProvider)",
+      "language" : "swift"
+    },
+    {
+      "code" : "let city: City\n\n\/\/ Read the city id from the complication's userInfo dictionary.\nif let cityID = complication.userInfo?[myCityIDKey] as? String {\n    city = myData.lookupCity(byID: cityID) ?? myData.currentCity\n} else {\n    city = myData.currentCity\n}\n\nlet nameProvider = CLKSimpleTextProvider(\n    text: city.name,\n    shortText: city.abbreviation)\n\n\/\/ Read the complication type from the userInfo dictionary.\nlet typeIdentifier = complication.userInfo?[myTypeIdentifierKey] as? String ?? \"Undefined\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "eb436fa69a9476fef49708b602c52a8031e32d66f1f02229084cecbcc46f037f",
+  "crawledAt" : "2026-03-10T14:33:40Z",
+  "id" : "00232D9A-405D-4A6C-BB21-1C1EB9DFF4D9",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "ClockKit",
+  "overview" : "## Overview\n\nClockKit periodically requests timeline entries from your complication’s data source. A timeline entry consists of a complication template that you have configured with your app’s data and a date that specifies when ClockKit displays that template.\n\n\n\nYour data source packages app-specific data into a template that ClockKit can display onscreen. To create the template, you examine the provided [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication] object, select an appropriate template, fill the template with data from your app, and then create a timeline entry for the template.\n\n### Examine the Complication Object\n\nWhen ClockKit requests a template, it always provides a [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication] object that describes the complication. The complication has an [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/identifier] that your app defines, and a [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/family] from the [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplicationFamily] enumeration. Each [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/identifier] defines a separate complication type for the specified [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/family].\n\nExamine the [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/identifier] to determine which kind of complication you’re creating. In watchOS 7 and later, your app can provide one or more complications per [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/family]. For example, a weather app may support separate complications for the `Condition`, `Temperature`, and `Precipitation` identifiers.\n\nThe ClockKit framework organizes complications into families. Each family defines the size and shape of the complication. Examine the [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/family] to discover which kind of template you can use. For the complete list of families, see [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplicationFamily].\n\nEach family provides one or more templates that define the type of data and the data’s position within the complication.\n\nSelect and create a template for the specified family from the following pages:\n\n### Create Data Providers to Fill the Template\n\nData providers take a raw value and format it for the template. For example, the [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKSimpleTextProvider] takes two strings—a short string and a long string. If you provide both, ClockKit selects the best string for the template’s size.\n\nClockKit uses data providers for text, images, and gauges, including:\n\nSome of the data providers, like [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKRelativeDateTextProvider] and [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKTimeIntervalGaugeProvider], automatically update the complication as time passes without affecting your complication’s background execution budgets.\n\nUse the data providers to create and populate your template.\n\n### Use Complication Data\n\nThe [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplicationDescriptor] class’s `userInfo` and `userActivity` properties let you pass additional data about the complication. You can use this data to simplify creating timeline entires, and to launch a particular scene in your app.\n\nFor example, you can create a set of complications from the user’s favorite city list, as shown in [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/declaring-complications-for-your-app#Dynamically-Define-Descriptors]. Instead of parsing the complications identifier, you can add the city and the weather data type to the complication’s [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/userInfo] dictionary. Then, to create a timeline entry, you read the data from the dictionary before selecting and filling your template.\n\n### Create the Timeline Entry Object\n\nCreate a [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplicationTimelineEntry] object using the template and the desired date. For the current timeline entry, you must specify a date equal to or earlier than the current time.\n\nFor future timeline entries, specify the date and time for the data to appear on the complication. For a meeting complication, you might display information about a meeting before its scheduled start time. For more information on creating future timeline entries, see [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/loading-future-timeline-events].",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/ClockKit\/creating-a-timeline-entry\ncrawled: 2026-03-10T14:33:40Z\n---\n\n# Creating a timeline entry\n\n**Article**\n\nPackage your app-specific data into a template and create a timeline entry for that template.\n\n## Overview\n\nClockKit periodically requests timeline entries from your complication’s data source. A timeline entry consists of a complication template that you have configured with your app’s data and a date that specifies when ClockKit displays that template.\n\n\n\nYour data source packages app-specific data into a template that ClockKit can display onscreen. To create the template, you examine the provided [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication] object, select an appropriate template, fill the template with data from your app, and then create a timeline entry for the template.\n\n### Examine the Complication Object\n\nWhen ClockKit requests a template, it always provides a [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication] object that describes the complication. The complication has an [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/identifier] that your app defines, and a [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/family] from the [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplicationFamily] enumeration. Each [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/identifier] defines a separate complication type for the specified [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/family].\n\nExamine the [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/identifier] to determine which kind of complication you’re creating. In watchOS 7 and later, your app can provide one or more complications per [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/family]. For example, a weather app may support separate complications for the `Condition`, `Temperature`, and `Precipitation` identifiers.\n\n```swift\nswitch complication.identifier {\ncase complicationConditionIdentifier:\n    templateOrNil = myGetConditionTemplate(for: family, date: date)\n    \ncase complicationTemperatureIdentifier:\n    templateOrNil = myGetTemperatureTemplate(for: family, date: date)\n    \ncase complicationPrecipitationIdentifier:\n    templateOrNil = myGetPrecipitationPercentageTemplate(for: family, date: date)\n```\n\nThe ClockKit framework organizes complications into families. Each family defines the size and shape of the complication. Examine the [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/family] to discover which kind of template you can use. For the complete list of families, see [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplicationFamily].\n\n```swift\nswitch complication.family {\ncase .circularSmall:\n    \/\/ Create a template from the circular small family.\n    \ncase .modularSmall:\n    \/\/ Create a template from the modular small family.\n    \ncase .modularLarge:\n    \/\/ Create a template from the modular large family.\n    \n\/\/ Continue with all the templates supported by the specified type.\n    \n@unknown default:\n    print(\"*** Unknown Complication Family: \\(complication.family) ***\")\n    \/\/ Handle the error here.\n}\n```\n\nEach family provides one or more templates that define the type of data and the data’s position within the complication.\n\nSelect and create a template for the specified family from the following pages:\n\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/circular-small]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/extra-large]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/modular-small]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/modular-large]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/utilitarian]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/graphic]\n\n\n\n### Create Data Providers to Fill the Template\n\nData providers take a raw value and format it for the template. For example, the [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKSimpleTextProvider] takes two strings—a short string and a long string. If you provide both, ClockKit selects the best string for the template’s size.\n\n```swift\nlet temperature = myCity.temperature(date)\n\nlet nameProvider = CLKSimpleTextProvider(\n    text: myCity.name,\n    shortText: myCity.abbreviation)\n\nlet temperatureProvider = CLKSimpleTextProvider(\n    text: \"\\(longNumberFormatter.string(from: NSNumber(value: temperature)) ?? \"Unknown\")º F\",\n    shortText: shortNumberFormatter.string(from: NSNumber(value: temperature)) ?? \"??\")\n```\n\nClockKit uses data providers for text, images, and gauges, including:\n\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKSimpleTextProvider]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKDateTextProvider]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKTimeTextProvider]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKRelativeDateTextProvider]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKTimeIntervalTextProvider]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKImageProvider]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKFullColorImageProvider]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKSimpleGaugeProvider]\n- [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKTimeIntervalGaugeProvider]\n\nSome of the data providers, like [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKRelativeDateTextProvider] and [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKTimeIntervalGaugeProvider], automatically update the complication as time passes without affecting your complication’s background execution budgets.\n\nUse the data providers to create and populate your template.\n\n```swift\nlet template = CLKComplicationTemplateModularSmallStackText(\n    line1TextProvider: temperatureProvider,\n    line2TextProvider: nameProvider)\n```\n\n### Use Complication Data\n\nThe [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplicationDescriptor] class’s `userInfo` and `userActivity` properties let you pass additional data about the complication. You can use this data to simplify creating timeline entires, and to launch a particular scene in your app.\n\nFor example, you can create a set of complications from the user’s favorite city list, as shown in [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/declaring-complications-for-your-app#Dynamically-Define-Descriptors]. Instead of parsing the complications identifier, you can add the city and the weather data type to the complication’s [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplication\/userInfo] dictionary. Then, to create a timeline entry, you read the data from the dictionary before selecting and filling your template.\n\n```swift\nlet city: City\n\n\/\/ Read the city id from the complication's userInfo dictionary.\nif let cityID = complication.userInfo?[myCityIDKey] as? String {\n    city = myData.lookupCity(byID: cityID) ?? myData.currentCity\n} else {\n    city = myData.currentCity\n}\n\nlet nameProvider = CLKSimpleTextProvider(\n    text: city.name,\n    shortText: city.abbreviation)\n\n\/\/ Read the complication type from the userInfo dictionary.\nlet typeIdentifier = complication.userInfo?[myTypeIdentifierKey] as? String ?? \"Undefined\"\n```\n\n### Create the Timeline Entry Object\n\nCreate a [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/CLKComplicationTimelineEntry] object using the template and the desired date. For the current timeline entry, you must specify a date equal to or earlier than the current time.\n\n```swift\nCLKComplicationTimelineEntry(date: Date(), complicationTemplate: template)\n```\n\nFor future timeline entries, specify the date and time for the data to appear on the complication. For a meeting complication, you might display information about a meeting before its scheduled start time. For more information on creating future timeline entries, see [doc:\/\/com.apple.clockkit\/documentation\/ClockKit\/loading-future-timeline-events].\n\n## Related Documentation\n\n- **Enabling Complications for Your watchOS App**: Set up your watchOS app’s complications.\n- **Adding Placeholders for Your Complication**: Provide the placeholders that users see when adding your complication to a watch face.\n\n## Articles\n\n- **Creating complications for your watchOS app**: Set up and implement complications for your watchOS app.\n- **Declaring complications for your app**: Define the complications that your app supports.\n- **Loading future timeline events**: Preserve battery life and improve performance on the watch by providing a timeline with expected data and updates.\n- **Keeping your complications up to date**: Replace or extend the data in your complication’s timeline.\n- **Building complications with SwiftUI**: Design the appearance of a graphic complication using SwiftUI.\n- **Displaying progress views and gauges**: Add rich visual data to your SwiftUI complications with progress views and gauges.\n- **Adding text to a complication**: Use text in SwiftUI complications.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Set up your watchOS app’s complications.",
+          "name" : "Enabling Complications for Your watchOS App",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClockKit\/enabling-complications-for-your-watchos-app"
+        },
+        {
+          "description" : "Provide the placeholders that users see when adding your complication to a watch face.",
+          "name" : "Adding Placeholders for Your Complication",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClockKit\/adding-placeholders-for-your-complication"
+        }
+      ],
+      "title" : "Related Documentation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Set up and implement complications for your watchOS app.",
+          "name" : "Creating complications for your watchOS app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClockKit\/creating-complications-for-your-watchos-app"
+        },
+        {
+          "description" : "Define the complications that your app supports.",
+          "name" : "Declaring complications for your app",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClockKit\/declaring-complications-for-your-app"
+        },
+        {
+          "description" : "Preserve battery life and improve performance on the watch by providing a timeline with expected data and updates.",
+          "name" : "Loading future timeline events",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClockKit\/loading-future-timeline-events"
+        },
+        {
+          "description" : "Replace or extend the data in your complication’s timeline.",
+          "name" : "Keeping your complications up to date",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClockKit\/keeping-your-complications-up-to-date"
+        },
+        {
+          "description" : "Design the appearance of a graphic complication using SwiftUI.",
+          "name" : "Building complications with SwiftUI",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClockKit\/building-complications-with-swiftui"
+        },
+        {
+          "description" : "Add rich visual data to your SwiftUI complications with progress views and gauges.",
+          "name" : "Displaying progress views and gauges",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClockKit\/displaying-progress-views-and-gauges"
+        },
+        {
+          "description" : "Use text in SwiftUI complications.",
+          "name" : "Adding text to a complication",
+          "url" : "https:\/\/developer.apple.com\/documentation\/ClockKit\/adding-text-to-a-complication"
+        }
+      ],
+      "title" : "Articles"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Creating a timeline entry",
+  "url" : "https:\/\/developer.apple.com\/documentation\/ClockKit\/creating-a-timeline-entry"
+}

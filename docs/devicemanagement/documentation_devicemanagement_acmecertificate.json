@@ -1,0 +1,97 @@
+{
+  "abstract" : "The payload that configures Automated Certificate Management Environment (ACME) settings.",
+  "codeExamples" : [
+    {
+      "code" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-\/\/Apple\/\/DTD PLIST 1.0\/\/EN\" \"http:\/\/www.apple.com\/DTDs\/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n    <key>PayloadContent<\/key>\n    <array>\n        <dict>\n            <key>ClientIdentifier<\/key>\n            <string>this is an identifier<\/string>\n            <key>ExtendedKeyUsage<\/key>\n            <array>\n                <string>1.3.6.1.5.5.7.3.2<\/string>\n            <\/array>\n            <key>HardwareBound<\/key>\n            <true\/>\n            <key>KeySize<\/key>\n            <integer>384<\/integer>\n            <key>KeyType<\/key>\n            <string>ECSECPrimeRandom<\/string>\n            <key>UsageFlags<\/key>\n            <integer>5<\/integer>\n            <key>PayloadIdentifier<\/key>\n            <string>com.example.myacmepayload<\/string>\n            <key>PayloadType<\/key>\n            <string>com.apple.security.acme<\/string>\n            <key>PayloadUUID<\/key>\n            <string>cbdc6238-feec-4171-878d-34e576bbb813<\/string>\n            <key>PayloadVersion<\/key>\n            <integer>1<\/integer>\n            <key>Subject<\/key>\n            <array>\n                <array>\n                    <array>\n                        <string>C<\/string>\n                        <string>US<\/string>\n                    <\/array>\n                <\/array>\n                <array>\n                    <array>\n                        <string>O<\/string>\n                        <string>Example Inc.<\/string>\n                    <\/array>\n                <\/array>\n                <array>\n                    <array>\n                        <string>1.2.840.113635.100.6.99999.99999<\/string>\n                        <string>test custom OID value<\/string>\n                    <\/array>\n                <\/array>\n            <\/array>\n            <key>SubjectAltName<\/key>\n            <dict>\n                <key>dNSName<\/key>\n                <string>site.example.com<\/string>\n            <\/dict>\n            <key>DirectoryURL<\/key>\n            <string>https:\/\/acme.example.com\/acme<\/string>\n        <\/dict>\n    <\/array>\n    <key>PayloadDisplayName<\/key>\n    <string>ACME<\/string>\n    <key>PayloadIdentifier<\/key>\n    <string>com.example.myprofile<\/string>\n    <key>PayloadType<\/key>\n    <string>Configuration<\/string>\n    <key>PayloadUUID<\/key>\n    <string>ce876f81-abf0-46f9-9e68-9b3a7ede8097<\/string>\n    <key>PayloadVersion<\/key>\n    <integer>1<\/integer>\n<\/dict>\n<\/plist>",
+      "language" : "plist"
+    }
+  ],
+  "contentHash" : "e67197fef61541215b65ee64e444775b17dd147908ecd35226e85fd599821b6e",
+  "crawledAt" : "2026-03-10T15:23:34Z",
+  "declaration" : {
+    "code" : "object ACMECertificate",
+    "language" : "swift"
+  },
+  "id" : "AF07788F-9A9C-40E8-9C66-ED6F2B0A3A94",
+  "kind" : "unknown",
+  "language" : "data",
+  "module" : "Device Management",
+  "overview" : "## Discussion\n\nSpecify `com.apple.security.acme` as the payload type.\n\nUse this payload to specify how the device requests a client certificate from an Automated Certificate Management Environment (ACME) server. Other payloads can reference the resulting client identity by the payload’s `PayloadUUID`.\n\nFirst the device generates an asymmetric key pair based upon the `KeyType`, `KeySize`, and `HardwareBound` fields. Then the device communicates with the ACME server. It requests a new order using the `ClientIdentifier` as the `permanent-identifier`. The ACME server responds with a challenge type of `device-attest-01`. If `Attest` is `true` the device requests an attestation of the key and device properties. Then it replies to the challenge with a WebAuthn attestation statement, and this contains the attestation if the device obtained one. The device submits a certificate signing request matching the key and containing the `ClientIdentifier`, `Subject`, `SubjectAltName`, `UsageFlags`, and `ExtendedKeyUsage` fields. The ACME server issues a certificate, and the device stores the resulting identity.\n\nFor details on the content of the attestation provided to the ACME server, see the documentation of the `DevicePropertiesAttestation` key in the [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/DeviceInformationResponse\/QueryResponses-data.dictionary]response. In the attestation certificate the value of the freshness code OID is the SHA-256 hash of the `token` from the `device-attest-01` challenge.\n\n### ACME attestation hardware support\n\nThe following table indicates which System on Chips (SoCs) support ACME attestation. If the Attest key is false or ignored, the ACME server does not receive an attestation.\n\n### Profile availability\n\n### Example Profile",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/DeviceManagement\/ACMECertificate\ncrawled: 2026-03-10T15:23:34Z\n---\n\n# ACMECertificate\n\n**Device Management Profile**\n\nThe payload that configures Automated Certificate Management Environment (ACME) settings.\n\n## Declaration\n\n```swift\nobject ACMECertificate\n```\n\n## Discussion\n\nSpecify `com.apple.security.acme` as the payload type.\n\nUse this payload to specify how the device requests a client certificate from an Automated Certificate Management Environment (ACME) server. Other payloads can reference the resulting client identity by the payload’s `PayloadUUID`.\n\nFirst the device generates an asymmetric key pair based upon the `KeyType`, `KeySize`, and `HardwareBound` fields. Then the device communicates with the ACME server. It requests a new order using the `ClientIdentifier` as the `permanent-identifier`. The ACME server responds with a challenge type of `device-attest-01`. If `Attest` is `true` the device requests an attestation of the key and device properties. Then it replies to the challenge with a WebAuthn attestation statement, and this contains the attestation if the device obtained one. The device submits a certificate signing request matching the key and containing the `ClientIdentifier`, `Subject`, `SubjectAltName`, `UsageFlags`, and `ExtendedKeyUsage` fields. The ACME server issues a certificate, and the device stores the resulting identity.\n\nFor details on the content of the attestation provided to the ACME server, see the documentation of the `DevicePropertiesAttestation` key in the [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/DeviceInformationResponse\/QueryResponses-data.dictionary]response. In the attestation certificate the value of the freshness code OID is the SHA-256 hash of the `token` from the `device-attest-01` challenge.\n\n### ACME attestation hardware support\n\nThe following table indicates which System on Chips (SoCs) support ACME attestation. If the Attest key is false or ignored, the ACME server does not receive an attestation.\n\n\n\n### Profile availability\n\n\n\n### Example Profile\n\n```plist\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-\/\/Apple\/\/DTD PLIST 1.0\/\/EN\" \"http:\/\/www.apple.com\/DTDs\/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n    <key>PayloadContent<\/key>\n    <array>\n        <dict>\n            <key>ClientIdentifier<\/key>\n            <string>this is an identifier<\/string>\n            <key>ExtendedKeyUsage<\/key>\n            <array>\n                <string>1.3.6.1.5.5.7.3.2<\/string>\n            <\/array>\n            <key>HardwareBound<\/key>\n            <true\/>\n            <key>KeySize<\/key>\n            <integer>384<\/integer>\n            <key>KeyType<\/key>\n            <string>ECSECPrimeRandom<\/string>\n            <key>UsageFlags<\/key>\n            <integer>5<\/integer>\n            <key>PayloadIdentifier<\/key>\n            <string>com.example.myacmepayload<\/string>\n            <key>PayloadType<\/key>\n            <string>com.apple.security.acme<\/string>\n            <key>PayloadUUID<\/key>\n            <string>cbdc6238-feec-4171-878d-34e576bbb813<\/string>\n            <key>PayloadVersion<\/key>\n            <integer>1<\/integer>\n            <key>Subject<\/key>\n            <array>\n                <array>\n                    <array>\n                        <string>C<\/string>\n                        <string>US<\/string>\n                    <\/array>\n                <\/array>\n                <array>\n                    <array>\n                        <string>O<\/string>\n                        <string>Example Inc.<\/string>\n                    <\/array>\n                <\/array>\n                <array>\n                    <array>\n                        <string>1.2.840.113635.100.6.99999.99999<\/string>\n                        <string>test custom OID value<\/string>\n                    <\/array>\n                <\/array>\n            <\/array>\n            <key>SubjectAltName<\/key>\n            <dict>\n                <key>dNSName<\/key>\n                <string>site.example.com<\/string>\n            <\/dict>\n            <key>DirectoryURL<\/key>\n            <string>https:\/\/acme.example.com\/acme<\/string>\n        <\/dict>\n    <\/array>\n    <key>PayloadDisplayName<\/key>\n    <string>ACME<\/string>\n    <key>PayloadIdentifier<\/key>\n    <string>com.example.myprofile<\/string>\n    <key>PayloadType<\/key>\n    <string>Configuration<\/string>\n    <key>PayloadUUID<\/key>\n    <string>ce876f81-abf0-46f9-9e68-9b3a7ede8097<\/string>\n    <key>PayloadVersion<\/key>\n    <integer>1<\/integer>\n<\/dict>\n<\/plist>\n```\n\n## Objects\n\n- **ACMECertificate.SubjectAltName**: The subject’s alternative name details.\n\n## Certificates\n\n- **ActiveDirectoryCertificate**: The payload that configures Active Directory Certificate settings.\n- **CertificatePEM**: The payload that configures a PEM-formatted certificate.\n- **CertificatePKCS1**: The payload that configures a PKCS #1-formatted certificate.\n- **CertificatePKCS12**: The payload that configures a PKCS #12-formatted certificate.\n- **CertificateRoot**: The payload that configures a root certificate.\n- **CertificatePreference**: The payload that configures a certificate preference.\n- **CertificateRevocation**: The payload that configures certificate revocation checking.\n- **CertificateTransparency**: The payload that configures certificate transparency enforcement.\n- **SCEP**: The payload that configures Simple Certificate Enrollment Protocol (SCEP) settings.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The subject’s alternative name details.",
+          "name" : "ACMECertificate.SubjectAltName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/ACMECertificate\/SubjectAltName-data.dictionary"
+        }
+      ],
+      "title" : "Objects"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The payload that configures Active Directory Certificate settings.",
+          "name" : "ActiveDirectoryCertificate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/ActiveDirectoryCertificate"
+        },
+        {
+          "description" : "The payload that configures a PEM-formatted certificate.",
+          "name" : "CertificatePEM",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/CertificatePEM"
+        },
+        {
+          "description" : "The payload that configures a PKCS #1-formatted certificate.",
+          "name" : "CertificatePKCS1",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/CertificatePKCS1"
+        },
+        {
+          "description" : "The payload that configures a PKCS #12-formatted certificate.",
+          "name" : "CertificatePKCS12",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/CertificatePKCS12"
+        },
+        {
+          "description" : "The payload that configures a root certificate.",
+          "name" : "CertificateRoot",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/CertificateRoot"
+        },
+        {
+          "description" : "The payload that configures a certificate preference.",
+          "name" : "CertificatePreference",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/CertificatePreference"
+        },
+        {
+          "description" : "The payload that configures certificate revocation checking.",
+          "name" : "CertificateRevocation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/CertificateRevocation"
+        },
+        {
+          "description" : "The payload that configures certificate transparency enforcement.",
+          "name" : "CertificateTransparency",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/CertificateTransparency"
+        },
+        {
+          "description" : "The payload that configures Simple Certificate Enrollment Protocol (SCEP) settings.",
+          "name" : "SCEP",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/SCEP"
+        }
+      ],
+      "title" : "Certificates"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "ACMECertificate",
+  "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/ACMECertificate"
+}

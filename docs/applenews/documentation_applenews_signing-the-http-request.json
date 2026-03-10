@@ -1,0 +1,65 @@
+{
+  "abstract" : "Sign the canonical request and send the custom authorization header to the Apple News API.",
+  "codeExamples" : [
+    {
+      "code" : "import base64\nimport hmac\nimport requests\nimport sys\nfrom datetime import datetime\nimport hashlib \n\nclass PublisherAPI:\n    channel_id = \"\"\n    current_action = \"\"\n    key_id = \"\"\n    key_secret = \"\"\n    url = \"\"\n\n    def send_request(self, method, url, content_type=None):\n        date = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')\n        canonical_request = method + url + date\n        canonical_request = canonical_request.encode()\n        signature = self.create_signature(canonical_request)\n        authorization = \"HHMAC; key=%s; signature=%s; date=%s\" % (\n            self.key_id, signature, date)\n        headers = {\"Authorization\": authorization}\n        return requests.request(method, url, headers=headers)\n\n    def create_signature(self, canonical_request):\n        key_bytes = base64.b64decode(self.key_secret)\n        message = canonical_request\n        secret = self.key_secret.encode(\"utf-8\")\n\n        signature = base64.b64encode(\n            hmac.new(key_bytes, message,digestmod=hashlib.sha256).digest()).decode(\"utf-8\")\n        return signature\n\n    def read_channel(self):\n        method = \"GET\"\n        url = self.url + \"%s\" % self.channel_id\n        return self.send_request(method, url)\n\n    def main(self):\n        if self.current_action == \"readChannel\":\n            response = self.read_channel()\n        else:\n            response = {\n                \"status_code\": 400,\n                \"response\": \"{\\\"errors\\\":[{\\\"code\\\":\\\"UNKNOWN_COMMAND\\\"}]}\"\n            }\n        return response\n\nif __name__ == '__main__':\n    if not len(sys.argv) > 4:\n        print ('no or missing arguments')\n        exit()\n\n    publisherAPI = PublisherAPI()\n    publisherAPI.url = sys.argv[1] + \"\/channels\/\"\n    publisherAPI.channel_id = sys.argv[2]\n    publisherAPI.key_id = sys.argv[3]\n    publisherAPI.key_secret = sys.argv[4]\n    publisherAPI.current_action = \"readChannel\"\n\n    response = publisherAPI.main()\n\n    print(response.status_code)\n    print(response.text)",
+      "language" : "python"
+    },
+    {
+      "code" : "python read_channel.py https:\/\/news-api.apple.com channel_id key_id key_secret",
+      "language" : "swift"
+    },
+    {
+      "code" : "{\n    \"data\": {\n        \"createdAt\": \"2016-06-13T00:25:43Z\",\n        \"modifiedAt\": \"2016-06-13T23:30:05Z\",\n        \"id\": \"42424242-4242-4242-4242-424242424242\",\n        \"type\": \"channel\",\n        \"shareUrl\": \"https:\/\/apple.news\/Taaaaaaaaaaaaaaaaaaaaaa\",\n        \"links\": {\n            \"defaultSection\": \"https:\/\/news-api.apple.com\/sections\/42424242-4242-4242-4242-424242424242\",\n            \"self\": \"https:\/\/news-api.apple.com\/channels\/42424242-4242-4242-4242-424242424242\"\n        },\n        \"name\": \"My Channel\",\n        \"website\": \"http:\/\/mychannel.com\"\n    }\n}",
+      "language" : "json"
+    },
+    {
+      "code" : "date = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')\ncanonical_request = method + url + date",
+      "language" : "python"
+    },
+    {
+      "code" : "2018-08-10T23:55:11Z",
+      "language" : "other"
+    },
+    {
+      "code" : "GEThttps:\/\/news-api.apple.com\/channels\/{channel-id}2018-08-10T23:57:00Z",
+      "language" : "other"
+    },
+    {
+      "code" : "{'Authorization': 'HHMAC; key={Key ID}; signature=1rBvQKZeQ6M3\/dVMtv95Dc51V+QViaqUB0bF6exzYtw",
+      "language" : "other"
+    },
+    {
+      "code" : "return requests.request(method, url, headers=headers)",
+      "language" : "python"
+    }
+  ],
+  "contentHash" : "ea723b09a45bad798632025518aa04d107478858905b3b11d2a556d46ecedd07",
+  "crawledAt" : "2026-03-10T14:18:54Z",
+  "id" : "17204EFE-885A-48B8-A438-5E45B2423FC9",
+  "kind" : "article",
+  "language" : "data",
+  "overview" : "## Overview\n\nWhen communicating using HTTP protocol, the server validates the identity of the client and provides authorization for specific actions. By signing the HTTP request, the Apple News API authenticates the client and authorizes your news channel. See [doc:\/\/com.apple.applenews\/documentation\/AppleNews\/about-the-apple-news-security-model].\n\n**On this page, you’ll learn how to:**\n\n### Copy This Code\n\nOpen any text editor to copy this code. Save the file as `read_channel.py`.\n\n### Run the Script\n\nStart the command prompt and change to the directory containing `read_channel.py`. Run this script to make a properly authenticated [doc:\/\/com.apple.applenews\/documentation\/AppleNewsAPI\/GET-channels-_channelId_] request to the Apple News API. This script takes four arguments: API URL `(https:\/\/news-api.apple.com`), Channel ID, Key ID, and the Secret.\n\n### Result\n\nThe server returns a  successful response. The response includes information about the channel, as shown here. See [doc:\/\/com.apple.applenews\/documentation\/AppleNewsAPI\/Channel] and [doc:\/\/com.apple.applenews\/documentation\/AppleNewsAPI\/ChannelLinks].\n\n### How It Works\n\nThe canonical request combines the method, the URL, and the current date, as shown here:\n\nThe date is formatted as shown here:\n\n`{Year with century as a decimal number}-{Month as a zero-padded decimal number}-{Day of the month as a zero-padded decimal number}T{Hour (24-hour clock) as a zero-padded decimal number}:{Minute as a zero-padded decimal number}:{Second as a zero-padded decimal number}Z`\n\nThe date format looks like this:\n\nThe canonical request looks like this:\n\nYou create a custom authorization header by combining the Key ID, the signed canonical request, and the formatted current date, as shown here:\n\n`{'HHMAC; key={Key ID}; signature={Signed Canonical Request}; date={Formatted Current Date'}`\n\nThe header looks like this:\n\nFinally, you send the header and the request to the Apple News API. The request looks like this:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/AppleNews\/signing-the-http-request\ncrawled: 2026-03-10T14:18:54Z\n---\n\n# Signing the HTTP Request\n\n**Article**\n\nSign the canonical request and send the custom authorization header to the Apple News API.\n\n## Overview\n\nWhen communicating using HTTP protocol, the server validates the identity of the client and provides authorization for specific actions. By signing the HTTP request, the Apple News API authenticates the client and authorizes your news channel. See [doc:\/\/com.apple.applenews\/documentation\/AppleNews\/about-the-apple-news-security-model].\n\n**On this page, you’ll learn how to:**\n\n- Create a canonical request.\n- Sign the canonical request.\n- Create a custom authorization header.\n- Send the header and the request to the Apple News API.\n\n### Copy This Code\n\nOpen any text editor to copy this code. Save the file as `read_channel.py`.\n\n```python\nimport base64\nimport hmac\nimport requests\nimport sys\nfrom datetime import datetime\nimport hashlib \n\nclass PublisherAPI:\n    channel_id = \"\"\n    current_action = \"\"\n    key_id = \"\"\n    key_secret = \"\"\n    url = \"\"\n\n    def send_request(self, method, url, content_type=None):\n        date = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')\n        canonical_request = method + url + date\n        canonical_request = canonical_request.encode()\n        signature = self.create_signature(canonical_request)\n        authorization = \"HHMAC; key=%s; signature=%s; date=%s\" % (\n            self.key_id, signature, date)\n        headers = {\"Authorization\": authorization}\n        return requests.request(method, url, headers=headers)\n\n    def create_signature(self, canonical_request):\n        key_bytes = base64.b64decode(self.key_secret)\n        message = canonical_request\n        secret = self.key_secret.encode(\"utf-8\")\n\n        signature = base64.b64encode(\n            hmac.new(key_bytes, message,digestmod=hashlib.sha256).digest()).decode(\"utf-8\")\n        return signature\n\n    def read_channel(self):\n        method = \"GET\"\n        url = self.url + \"%s\" % self.channel_id\n        return self.send_request(method, url)\n\n    def main(self):\n        if self.current_action == \"readChannel\":\n            response = self.read_channel()\n        else:\n            response = {\n                \"status_code\": 400,\n                \"response\": \"{\\\"errors\\\":[{\\\"code\\\":\\\"UNKNOWN_COMMAND\\\"}]}\"\n            }\n        return response\n\nif __name__ == '__main__':\n    if not len(sys.argv) > 4:\n        print ('no or missing arguments')\n        exit()\n\n    publisherAPI = PublisherAPI()\n    publisherAPI.url = sys.argv[1] + \"\/channels\/\"\n    publisherAPI.channel_id = sys.argv[2]\n    publisherAPI.key_id = sys.argv[3]\n    publisherAPI.key_secret = sys.argv[4]\n    publisherAPI.current_action = \"readChannel\"\n\n    response = publisherAPI.main()\n\n    print(response.status_code)\n    print(response.text)\n```\n\n### Run the Script\n\nStart the command prompt and change to the directory containing `read_channel.py`. Run this script to make a properly authenticated [doc:\/\/com.apple.applenews\/documentation\/AppleNewsAPI\/GET-channels-_channelId_] request to the Apple News API. This script takes four arguments: API URL `(https:\/\/news-api.apple.com`), Channel ID, Key ID, and the Secret.\n\n```swift\npython read_channel.py https:\/\/news-api.apple.com channel_id key_id key_secret\n```\n\n### Result\n\nThe server returns a  successful response. The response includes information about the channel, as shown here. See [doc:\/\/com.apple.applenews\/documentation\/AppleNewsAPI\/Channel] and [doc:\/\/com.apple.applenews\/documentation\/AppleNewsAPI\/ChannelLinks].\n\n```json\n{\n    \"data\": {\n        \"createdAt\": \"2016-06-13T00:25:43Z\",\n        \"modifiedAt\": \"2016-06-13T23:30:05Z\",\n        \"id\": \"42424242-4242-4242-4242-424242424242\",\n        \"type\": \"channel\",\n        \"shareUrl\": \"https:\/\/apple.news\/Taaaaaaaaaaaaaaaaaaaaaa\",\n        \"links\": {\n            \"defaultSection\": \"https:\/\/news-api.apple.com\/sections\/42424242-4242-4242-4242-424242424242\",\n            \"self\": \"https:\/\/news-api.apple.com\/channels\/42424242-4242-4242-4242-424242424242\"\n        },\n        \"name\": \"My Channel\",\n        \"website\": \"http:\/\/mychannel.com\"\n    }\n}\n```\n\n### How It Works\n\nThe canonical request combines the method, the URL, and the current date, as shown here:\n\n```python\ndate = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')\ncanonical_request = method + url + date\n```\n\nThe date is formatted as shown here:\n\n`{Year with century as a decimal number}-{Month as a zero-padded decimal number}-{Day of the month as a zero-padded decimal number}T{Hour (24-hour clock) as a zero-padded decimal number}:{Minute as a zero-padded decimal number}:{Second as a zero-padded decimal number}Z`\n\nThe date format looks like this:\n\n```other\n2018-08-10T23:55:11Z\n```\n\nThe canonical request looks like this:\n\n```other\nGEThttps:\/\/news-api.apple.com\/channels\/{channel-id}2018-08-10T23:57:00Z\n```\n\nYou create a custom authorization header by combining the Key ID, the signed canonical request, and the formatted current date, as shown here:\n\n`{'HHMAC; key={Key ID}; signature={Signed Canonical Request}; date={Formatted Current Date'}`\n\nThe header looks like this:\n\n```other\n{'Authorization': 'HHMAC; key={Key ID}; signature=1rBvQKZeQ6M3\/dVMtv95Dc51V+QViaqUB0bF6exzYtw\n```\n\nFinally, you send the header and the request to the Apple News API. The request looks like this:\n\n```python\nreturn requests.request(method, url, headers=headers)\n```\n\n## Apple News API Python Tutorial\n\n- **Making an HTTP Request to the Apple News API**: Create the URL, set the method, and send the request.\n- **Publishing an Article**: Build a URL and article body for the publish-article request.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Create the URL, set the method, and send the request.",
+          "name" : "Making an HTTP Request to the Apple News API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppleNews\/making-an-http-request-to-the-apple-news-api"
+        },
+        {
+          "description" : "Build a URL and article body for the publish-article request.",
+          "name" : "Publishing an Article",
+          "url" : "https:\/\/developer.apple.com\/documentation\/AppleNews\/publishing-an-article"
+        }
+      ],
+      "title" : "Apple News API Python Tutorial"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Signing the HTTP Request",
+  "url" : "https:\/\/developer.apple.com\/documentation\/AppleNews\/signing-the-http-request"
+}

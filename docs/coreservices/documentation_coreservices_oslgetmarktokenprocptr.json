@@ -1,0 +1,96 @@
+{
+  "abstract" : "Defines a pointer to a mark token callback function. Your mark token function returns a mark token.",
+  "codeExamples" : [
+    {
+      "code" : "OSLGetMarkTokenUPP MyGetMarkTokenUPP;\nMyGetMarkTokenUPP = NewOSLGetMarkTokenUPP (&MyGetMarkTokenCallback)",
+      "language" : "occ"
+    }
+  ],
+  "contentHash" : "5f46c6168f79454f0d71784e98018c351dd55be74b101be2cb50e65de6e0b876",
+  "crawledAt" : "2026-03-10T13:44:34Z",
+  "declaration" : {
+    "code" : "typealias OSLGetMarkTokenProcPtr = (UnsafePointer<AEDesc>?, DescType, UnsafeMutablePointer<AEDesc>?) -> OSErr",
+    "language" : "swift"
+  },
+  "id" : "32B70496-C7ED-48CE-A11C-93B371AAEA26",
+  "kind" : "typealias",
+  "language" : "swift",
+  "module" : "Core Services",
+  "overview" : "## Return Value\n\nA result code. See [doc:\/\/com.apple.documentation\/documentation\/applicationservices\/apple_event_manager#1656145]. Your mark token function should return `noErr` if it successfully supplies a mark token and `errAEEventNotHandled` if it fails to supply a mark token. When the Apple Event Manager gets an error result of `errAEEventNotHandled` after calling a mark token function, it attempts to get a mark token by calling the equivalent system marking callback function.\n\n## Discussion\n\nTo get a mark token, the Apple Event Manager calls your mark token function. Like other tokens, the mark token returned can be a descriptor of any type; however, unlike other tokens, a mark token identifies the way your application will mark Apple event objects during the current session while resolving a single object specifier that specifies the key form `formTest`. \n\nA mark token is valid until the Apple Event Manager either disposes of it by calling [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1446783-aedisposetoken] or returns it as the result of the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1449720-aeresolve] function. If the final result of a call to `AEResolve` is a mark token, the Apple event objects currently marked for that mark token are those specified by the object specifier passed to `AEResolve`, and your application can proceed to do whatever the Apple event has requested. Note that your application is responsible for disposing of a final mark token with a call to `AEDisposeToken`, just as for any other final token.\n\nIf your application supports marking, it should also provide a token disposal function modeled after the token disposal function described in [doc:\/\/com.apple.documentation\/documentation\/coreservices\/osldisposetokenprocptr]. When the Apple Event Manager calls `AEDisposeToken` to dispose of a mark token that is not the final result of a call to `AEResolve`, the subsequent call to your token disposal function lets you know that you can unmark the Apple event objects marked with that mark token. A call to `AEDisposeDesc` to dispose of a mark token (which would occur if you did not provide a token disposal function) would go unnoticed.\n\nTo provide a pointer to your mark token callback function, you create a universal procedure pointer (UPP) of type [doc:\/\/com.apple.documentation\/documentation\/coreservices\/oslgetmarktokenupp], using the function [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1445166-newoslgetmarktokenupp]. You can do so with code like the following:\n\nYou can then pass the UPP `MyGetMarkTokenUPP` as a parameter to the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1447756-aesetobjectcallbacks] function or the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1445532-aeinstallspecialhandler] function.\n\nIf you wish to call your mark token callback function directly, you can use the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1441894-invokeoslgetmarktokenupp] function.\n\nAfter you are finished with your mark token callback function, you can dispose of the UPP with the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1442377-disposeoslgetmarktokenupp] function. However, if you will use the same mark token function in subsequent calls to the function `AESetObjectCallbacks` or the function `AEInstallSpecialHandler`, you can reuse the same UPP, rather than dispose of it and later create a new UPP. ",
+  "platforms" : [
+    "Mac Catalyst",
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/coreservices\/oslgetmarktokenprocptr\ncrawled: 2026-03-10T13:44:34Z\n---\n\n# OSLGetMarkTokenProcPtr\n\n**Type Alias**\n\nDefines a pointer to a mark token callback function. Your mark token function returns a mark token.\n\n## Declaration\n\n```swift\ntypealias OSLGetMarkTokenProcPtr = (UnsafePointer<AEDesc>?, DescType, UnsafeMutablePointer<AEDesc>?) -> OSErr\n```\n\n## Parameters\n\n- **dContainerToken**: A pointer to the Apple event object that contains the elements to be marked with the mark token. (Token is defined in [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1446783-aedisposetoken]. See [doc:\/\/com.apple.documentation\/documentation\/coreservices\/aedesc].\n- **containerClass**: The object class of the container that contains the objects to be marked. See [doc:\/\/com.apple.documentation\/documentation\/coreservices\/desctype].\n- **result**: A pointer to a descriptor where your mark token function should return a mark token. If your function can’t return a mark token, it should return a null descriptor. See [doc:\/\/com.apple.documentation\/documentation\/coreservices\/aedesc].\n\n## Return Value\n\nA result code. See [doc:\/\/com.apple.documentation\/documentation\/applicationservices\/apple_event_manager#1656145]. Your mark token function should return `noErr` if it successfully supplies a mark token and `errAEEventNotHandled` if it fails to supply a mark token. When the Apple Event Manager gets an error result of `errAEEventNotHandled` after calling a mark token function, it attempts to get a mark token by calling the equivalent system marking callback function.\n\n## Discussion\n\nTo get a mark token, the Apple Event Manager calls your mark token function. Like other tokens, the mark token returned can be a descriptor of any type; however, unlike other tokens, a mark token identifies the way your application will mark Apple event objects during the current session while resolving a single object specifier that specifies the key form `formTest`. \n\nA mark token is valid until the Apple Event Manager either disposes of it by calling [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1446783-aedisposetoken] or returns it as the result of the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1449720-aeresolve] function. If the final result of a call to `AEResolve` is a mark token, the Apple event objects currently marked for that mark token are those specified by the object specifier passed to `AEResolve`, and your application can proceed to do whatever the Apple event has requested. Note that your application is responsible for disposing of a final mark token with a call to `AEDisposeToken`, just as for any other final token.\n\nIf your application supports marking, it should also provide a token disposal function modeled after the token disposal function described in [doc:\/\/com.apple.documentation\/documentation\/coreservices\/osldisposetokenprocptr]. When the Apple Event Manager calls `AEDisposeToken` to dispose of a mark token that is not the final result of a call to `AEResolve`, the subsequent call to your token disposal function lets you know that you can unmark the Apple event objects marked with that mark token. A call to `AEDisposeDesc` to dispose of a mark token (which would occur if you did not provide a token disposal function) would go unnoticed.\n\nTo provide a pointer to your mark token callback function, you create a universal procedure pointer (UPP) of type [doc:\/\/com.apple.documentation\/documentation\/coreservices\/oslgetmarktokenupp], using the function [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1445166-newoslgetmarktokenupp]. You can do so with code like the following:\n\n```occ\nOSLGetMarkTokenUPP MyGetMarkTokenUPP;\nMyGetMarkTokenUPP = NewOSLGetMarkTokenUPP (&MyGetMarkTokenCallback)\n```\n\nYou can then pass the UPP `MyGetMarkTokenUPP` as a parameter to the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1447756-aesetobjectcallbacks] function or the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1445532-aeinstallspecialhandler] function.\n\nIf you wish to call your mark token callback function directly, you can use the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1441894-invokeoslgetmarktokenupp] function.\n\nAfter you are finished with your mark token callback function, you can dispose of the UPP with the [doc:\/\/com.apple.documentation\/documentation\/coreservices\/1442377-disposeoslgetmarktokenupp] function. However, if you will use the same mark token function in subsequent calls to the function `AESetObjectCallbacks` or the function `AEInstallSpecialHandler`, you can reuse the same UPP, rather than dispose of it and later create a new UPP. \n\n## Callbacks\n\n- **AERemoteProcessResolverCallback**: Defines a pointer to a function the Apple Event Manager calls when the asynchronous execution of a remote process resolver completes, either due to success or failure, after a call to the `AERemoteProcessResolverScheduleWithRunLoop` function. Your callback function can use the reference passed to it to get the remote process information.\n- **AEDisposeExternalProcPtr**: Defines a pointer to a function the Apple Event Manager calls to dispose of a descriptor created by the `AECreateDescFromExternalPtr` function. Your callback function disposes of the buffer you originally passed to that function.\n- **AECoerceDescProcPtr**: Defines a pointer to a function that coerces data stored in a descriptor. Your descriptor coercion callback function coerces the data from the passed descriptor to the specified type, returning the coerced data in a second descriptor.\n- **AECoercePtrProcPtr**: Defines a pointer to a function that coerces data stored in a buffer. Your pointer coercion callback routine coerces the data from the passed buffer to the specified type, returning the coerced data in a descriptor.\n- **AEEventHandlerProcPtr**: Defines a pointer to a function that handles one or more Apple events. Your Apple event handler function performs any action requested by the Apple event, adds parameters to the reply Apple event if appropriate (possibly including error information), and returns a result code.\n- **OSLAccessorProcPtr**: Your object accessor function either finds elements or properties of an Apple event object.\n- **OSLAdjustMarksProcPtr**: Defines a pointer to an adjust marks callback function. Your adjust marks function unmarks objects previously marked by a call to your marking function.\n- **OSLCompareProcPtr**: Defines a pointer to an object comparison callback function. Your object comparison function compares one Apple event object to another or to the data for a descriptor.\n- **OSLCountProcPtr**: Defines a pointer to an object counting callback function. Your object counting function counts the number of Apple event objects of a specified class in a specified container object.\n- **OSLDisposeTokenProcPtr**: Defines a pointer to a dispose token callback function. Your dispose token function, required only if you use a complex token format, disposes of the specified token.\n- **OSLGetErrDescProcPtr**: Defines a pointer to an error descriptor callback function. Your error descriptor callback function supplies a pointer to an address where the Apple Event Manager can store the current descriptor if an error occurs during a call to the `AEResolve` function.\n- **OSLMarkProcPtr**: Defines a pointer to an object marking callback function. Your object-marking function marks a specific Apple event object.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Defines a pointer to a function the Apple Event Manager calls when the asynchronous execution of a remote process resolver completes, either due to success or failure, after a call to the `AERemoteProcessResolverScheduleWithRunLoop` function. Your callback function can use the reference passed to it to get the remote process information.",
+          "name" : "AERemoteProcessResolverCallback",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aeremoteprocessresolvercallback"
+        },
+        {
+          "description" : "Defines a pointer to a function the Apple Event Manager calls to dispose of a descriptor created by the `AECreateDescFromExternalPtr` function. Your callback function disposes of the buffer you originally passed to that function.",
+          "name" : "AEDisposeExternalProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aedisposeexternalprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a function that coerces data stored in a descriptor. Your descriptor coercion callback function coerces the data from the passed descriptor to the specified type, returning the coerced data in a second descriptor.",
+          "name" : "AECoerceDescProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aecoercedescprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a function that coerces data stored in a buffer. Your pointer coercion callback routine coerces the data from the passed buffer to the specified type, returning the coerced data in a descriptor.",
+          "name" : "AECoercePtrProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aecoerceptrprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a function that handles one or more Apple events. Your Apple event handler function performs any action requested by the Apple event, adds parameters to the reply Apple event if appropriate (possibly including error information), and returns a result code.",
+          "name" : "AEEventHandlerProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/aeeventhandlerprocptr"
+        },
+        {
+          "description" : "Your object accessor function either finds elements or properties of an Apple event object.",
+          "name" : "OSLAccessorProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslaccessorprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an adjust marks callback function. Your adjust marks function unmarks objects previously marked by a call to your marking function.",
+          "name" : "OSLAdjustMarksProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/osladjustmarksprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an object comparison callback function. Your object comparison function compares one Apple event object to another or to the data for a descriptor.",
+          "name" : "OSLCompareProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslcompareprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an object counting callback function. Your object counting function counts the number of Apple event objects of a specified class in a specified container object.",
+          "name" : "OSLCountProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslcountprocptr"
+        },
+        {
+          "description" : "Defines a pointer to a dispose token callback function. Your dispose token function, required only if you use a complex token format, disposes of the specified token.",
+          "name" : "OSLDisposeTokenProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/osldisposetokenprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an error descriptor callback function. Your error descriptor callback function supplies a pointer to an address where the Apple Event Manager can store the current descriptor if an error occurs during a call to the `AEResolve` function.",
+          "name" : "OSLGetErrDescProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslgeterrdescprocptr"
+        },
+        {
+          "description" : "Defines a pointer to an object marking callback function. Your object-marking function marks a specific Apple event object.",
+          "name" : "OSLMarkProcPtr",
+          "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslmarkprocptr"
+        }
+      ],
+      "title" : "Callbacks"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "OSLGetMarkTokenProcPtr",
+  "url" : "https:\/\/developer.apple.com\/documentation\/coreservices\/oslgetmarktokenprocptr"
+}

@@ -1,0 +1,55 @@
+{
+  "abstract" : "Access certificates, keys, and identities stored on a smart card as if they were part of the keychain.",
+  "codeExamples" : [
+    {
+      "code" : "let getquery: [String: Any] = [kSecClass as String: kSecClassKey,\n                               kSecAttrTokenID as String: \"com.example.piv:0123456789\",\n                               kSecReturnRef as String: true]",
+      "language" : "swift"
+    },
+    {
+      "code" : "let watcher = TKTokenWatcher()\nprint(\"The following token IDs are present in the system:\")\nfor tokenID in watcher.tokenIDs {\n    print(tokenID)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "watcher.setInsertionHandler { tokenID in\n    print(\"Token \\(tokenID) inserted\")\n            \n    watcher.addRemovalHandler( { tokenID in\n        print(\"Token \\(tokenID) removed\")\n    }, forTokenID: tokenID)\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let getquery: [String: Any] = [kSecClass as String: kSecClassKey,\n                               kSecAttrTokenID as String: \"com.example.piv:0123456789\",\n                               kSecReturnPersistentRef as String: true]",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "5aafb8944037ffc7ddfaf4b07060d1760b0c93382d95b44f956969e8d41d59da",
+  "crawledAt" : "2026-03-10T13:38:48Z",
+  "id" : "CB7376FD-7AC4-473E-94C8-43432E938DE3",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "CryptoTokenKit",
+  "overview" : "## Overview\n\nA token is a storage repository for cryptographic items. When a token is present in the system—such as when the user physically inserts a smart card into a USB slot—the CryptoTokenKit framework exposes the token’s items to your app as standard keychain items. It does this by copying the items to the keychain when the token is inserted, and deleting them from the keychain when the token is removed.\n\n\n\nBecause the items appear to your app as standard keychain items, you use [doc:\/\/com.apple.documentation\/documentation\/Security\/keychain-services] to access them. All the usual rules for building a search query and parsing the search results apply. For an example of storing and retrieving keychain items, see [doc:\/\/com.apple.documentation\/documentation\/Security\/storing-keys-in-the-keychain]. When you work with tokens, the CryptoTokenKit framework handles the storage. You only have to perform item retrieval.\n\n### Narrow the Keychain Search with a Token ID\n\nWhen the framework copies an item from a token to the keychain, it records the associated token’s identifier, or token ID, as part of the keychain item. If you know the token ID, you can use it to very precisely filter the keychain search. Do this by including the [doc:\/\/com.apple.documentation\/documentation\/Security\/kSecAttrTokenID] key in the query dictionary. For example, to get a reference to a key that comes from a token with token ID `com.example.piv:0123456789`, use the search query:\n\nTo identify token IDs that are currently available in the system, use an instance of the [doc:\/\/com.apple.cryptotokenkit\/documentation\/CryptoTokenKit\/TKTokenWatcher] class. This object has a [doc:\/\/com.apple.cryptotokenkit\/documentation\/CryptoTokenKit\/TKTokenWatcher\/tokenIDs] property that’s a list of all the token IDs present in the system. You can read this at any time:\n\nAlternatively, use the [doc:\/\/com.apple.cryptotokenkit\/documentation\/CryptoTokenKit\/TKTokenWatcher\/setInsertionHandler(_:)] method to register for a callback when a token is inserted into the system. Register to be notified of a particular token’s removal using the [doc:\/\/com.apple.cryptotokenkit\/documentation\/CryptoTokenKit\/TKTokenWatcher\/addRemovalHandler(_:forTokenID:)] method. You typically use these methods together, registering for removal at the time the insertion handler is called:\n\n### Use a Persistent Reference to Record a Token Item\n\nWhen you want to keep a record of a token item or pass it to another process, you can get a persistent reference to the associated keychain item. Do this by setting the [doc:\/\/com.apple.documentation\/documentation\/Security\/kSecReturnPersistentRef] key’s value to [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSExpression\/true] in the keychain search query. For example, the earlier query becomes:\n\nHowever, if you perform any operation with the persistent reference after the token is removed from the system, Keychain Services returns the [doc:\/\/com.apple.documentation\/documentation\/Security\/errSecItemNotFound] status.  Handle this by prompting the user to reinsert the token, after which you can try the operation again.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/cryptotokenkit\/using-cryptographic-assets-stored-on-a-smart-card\ncrawled: 2026-03-10T13:38:48Z\n---\n\n# Using Cryptographic Assets Stored on a Smart Card\n\n**Article**\n\nAccess certificates, keys, and identities stored on a smart card as if they were part of the keychain.\n\n## Overview\n\nA token is a storage repository for cryptographic items. When a token is present in the system—such as when the user physically inserts a smart card into a USB slot—the CryptoTokenKit framework exposes the token’s items to your app as standard keychain items. It does this by copying the items to the keychain when the token is inserted, and deleting them from the keychain when the token is removed.\n\n\n\nBecause the items appear to your app as standard keychain items, you use [doc:\/\/com.apple.documentation\/documentation\/Security\/keychain-services] to access them. All the usual rules for building a search query and parsing the search results apply. For an example of storing and retrieving keychain items, see [doc:\/\/com.apple.documentation\/documentation\/Security\/storing-keys-in-the-keychain]. When you work with tokens, the CryptoTokenKit framework handles the storage. You only have to perform item retrieval.\n\n### Narrow the Keychain Search with a Token ID\n\nWhen the framework copies an item from a token to the keychain, it records the associated token’s identifier, or token ID, as part of the keychain item. If you know the token ID, you can use it to very precisely filter the keychain search. Do this by including the [doc:\/\/com.apple.documentation\/documentation\/Security\/kSecAttrTokenID] key in the query dictionary. For example, to get a reference to a key that comes from a token with token ID `com.example.piv:0123456789`, use the search query:\n\n```swift\nlet getquery: [String: Any] = [kSecClass as String: kSecClassKey,\n                               kSecAttrTokenID as String: \"com.example.piv:0123456789\",\n                               kSecReturnRef as String: true]\n```\n\nTo identify token IDs that are currently available in the system, use an instance of the [doc:\/\/com.apple.cryptotokenkit\/documentation\/CryptoTokenKit\/TKTokenWatcher] class. This object has a [doc:\/\/com.apple.cryptotokenkit\/documentation\/CryptoTokenKit\/TKTokenWatcher\/tokenIDs] property that’s a list of all the token IDs present in the system. You can read this at any time:\n\n```swift\nlet watcher = TKTokenWatcher()\nprint(\"The following token IDs are present in the system:\")\nfor tokenID in watcher.tokenIDs {\n    print(tokenID)\n}\n```\n\nAlternatively, use the [doc:\/\/com.apple.cryptotokenkit\/documentation\/CryptoTokenKit\/TKTokenWatcher\/setInsertionHandler(_:)] method to register for a callback when a token is inserted into the system. Register to be notified of a particular token’s removal using the [doc:\/\/com.apple.cryptotokenkit\/documentation\/CryptoTokenKit\/TKTokenWatcher\/addRemovalHandler(_:forTokenID:)] method. You typically use these methods together, registering for removal at the time the insertion handler is called:\n\n```swift\nwatcher.setInsertionHandler { tokenID in\n    print(\"Token \\(tokenID) inserted\")\n            \n    watcher.addRemovalHandler( { tokenID in\n        print(\"Token \\(tokenID) removed\")\n    }, forTokenID: tokenID)\n}\n```\n\n### Use a Persistent Reference to Record a Token Item\n\nWhen you want to keep a record of a token item or pass it to another process, you can get a persistent reference to the associated keychain item. Do this by setting the [doc:\/\/com.apple.documentation\/documentation\/Security\/kSecReturnPersistentRef] key’s value to [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSExpression\/true] in the keychain search query. For example, the earlier query becomes:\n\n```swift\nlet getquery: [String: Any] = [kSecClass as String: kSecClassKey,\n                               kSecAttrTokenID as String: \"com.example.piv:0123456789\",\n                               kSecReturnPersistentRef as String: true]\n```\n\nHowever, if you perform any operation with the persistent reference after the token is removed from the system, Keychain Services returns the [doc:\/\/com.apple.documentation\/documentation\/Security\/errSecItemNotFound] status.  Handle this by prompting the user to reinsert the token, after which you can try the operation again.\n\n## Smart Cards\n\n- **TKSmartCardSlotManager**: An interface to all available smart card reader slots.\n- **TKSmartCardSlot**: A single smart card reader slot in the system.\n- **TKSmartCard**: A representation of a smart card.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An interface to all available smart card reader slots.",
+          "name" : "TKSmartCardSlotManager",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CryptoTokenKit\/TKSmartCardSlotManager"
+        },
+        {
+          "description" : "A single smart card reader slot in the system.",
+          "name" : "TKSmartCardSlot",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CryptoTokenKit\/TKSmartCardSlot"
+        },
+        {
+          "description" : "A representation of a smart card.",
+          "name" : "TKSmartCard",
+          "url" : "https:\/\/developer.apple.com\/documentation\/CryptoTokenKit\/TKSmartCard"
+        }
+      ],
+      "title" : "Smart Cards"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Using Cryptographic Assets Stored on a Smart Card",
+  "url" : "https:\/\/developer.apple.com\/documentation\/cryptotokenkit\/using-cryptographic-assets-stored-on-a-smart-card"
+}
