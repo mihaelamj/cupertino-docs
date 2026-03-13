@@ -1,0 +1,47 @@
+{
+  "abstract" : "Publish elements periodically by using a timer.",
+  "codeExamples" : [
+    {
+      "code" : "var timer: Timer?\noverride func viewDidLoad() {\n    super.viewDidLoad()\n    timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in\n        self.myDispatchQueue.async() {\n            self.myDataModel.lastUpdated = Date()\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "var cancellable: Cancellable?\noverride func viewDidLoad() {\n    super.viewDidLoad()\n    cancellable = Timer.publish(every: 1, on: .main, in: .default)\n        .autoconnect()\n        .receive(on: myDispatchQueue)\n        .assign(to: \\.lastUpdated, on: myDataModel)\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "10eff16e53dd55162cbedca17173929f5165b0ba684ef7343abafea531baaf6e",
+  "crawledAt" : "2025-12-12T19:04:59Z",
+  "id" : "15FB812C-CB6F-4B4C-809E-5B6D2B2BF65F",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Combine",
+  "overview" : "## Overview\n\nIf your app uses Foundation’s [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer] class to repeatedly receive a callback or invoke a closure on a specified interval, you can convert these instances to Combine to simplify your code.\n\n### Performing Periodic Work with a Timer\n\nConsider the following snippet, which uses [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/scheduledTimer(withTimeInterval:repeats:block:)] to update the `lastUpdated` property of a data model once a second, on a specific dispatch queue:\n\n### Converting to a Timer Publisher\n\nTo migrate this code to Combine, replace the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer] that is returned by [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/scheduledTimer(withTimeInterval:repeats:block:)] with a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/TimerPublisher]. You create this publisher with the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer] method [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/publish(every:tolerance:on:in:options:)]. Every time the underyling [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer] fires, the publisher emits a new [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Date] that represents the instant the timer fired. You then apply Combine operators to the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Date], eventually connecting the publisher to a subscriber like [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/sink(receiveValue:)] or [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/assign(to:on:)].\n\nThe next example shows how to use a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/TimerPublisher] to replace the previous example. It uses Combine’s operators to perform the tasks that were in the previous example’s closure:\n\nIn this example, Combine operators replace all the behavior inside the closure of the earlier example:\n\nAnother advantage you’ll find when using Combine to simplify your code is that the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/TimerPublisher] produces new [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Date] instances as its output type. The first example’s closure receives the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer] itself as its parameter, so it has to create new [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Date] instances manually.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/replacing-foundation-timers-with-timer-publishers\ncrawled: 2025-12-12T19:04:59Z\n---\n\n# Replacing Foundation Timers with Timer Publishers\n\n**Article**\n\nPublish elements periodically by using a timer.\n\n## Overview\n\nIf your app uses Foundation’s [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer] class to repeatedly receive a callback or invoke a closure on a specified interval, you can convert these instances to Combine to simplify your code.\n\n### Performing Periodic Work with a Timer\n\nConsider the following snippet, which uses [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/scheduledTimer(withTimeInterval:repeats:block:)] to update the `lastUpdated` property of a data model once a second, on a specific dispatch queue:\n\n```swift\nvar timer: Timer?\noverride func viewDidLoad() {\n    super.viewDidLoad()\n    timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in\n        self.myDispatchQueue.async() {\n            self.myDataModel.lastUpdated = Date()\n        }\n    }\n}\n```\n\n### Converting to a Timer Publisher\n\nTo migrate this code to Combine, replace the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer] that is returned by [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/scheduledTimer(withTimeInterval:repeats:block:)] with a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/TimerPublisher]. You create this publisher with the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer] method [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/publish(every:tolerance:on:in:options:)]. Every time the underyling [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer] fires, the publisher emits a new [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Date] that represents the instant the timer fired. You then apply Combine operators to the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Date], eventually connecting the publisher to a subscriber like [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/sink(receiveValue:)] or [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/assign(to:on:)].\n\n\n\nThe next example shows how to use a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/TimerPublisher] to replace the previous example. It uses Combine’s operators to perform the tasks that were in the previous example’s closure:\n\n```swift\nvar cancellable: Cancellable?\noverride func viewDidLoad() {\n    super.viewDidLoad()\n    cancellable = Timer.publish(every: 1, on: .main, in: .default)\n        .autoconnect()\n        .receive(on: myDispatchQueue)\n        .assign(to: \\.lastUpdated, on: myDataModel)\n}\n```\n\nIn this example, Combine operators replace all the behavior inside the closure of the earlier example:\n\n- The [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/receive(on:options:)] operator ensures that its subsequent operators run on the specified dispatch queue. This replaces the `async()` call from before.\n- The [doc:\/\/com.apple.Combine\/documentation\/Combine\/Publisher\/assign(to:on:)] operator updates the data model, by using a key path to set the `lastUpdate` property.\n\nAnother advantage you’ll find when using Combine to simplify your code is that the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer\/TimerPublisher] produces new [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Date] instances as its output type. The first example’s closure receives the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Timer] itself as its parameter, so it has to create new [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Date] instances manually.\n\n## Combine Migration\n\n- **Routing Notifications to Combine Subscribers**: Deliver notifications to subscribers by using notification centers’ publishers.\n- **Performing Key-Value Observing with Combine**: Expose KVO changes with a Combine publisher.\n- **Using Combine for Your App’s Asynchronous Code**: Apply common patterns to migrate your closure-based, event-handling code.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Deliver notifications to subscribers by using notification centers’ publishers.",
+          "name" : "Routing Notifications to Combine Subscribers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/routing-notifications-to-combine-subscribers"
+        },
+        {
+          "description" : "Expose KVO changes with a Combine publisher.",
+          "name" : "Performing Key-Value Observing with Combine",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/performing-key-value-observing-with-combine"
+        },
+        {
+          "description" : "Apply common patterns to migrate your closure-based, event-handling code.",
+          "name" : "Using Combine for Your App’s Asynchronous Code",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/using-combine-for-your-app-s-asynchronous-code"
+        }
+      ],
+      "title" : "Combine Migration"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Replacing Foundation Timers with Timer Publishers",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/replacing-foundation-timers-with-timer-publishers"
+}

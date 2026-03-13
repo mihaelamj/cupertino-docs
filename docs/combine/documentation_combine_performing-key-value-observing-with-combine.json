@@ -1,0 +1,47 @@
+{
+  "abstract" : "Expose KVO changes with a Combine publisher.",
+  "codeExamples" : [
+    {
+      "code" : "class UserInfo: NSObject {\n    @objc dynamic var lastLogin: Date = Date(timeIntervalSince1970: 0)\n}\n@objc var userInfo = UserInfo()\nvar observation: NSKeyValueObservation?\n\noverride func viewDidLoad() {\n    super.viewDidLoad()\n    observation = observe(\\.userInfo.lastLogin, options: [.new]) { object, change in\n        print (\"lastLogin now \\(change.newValue!).\")\n    }\n}\n\noverride func viewDidAppear(_ animated: Bool) {\n    super.viewDidAppear(animated)\n    userInfo.lastLogin = Date()\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "class UserInfo: NSObject {\n    @objc dynamic var lastLogin: Date = Date(timeIntervalSince1970: 0)\n}\n@objc var userInfo = UserInfo()\nvar cancellable: Cancellable?\n\noverride func viewDidLoad() {\n    super.viewDidLoad()\n    cancellable = userInfo.publisher(for: \\.lastLogin)\n        .sink() { date in print (\"lastLogin now \\(date).\") }\n}\n\noverride func viewDidAppear(_ animated: Bool) {\n    super.viewDidAppear(animated)\n    userInfo.lastLogin = Date()\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "e5a5456d65702ddc53a8862e3b5126d3f675b32a9c62c88a55e4d29fb74740ad",
+  "crawledAt" : "2025-12-12T19:05:00Z",
+  "id" : "C6CD0FFE-C223-44DB-996B-AEB6C0D1B610",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "Combine",
+  "overview" : "## Overview\n\nSeveral frameworks use key-value observing to notify your app of asynchronous changes. By converting your use of KVO from callbacks and closures to Combine, you can make your code more elegant and maintainable.\n\n### Monitoring Changes with KVO\n\nIn the following example, the type `UserInfo` supports KVO for its `lastLogin` property, as described in [doc:\/\/com.apple.documentation\/documentation\/Swift\/using-key-value-observing-in-swift]. The [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/viewDidLoad()] method uses the `observe(_:options:changeHandler:)` method to set up a closure that handles any change to the property. The closure receives an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSKeyValueObservedChange] object that describes the change event, retrieves the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSKeyValueObservedChange\/newValue] property, and prints it. The [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/viewDidAppear(_:)] method changes the value, which calls the closure and prints the message.\n\n### Converting KVO Code to Use Combine\n\nTo convert KVO code to Combine, replace the `observe(_:options:changeHandler:)` method with an [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/KeyValueObservingPublisher]. You get an instance of this publisher by calling `publisher(for:)` on the parent object, as shown in the following example’s [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/viewDidLoad()] method:\n\nThe KVO publisher produces elements of the observed type — in this case, [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Date] — rather than [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSKeyValueObservedChange]. This saves you a step, because you don’t have to unpack the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSKeyValueObservedChange\/newValue] from the change object, as in the first example.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Combine\/performing-key-value-observing-with-combine\ncrawled: 2025-12-12T19:05:00Z\n---\n\n# Performing Key-Value Observing with Combine\n\n**Article**\n\nExpose KVO changes with a Combine publisher.\n\n## Overview\n\nSeveral frameworks use key-value observing to notify your app of asynchronous changes. By converting your use of KVO from callbacks and closures to Combine, you can make your code more elegant and maintainable.\n\n### Monitoring Changes with KVO\n\nIn the following example, the type `UserInfo` supports KVO for its `lastLogin` property, as described in [doc:\/\/com.apple.documentation\/documentation\/Swift\/using-key-value-observing-in-swift]. The [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/viewDidLoad()] method uses the `observe(_:options:changeHandler:)` method to set up a closure that handles any change to the property. The closure receives an [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSKeyValueObservedChange] object that describes the change event, retrieves the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSKeyValueObservedChange\/newValue] property, and prints it. The [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/viewDidAppear(_:)] method changes the value, which calls the closure and prints the message.\n\n```swift\nclass UserInfo: NSObject {\n    @objc dynamic var lastLogin: Date = Date(timeIntervalSince1970: 0)\n}\n@objc var userInfo = UserInfo()\nvar observation: NSKeyValueObservation?\n\noverride func viewDidLoad() {\n    super.viewDidLoad()\n    observation = observe(\\.userInfo.lastLogin, options: [.new]) { object, change in\n        print (\"lastLogin now \\(change.newValue!).\")\n    }\n}\n\noverride func viewDidAppear(_ animated: Bool) {\n    super.viewDidAppear(animated)\n    userInfo.lastLogin = Date()\n}\n```\n\n### Converting KVO Code to Use Combine\n\nTo convert KVO code to Combine, replace the `observe(_:options:changeHandler:)` method with an [doc:\/\/com.apple.documentation\/documentation\/ObjectiveC\/NSObject-swift.class\/KeyValueObservingPublisher]. You get an instance of this publisher by calling `publisher(for:)` on the parent object, as shown in the following example’s [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/viewDidLoad()] method:\n\n```swift\nclass UserInfo: NSObject {\n    @objc dynamic var lastLogin: Date = Date(timeIntervalSince1970: 0)\n}\n@objc var userInfo = UserInfo()\nvar cancellable: Cancellable?\n\noverride func viewDidLoad() {\n    super.viewDidLoad()\n    cancellable = userInfo.publisher(for: \\.lastLogin)\n        .sink() { date in print (\"lastLogin now \\(date).\") }\n}\n\noverride func viewDidAppear(_ animated: Bool) {\n    super.viewDidAppear(animated)\n    userInfo.lastLogin = Date()\n}\n```\n\nThe KVO publisher produces elements of the observed type — in this case, [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Date] — rather than [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSKeyValueObservedChange]. This saves you a step, because you don’t have to unpack the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSKeyValueObservedChange\/newValue] from the change object, as in the first example.\n\n## Combine Migration\n\n- **Routing Notifications to Combine Subscribers**: Deliver notifications to subscribers by using notification centers’ publishers.\n- **Replacing Foundation Timers with Timer Publishers**: Publish elements periodically by using a timer.\n- **Using Combine for Your App’s Asynchronous Code**: Apply common patterns to migrate your closure-based, event-handling code.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Deliver notifications to subscribers by using notification centers’ publishers.",
+          "name" : "Routing Notifications to Combine Subscribers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/routing-notifications-to-combine-subscribers"
+        },
+        {
+          "description" : "Publish elements periodically by using a timer.",
+          "name" : "Replacing Foundation Timers with Timer Publishers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/replacing-foundation-timers-with-timer-publishers"
+        },
+        {
+          "description" : "Apply common patterns to migrate your closure-based, event-handling code.",
+          "name" : "Using Combine for Your App’s Asynchronous Code",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/using-combine-for-your-app-s-asynchronous-code"
+        }
+      ],
+      "title" : "Combine Migration"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Performing Key-Value Observing with Combine",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Combine\/performing-key-value-observing-with-combine"
+}
