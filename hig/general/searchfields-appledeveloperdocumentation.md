@@ -129,7 +129,7 @@ When someone taps the search field, the system displays a text-input control tha
 #### [Developer documentation](/design/human-interface-guidelines/search-fields#Developer-documentation)
 [Adding a search interface to your app](/documentation/SwiftUI/Adding-a-search-interface-to-your-app) — SwiftUI
 
-[`searchable(text:placement:)`](/documentation/SwiftUI/View/searchable(text:placement:)) — SwiftUI
+[`searchable(text:placement:prompt:)`](/documentation/SwiftUI/View/searchable(text:placement:prompt:)) — SwiftUI
 
 [`UISearchBar`](/documentation/UIKit/UISearchBar) — UIKit
 

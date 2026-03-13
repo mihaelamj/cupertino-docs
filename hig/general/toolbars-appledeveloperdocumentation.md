@@ -11,7 +11,9 @@ source: hig
 > **Category:** General
 > **Platforms:** iOS, macOS, watchOS, visionOS, tvOS
 
-# Toolbars
+December 16, 2025
+
+ Updated guidance for Liquid Glass. # Toolbars
 A toolbar provides convenient access to frequently used commands, controls, navigation, and search.
 
 A toolbar consists of one or more sets of controls arranged horizontally along the top or bottom edge of the view, grouped into logical sections.
@@ -46,9 +48,9 @@ As the window narrows, the More menu moves into an overflow menu along with othe
 
 **Reduce the use of toolbar backgrounds and tinted controls.** Any custom backgrounds and appearances you use might overlay or interfere with background effects that the system provides. Instead, use the content layer to inform the color and appearance of the toolbar, and use a [`ScrollEdgeEffectStyle`](/documentation/SwiftUI/ScrollEdgeEffectStyle) when necessary to distinguish the toolbar area from the content area. This approach helps your app express its unique personality without distracting from content.
 
-**Prefer using standard components in a toolbar.** By default, standard buttons, text fields, headers, and footers have corner radii that are concentric with bar corners. If you need to create a custom component, ensure that its corner radius is also concentric with the bar’s corners.
+**Avoid applying a similar color to toolbar item labels and content layer backgrounds.** If your app already has bright, colorful content in the content layer, prefer using the default monochromatic appearance of toolbars. For more guidance, see [Liquid Glass color](/design/human-interface-guidelines/color#Liquid-Glass-color).
 
-**Avoid using a segmented control in a toolbar.** Segmented controls let people switch contexts, whereas a toolbar’s actions are specific to the current view. For guidance, see [Segmented controls](/design/human-interface-guidelines/segmented-controls).
+**Prefer using standard components in a toolbar.** By default, standard buttons, text fields, headers, and footers have corner radii that are concentric with bar corners. If you need to create a custom component, ensure that its corner radius is also concentric with the bar’s corners.
 
 **Consider temporarily hiding toolbars for a distraction-free experience.** Sometimes people appreciate a minimal interface to reduce distractions or reveal more content. If you support this, do so contextually when it makes the most sense, and offer ways to reliably restore hidden interface elements. For guidance, see [Going full screen](/design/human-interface-guidelines/going-full-screen). For guidance specific to visionOS, see [Immersive experiences](/design/human-interface-guidelines/immersive-experiences).
 
@@ -172,6 +174,10 @@ For developer guidance, see [`primaryAction`](/documentation/SwiftUI/ToolbarItem
 Date
 
 Changes
+
+December 16, 2025
+
+Updated guidance for Liquid Glass.
 
 June 9, 2025
 

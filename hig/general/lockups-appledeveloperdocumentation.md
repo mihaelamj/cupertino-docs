@@ -28,7 +28,7 @@ For developer guidance, see [`TVLockupView`](/documentation/TVUIKit/TVLockupView
 ## [Cards](/design/human-interface-guidelines/lockups#Cards)
 A card combines a header, footer, and content view to present ratings and reviews for media items.
 
-For developer guidance, see [`TVCardView`](/documentation/TVUIKit/TVCardView)
+For developer guidance, see [`TVCardView`](/documentation/TVUIKit/TVCardView).
 
 ## [Caption buttons](/design/human-interface-guidelines/lockups#Caption-buttons)
 A caption button can include a title and a subtitle beneath the button. A caption button can contain either an image or text.
@@ -47,7 +47,7 @@ For developer guidance, see [`TVMonogramContentView`](/documentation/TVUIKit/TVM
 ## [Posters](/design/human-interface-guidelines/lockups#Posters)
 Posters consist of an image and an optional title and subtitle, which are hidden until the poster comes into focus. Posters can be any size, but the size needs to be appropriate for their content. For related guidance, see [Image views](/design/human-interface-guidelines/image-views).
 
-For developer guidance, see [`TVPosterView`](/documentation/TVUIKit/TVPosterView)
+For developer guidance, see [`TVPosterView`](/documentation/TVUIKit/TVPosterView).
 
 ## [Platform considerations](/design/human-interface-guidelines/lockups#Platform-considerations)
 *Not supported in iOS, iPadOS, macOS, visionOS, or watchOS.*

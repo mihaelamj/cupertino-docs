@@ -1,0 +1,668 @@
+---
+source: https://www.swift.org/blog/swift-4.0-released/
+crawled: 2025-11-15T21:29:18Z
+---
+
+# Swift 4.0 Released!
+
+[ ](/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ # Swift 4.0 Released!
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ *
+ 
+ 
+ [Ted Kremenek](https://github.com/tkremenek/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ September 19, 2017
+ 
+ 
+ Swift 4 is now officially released! Swift 4 builds on the strengths of Swift 3, delivering greater robustness and stability, providing source code compatibility with Swift 3, making improvements to the standard library, and adding features like archival and serialization.
+
+You can watch a quick overview of it by watching the [WWDC 2017: What’s New in Swift](https://developer.apple.com/videos/play/wwdc2017/402/) presentation, and try out some of the new features in this [playground](https://github.com/ole/whats-new-in-swift-4) put together by Ole Begemann.
+
+Language updates 
+  
+ 
+
+Swift 4.0 is a major language release and contains the following language changes and updates that went through the Swift Evolution process:
+
+String 
+  
+ 
+
+Swift 4 includes a faster, easier to use `String` implementation that retains Unicode correctness and adds support for creating, using and managing substrings.
+
+See more at:
+
+ 
+- [SE-0163 String Revision: Collection Conformance, C Interop, Transcoding](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0163-string-revision-1.md)
+
+ 
+- [SE-0168 Multi-Line String Literals](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0168-multi-line-string-literals.md)
+
+ 
+- [SE-0178 Add unicodeScalars property to Character](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0178-character-unicode-view.md)
+
+ 
+- [SE-0180 String Index Overhaul](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0180-string-index-overhaul.md)
+
+ 
+- [SE-0182 String Newline Escaping](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0182-newline-escape-in-strings.md)
+
+ 
+- [SE-0183 Substring performance affordances](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0183-substring-affordances.md)
+
+Collection 
+  
+ 
+
+Swift 4 adds improvements for creating, using and managing Collection types.
+
+See more at:
+
+ 
+- [SE-0148 Generic Subscripts](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0148-generic-subscripts.md)
+
+ 
+- [SE-0154 Provide Custom Collections for Dictionary Keys and Values](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0154-dictionary-key-and-value-collections.md)
+
+ 
+- [SE-0165 Dictionary & Set Enhancements](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0165-dict.md)
+
+ 
+- [SE-0172 One-sided Ranges](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0172-one-sided-ranges.md)
+
+ 
+- [SE-0173 Add `MutableCollection.swapAt(_:_:)`](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0173-swap-indices.md)
+
+Archival and serialization 
+  
+ 
+
+Swift 4 supports archival of struct and enum types and enables type-safe serialization to external formats such as JSON and plist.
+
+See more at: [SE-0166 Swift Archival & Serialization](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0166-swift-archival-serialization.md)
+
+Additional language updates 
+  
+ 
+
+Swift 4 also implements the following language proposals from the Swift Evolution process:
+
+ 
+- [SE-0104 Protocol-oriented integers](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0104-improved-integers.md)
+
+ 
+- [SE-0142 Permit where clauses to constrain associated types](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0142-associated-types-constraints.md)
+
+ 
+- [SE-0156 Class and Subtype existentials](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0156-subclass-existentials.md)
+
+ 
+- [SE-0160 Limiting @objc inference](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0160-objc-inference.md)
+
+ 
+- [SE-0164 Remove final support in protocol extensions](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0164-remove-final-support-in-protocol-extensions.md)
+
+ 
+- [SE-0169 Improve Interaction Between private Declarations and Extensions](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0169-improve-interaction-between-private-declarations-and-extensions.md)
+
+ 
+- [SE-0170 NSNumber bridging and Numeric types](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0170-nsnumber_bridge.md)
+
+ 
+- [SE-0171 Reduce with inout](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0171-reduce-with-inout.md)
+
+ 
+- [SE-0176 Enforce Exclusive Access to Memory](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0176-enforce-exclusive-access-to-memory.md)
+
+ 
+- [SE-0179 Swift run Command](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0179-swift-run-command.md)
+
+New compatibility modes 
+  
+ 
+
+With Swift 4, you may not need to modify your code to use the new version of the compiler. The compiler supports two language modes:
+
+ 
+- 
+ Swift 3.2: In this mode, the compiler will accept the majority of sources that built with the Swift 3.x compilers. Updates to previously existing APIs (either those that are part of the standard library or APIs shipped by Apple) will not appear in this mode, in order to provide this level of source compatibility. Most new language features in Swift 4 are available in this language mode.
+
+ 
+
+ 
+- 
+ Swift 4.0: This mode includes all Swift 4.0 language and API changes. Some source migration will be needed for many projects, although the number of source changes are quite modest compared to many previous major changes between Swift releases.
+
+ 
+
+The language mode is specified to the compiler by the `-swift-version` flag, which is automatically handled by the Swift Package Manager and Xcode.
+
+One advantage of these language modes is that you can start using the new Swift 4 compiler and migrate fully to Swift 4 at your own pace, taking advantage of new Swift 4 features, one module at a time.
+
+For more information about Swift 4 migration and compatibility modes, see [Migrating to Swift 4](/migration-guide-swift4/)
+
+Package Manager Updates 
+  
+ 
+
+Swift 4 introduces new workflow features and a more complete API for the Swift Package Manager:
+
+ 
+- It’s now easier to develop multiple packages in tandem before tagging your first official release, or to work on a branch of multiple packages together.
+
+ 
+- Package products have been formalized, making it possible to control what libraries a package publishes to clients.
+
+ 
+- The new Package API allows packages to specify a number of new settings, giving package authors more control over how packages build or how sources are organized on disk. Overall, the API used to create a package is now cleaner and clearer, while retaining source-compatibility with older packages.
+
+ 
+- On macOS, Swift package builds now occur in a sandbox which prevents network access and file system modification, to help mitigate the effect of maliciously crafted manifests.
+
+Further, the Swift Package Manager builds on top of package manager tools versioning introduced in Swift 3.1 ([SE-0159](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0152-package-manager-tools-version.md)) which allows a package author to specify the version of Swift required for building a package — which now includes Swift 4.
+
+For more information about enhancements to the Package Manager, see:
+
+ 
+- [SE-0146 Package Manager Product Definitions](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0146-package-manager-product-definitions.md)
+
+ 
+- [SE-0149 Package Manager Support for Top of Tree development](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0149-package-manager-top-of-tree.md)
+
+ 
+- [SE-0150 Package Manager Support for branches](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0150-package-manager-branch-support.md)
+
+ 
+- [SE-0158 Package Manager Manifest API Redesign](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0158-package-manager-manifest-api-redesign.md)
+
+ 
+- [SE-0162 Package Manager Custom Target Layouts](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0162-package-manager-custom-target-layouts.md)
+
+ 
+- [SE-0175 Package Manager Revised Dependency Resolution](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0175-package-manager-revised-dependency-resolution.md)
+
+ 
+- [SE-0179 Swift run Command](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0179-swift-run-command.md)
+
+ 
+- [SE-0181 Package Manager C/C++ Language Standard Support](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0181-package-manager-cpp-language-version.md)
+
+Documentation 
+  
+ 
+
+An updated version of [The Swift Programming Language](/documentation/tspl) for Swift 4.0 is now available on Swift.org. It is also available for free on Apple’s [iBooks store](https://itunes.apple.com/us/book/the-swift-programming-language/id881256329?mt=11).
+
+Platforms 
+  
+ 
+
+Linux 
+  
+ 
+
+Official binaries for Ubuntu 16.10, Ubuntu 16.04 and Ubuntu 14.04 are
+[available for download](/download/).
+
+Apple (Xcode) 
+  
+ 
+
+For development on Apple’s platforms, Swift 4.0 ships as part of [Xcode 9](https://itunes.apple.com/app/xcode/id497799835).
+
+A toolchain is also [available for download](/download/) from Swift.org.
+
+Sources 
+  
+ 
+
+Development on Swift 4.0 was tracked in the swift-4.0-branch on the following repositories on GitHub:
+
+ 
+- [swift](https://github.com/apple/swift)
+
+ 
+- [swift-llvm](https://github.com/apple/swift-llvm)
+
+ 
+- [swift-clang](https://github.com/apple/swift-clang)
+
+ 
+- [swift-lldb](https://github.com/apple/swift-lldb)
+
+ 
+- [swift-cmark](https://github.com/swiftlang/swift-cmark)
+
+ 
+- [swift-corelibs-foundation](https://github.com/swiftlang/swift-corelibs-foundation)
+
+ 
+- [swift-corelibs-libdispatch](https://github.com/apple/swift-corelibs-libdispatch)
+
+ 
+- [swift-corelibs-xctest](https://github.com/swiftlang/swift-corelibs-xctest)
+
+ 
+- [swift-llbuild](https://github.com/swiftlang/swift-llbuild)
+
+ 
+- [swift-package-manager](https://github.com/swiftlang/swift-package-manager)
+
+ 
+- [swift-xcode-playground-support](https://github.com/apple/swift-xcode-playground-support)
+
+ 
+- [swift-compiler-rt](https://github.com/apple/swift-compiler-rt)
+
+ 
+- [swift-integration-tests](https://github.com/swiftlang/swift-integration-tests)
+
+The tag `swift-4.0-RELEASE` designates the specific revisions in those repositories that make up the final version of Swift 4.0.
+
+The `swift-4.0-branch` will remain open, but under the same release management process, to accumulate changes for a potential future bug-fix “dot” release.
+
+ 
+ 
+ 
+
+ 
+ 
+ ## Authors
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ [Ted Kremenek](https://github.com/tkremenek/)
+ 
+ 
+ 
+ 
+ 
+ 
+ Ted Kremenek is a member of the Swift Core Team and manages the Languages and Runtimes group at Apple.
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+
+ ## Continue Reading
+
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ 
+ ### Swift Local Refactoring
+
+ August 22, 2017
+ 
+ Xcode 9 includes a brand new refactoring engine. It can transform code locally..
+ 
+ [ More ](/blog/swift-local-refactoring/)
+ 
+ 
+
+ 
+ 
+- 
+ 
+ ### Dictionary and Set Improvements in Swift 4.0
+
+ October 4, 2017
+ 
+ In the latest release of Swift,
+dictionaries and sets gain a number of new met..
+ 
+ [ More ](/blog/dictionary-and-set-improvements/)
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ [ ](/)
+
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ [Install](/install/)
+ 
+
+ 
+ 
+
+ 
+ ### Tools
+
+ 
+ 
+ 
+- 
+ [Xcode](https://developer.apple.com/xcode/)
+ 
+
+ 
+ 
+- 
+ [Visual Studio Code](/documentation/articles/getting-started-with-vscode-swift.html)
+ 
+
+ 
+ 
+- 
+ [Emacs](/documentation/articles/zero-to-swift-emacs.html)
+ 
+
+ 
+ 
+- 
+ [Neovim](/documentation/articles/zero-to-swift-nvim.html)
+ 
+
+ 
+ 
+- 
+ [Other Editors](https://github.com/swiftlang/sourcekit-lsp/tree/main/Documentation/Editor%20Integration.md)
+ 
+
+ 
+ 
+
+ 
+ ### Community
+
+ 
+ 
+ 
+- 
+ [Overview](/community/)
+ 
+
+ 
+ 
+- 
+ [Swift Evolution](/swift-evolution/)
+ 
+
+ 
+ 
+- 
+ [Diversity](/diversity/)
+ 
+
+ 
+ 
+- 
+ [Mentorship](/mentorship/)
+ 
+
+ 
+ 
+- 
+ [Contributing](/contributing/)
+ 
+
+ 
+ 
+
+ 
+ ### Governance
+
+ 
+ 
+ 
+- 
+ [Code of Conduct](/code-of-conduct/)
+ 
+
+ 
+ 
+- 
+ [License](/legal/license.html)
+ 
+
+ 
+ 
+- 
+ [Security](/support/security.html)
+ 
+
+ 
+ 
+
+ 
+ Color scheme preference
+ 
+ 
+ Light
+ 
+ 
+ 
+ Dark
+ 
+ 
+ 
+ Auto
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ Copyright © 2025 Apple Inc. All rights reserved.
+ 
+ 
+ Swift and the Swift logo are trademarks of Apple Inc.
+ 
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [Privacy Policy](//www.apple.com/privacy/privacy-policy/)
+ 
+
+ 
+ 
+- 
+ [Cookies](//www.apple.com/legal/privacy/en-ww/cookies/)
+ 
+
+ 
+ 
+- 
+ [API](/openapi)
+ 
+
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [*](https://x.com/swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](https://bsky.app/profile/swift.org)
+ 
+
+ 
+ 
+- 
+ [**](https://mastodon.social/@swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](/atom.xml)

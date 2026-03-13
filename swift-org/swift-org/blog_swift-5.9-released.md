@@ -1,0 +1,872 @@
+---
+source: https://www.swift.org/blog/swift-5.9-released/
+crawled: 2025-11-15T21:21:07Z
+---
+
+# Swift 5.9 Released
+
+[ ](/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ # Swift 5.9 Released
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ *
+ 
+ 
+ [Alexander Sandberg](https://github.com/alexandersandberg/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ [Holly Borla](https://github.com/hborla/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ September 18, 2023
+ 
+ 
+ Swift 5.9 is now available! 🎉
+
+This is a major new release that **adds an expressive macro system to the language** and introduces **support for integrating Swift into C++ codebases** through bidirectional interoperability.
+
+It also introduces parameter packs, an improved expression evaluator while debugging, enhanced crash handling, Windows platform improvements, and more.
+
+Read on for a deep dive into changes to the language, standard library, tooling, platform support, and next steps for getting started with Swift 5.9.
+
+Thank you to everyone in the Swift community who made this release possible. Your Swift Forums discussions, bug reports, pull requests, educational content, and other contributions are always appreciated!
+
+Language and Standard Library 
+  
+ 
+
+Swift’s fundamental goal is to encourage code that is clear and concise, while remaining safe and efficient.
+
+This release adds three long-desired features that further that goal: a new macro system for more expressive libraries, parameter packs to make overloaded APIs natural to use, and new ownership features to offer more control over performance in low-level code.
+
+Macros 
+  
+ 
+
+[Macros](https://github.com/swiftlang/swift-evolution/blob/main/visions/macros.md) help developers reduce repetitive boilerplate and create more expressive libraries that can be distributed as a Swift package.
+
+Using a macro is easy and natural. Macros can either be expanded with a function-like freestanding `#macroName` syntax:
+
+
+
+```
+let _: Font = #fontLiteral(name: "SF Mono", size: 14, weight: .regular)
+
+```
+
+
+
+or attached to declarations with an `@MacroName` attribute:
+
+
+
+```
+// Move storage from the stored properties into a dictionary,
+// turning the stored properties into computed properties.
+@DictionaryStorage
+struct Point {
+  var x: Int = 1
+  var y: Int = 2
+}
+
+```
+
+
+
+They work just like built-in language features but can’t be mistaken for normal code.
+
+You write macros using a powerful and flexible approach: they are simply Swift functions that use the [SwiftSyntax](https://github.com/swiftlang/swift-syntax) library to generate code to be inserted into the source file.
+
+Macros make it easy for your library’s users to adopt powerful capabilities that adapt to the code they’re used in, like [the new `Observation` module](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0395-observability.md), which allows Swift classes to automatically notify other code when their properties change.
+
+The Swift community has been hard at work creating tools and frameworks that build upon macros. For some examples, take a look at [swift-power-assert](https://github.com/kishikawakatsumi/swift-power-assert), [swift-spyable](https://github.com/Matejkob/swift-spyable), [swift-macro-testing](https://github.com/pointfreeco/swift-macro-testing), and [MetaCodable](https://github.com/SwiftyLab/MetaCodable).
+
+Swift 5.9 supports macros on macOS and Linux, with Windows support coming soon.
+
+Parameter packs 
+  
+ 
+
+[Parameter packs](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0393-parameter-packs.md) let you write generic types and functions which work over an arbitrary number of types.
+
+For example, without parameter packs, if you wanted to write a function called `all` to check whether any number of `Optional` values are `nil`, you would need to write a separate overload for each argument length you wanted to support, creating an arbitrary upper limit:
+
+
+
+```
+func all<W1>(_ optional: W1?) -> W1?
+func all<W1, W2>(_ optional1: W1?, optional2: W2?) -> (W1, W2)?
+func all<W1, W2, W3>(_ optional1: W1?, optional2: W2?, optional3: W3?) -> (W1, W2, W3)?
+
+```
+
+
+
+With parameter packs, you can express this API as a single function that has no upper limit, allowing you to pass any number of arguments:
+
+
+
+```
+func all<each Wrapped>(_ optional: repeat (each Wrapped)?) -> (repeat each Wrapped)?
+
+```
+
+
+
+Calling an API that uses parameter packs is intuitive and requires no extra work:
+
+
+
+```
+if let (int, double, string, bool) = all(optionalInt, optionalDouble, optionalString, optionalBool) {
+  print(int, double, string, bool)
+}
+else {
+  print("got a nil")
+}
+
+```
+
+
+
+Ownership 
+  
+ 
+
+Ownership features can help developers fine-tune memory management behavior in performance-critical code.
+
+The new [`consume` operator](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0366-move-function.md) tells Swift to deinitialize a variable and transfer its contents without copying it. The [`consuming` and `borrowing` parameter modifiers](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0377-parameter-ownership-modifiers.md) provide hints that Swift can use to eliminate unnecessary copying and reference-counting operations when passing a parameter. Finally, [noncopyable structs and enums](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md) allow you to create types which, like a class, can’t be meaningfully copied when assigned, but like a struct or enum, do not need to be reference-counted because only one storage location can own the instance at a time.
+
+These major features are the foundation for further evolution that puts more expressive power and performance control into your hands. We’re excited about what you can do with Swift 5.9, and we’re working toward a future with a larger suite of variadic generics and ownership features.
+
+Additional Features 
+  
+ 
+
+Swift 5.9 also includes smaller, quality-of-life changes to the language, like the ability to use [`if` and `switch` as expressions](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0380-if-switch-expressions.md) for variable assignment and return values:
+
+
+
+```
+statusBar.text = if !hasConnection { "Disconnected" }
+                 else if let error = lastError { error.localizedDescription }
+                 else { "Ready" }
+
+```
+
+
+
+A [new `package` access level](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0386-package-access-modifier.md) lets other modules in the same package access APIs, but hides them from code outside the package. It’s great for splitting up large modules into several smaller ones without exposing internals to the package’s clients.
+
+Developers using Swift Concurrency may appreciate the [more convenient `DiscardingTaskGroup` types](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0381-task-group-discard-results.md) for task groups that don’t generate results and the advanced [custom actor executors](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0392-custom-actor-executors.md) feature for controlling the exact environment that an actor is run in.
+
+A full list of Swift 5.9 Evolution proposals can be found at the end of this post.
+
+Developer Experience 
+  
+ 
+
+Crash Handling 
+  
+ 
+
+On Linux, the Swift runtime will now catch program crashes and Swift runtime errors and display a backtrace on the program’s output. The backtracer is out-of-process and includes support for `async` functions.
+
+This feature is also available on macOS but is disabled by default. To enable it, set `SWIFT_BACKTRACE=enable=yes` and sign your program with the `com.apple.security.get-task-allow` entitlement.
+
+Debugging 
+  
+ 
+
+Swift 5.9 introduces new features to [LLDB](https://lldb.llvm.org/) and the Swift compiler aimed at making Swift debugging faster and more reliable.
+
+The `p` and `po` commands now print local variables and properties as fast as the `frame variable` or `v` commands by bypassing the Swift compiler when evaluating simple expressions.
+
+Swift expressions can now refer to generic type parameters. This allows setting a conditional breakpoint in a generic function that only triggers when a type parameter is instantiated with a specific concrete type.
+
+The debug info produced by the Swift compiler now more precisely scopes local variables, making it less likely to display variables backed by uninitialized memory in the debugger.
+
+Ecosystem 
+  
+ 
+
+C++ Interoperability 
+  
+ 
+
+Swift 5.9 supports bidirectional interoperability with C++ and Objective-C++ for certain kinds of APIs.
+
+For example, if you have a C++ function like:
+
+
+
+```
+// Clang module 'PromptResponder'
+#pragma once
+#include <vector>
+
+std::vector<std::string> generatePromptResponse(std::string prompt);
+
+```
+
+
+
+you can call it directly from your Swift code:
+
+
+
+```
+import PromptResponder
+
+let codeLines = generatePromptResponse("Write Swift code that prints hello world")
+  .map(String.init)
+  .filter { !___CODEBLOCK_0___.isEmpty }
+
+for line in codeLines {
+  print(line)
+}
+
+```
+
+
+
+C++ interoperability is actively evolving, with some aspects subject to change in future releases as the community gathers feedback from real world adoption in mixed Swift and C++ codebases.
+
+For information on enabling C++ interoperability and the supported language subset, please refer to the [documentation](/documentation/cxx-interop/).
+
+Special thanks to the [C++ Interoperability Workgroup](/cxx-interop-workgroup/) for their focus and dedication in supporting this feature.
+
+Swift Package Manager 
+  
+ 
+
+The [Swift Package Manager](https://github.com/swiftlang/swift-package-manager) has a number of improvements in Swift 5.9:
+
+ 
+- 
+ Packages can use the new `package` access modifier, allowing access of symbols in another target / module within the same package without making them public. SwiftPM automatically sets the new compiler configuration to ensure this feature works out-of-the-box for packages.
+
+ 
+
+ 
+- 
+ The `CompilerPluginSupport` module enables defining macro targets. Macro targets allow authoring and distributing custom Swift macros as APIs in a library.
+
+ 
+
+ 
+- 
+ The new `.embedInCode` resource rule allows embedding the contents of a resource into an executable by generating a byte array.
+
+ 
+
+ 
+- 
+ The `allowNetworkConnections(scope:reason:)` setting gives a command plugin permissions to access the network. Permissions can be scoped to Unix domain sockets as well as local or remote IP connections, with an option to limit by port. For non-interactive use cases, the `--allow-network-connections` command-line flag allows network connections for a particular scope.
+
+ 
+
+ 
+- 
+ SwiftPM can now publish to a registry following the specification defined in [SE-0391](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0391-package-registry-publish.md), as well as support signed packages, which may be required by a registry. Trust-on-first-use (TOFU) validation checks can now use signing identities in addition to fingerprints, and are enforced for source archives as well as package manifests.
+
+ 
+
+ 
+- 
+ SwiftPM now supports cross compilation based on [the Swift SDK bundle format](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0387-cross-compilation-destinations.md#swift-sdk-bundles). While the feature is still considered experimental, we invite users to try it out and provide feedback.
+
+ 
+
+See the [Swift Package Manager changelog](https://github.com/swiftlang/swift-package-manager/blob/main/CHANGELOG.md#swift-59) for the complete list of changes.
+
+Swift Syntax 
+  
+ 
+
+[swift-syntax](https://github.com/swiftlang/swift-syntax) is an essential tool for parsing Swift code and helps power the new macro system. This year, swift-syntax received a number of improvements:
+
+ 
+- 
+ Syntax node names are more consistent and accurately reflect the Swift language.
+
+ 
+
+ 
+- 
+ Error recovery in the new SwiftParser is greatly improved, leading to more precise error messages for incorrect or missing syntax.
+
+ 
+
+ 
+- 
+ Incremental parsing is now supported, allowing editors and other tools to only reparse those parts of a syntax tree that have changed.
+
+ 
+
+ 
+- 
+ The [documentation](https://swiftpackageindex.com/swiftlang/swift-syntax) of swift-syntax has been greatly expanded.
+
+ 
+
+Over the last year, swift-syntax has been a huge success as an open source project. Since the release of Swift 5.8, more than 30 distinct contributors have worked on the package, accounting for more than 30% of the commits. In addition, the community tool [swift-ast-explorer.com](https://swift-ast-explorer.com) is invaluable in exploring and understanding the SwiftSyntax tree. Thank you to everyone who contributed!
+
+Server 
+  
+ 
+
+Custom actor executors and other features from Swift 5.9 are making their way into the Swift on server ecosystem.
+
+The server workgroup also recently published their [annual update for 2023](/blog/sswg-update-2023/), detailing plans to increase adoption of concurrency within key libraries, as well as other efforts.
+
+Windows Platform 
+  
+ 
+
+Windows support for Swift 5.9 greatly improves stability and the developer experience.
+
+The Windows installer now supports installation both before and after Visual Studio installation, and no longer requires repair after a Visual Studio upgrade. Initial work has also begun to enable multiple, parallel toolchains installed side-by-side on Windows.
+
+The Swift toolchain also added new flags (`-windows-sdk-root`, `-windows-sdk-version`, `-visualc-tools-root`, `-visualc-tools-version`) to help control the Windows SDK and Visual C++ tools that it builds against.
+
+The Windows SDK (`WinSDK`) module saw improvements in coverage, enabling access to a wider set of system APIs. The Visual C++ (`vcruntime`) module was greatly restructured to support C++ interoperability.
+
+Structured Concurrency is now significantly more stable on Windows, eliminating stack overflows and other execution failures for common patterns such as iterating over an `AsyncStream` with many elements.
+
+Improvements to path handling in the LSP and SwiftPM makes both of these tools more robust on Windows. LLDB also saw initial work towards improving support for Windows, enabling fundamental debugging workflows in LLDB on Windows. While still a work in progress, this will significantly improve the developer experience on Windows.
+
+Small improvements have also been made to reduce the size of the toolchain on Windows.
+
+Next Steps 
+  
+ 
+
+Downloads 
+  
+ 
+
+Official binaries are [available for download](https://swift.org/download/) from [Swift.org](http://swift.org/) for macOS, Windows, and Linux. The Swift 5.9 compiler is also included in [Xcode 15](https://apps.apple.com/app/xcode/id497799835).
+
+Website 
+  
+ 
+
+Swift.org has revamped certain key pages, including [a richer home page](/) and clearer [download and install instructions](/install/).
+
+If you’re new to Swift or looking to dive deeper, check out the updated [Getting Started guides](/getting-started/).
+
+Language Guide 
+  
+ 
+
+[The Swift Programming Language](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/) book has been updated for Swift 5.9 and is now published with DocC.
+
+This is the official Swift guide and a great entry point for learning Swift.
+
+The Swift community also maintains a number of [translations](/documentation/tspl/#translations).
+
+Swift Evolution Appendix 
+  
+ 
+
+The following language, standard library, and Swift Package Manager proposals were accepted through the [Swift Evolution](https://github.com/swiftlang/swift-evolution) process and [implemented in Swift 5.9](https://www.swift.org/swift-evolution/#?version=5.9).
+
+ 
+- SE-0366: [`consume` operator to end the lifetime of a variable binding](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0366-move-function.md)
+
+ 
+- SE-0374: [Add sleep(for:) to Clock](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0374-clock-sleep-for.md)
+
+ 
+- SE-0377: [`borrowing` and `consuming` parameter ownership modifiers](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0377-parameter-ownership-modifiers.md)
+
+ 
+- SE-0380: [`if` and `switch` expressions](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0380-if-switch-expressions.md)
+
+ 
+- SE-0381: [DiscardingTaskGroups](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0381-task-group-discard-results.md)
+
+ 
+- SE-0382: [Expression Macros](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0382-expression-macros.md)
+
+ 
+- SE-0384: [Importing Forward Declared Objective-C Interfaces and Protocols](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0384-importing-forward-declared-objc-interfaces-and-protocols.md)
+
+ 
+- SE-0386: [New access modifier: `package`](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0386-package-access-modifier.md)
+
+ 
+- SE-0388: [Convenience Async[Throwing]Stream.makeStream methods](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0388-async-stream-factory.md)
+
+ 
+- SE-0389: [Attached Macros](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0389-attached-macros.md)
+
+ 
+- SE-0390: [Noncopyable structs and enums](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md)
+
+ 
+- SE-0392: [Custom Actor Executors](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0392-custom-actor-executors.md)
+
+ 
+- SE-0393: [Value and Type Parameter Packs](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0393-parameter-packs.md)
+
+ 
+- SE-0394: [Package Manager Support for Custom Macros](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0394-swiftpm-expression-macros.md)
+
+ 
+- SE-0395: [Observation](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0395-observability.md)
+
+ 
+- SE-0396: [Conform `Never` to `Codable`](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0396-never-codable.md)
+
+ 
+- SE-0397: [Freestanding Declaration Macros](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0397-freestanding-declaration-macros.md)
+
+ 
+- SE-0398: [Allow Generic Types to Abstract Over Packs](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0398-variadic-types.md)
+
+ 
+- SE-0399: [Tuple of value pack expansion](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0399-tuple-of-value-pack-expansion.md)
+
+ 
+- SE-0400: [Init Accessors](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0400-init-accessors.md)
+
+ 
+- SE-0401: [Remove Actor Isolation Inference caused by Property Wrappers](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0401-remove-property-wrapper-isolation.md)
+
+ 
+- SE-0402: [Generalize `conformance` macros as `extension` macros](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0402-extension-macros.md)
+
+ 
+ 
+ 
+
+ 
+ 
+ ## Authors
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ [Alexander Sandberg](https://github.com/alexandersandberg/)
+ 
+ 
+ 
+ 
+ 
+ 
+ Alexander Sandberg is an iOS and macOS developer and a member of the Swift Website Workgroup.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ [Holly Borla](https://github.com/hborla/)
+ 
+ 
+ 
+ 
+ 
+ 
+ Holly Borla is a member of the Swift Core Team and Language Steering Group, and the engineering manager of the Swift language team at Apple.
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+
+ ## Continue Reading
+
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ 
+ ### SSWG 2023 Annual Update
+
+ August 17, 2023
+ 
+ Once a year, the Swift Server workgroup (SSWG) reflects on recent community ac..
+ 
+ [ More ](/blog/sswg-update-2023/)
+ 
+ 
+
+ 
+ 
+- 
+ 
+ ### Debugging Improvements in Swift 5.9
+
+ September 28, 2023
+ 
+ Swift 5.9 introduced a number of new debugging features to the compiler and LL..
+ 
+ [ More ](/blog/whats-new-swift-debugging-5.9/)
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ [ ](/)
+
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ [Install](/install/)
+ 
+
+ 
+ 
+
+ 
+ ### Tools
+
+ 
+ 
+ 
+- 
+ [Xcode](https://developer.apple.com/xcode/)
+ 
+
+ 
+ 
+- 
+ [Visual Studio Code](/documentation/articles/getting-started-with-vscode-swift.html)
+ 
+
+ 
+ 
+- 
+ [Emacs](/documentation/articles/zero-to-swift-emacs.html)
+ 
+
+ 
+ 
+- 
+ [Neovim](/documentation/articles/zero-to-swift-nvim.html)
+ 
+
+ 
+ 
+- 
+ [Other Editors](https://github.com/swiftlang/sourcekit-lsp/tree/main/Documentation/Editor%20Integration.md)
+ 
+
+ 
+ 
+
+ 
+ ### Community
+
+ 
+ 
+ 
+- 
+ [Overview](/community/)
+ 
+
+ 
+ 
+- 
+ [Swift Evolution](/swift-evolution/)
+ 
+
+ 
+ 
+- 
+ [Diversity](/diversity/)
+ 
+
+ 
+ 
+- 
+ [Mentorship](/mentorship/)
+ 
+
+ 
+ 
+- 
+ [Contributing](/contributing/)
+ 
+
+ 
+ 
+
+ 
+ ### Governance
+
+ 
+ 
+ 
+- 
+ [Code of Conduct](/code-of-conduct/)
+ 
+
+ 
+ 
+- 
+ [License](/legal/license.html)
+ 
+
+ 
+ 
+- 
+ [Security](/support/security.html)
+ 
+
+ 
+ 
+
+ 
+ Color scheme preference
+ 
+ 
+ Light
+ 
+ 
+ 
+ Dark
+ 
+ 
+ 
+ Auto
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ Copyright © 2025 Apple Inc. All rights reserved.
+ 
+ 
+ Swift and the Swift logo are trademarks of Apple Inc.
+ 
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [Privacy Policy](//www.apple.com/privacy/privacy-policy/)
+ 
+
+ 
+ 
+- 
+ [Cookies](//www.apple.com/legal/privacy/en-ww/cookies/)
+ 
+
+ 
+ 
+- 
+ [API](/openapi)
+ 
+
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [*](https://x.com/swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](https://bsky.app/profile/swift.org)
+ 
+
+ 
+ 
+- 
+ [**](https://mastodon.social/@swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](/atom.xml)

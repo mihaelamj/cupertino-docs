@@ -1,0 +1,471 @@
+---
+source: https://www.swift.org/blog/womens-history-month/
+crawled: 2025-11-15T21:24:29Z
+---
+
+# Celebrating Women’s History Month
+
+[ ](/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ # Celebrating Women’s History Month
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ *
+ 
+ 
+ [Holly Borla](https://github.com/hborla/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ [Paul Hudson](https://github.com/twostraws/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ March 24, 2021
+ 
+ 
+ This Women’s History Month, we’re so happy to celebrate the amazing women developers in our community. Women have made an immense impact on the Swift ecosystem by building important tools we use every day, creating resources to pass on what they have learned, and more. This post highlights a few outstanding contributions from individuals in the Women in Swift community.
+
+[Erica Sadun](https://github.com/erica) has authored 30 Swift Evolution proposals to date, and she has participated in the discussion and development of countless more. Erica has influenced Swift to be a more consistent, intuitive, and readable language. Her contributions to the language include replacing equal signs with colons for attribute arguments ([SE-0040](https://github.com/swiftlang/swift-evolution/blob/fb974bd979f31a231a4d57a3c49ebdcbc299fc71/proposals/0040-attributecolons.md)), expanding the `Self` type to class members and value types ([SE-0068](https://github.com/swiftlang/swift-evolution/blob/fb974bd979f31a231a4d57a3c49ebdcbc299fc71/proposals/0068-universal-self.md)), supporting recursive constraints on associated types ([SE-0157](https://github.com/swiftlang/swift-evolution/blob/fb974bd979f31a231a4d57a3c49ebdcbc299fc71/proposals/0157-recursive-protocol-constraints.md)), and many more. Erica is also a veteran writer, and has written many blog posts and books to guide developers toward best practices and conventions in their Swift code.
+
+As an experienced library developer and a member of the [Swift Server Work Group](/server/), [Kaitlin Mahar](https://github.com/kmahar) has a lot of influence on best practices for library development and growing the Swift package ecosystem. Kaitlin shares her advice on open source library development in her talk from the ServerSide.swift conference in 2019: [Maintaining a Library in a Swiftly Moving Ecosystem](https://www.youtube.com/watch?v=9-fdbG9jNt4). Kaitlin also joins John Sundell to discuss the current state of server-side Swift and the impact that Swift concurrency will have on libraries in episode 92 of the Swift by Sundell podcast: [All of our wildest Swift dreams](https://www.swiftbysundell.com/podcast/92/).
+
+Tooling is a critical aspect of the Swift ecosystem that empowers developers to be more productive. [Ellie Shin](https://github.com/elsh) talks about building a tool to generate concrete types that conform to a given protocol for mocking in her talk from UIKonf 2019: [Mockolo: Efficient Mock Generator for Swift](https://www.youtube.com/watch?v=Tkg8721fObU). Throughout the presentation, Ellie explores several other open source Swift tools that she considered using to implement Mockolo, including [SourceKit](https://github.com/apple/swift/tree/main/tools/SourceKit), [SwiftSyntax](https://github.com/swiftlang/swift-syntax), and [Stencil](https://github.com/stencilproject/Stencil).
+
+Another crucial tool in the Swift ecosystem is [Swift Package Manager](/documentation/package-manager/) (SwiftPM). [Ellen Shapiro](https://github.com/designatednerd) has been an advocate for SwiftPM and has given numerous talks on how developers can utilize SwiftPM in their projects. For example, in her presentation from iOS Conf SG 2020, [Scripting in Swift For a Testable Build](https://www.youtube.com/watch?v=tohaS-UYTYg&list=PLy2csMnlIs-5cE-txVTMXd9ogrywo9Zq7&index=4), Ellen talks about how developers can utilize SwiftPM to write build scripts in a language that they already know using familiar APIs, eliminate bugs with compile-time type safety, and take advantage of tools such as code coverage and unit testing for scripts.
+
+Countless women dedicate their time to teaching Swift and sharing tips and tricks to help everyone get the most out of the language. [Natascha Fadeeva](https://github.com/tanaschita) shares her expertise through articles and quick tips on her blog. In addition to helping others figure out how to use Swift, such as [using the power of bitwise operations and option sets](https://tanaschita.com/20201214-working-with-bits-in-swift), Natascha also shares interview tips and [sample questions that she has asked when conducting Swift interviews](https://tanaschita.com/20190715-ios-interview-questions-and-answers-for-senior-developers-part-1), which serves as a resource for job applicants.
+
+The Women in Swift community works hard to support other women as they enter the field and advance in their careers. [Niharika Bedekar](https://github.com/niharikabedekar) is a champion for diversity in the Swift community, and her ideas sparked the formation of Women in Swift and the larger [Diversity in Swift](/diversity) initiative.
+
+Women continue to use their expertise and creativity to improve our community, from shaping the core language and libraries, to empowering Swift developers through tooling and sharing their experiences with Swift. Please join in on the Women’s History Month celebration over on the [Community Showcase forum](https://forums.swift.org/c/community-showcase/) and share how the Women in Swift community has helped you on your journey with Swift. If you are a woman Swift developer or contributor, we highly encourage you to [join Women in Swift](/diversity/#community-groups) to connect with others in the community!
+
+ 
+ 
+ 
+
+ 
+ 
+ ## Authors
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ [Holly Borla](https://github.com/hborla/)
+ 
+ 
+ 
+ 
+ 
+ 
+ Holly Borla is a member of the Swift Core Team and Language Steering Group, and the engineering manager of the Swift language team at Apple.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ [Paul Hudson](https://github.com/twostraws/)
+ 
+ 
+ 
+ 
+ 
+ 
+ Paul Hudson is the creator of Hacking with Swift, and a member of the Diversity in Swift workgroup.
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+
+ ## Continue Reading
+
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ 
+ ### Celebrating Black History Month
+
+ February 22, 2021
+ 
+ Black History Month is a time to learn about, reflect on, and celebrate the im..
+ 
+ [ More ](/blog/black-history-month/)
+ 
+ 
+
+ 
+ 
+- 
+ 
+ ### Introducing Swift Collections
+
+ April 5, 2021
+ 
+ I’m thrilled to announce Swift Collections, a new open-source package focused ..
+ 
+ [ More ](/blog/swift-collections/)
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ [ ](/)
+
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ [Install](/install/)
+ 
+
+ 
+ 
+
+ 
+ ### Tools
+
+ 
+ 
+ 
+- 
+ [Xcode](https://developer.apple.com/xcode/)
+ 
+
+ 
+ 
+- 
+ [Visual Studio Code](/documentation/articles/getting-started-with-vscode-swift.html)
+ 
+
+ 
+ 
+- 
+ [Emacs](/documentation/articles/zero-to-swift-emacs.html)
+ 
+
+ 
+ 
+- 
+ [Neovim](/documentation/articles/zero-to-swift-nvim.html)
+ 
+
+ 
+ 
+- 
+ [Other Editors](https://github.com/swiftlang/sourcekit-lsp/tree/main/Documentation/Editor%20Integration.md)
+ 
+
+ 
+ 
+
+ 
+ ### Community
+
+ 
+ 
+ 
+- 
+ [Overview](/community/)
+ 
+
+ 
+ 
+- 
+ [Swift Evolution](/swift-evolution/)
+ 
+
+ 
+ 
+- 
+ [Diversity](/diversity/)
+ 
+
+ 
+ 
+- 
+ [Mentorship](/mentorship/)
+ 
+
+ 
+ 
+- 
+ [Contributing](/contributing/)
+ 
+
+ 
+ 
+
+ 
+ ### Governance
+
+ 
+ 
+ 
+- 
+ [Code of Conduct](/code-of-conduct/)
+ 
+
+ 
+ 
+- 
+ [License](/legal/license.html)
+ 
+
+ 
+ 
+- 
+ [Security](/support/security.html)
+ 
+
+ 
+ 
+
+ 
+ Color scheme preference
+ 
+ 
+ Light
+ 
+ 
+ 
+ Dark
+ 
+ 
+ 
+ Auto
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ Copyright © 2025 Apple Inc. All rights reserved.
+ 
+ 
+ Swift and the Swift logo are trademarks of Apple Inc.
+ 
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [Privacy Policy](//www.apple.com/privacy/privacy-policy/)
+ 
+
+ 
+ 
+- 
+ [Cookies](//www.apple.com/legal/privacy/en-ww/cookies/)
+ 
+
+ 
+ 
+- 
+ [API](/openapi)
+ 
+
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [*](https://x.com/swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](https://bsky.app/profile/swift.org)
+ 
+
+ 
+ 
+- 
+ [**](https://mastodon.social/@swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](/atom.xml)

@@ -11,7 +11,9 @@ source: hig
 > **Category:** General
 > **Platforms:** iOS, macOS, watchOS, visionOS, tvOS
 
-# Color
+December 16, 2025
+
+ Updated guidance for Liquid Glass. # Color
 Judicious use of color can enhance communication, evoke your brand, provide visual continuity, communicate status and feedback, and help people understand information.
 
 The system defines colors that look good on various backgrounds and appearance modes, and can automatically adapt to vibrancy and accessibility settings. Using system colors is a convenient way to make your experience feel at home on the device.
@@ -21,7 +23,15 @@ You may also want to use custom colors to enhance the visual experience of your 
 ## [Best practices](/design/human-interface-guidelines/color#Best-practices)
 **Avoid using the same color to mean different things.** Use color consistently throughout your interface, especially when you use it to help communicate information like status or interactivity. For example, if you use your brand color to indicate that a borderless button is interactive, using the same or similar color to stylize noninteractive text is confusing.
 
-**Make sure your app’s colors work well in both light and dark contexts.** iOS, iPadOS, macOS, and tvOS offer both light and [dark](/design/human-interface-guidelines/dark-mode) appearance settings. System colors vary subtly depending on the system appearance, adjusting to ensure proper color differentiation and contrast for text, symbols, and other elements. With the Increase Contrast setting turned on, the color differences become far more apparent. If you use a custom color, supply light and dark variants, and an increased contrast option for each variant.
+**Make sure all your app’s colors work well in light, dark, and increased contrast contexts.** iOS, iPadOS, macOS, and tvOS offer both light and [dark](/design/human-interface-guidelines/dark-mode) appearance settings. [System colors](/design/human-interface-guidelines/color#System-colors) vary subtly depending on the system appearance, adjusting to ensure proper color differentiation and contrast for text, symbols, and other elements. With the Increase Contrast setting turned on, the color differences become far more apparent. When possible, use system colors, which already define variants for all these contexts. If you define a custom color, make sure to supply light and dark variants, and an increased contrast option for each variant that provides a significantly higher amount of visual differentiation. Even if your app ships in a single appearance mode, provide both light and dark colors to support Liquid Glass adaptivity in these contexts.
+
+Default (light)
+
+Increased contrast (light)
+
+Default (dark)
+
+Increased contrast (dark)
 
 **Test your app’s color scheme under a variety of lighting conditions.** Colors can look different when you view your app outside on a sunny day or in dim light. In bright surroundings, colors look darker and more muted. In dark environments, colors appear bright and saturated. In visionOS, colors can look different depending on the colors of a wall or object in a person’s physical surroundings and how it reflects light. Adjust app colors to provide an optimal viewing experience in the majority of use cases.
 
@@ -50,17 +60,21 @@ iOS, iPadOS, macOS, and visionOS also define sets of *dynamic system colors* tha
 **Avoid redefining the semantic meanings of dynamic system colors.** To ensure a consistent experience and ensure your interface looks great when the appearance of the platform changes, use dynamic system colors as intended. For example, don’t use the [separator](https://developer.apple.com/documentation/uikit/uicolor/separator) color as a text color, or [secondary text label](https://developer.apple.com/documentation/uikit/uicolor/secondarylabel) color as a background color.
 
 ## [Liquid Glass color](/design/human-interface-guidelines/color#Liquid-Glass-color)
-For smaller elements like toolbars and tab bars, the system can adapt [Liquid Glass](/design/human-interface-guidelines/materials#Liquid-Glass) between a light and dark appearance in response to the underlying content. Symbols and text on these elements follow a monochromatic color scheme, becoming darker when the underlying content is light, and lighter when it’s dark.
+By default, [Liquid Glass](/design/human-interface-guidelines/materials#Liquid-Glass) has no inherent color, and instead takes on colors from the content directly behind it. You can apply color to some Liquid Glass elements, giving them the appearance of colored or stained glass. This is useful for drawing emphasis to a specific control, like a primary call to action, and is the approach the system uses for prominent button styling. Symbols or text labels on Liquid Glass controls can also have color.
 
-Liquid Glass appears more opaque in larger elements like sidebars to preserve legibility over complex backgrounds and accommodate richer content on the material’s surface.
+Controls can use color in the Liquid Glass background, like in a primary action button.
 
-**Use color sparingly in Liquid Glass.** To reduce visual noise, limit the amount of color you apply to the material, and to symbols or text on the material. If you apply color, reserve it for elements that truly benefit from emphasis, such as status indicators or key actions. For example, the system applies tint color to the material backing in prominent buttons — such as the Done button — to draw attention and elevate their visual prominence.
+Symbols and text that appear on Liquid Glass can have color, like in a selected tab bar item.
 
-**Consider using color in the content layer to evoke your brand.** If your app feels visually muted or lacks sufficient brand emphasis, consider adjusting the color palette in your content layer, such as adding a colorful header to the scrollable content. This approach allows your app to continue expressing its unique personality without distracting from content. Refrain from adding color throughout Liquid Glass solely to evoke your brand.
+By default, Liquid Glass picks up the color from the content layer behind it.
 
-Liquid Glass elements over a simple background.
+For smaller elements like toolbars and tab bars, the system can adapt Liquid Glass between a light and dark appearance in response to the underlying content. By default, symbols and text on these elements follow a monochromatic color scheme, becoming darker when the underlying content is light, and lighter when it’s dark. Liquid Glass appears more opaque in larger elements like sidebars to preserve legibility over complex backgrounds and accommodate richer content on the material’s surface.
 
-Color in the content layer can help highlight your brand.
+**Apply color sparingly to the Liquid Glass material, and to symbols or text on the material.** If you apply color, reserve it for elements that truly benefit from emphasis, such as status indicators or primary actions. To emphasize primary actions, apply color to the background rather than to symbols or text. For example, the system applies the app accent color to the background in prominent buttons — such as the Done button — to draw attention and elevate their visual prominence. Refrain from adding color to the background of multiple controls.
+
+**Avoid using similar colors in control labels if your app has a colorful background.** While color can make apps more visually appealing, playful, or reflective of your brand, too much color can be overwhelming and make control labels more difficult to read. If your app features colorful backgrounds or visually rich content, prefer a monochromatic appearance for toolbars and tab bars, or choose an accent color with sufficient visual differentiation. By contrast, in apps with primarily monochromatic content or backgrounds, choosing your brand color as the app accent color can be an effective way to tailor your app experience and reflect your company’s identity.
+
+**Be aware of the placement of color in the content layer.** Make sure your interface maintains sufficient contrast by avoiding overlap of similar colors in the content layer and controls when possible. Although colorful content might intermittently scroll underneath controls, make sure its default or resting state — like the top of a screen of scrollable content — maintains clear legibility.
 
 ## [Color management](/design/human-interface-guidelines/color#Color-management)
 A *color space* represents the colors in a *color model* like RGB or CMYK. Common color spaces — sometimes called *gamuts* — are sRGB and Display P3.
@@ -507,6 +521,10 @@ In SwiftUI, the equivalent of `systemGray` is [`gray`](/documentation/SwiftUI/Co
 Date
 
 Changes
+
+December 16, 2025
+
+Updated guidance for Liquid Glass.
 
 June 9, 2025
 

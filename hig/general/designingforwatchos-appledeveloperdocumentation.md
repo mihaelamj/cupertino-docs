@@ -49,8 +49,6 @@ Use [notifications](/design/human-interface-guidelines/notifications) to deliver
 
 Use background content such as [color](/design/human-interface-guidelines/color) to convey useful supporting information, and use  [materials](/design/human-interface-guidelines/materials) to illustrate hierarchy and a sense of place.
 
-Support Siri to help people access shortcuts on the Siri watch face.
-
 Design your app to function independently, complementing your notifications and complications by providing additional details and functionality.
 
 ## [Resources](/design/human-interface-guidelines/designing-for-watchos#Resources)

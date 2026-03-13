@@ -93,11 +93,11 @@ tvOS
 ### [macOS](/design/human-interface-guidelines/alerts#macOS)
 macOS automatically displays your app icon in an alert, but you can supply an alternative icon or symbol. In addition, macOS lets you:
 
-Configure repeating alerts to let people suppress subsequent occurrences of the same alert
+Configure repeating alerts to let people suppress subsequent occurrences of the same alert.
 
-Append a custom view if it’s necessary to provide additional information (for developer guidance, see [`accessoryView`](/documentation/AppKit/NSAlert/accessoryView))
+Append a custom view if it’s necessary to provide additional information (for developer guidance, see [`accessoryView`](/documentation/AppKit/NSAlert/accessoryView)).
 
-Include a Help button that opens your help documentation (see [Help buttons](/design/human-interface-guidelines/buttons#Help-buttons))
+Include a Help button that opens your help documentation (see [Help buttons](/design/human-interface-guidelines/buttons#Help-buttons)).
 
 **Use a caution symbol sparingly.** Using a caution symbol like `exclamationmark.triangle` too frequently in your alerts diminishes its significance. Use the symbol only when extra attention is really needed, as when confirming an action that might result in unexpected loss of data. Don’t use the symbol for tasks whose only purpose is to overwrite or remove data, such as a save or empty trash.
 

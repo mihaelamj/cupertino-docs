@@ -1,0 +1,124 @@
+---
+source: https://www.swift.org/documentation/docc/metadata
+crawled: 2025-11-15T21:49:51Z
+---
+
+# Metadata
+
+Directive# Metadata
+
+Use metadata directives to instruct DocC how to build certain documentation files. Swift-DocC 5.5+ 
+
+```
+@Metadata {
+    ...
+}
+```
+
+## [Overview](/documentation/docc/metadata#Overview)
+
+Use the `Metadata` directive with other directives to configure how certain documentation files build. Place the directive after the documentation page’s title.
+
+Use it with the [`DocumentationExtension`](/documentation/docc/documentationextension) directive to replace in-source documentation with the documentation extension file’s content.
+
+
+
+```
+# ``SlothCreator/Sloth``
+
+
+@Metadata {
+    @DocumentationExtension(mergeBehavior: override)
+}
+
+```
+
+Use the `Metadata` directive with the [`TechnologyRoot`](/documentation/docc/technologyroot) directive to customize which article is the top-level page for a documentation catalog (’.docc’ directory) without any framework documentation or other top-level pages.
+
+Use the `Metadata` directive with the [`DisplayName`](/documentation/docc/displayname) directive to configure a symbol’s documentation page to use a custom display name.
+
+
+
+```
+# ``SlothCreator``
+
+
+@Metadata {
+    @DisplayName("Sloth Creator")
+}
+
+```
+
+Use the `Metadata` directive with the [`TitleHeading`](/documentation/docc/titleheading) directive to configure the text of a page’s title heading.
+
+
+
+```
+# ``SlothCreator``
+
+
+@Metadata {
+    @TitleHeading("Release Notes")
+}
+
+```
+
+Starting with version 6.0, use the `Metadata` directive with one or more [`Redirected`](/documentation/docc/redirected) directives to add additional URLs for a page.
+
+
+
+```
+# ``SlothCreator``
+
+
+@Metadata {
+    @Redirected(from: "old/path/to/page")
+    @Redirected(from: "another/old/path/to/page")
+}
+
+```
+
+Note
+
+Starting with version 6.0, @Redirected is supported as a child directive of @Metadata. In previous versions, @Redirected must be used as a top level directive.
+
+### [Usage in documentation comments](/documentation/docc/metadata#Usage-in-documentation-comments)
+
+You can specify `@Metadata` configuration in documentation comments to specify [`Available`](/documentation/docc/available) directives. Other metadata directives are not supported in documentation comments.
+
+Note
+
+Don’t specify an `@Metadata` directive in both the symbol’s documentation comment and its documentation extension file. If you have one in each, DocC will pick the one in the documentation extension and discard the one in the documentation comment.
+
+Earlier versions
+
+Before Swift-DocC 6.1, `@Metadata` was not supported in documentation comments.
+
+## [Topics](/documentation/docc/metadata#topics)
+
+### [Extending or Overriding Source Documentation](/documentation/docc/metadata#Extending-or-Overriding-Source-Documentation)
+
+[`@DocumentationExtension(mergeBehavior: Behavior)`](/documentation/docc/documentationextension)Defines whether the content in a documentation extension file replaces in-source documentation or amends it (the default).### [Creating a Top-Level Technology Page](/documentation/docc/metadata#Creating-a-Top-Level-Technology-Page)
+
+[`@TechnologyRoot`](/documentation/docc/technologyroot)Configures an article to become a top-level page.### [Customizing the Presentation of a Page](/documentation/docc/metadata#Customizing-the-Presentation-of-a-Page)
+
+[`@DisplayName(_ name: String, style: Style)`](/documentation/docc/displayname)Configures a symbol’s documentation page and any references to that page to show a custom name instead of the symbol name.[`@PageImage(purpose: Purpose, source: ResourceReference, alt: String)`](/documentation/docc/pageimage)Associates an image with a page.[`@PageKind(_ kind: Kind)`](/documentation/docc/pagekind)A directive that allows you to set a page’s kind, which affects its default title heading and page icon.[`@PageColor(_ color: Color)`](/documentation/docc/pagecolor)A directive that specifies an accent color for a given documentation page.[`@CallToAction(url: URL, file: ResourceReference, purpose: Purpose, label: String)`](/documentation/docc/calltoaction)A directive that adds a prominent button or link to a page’s header.[`@TitleHeading(_ heading: String)`](/documentation/docc/titleheading)A directive that specifies a title heading for a given documentation page.### [Customizing the Languages of an Article](/documentation/docc/metadata#Customizing-the-Languages-of-an-Article)
+
+[`@SupportedLanguage(_ language: SourceLanguage)`](/documentation/docc/supportedlanguage)A directive that controls what programming languages an article is available in.[`@AlternateRepresentation(_ reference: TopicReference)`](/documentation/docc/alternaterepresentation)A directive that configures an alternate language representation of a symbol.### [Customizing the Availability Information of a Page](/documentation/docc/metadata#Customizing-the-Availability-Information-of-a-Page)
+
+[`@Available(_ platform: Platform, introduced: SemanticVersion, deprecated: SemanticVersion)`](/documentation/docc/available)A directive that specifies when a documentation page is available for a given platform.[`@DeprecationSummary`](/documentation/docc/deprecationsummary)A directive that specifies a custom deprecation summary message to an already deprecated symbol.### [Specifying an Additional URL of a Page](/documentation/docc/metadata#Specifying-an-Additional-URL-of-a-Page)
+
+[`@Redirected(from: URL)`](/documentation/docc/redirected)A directive that specifies a previous URL for the page where the directive appears.## [See Also](/documentation/docc/metadata#see-also)
+
+### [Configuring Documentation Behavior](/documentation/docc/metadata#Configuring-Documentation-Behavior)
+
+[`@Options(scope: Scope)`](/documentation/docc/options)A directive to adjust Swift-DocC’s default behaviors when rendering a page.[`@TechnologyRoot`](/documentation/docc/technologyroot)Configures an article to become a top-level page.[`@Redirected(from: URL)`](/documentation/docc/redirected)A directive that specifies a previous URL for the page where the directive appears.
+- [ Metadata ](/documentation/docc/metadata#app-top)
+
+- [ Overview ](/documentation/docc/metadata#Overview)
+
+- [ Usage in documentation comments ](/documentation/docc/metadata#Usage-in-documentation-comments)
+
+- [ Topics ](/documentation/docc/metadata#topics)
+
+- [ See Also ](/documentation/docc/metadata#see-also)

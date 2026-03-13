@@ -1,0 +1,655 @@
+---
+source: https://www.swift.org/blog/swift-5.6-released/
+crawled: 2025-11-15T21:23:43Z
+---
+
+# Swift 5.6 Released!
+
+[ ](/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ # Swift 5.6 Released!
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ *
+ 
+ 
+ [Ted Kremenek](https://github.com/tkremenek/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ March 14, 2022
+ 
+ 
+ Swift 5.6 is now officially released!
+
+Thank you to everyone in the Swift community for your discussion, proposals, bug reports, pull requests, and more.
+
+Swift 5.6 includes a number of enhancements to the type system, improved interaction with pointers, and adds the ability to run new plugin commands using the package manager.
+
+For a quick dive into some of what’s new in Swift 5.6, check out this [playground](https://github.com/twostraws/whats-new-in-swift-5-6) put together by Paul Hudson.
+
+If you’re new to Swift, [The Swift Programming Language](https://docs.swift.org/swift-book/) is the definitive guide on the Swift programming language and has been updated for version 5.6. The Swift community also maintains a number of [translations](/documentation/). It is also available for free on the [Apple Books store](https://itunes.apple.com/us/book/the-swift-programming-language/id881256329?mt=11).
+
+Language and Standard Library 
+  
+ 
+
+New Features and Refinements 
+  
+ 
+
+Swift 5.6 enhances the language through a number of proposals from the [Swift Evolution](https://github.com/swiftlang/swift-evolution) process, including:
+
+ 
+- [SE-0290](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0290-negative-availability.md) - Unavailability Condition
+
+ 
+- [SE-0315](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0315-placeholder-types.md) - Type placeholders (formerly, “Placeholder types”)
+
+ 
+- [SE-0320](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0320-codingkeyrepresentable.md) - Allow coding of non `String` / `Int` keyed `Dictionary` into a `KeyedContainer`
+
+ 
+- [SE-0322](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0322-temporary-buffers.md) - Temporary uninitialized buffers
+
+ 
+- [SE-0324](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0324-c-lang-pointer-arg-conversion.md) - Relax diagnostics for pointer arguments to C functions
+
+ 
+- [SE-0331](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0331-remove-sendable-from-unsafepointer.md) - Remove Sendable conformance from unsafe pointer types
+
+ 
+- [SE-0335](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0335-existential-any.md) - Introduces existential `any`
+
+ 
+- [SE-0337](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0337-support-incremental-migration-to-concurrency-checking.md) - Incremental migration to concurrency checking
+
+Let’s take a closer look at some of these below.
+
+Enhancements to the Type System 
+  
+ 
+
+#### Type Placeholders ([SE-0315](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0315-placeholder-types.md))
+
+Swift allows you to omit verbose, incidental details from your code using type inference. However, writing explicit types when needed can feel excessive because you have to specify a complete type, even when your code only needed a specific part of the type to provide clarity:
+
+
+
+```
+enum Either<Left, Right> {
+  case left(Left)
+  case right(Right)
+}
+
+let either: Either<ClosedRange<Int>, Range<Int>> = .left(0...10)
+
+```
+
+
+
+With type placeholders, you can now write partial type annotations in your code to provide only the details that were necessary. A type placeholder is written with _, and it directs the compiler to infer the missing type:
+
+
+
+```
+enum Either<Left, Right> {
+  case left(Left)
+  case right(Right)
+}
+
+// Inferred as 'Either<ClosedRange<Int>, Range<Int>>'
+let either: Either<_, Range<Int>> = .left(0...10)
+
+```
+
+
+
+#### Existential `any` ([SE-0335](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0335-existential-any.md))
+
+Existential types in Swift are used to store a value of any type conforming to a specific protocol. Today, existential types are spelled using a plain protocol name or protocol composition:
+
+
+
+```
+protocol DataSourceObserver { ... }
+
+struct DataSource {
+  var observers: [DataSourceObserver] { ... }
+}
+
+```
+
+
+
+An existential type erases its underlying type information, which is useful when you need to dynamically change the underlying type, but it prohibits existential types from other useful capabilities such as conforming to protocols. The existing syntax is confusing because an existential type looks just like a generic conformance requirement, which doesn’t have these fundamental limitations.
+
+In Swift 5.6, existential types can be explicitly marked with the any keyword:
+
+
+
+```
+protocol DataSourceObserver { ... }
+
+struct DataSource {
+  var observers: [any DataSourceObserver] { ... }
+}
+
+```
+
+
+
+Improved Interaction with Pointers 
+  
+ 
+
+Swift 5.6 introduces three significant improvements when working with unsafe pointers:
+
+#### Temporary uninitialized buffers ([SE-0322](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0322-temporary-buffers.md))
+
+This introduces a new way to create temporary uninitialized memory space, which is particularly useful when interacting with C APIs that need to be supplied with memory into which to store results of a computation.
+
+#### Relax diagnostics for pointer arguments to C functions ([SE-0324](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0324-c-lang-pointer-arg-conversion.md))
+
+This change allows the passing of mutable variants of unsafe pointers (e.g. `UnsafeMutablePointer`) to APIs that take the immutable version (e.g. `UnsafePointer`) without an explicit conversion.
+
+#### Remove Sendable conformance from unsafe pointer types ([SE-0331](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0331-remove-sendable-from-unsafepointer.md))
+
+Feedback from early adoption of Sendable shows that pointer conformance has unexpected negative consequences, especially for implicit conformance, since these types behave like references.
+
+Improved Concurrency Safety Model 
+  
+ 
+
+Swift 5.6 also includes several improvements to the concurrency safety model:
+
+#### Incremental migration to concurrency checking ([SE-0337](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0337-support-incremental-migration-to-concurrency-checking.md))
+
+Diagnostics about `Sendable` are suppressed by default in Swift 5.6, but can be enabled by explicitly defining conformances to `Sendable` or using the `-warn-concurrency` compiler flag, enabling an incremental migration path to concurrency checking.
+
+Ecosystem 
+  
+ 
+
+Swift Package Manager 
+  
+ 
+
+The Swift Package Manager gained extensibility features in Swift 5.6, alongside several important security, performance and reliability updates.
+
+#### Extensible Build Tools ([SE-0303](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0303-swiftpm-extensible-build-tools.md))
+
+Introduces the ability to define build tool plugins in SwiftPM, allowing custom tools to be automatically invoked during a build. Build tool plugins are focused on code generation during the build of a package, for such purposes as generating Swift source files from .proto files or from other inputs, in order to allow build tools to be incorporated into the build graph and to run automatically in a safe manner.
+
+#### Command Plugins ([SE-0332](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0332-swiftpm-command-plugins.md))
+
+Extends SwiftPM plugin support first introduced with SE-0303 to allow the definition of custom command plugins — plugins that users can invoke directly from the SwiftPM CLI, or from an IDE that supports Swift Packages, in order to perform custom actions on their packages. A command plugin specifies the semantic intent of the command — this might be one of the predefined intents such “documentation generation” or “source code formatting”, or it might be a custom intent with a specialized verb that can be passed to the swift package command.
+
+Other updates include:
+
+ 
+- [SE-0305](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0305-swiftpm-binary-target-improvements.md) - Package Manager Binary Target Improvements
+
+ 
+- Semantic version dependencies can now be resolved against Git tag names that contain only major and minor version identifiers. A tag with the form X.Y will be treated as X.Y.0. This improves compatibility with existing repositories.
+
+ 
+- To increase the security of packages, SwiftPM performs trust on first use (TOFU) validation. The fingerprint of a package is now being recorded when the package is first downloaded from a Git repository. Subsequent downloads must have fingerprints matching previous recorded values, otherwise it would result in build warnings or failures depending on settings.
+
+ 
+- Multiple improvements to dependencies resolution infrastructure, leading to improved performance and reliability of dependency resolution
+
+Swift-DocC Updates 
+  
+ 
+
+Swift-DocC is now available [as a SwiftPM plugin](https://github.com/swiftlang/swift-docc-plugin) using the new plugin command support. See the documentation to [learn how to get started](https://apple.github.io/swift-docc-plugin/documentation/swiftdoccplugin/).
+
+In addition, you can now use Swift-DocC to [publish static content to GitHub Pages](https://apple.github.io/swift-docc-plugin/documentation/swiftdoccplugin/publishing-to-github-pages).
+
+Other enhancements include:
+
+ 
+- The `docc` command-line tool is now a part of the open-source, release Swift toolchain for macOS and Linux platforms.
+
+ 
+- Swift-DocC can now build documentation that is compatible with static hosting environments, like GitHub Pages.
+
+ 
+- Swift-DocC can now produce documentation for executable targets like command-line tools and apps.
+
+Be sure to check out Joseph Heck’s [great blog post](https://rhonabwy.com/2022/01/28/hosting-your-swift-library-docs-on-github-pages/) covering this is in more detail.
+
+Downloads 
+  
+ 
+
+Official binaries are [available for download](/download/) from Swift.org for Xcode, Windows, and Linux. Swift 5.6 is also included in [Xcode 13.3](https://apps.apple.com/app/xcode/id497799835).
+
+We also provide RPMs for Amazon Linux 2 and CentOS 7 for **experimental use only**. Please provide your [feedback](https://bugs.swift.org).
+
+Use the instructions below for RPM installation:
+
+**Amazon Linux 2**
+
+
+
+```
+$ curl https://download.swift.org/experimental-use-only/repo/amazonlinux/releases/2/swiftlang.repo > /etc/yum.repos.d/swiftlang.repo
+$ amazon-linux-extras install epel
+$ yum install swiftlang
+
+```
+
+
+
+**CentOS 7**
+
+
+
+```
+$ curl https://download.swift.org/experimental-use-only/repo/centos/releases/7/swiftlang.repo > /etc/yum.repos.d/swiftlang.repo
+$ yum install epel-release
+$ yum install swiftlang
+
+```
+
+
+ 
+ 
+ 
+
+ 
+ 
+ ## Authors
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ [Ted Kremenek](https://github.com/tkremenek/)
+ 
+ 
+ 
+ 
+ 
+ 
+ Ted Kremenek is a member of the Swift Core Team and manages the Languages and Runtimes group at Apple.
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+
+ ## Continue Reading
+
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ 
+ ### Introducing Swift Distributed Actors
+
+ October 28, 2021
+ 
+ We’re thrilled to announce a new open-source package for the Swift on Server e..
+ 
+ [ More ](/blog/distributed-actors/)
+ 
+ 
+
+ 
+ 
+- 
+ 
+ ### Swift.org Website is Now Open Source
+
+ March 15, 2022
+ 
+ The Swift.org site has long served as the hub where developers come together t..
+ 
+ [ More ](/blog/website-open-source/)
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ [ ](/)
+
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ [Install](/install/)
+ 
+
+ 
+ 
+
+ 
+ ### Tools
+
+ 
+ 
+ 
+- 
+ [Xcode](https://developer.apple.com/xcode/)
+ 
+
+ 
+ 
+- 
+ [Visual Studio Code](/documentation/articles/getting-started-with-vscode-swift.html)
+ 
+
+ 
+ 
+- 
+ [Emacs](/documentation/articles/zero-to-swift-emacs.html)
+ 
+
+ 
+ 
+- 
+ [Neovim](/documentation/articles/zero-to-swift-nvim.html)
+ 
+
+ 
+ 
+- 
+ [Other Editors](https://github.com/swiftlang/sourcekit-lsp/tree/main/Documentation/Editor%20Integration.md)
+ 
+
+ 
+ 
+
+ 
+ ### Community
+
+ 
+ 
+ 
+- 
+ [Overview](/community/)
+ 
+
+ 
+ 
+- 
+ [Swift Evolution](/swift-evolution/)
+ 
+
+ 
+ 
+- 
+ [Diversity](/diversity/)
+ 
+
+ 
+ 
+- 
+ [Mentorship](/mentorship/)
+ 
+
+ 
+ 
+- 
+ [Contributing](/contributing/)
+ 
+
+ 
+ 
+
+ 
+ ### Governance
+
+ 
+ 
+ 
+- 
+ [Code of Conduct](/code-of-conduct/)
+ 
+
+ 
+ 
+- 
+ [License](/legal/license.html)
+ 
+
+ 
+ 
+- 
+ [Security](/support/security.html)
+ 
+
+ 
+ 
+
+ 
+ Color scheme preference
+ 
+ 
+ Light
+ 
+ 
+ 
+ Dark
+ 
+ 
+ 
+ Auto
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ Copyright © 2025 Apple Inc. All rights reserved.
+ 
+ 
+ Swift and the Swift logo are trademarks of Apple Inc.
+ 
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [Privacy Policy](//www.apple.com/privacy/privacy-policy/)
+ 
+
+ 
+ 
+- 
+ [Cookies](//www.apple.com/legal/privacy/en-ww/cookies/)
+ 
+
+ 
+ 
+- 
+ [API](/openapi)
+ 
+
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [*](https://x.com/swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](https://bsky.app/profile/swift.org)
+ 
+
+ 
+ 
+- 
+ [**](https://mastodon.social/@swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](/atom.xml)

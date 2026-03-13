@@ -1,0 +1,688 @@
+---
+source: https://www.swift.org/blog/swift-5.7-released/
+crawled: 2025-11-15T21:22:28Z
+---
+
+# Swift 5.7 Released!
+
+[ ](/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ # Swift 5.7 Released!
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ *
+ 
+ 
+ [Holly Borla](https://github.com/hborla/)
+ 
+ 
+ 
+ 
+ 
+ 
+ Holly Borla is a member of the Swift Core Team and Language Steering Group, and the engineering manager of the Swift language team at Apple.
+ 
+ 
+ 
+ 
+ 
+
+ September 12, 2022
+ 
+ 
+ Swift 5.7 is now officially released! Swift 5.7 includes major additions to the language and standard library, enhancements to the compiler for a better developer experience, improvements to tools in the Swift ecosystem including SourceKit-LSP and the Swift Package Manager, refined Windows support, and more.
+
+Swift 5.7 is the culmination of countless contributions from members across the Swift community. Thank you to everyone in the community for your Swift Forum discussions, bug reports, pull requests, educational content, and much more!
+
+If you’re new to Swift, [The Swift Programming Language](https://docs.swift.org/swift-book/) is the official Swift guide and has been updated for version 5.7. The Swift community maintains a number of [translations](https://www.swift.org/documentation/tspl/#translations). It is also available for free on the [Apple Books store](https://itunes.apple.com/us/book/the-swift-programming-language/id881256329?mt=11).
+
+Language and Standard Library 
+  
+ 
+
+The Swift 5.7 language and standard library feature a number of improvements:
+
+ 
+- New shorthand syntax for common boilerplate code, including `if let` statements and multi-statement closure type annotations
+
+ 
+- Lifted long-standing language limitations to make generic programming more seamless
+
+ 
+- Enhanced data race safety with new annotations and opt-in diagnositcs
+
+ 
+- Actor isolation in distributed environments
+
+ 
+- Improved usability of a suite of existing pointer APIs
+
+ 
+- Brand new language support and APIs for string processing
+
+Most of these features were discussed at WWDC22 and were covered in a previous blog post, [Swift language announcements from WWDC22](https://www.swift.org/blog/swift-language-updates-from-wwdc22/). You can also find a complete list of language and standard library Swift Evolution proposals in the [Swift Evolution Appendix](#swift-evolution-appendix).
+
+Developer Experience 
+  
+ 
+
+New Generics Implementation 
+  
+ 
+
+In addition to the above language improvements for working with generics, the type checker’s generics implementation has been rewritten from scratch with improvements to correctness and performance.
+
+The new implementation fixes many long-standing bugs, mostly related to the handling of complex same-type requirements, such as same-type requirements on a collection’s `SubSequence` associated type, and code making use of the `CaseIterable` protocol which defines the requirement `Self.Element == Self`.
+
+The new generics implementation also improves performance. With certain configurations of protocols and associated types, type checking time would scale exponentially in Swift 5.6, but is now linear in Swift 5.7.
+
+Automatic Reference Counting Improvements 
+  
+ 
+
+In Swift 5.7, ARC behavior is more predictable, user-friendly, and performant by specifying new rules to shorten the lifetime of variables when optimization is allowed. To enforce the rules, the compiler adopted a new internal representation that tracks the lexical scope of each variable. This involved updating existing optimizations and implementing several new optimizations. Now, the most common programming patterns that depend on extended variable lifetimes are safe without requiring programmers to explicitly use `withExtendedLifetime()`. This protects you from difficult-to-diagnose lifetime bugs that only appear at runtime in optimized builds. It also allows the introduction of more powerful optimization without breaking existing source.
+
+Code Completion 
+  
+ 
+
+Code completion of function call arguments, variables, and global functions is now tightly integrated into Swift’s type checker. This allows code completion to provide more accurate results inside ambiguous code or code with errors.
+
+If completing after the `+` in the following example, code completion now reports `int` and `string` as matching the surrounding context, allowing editors to rank these results higher than `array`.
+
+
+
+```
+func makeIntOrString() -> Int {}
+func makeIntOrString() -> String {}
+
+let array = [4, 2]
+let int = 42
+let string = "Hello World!"
+makeIntOrString() +
+
+```
+
+
+
+If completing the missing argument in the following example, code completion now only suggests the `secondInt` argument label and omits `secondString`.
+
+
+
+```
+func add(_ firstInt: Int, secondInt: Int) {}
+func add(_ firstString: String, secondString: String) {}
+add(1, )
+
+```
+
+
+
+Ecosystem 
+  
+ 
+
+SourceKit-LSP 
+  
+ 
+
+SourceKit-LSP received several improvements to support the release of the [Swift for Visual Studio Code extension](https://forums.swift.org/t/introducing-swift-for-visual-studio-code/54246).
+
+Compiler arguments are now recomputed after changes to `Package.swift`, `compile_commands.json`, or `compile_flags.txt`. This ensures that semantic functionality, such as code completion or live issues, continues to work correctly after these changes.
+
+If multiple SwiftPM projects are opened in the same Visual Studio Code workspace, SourceKit-LSP can manage them in a single server instance. The language server no longer needs to be restarted when switching between files from different SwiftPM projects, which reduces the delay until semantic functionality becomes available for a file.
+
+Swift Package Manager 
+  
+ 
+
+The following [Swift Evolution](https://github.com/swiftlang/swift-evolution) proposals for SwiftPM were accepted and [implemented in Swift 5.7](https://www.swift.org/swift-evolution/#?version=5.7):
+
+ 
+- SE-0292: [Package Registry Service](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0292-package-registry-service.md)
+
+ 
+- SE-0303: [Build tool plugins](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0303-swiftpm-extensible-build-tools.md) and SE-0332: [Command Plugins](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0332-swiftpm-command-plugins.md) which were first introduced in Swift 5.6 have been further refined and made available via Xcode.
+
+ 
+- SE-0339: [Module Aliasing For Disambiguation](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0339-module-aliasing-for-disambiguation.md)
+
+Distributed Actor Library 
+  
+ 
+
+Based on SE-0336: [Distributed Actor Isolation](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0336-distributed-actor-isolation.md), a [server library](https://github.com/apple/swift-distributed-actors) for building distributed systems in Swift has been made open source. The library provides a peer-to-peer cluster actor system implementation, including cluster management, failure detection, and integration with service discovery.
+
+Windows Platform 
+  
+ 
+
+Swift 5.7 comes with the following refinements to Windows support:
+
+ 
+- The Windows toolchain has fully adopted swift-driver as the compiler driver, and the C++ driver is no longer packaged nor provided as a fallback.
+
+ 
+- The installer is more robust in deploying module-maps and packaging files, which reduced the size of the installer download.
+
+ 
+- The API digester and other tools have been added in the new smaller download.
+
+ 
+- The SDK layout has been further streamlined by removing unnecessary path components.
+
+ 
+- The developer libraries were restructured to allow multi-architectural installations as work continues to support ARM64 and X86 targets in addition to X64.
+
+ 
+- Initial support for static Swift libraries was implemented for libraries other than the Swift standard library, and can be used with build tools such as CMake and Bazel on Windows.
+
+Downloads 
+  
+ 
+
+Official binaries are [available for download](https://swift.org/download/) from [Swift.org](http://swift.org/) for Xcode, Windows, and Linux. The Swift 5.7 compiler is also included in [Xcode 14](https://apps.apple.com/app/xcode/id497799835).
+
+You can also install RPMs for Amazon Linux 2 and CentOS 7 for **experimental use only**. Please provide your [feedback](https://github.com/apple/swift/issues). Use the instructions below for RPM installation:
+
+**Amazon Linux 2**
+
+
+
+```
+$ curl https://download.swift.org/experimental-use-only/repo/amazonlinux/releases/2/swiftlang.repo > /etc/yum.repos.d/swiftlang.repo
+$ amazon-linux-extras install epel
+$ yum install swiftlang
+
+```
+
+
+
+**CentOS 7**
+
+
+
+```
+$ curl https://download.swift.org/experimental-use-only/repo/centos/releases/7/swiftlang.repo > /etc/yum.repos.d/swiftlang.repo
+$ yum install epel-release
+$ yum install swiftlang
+
+```
+
+
+
+Swift Evolution Appendix 
+  
+ 
+
+The following language, standard library, and Swift Package Manager proposals were accepted through the [Swift Evolution](https://github.com/swiftlang/swift-evolution) process and [implemented in Swift 5.7](https://www.swift.org/swift-evolution/#?version=5.7).
+
+**Concurrency**
+
+ 
+- SE-0302: [Sendable and @Sendable closures](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0302-concurrent-value-and-concurrent-closures.md)
+
+ 
+- SE-0329: [Clock, Instant, and Duration](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0329-clock-instant-duration.md)
+
+ 
+- SE-0336: [Distributed Actor Isolation](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0336-distributed-actor-isolation.md)
+
+ 
+- SE-0338: [Clarify the Execution of Non-Actor-Isolated Async Functions](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0338-clarify-execution-non-actor-async.md)
+
+ 
+- SE-0340: [Unavailable From Async Attribute](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0340-swift-noasync.md)
+
+ 
+- SE-0343: [Concurrency in Top-level Code](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0343-top-level-concurrency.md)
+
+ 
+- SE-0344: [Distributed Actor Runtime](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0344-distributed-actor-runtime.md)
+
+**Type System Enhancements**
+
+ 
+- SE-0309: [Unlock existentials for all protocols](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0309-unlock-existential-types-for-all-protocols.md)
+
+ 
+- SE-0326: [Enable multi-statement closure parameter/result type inference](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0326-extending-multi-statement-closure-inference.md)
+
+ 
+- SE-0328: [Structural opaque result types](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0328-structural-opaque-result-types.md)
+
+ 
+- SE-0341: [Opaque Parameter Declarations](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0341-opaque-parameters.md)
+
+ 
+- SE-0345: [`if let` shorthand for shadowing an existing optional variable](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0345-if-let-shorthand.md)
+
+ 
+- SE-0346: [Lightweight same-type requirements for primary associated types](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0346-light-weight-same-type-syntax.md)
+
+ 
+- SE-0347: [Type inference from default expressions](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0347-type-inference-from-default-exprs.md)
+
+ 
+- SE-0348: [buildPartialBlock for result builders](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0348-buildpartialblock.md)
+
+ 
+- SE-0352: [Implicitly Opened Existentials](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0352-implicit-open-existentials.md)
+
+ 
+- SE-0353: [Constrained Existential Types](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0353-constrained-existential-types.md)
+
+ 
+- SE-0358: [Primary Associated Types in the Standard Library](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0358-primary-associated-types-in-stdlib.md)
+
+ 
+- SE-0360: [Opaque result types with limited availability](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0360-opaque-result-types-with-availability.md)
+
+ 
+- SE-0361: [Extensions on bound generic types](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0361-bound-generic-extensions.md)
+
+**String Processing**
+
+ 
+- SE-0350: [Regex Type and Overview](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0350-regex-type-overview.md)
+
+ 
+- SE-0351: [Regex builder DSL](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0351-regex-builder.md)
+
+ 
+- SE-0354: [Regex Literals](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0354-regex-literals.md)
+
+ 
+- SE-0355: [Regex Syntax and Run-time Construction](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0355-regex-syntax-run-time-construction.md)
+
+ 
+- SE-0357: [Regex-powered string processing algorithms](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0357-regex-string-processing-algorithms.md)
+
+ 
+- SE-0363: [Unicode for String Processing](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0363-unicode-for-string-processing.md)
+
+**Pointer Usability**
+
+ 
+- SE-0333: [Expand usability of withMemoryRebound](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0333-with-memory-rebound.md)
+
+ 
+- SE-0334: [Pointer API Usability Improvements](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0334-pointer-usability-improvements.md)
+
+ 
+- SE-0349: [Unaligned Loads and Stores from Raw Memory](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0349-unaligned-loads-and-stores.md)
+
+**Swift Package Manager**
+
+ 
+- SE-0292: [Package Registry Service](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0292-package-registry-service.md)
+
+ 
+- SE-0339: [Module Aliasing For Disambiguation](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0339-module-aliasing-for-disambiguation.md)
+
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+
+ ## Continue Reading
+
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ 
+ ### Announcing SwiftNIO IMAP
+
+ August 30, 2022
+ 
+ As part of expanding the Swift on Server ecosystem, we’re thrilled to announce..
+ 
+ [ More ](/blog/swift-nio-imap/)
+ 
+ 
+
+ 
+ 
+- 
+ 
+ ### Swift project in 2023
+
+ November 18, 2022
+ 
+ There’s a lot of exciting work going on in the Swift project, and it’s hard to..
+ 
+ [ More ](/blog/focus-areas-2023/)
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ [ ](/)
+
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ [Install](/install/)
+ 
+
+ 
+ 
+
+ 
+ ### Tools
+
+ 
+ 
+ 
+- 
+ [Xcode](https://developer.apple.com/xcode/)
+ 
+
+ 
+ 
+- 
+ [Visual Studio Code](/documentation/articles/getting-started-with-vscode-swift.html)
+ 
+
+ 
+ 
+- 
+ [Emacs](/documentation/articles/zero-to-swift-emacs.html)
+ 
+
+ 
+ 
+- 
+ [Neovim](/documentation/articles/zero-to-swift-nvim.html)
+ 
+
+ 
+ 
+- 
+ [Other Editors](https://github.com/swiftlang/sourcekit-lsp/tree/main/Documentation/Editor%20Integration.md)
+ 
+
+ 
+ 
+
+ 
+ ### Community
+
+ 
+ 
+ 
+- 
+ [Overview](/community/)
+ 
+
+ 
+ 
+- 
+ [Swift Evolution](/swift-evolution/)
+ 
+
+ 
+ 
+- 
+ [Diversity](/diversity/)
+ 
+
+ 
+ 
+- 
+ [Mentorship](/mentorship/)
+ 
+
+ 
+ 
+- 
+ [Contributing](/contributing/)
+ 
+
+ 
+ 
+
+ 
+ ### Governance
+
+ 
+ 
+ 
+- 
+ [Code of Conduct](/code-of-conduct/)
+ 
+
+ 
+ 
+- 
+ [License](/legal/license.html)
+ 
+
+ 
+ 
+- 
+ [Security](/support/security.html)
+ 
+
+ 
+ 
+
+ 
+ Color scheme preference
+ 
+ 
+ Light
+ 
+ 
+ 
+ Dark
+ 
+ 
+ 
+ Auto
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ Copyright © 2025 Apple Inc. All rights reserved.
+ 
+ 
+ Swift and the Swift logo are trademarks of Apple Inc.
+ 
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [Privacy Policy](//www.apple.com/privacy/privacy-policy/)
+ 
+
+ 
+ 
+- 
+ [Cookies](//www.apple.com/legal/privacy/en-ww/cookies/)
+ 
+
+ 
+ 
+- 
+ [API](/openapi)
+ 
+
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [*](https://x.com/swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](https://bsky.app/profile/swift.org)
+ 
+
+ 
+ 
+- 
+ [**](https://mastodon.social/@swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](/atom.xml)

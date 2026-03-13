@@ -11,7 +11,9 @@ source: hig
 > **Category:** General
 > **Platforms:** iOS, macOS, watchOS, visionOS, tvOS
 
-# Writing
+December 16, 2025
+
+ Clarified guidance on language patterns, and added guidance for possessive pronouns. # Writing
 The words you choose within your app are an essential part of its user experience.
 
 Whether you’re building an onboarding experience, writing an alert, or describing an image for accessibility, designing through the lens of language will help people get the most from your app or game.
@@ -30,15 +32,15 @@ Compare the tone of these two examples from Apple Watch. In the first, the tone 
 ## [Best practices](/design/human-interface-guidelines/writing#Best-practices)
 **Consider each screen’s purpose**. Pay attention to the order of elements on a screen, and put the most important information first. Format your text to make it easy to read. If you’re trying to convey more than one idea, consider breaking up the text onto multiple screens, and think about the flow of information across those screens.
 
-**Be action oriented.** Active voice and clear labels help people navigate through your app from one step to the next, or from one screen to another. When labeling buttons and links, it’s almost always best to use a verb. Prioritize clarity and avoid the temptation to be too cute or clever with your labels. For example, just saying “Next” often works better than “Let’s do this!” For links, avoid using “Click here” in favor of more descriptive words or phrases, such as “Learn more about UX Writing.” This is especially important for people using screen readers to access your app.
+**Be action oriented.** Active voice and clear labels help people navigate through your app from one step to the next, or from one screen to another. When labeling buttons and links, it’s almost always best to use a verb. Prioritize clarity and avoid the temptation to be too cute or clever with your labels. For example, just saying “Send” often works better than “Let’s do it!” For links, avoid using “Click here” in favor of more descriptive words or phrases, such as “Learn more about UX Writing.” This is especially important for people using screen readers to access your app.
 
-**Build language patterns.** Consistency builds familiarity, helping your app feel cohesive, intuitive, and thoughtfully designed. It also makes writing for your app easier, as you can return to these patterns again and again. Here are a few language patterns to consider establishing:
+**Build language patterns.** Consistency builds familiarity, helping your app feel cohesive, intuitive, and thoughtfully designed. It also makes writing for your app easier, as you can return to these patterns again and again.
 
-**Title or sentence case.** Decide whether you want to use title case or sentence case for alerts, page titles, headlines, button labels, and links. Throughout the HIG, you’ll find guidelines for specific components, but how you format your text is a reflection of your app’s voice. Title case is more formal, while sentence case is more casual. Choose a style that fits your app.
+**Adopt capitalization rules that align with your app’s style, then apply them consistently.** While certain components, like [button labels](/design/human-interface-guidelines/buttons#Content), have specific guidelines, how you format text reflects your app’s voice. Title case is generally considered formal, while sentence case is more casual. Choose a style for each UI element type and use it consistently throughout your app — for example, title case for all alerts or sentence case for all headlines.
 
-**First or second person.** If your app allows people to save favorites or bookmark items, for example, those items could be found in “My Favorites” or “Your Saved Items,” but don’t use both. Choose first or second person and stick with it.
+**Give clear guidance and use consistent language throughout processes with multiple steps.** If your app has a flow that spans multiple screens, decide how you want to label the actions that take people from one step to the next. Begin with language like “Get Started” to indicate you’re starting a flow. You can use the button label to hint at the next step, or use terms like “Continue” or “Next,” but be consistent with what you choose. Make it clear when a flow is complete by using language like “Done.”
 
-**Continue or Next.** If your app has a flow that spans multiple screens, decide how you want to label the button or link that takes you from one step to the next. “Continue” or “Next” works well, but choose one and be consistent with how you use it. Make sure you indicate a difference at the end of the flow, like a button labeled “Done.”
+**Use possessive pronouns sparingly.** Possessive pronouns like *my* and *your* are often unnecessary to establish context. For example, “Favorites” conveys the same message as “Your Favorites,” and is more succinct. If you do use possessive pronouns, use them consistently throughout your app, and try not to switch perspectives. Avoid using *we* altogether because it may be unclear who the “we” in question refers to. This is particularly problematic in error messages like “We’re having trouble loading this content.” Something like “Unable to load content” is much clearer.
 
 **Write for how people use each device.** People may use your app on several types of devices. While your language needs to be consistent across them, think about where it would be helpful to adjust your text to make it suitable for different devices. Make sure you describe gestures correctly on each device — for example, not saying “click” for a touch device like iPhone or iPad where you mean “tap.”
 
@@ -76,6 +78,10 @@ If you need to direct someone to a setting, provide a direct link or button, rat
 Date
 
 Changes
+
+December 16, 2025
+
+Clarified guidance on language patterns, and added guidance for possessive pronouns.
 
 February 27, 2023
 

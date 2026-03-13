@@ -116,21 +116,17 @@ In iOS and iPadOS, subscription offer codes let you use both online and offline 
 
 There are two types of offer codes you can support:
 
-A *one-time use code* is a unique code you generate in App Store Connect. People can redeem a one-time use code on a website, within your app (when you support redemption), or by entering it in the App Store, where they’re prompted to install your app if they haven’t already. Consider using one-time use codes when your distribution is small or when you need to restrict access to a code.
+A *one-time use code* is a unique code you generate in App Store Connect. People can redeem a one-time use code through a [redemption URL](https://developer.apple.com/help/app-store-connect/manage-subscriptions/set-up-offer-codes/#distribute-offer-codes) (a shareable link), within your app (when you support redemption), or by entering it in the App Store, where they’re prompted to install your app if they haven’t already. Consider using one-time use codes when your distribution is small or when you need to restrict access to a code.
 
-A *custom code* is a code you create, such as NEWYEAR or SPRINGSALE. People can redeem a custom code on a website, or within your app (when you support redemption). Consider using a custom code when you want to support a large campaign that requires a mass distribution of codes.
+A *custom code* is a code you create, such as NEWYEAR or SPRINGSALE. People can redeem a custom code through a redemption URL or within your app (when you support redemption). Consider using a custom code when you want to support a large campaign that requires a mass distribution of codes.
 
-For technical details and business guidance on using both types of offer codes, see [Offer codes](https://developer.apple.com/app-store/subscriptions/#offer-codes); to learn more about other types of offers, see [Providing subscription offers](https://developer.apple.com/app-store/subscriptions/#providing-subscription-offers).
-
-Developer note
-
-While in-app purchase is supported on all platforms, redeeming an offer code through a URL is supported in iOS and iPadOS only. The offer itself can represent a subscription that is available on any platform.
+For developer guidance on implementing offer codes, see [Offer codes](https://developer.apple.com/documentation/storekit/implementing-offer-codes-in-your-app) and [Set up offer codes](https://developer.apple.com/help/app-store-connect/manage-subscriptions/set-up-offer-codes). For guidance on other types of offers, see [Providing subscription offers](https://developer.apple.com/app-store/subscriptions/#providing-subscription-offers).
 
 **Clearly explain offer details.** To help people make an informed decision, provide a straightforward and succinct description of your offer in your marketing materials.
 
 **Follow guidelines for creating a custom code.** A custom code can contain only alphanumeric ASCII characters. Don’t use special characters, including Chinese and Arabic characters.
 
-**Tell people how to redeem a custom code.** Because people can’t redeem a custom code by entering it in their App Store account settings, it’s important to let them know that they can redeem it on your website or within your app.
+**Tell people how to redeem a custom code.** Because people can’t redeem a custom code by entering it in their App Store account settings, it’s important to let them know that they can redeem it through a redemption URL or within your app.
 
 **Consider supporting offer redemption within your app.** The system automatically provides screens that present the offer-redemption flow, whether people redeem the offer in your app or in the App Store. When you use StoreKit API to let people redeem offer codes within your app, the only custom UI you need to create is one that initiates the system-provided flow. For developer guidance, see [`presentOfferCodeRedeemSheet(in:)`](/documentation/StoreKit/AppStore/presentOfferCodeRedeemSheet(in:)) and [`offerCodeRedemption(isPresented:onCompletion:)`](/documentation/SwiftUI/View/offerCodeRedemption(isPresented:onCompletion:)). There are several natural places to provide this custom UI. For example, you could add a “Redeem Code” button to your paywall, onboarding screens, or your app’s settings screen.
 

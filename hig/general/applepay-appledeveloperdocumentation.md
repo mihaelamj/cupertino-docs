@@ -11,8 +11,10 @@ source: hig
 > **Category:** General
 > **Platforms:** iOS, macOS, watchOS, visionOS, tvOS
 
-# Apple Pay
-Apple Pay is a secure, easy way to make payments for physical goods and services — as well as donations and subscriptions — in apps running on iPhone, iPad, Mac, and Apple Watch, and on websites.
+December 16, 2025
+
+ Clarified supported platforms, including web browsers and Apple Vision Pro. # Apple Pay
+Apple Pay is a secure, easy way to make payments for physical goods and services — as well as donations and subscriptions — in apps running on iPhone, iPad, Mac, Apple Vision Pro, Apple Watch, on websites, and on any browser.
 
 People authorize payments and provide shipping and contact information, using credentials that are securely stored on the device.
 
@@ -20,22 +22,20 @@ Tip
 
 It’s important to understand the difference between Apple Pay and [In-app purchase](/design/human-interface-guidelines/in-app-purchase). Use Apple Pay in your app to sell physical goods like groceries, clothing, and appliances; for services such as club memberships, hotel reservations, and tickets for events; and for donations. Use In-App Purchase in your app to sell virtual goods, such as premium content for your app, and subscriptions for digital content.
 
-Apps that accept Apple Pay display an Apple Pay mark wherever available payment options are shown and an Apple Pay button that people tap to bring up a payment sheet. During checkout, the payment sheet can show the credit or debit card linked to Apple Pay, purchase amount (including tax and fees), shipping options, and contact information. People make any necessary adjustments and then authorize payment and complete the purchase.
-
-For developer guidance, see [Apple Pay](/documentation/PassKit/apple-pay).
-
-Websites that accept Apple Pay incorporate it into the purchasing flow. An Apple Pay mark needs to be shown wherever available payment options are shown and an Apple Pay button lets people view a payment sheet. During checkout, the payment sheet can show the credit or debit card linked to Apple Pay, purchase amount (including tax and fees), shipping options, and contact information. People make any necessary adjustments, authorize payment, and complete the purchase using securely stored credentials on iPhone, iPad, and Macs that include Touch ID or a Magic Keyboard with Touch ID (for a complete list of supported Macs, see [Devices compatible with Apple Pay](https://support.apple.com/en-us/HT208531)). On other Macs, people confirm the purchase with their nearby iPhone or Apple Watch on which Apple Pay is set up.
+Apps and websites that accept Apple Pay display it as an available payment option, and include an Apple Pay button in the purchasing flow that people tap to bring up a payment sheet. During checkout, the payment sheet can show the credit or debit card linked to Apple Pay, purchase amount (including tax and fees), shipping options, and contact information. People make any necessary adjustments and then authorize payment and complete the purchase. For developer guidance, see [Apple Pay](/documentation/PassKit/apple-pay).
 
 All websites that offer Apple Pay must include a privacy statement and adhere to the [Acceptable use guidelines for Apple Pay on the web](https://developer.apple.com/apple-pay/acceptable-use-guidelines-for-websites/). For developer guidance, see [Apple Pay on the Web](/documentation/ApplePayontheWeb). For a hands-on demo of Apple Pay on the web, see [Apple Pay on the web interactive demo](https://applepaydemo.apple.com).
 
-## [Offering Apple Pay](/design/human-interface-guidelines/apple-pay#Offering-Apple-Pay)
-**Offer Apple Pay on all devices that support it.** If the device doesn’t support Apple Pay, don’t present Apple Pay as a payment option.
+The device performs payment authentication in most cases where the device supports Face ID, Touch ID, or Optic ID. In some cases, the system transfers payment authentication to a nearby iPhone, iPad, or Apple Watch via a secure Bluetooth connection or a scannable code.
 
-**If you use Apple Pay APIs to find out whether someone has an active card in Wallet, you must make Apple Pay the primary — but not necessarily sole — payment option everywhere you use the APIs.** For example, you might pre-select Apple Pay as the payment option when you display it alongside other options. For developer guidance, see [`PKPaymentAuthorizationController`](/documentation/PassKit/PKPaymentAuthorizationController) (iOS, watchOS) and [Checking for Apple Pay availability](/documentation/ApplePayontheWeb/checking-for-apple-pay-availability) (web).
+## [Offering Apple Pay](/design/human-interface-guidelines/apple-pay#Offering-Apple-Pay)
+**Offer Apple Pay on all devices and browsers that support it.** If the device doesn’t support Apple Pay, don’t present Apple Pay as a payment option. Use Apple Pay APIs to evaluate when a device can support Apple Pay. For developer guidance, see [`PKPaymentAuthorizationController`](/documentation/PassKit/PKPaymentAuthorizationController) (iOS, watchOS) and [`canMakePayments`](/documentation/ApplePayontheWeb/ApplePaySession/canMakePayments) (web).
+
+**If you use Apple Pay APIs to find out whether someone has an active card in Wallet, you must make Apple Pay the primary — but not necessarily sole — payment option everywhere you use the APIs.** For example, you might pre-select Apple Pay as the payment option when you display it alongside other options. For developer guidance, see [Offering Apple Pay in Your App](/documentation/PassKit/offering-apple-pay-in-your-app) (iOS, watchOS) and [Checking for Apple Pay availability](/documentation/ApplePayontheWeb/checking-for-apple-pay-availability) (web).
 
 **If you also offer other payment methods, offer Apple Pay at the same time.** Feature Apple Pay at least as prominently as the other options on every page or screen that offers or accepts payment methods.
 
-**If you use an Apple Pay button to start the Apple Pay payment process, you must use the Apple-provided API to display it.** Unlike a button graphic, the buttons produced by the API always have the correct appearance and are localized automatically. On devices running older systems that support Apple Pay on the web but don’t include the API, use the recommended JavaScript SDK to display the buttons on your website, as described in [Displaying Apple Pay Buttons Using JavaScript](/documentation/ApplePayontheWeb/displaying-apple-pay-buttons-using-javascript).
+**If you use an Apple Pay button to start the Apple Pay payment process, you must use the Apple-provided API to display it.** Unlike a button graphic, the buttons produced by the API always have the correct appearance and are localized automatically.
 
 **If you use a custom button to start the Apple Pay payment process, make sure your custom button doesn’t display “Apple Pay” or the Apple Pay logo.** In this scenario, you must let people know that you accept Apple Pay by displaying the Apple Pay mark or referencing Apple Pay in text on the same page that displays your payment button.
 
@@ -369,6 +369,10 @@ Purchase with APPLE PAY
 Date
 
 Changes
+
+December 16, 2025
+
+Clarified supported platforms, including web browsers and Apple Vision Pro.
 
 June 10, 2024
 

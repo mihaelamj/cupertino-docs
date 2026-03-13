@@ -11,7 +11,9 @@ source: hig
 > **Category:** General
 > **Platforms:** iOS, macOS, watchOS, visionOS, tvOS
 
-# Tab bars
+December 16, 2025
+
+ Updated guidance for Liquid Glass. # Tab bars
 A tab bar lets people navigate between top-level sections of your app.
 
 Tab bars help people understand the different types of information or functionality that an app provides. They also let people quickly switch between sections of the view while preserving the current navigation state within each section.
@@ -34,6 +36,8 @@ Tab bars help people understand the different types of information or functional
 If you’re creating custom tab bar icons, see [Apple Design Resources](https://developer.apple.com/design/resources/) for tab bar icon dimensions.
 
 **Use a badge to indicate that critical information is available.** You can display a badge — a red oval containing white text and either a number or an exclamation point — on a tab to indicate that there’s new or updated information in the section that warrants a person’s attention. Reserve badges for critical information so you don’t dilute their impact and meaning. For guidance, see [Notifications](/design/human-interface-guidelines/notifications).
+
+**Avoid applying a similar color to tab labels and content layer backgrounds.** If your app already has bright, colorful content in the content layer, prefer a monochromatic appearance for tab bars, or choose an accent color with sufficient visual differentiation. For more guidance, see [Liquid Glass color](/design/human-interface-guidelines/color#Liquid-Glass-color).
 
 ## [Platform considerations](/design/human-interface-guidelines/tab-bars#Platform-considerations)
 *No additional considerations for macOS. Not supported in watchOS.*
@@ -127,6 +131,10 @@ Expanded
 Date
 
 Changes
+
+December 16, 2025
+
+Updated guidance for Liquid Glass.
 
 July 28, 2025
 

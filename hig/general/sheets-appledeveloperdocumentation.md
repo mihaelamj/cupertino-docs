@@ -49,7 +49,13 @@ Sheets automatically support the large detent. Adding the medium detent allows t
 
 **Support swiping to dismiss a sheet.** People expect to swipe vertically to dismiss a sheet instead of tapping a dismiss button. If people have unsaved changes in the sheet when they begin swiping to dismiss it, use an action sheet to let them confirm their action.
 
-**Position Done and Cancel buttons as people expect.** Typically, a Done or Dismiss button belongs in a sheet’s top-right corner (in a left-to-right layout) or top-left corner (in a right-to-left layout). The Cancel button belongs in a sheet’s top-left (in a left-to-right layout) or top-right (in a right-to-left layout) corner.
+**Position Done and Cancel buttons as people expect.** Typically, a Done or Dismiss button belongs in a sheet’s top-right corner in a left-to-right layout. The Cancel button belongs in a sheet’s top-left corner.
+
+The exception to this is for sheets with additional subviews, where the Cancel button belongs in the top-right; this provides room for the Back button in the top-left on pages after the first. At the end of the navigation flow, replace the Cancel button with the Done button.
+
+Placement of the Cancel button when it appears by itself
+
+Placement of the Cancel button when it appears as part of a multi-step flow
 
 **Prefer using the page or form sheet presentation styles in an iPadOS app.** Each style uses a default size for the sheet, centering its content on top of a dimmed background view and providing a consistent experience. For developer guidance, see [`UIModalPresentationStyle`](/documentation/UIKit/UIModalPresentationStyle).
 

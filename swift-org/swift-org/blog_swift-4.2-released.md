@@ -1,0 +1,656 @@
+---
+source: https://www.swift.org/blog/swift-4.2-released/
+crawled: 2025-11-15T21:28:09Z
+---
+
+# Swift 4.2 Released!
+
+[ ](/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ 
+ 
+
+ 
+- 
+ [Install (6.2.1)](/install)
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+ # Swift 4.2 Released!
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ *
+ 
+ 
+ [Ted Kremenek](https://github.com/tkremenek/)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ September 17, 2018
+ 
+ 
+ Swift 4.2 is now officially released! Swift 4.2 builds on the strengths of Swift 4, delivering faster compile times, improving the debugging experience, updating the standard library, and converging on binary compatibility.
+
+You can watch a quick overview of it by watching the [WWDC 2018: What’s New in Swift](https://developer.apple.com/videos/play/wwdc2018/401/) presentation, and try out some of the new features in this [playground](https://oleb.net/blog/2018/06/whats-new-in-swift-4-2-playground/) put together by Ole Begemann.
+
+Language updates 
+  
+ 
+
+Swift 4.2 is a major language release and contains the following language changes and updates that went through the Swift Evolution process:
+
+Generics improvements 
+  
+ 
+
+With the completion of conditional conformance support, Swift 4.2 makes significant progress in implementing the vision of generics in the language. Better support for generics ultimately reduces the amount of boilerplate needed in your code and make more of your code reusable. To learn more about conditional conformance, see more at:
+
+ 
+- [SE-0143 Conditional conformances](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0143-conditional-conformances.md)
+
+Watch the [Swift Generics](https://developer.apple.com/videos/play/wwdc2018/406/) WWDC 2018 presentation for more details.
+
+Standard Library updates 
+  
+ 
+
+The standard library in Swift 4.2 includes a number of new features, including improvements to the Hashable protocol as well as a new unified set of randomization functions and protocols.
+
+See more at:
+
+ 
+- [SE-0197 Adding in-place removeAll(where:) to the Standard Library](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0197-remove-where.md)
+
+ 
+- [SE-0199 Adding toggle to Bool](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0199-bool-toggle.md)
+
+ 
+- [SE-0202 Random Unification](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0202-random-unification.md)
+
+ 
+- [SE-0204 Add last(where:) and lastIndex(where:) Methods](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0204-add-last-methods.md)
+
+ 
+- [SE-0206 Hashable Enhancements](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0206-hashable-enhancements.md)
+
+ 
+- [SE-0207 Add an allSatisfy algorithm to Sequence](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0207-containsOnly.md)
+
+Binary compatibility 
+  
+ 
+
+Swift 4.2 brings the language closer towards a stabilized ABI, enabling binary compatibility for future releases of Swift. Visit the [ABI Dashboard](/abi-stability/) for more details on the current progress of this effort.
+
+Additional language and compiler updates 
+  
+ 
+
+Swift 4.2 includes a number of improvements that have a noticable impact on developer experience, including:
+
+ 
+- Support for batch mode compilation resulting in faster build times
+
+ 
+- Change in calling convention for retain/release cycle to reduce code size and improve runtime performance
+
+ 
+- Lazier SIL deserialization with -Onone
+
+ 
+- Recursive metadata support
+
+ 
+- More compact reflection metadata
+
+ 
+- Default arguments are inlined at call sites
+
+ 
+- Some long-standing bug fixes, including init declname, switch with multiple case labels per block, inheritance of generic initializers, and more
+
+Swift 4.2 also implements the following language proposals from the Swift Evolution process:
+
+ 
+- [SE-0054 Abolish ImplicitlyUnwrappedOptional type](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0054-abolish-iuo.md). Read even more details about the reimplementation [here](/blog/iuo/).
+
+ 
+- [SE-0079 Allow using optional binding to upgrade self from a weak to strong reference](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0079-upgrade-self-from-weak-to-strong.md)
+
+ 
+- [SE-0193 Cross-module inlining and specialization](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0193-cross-module-inlining-and-specialization.md)
+
+ 
+- [SE-0194 Derived Collection of Enum Cases](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0194-derived-collection-of-enum-cases.md)
+
+ 
+- [SE-0195 Introduce User-defined “Dynamic Member Lookup” Types](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0195-dynamic-member-lookup.md)
+
+ 
+- [SE-0196 Compiler Diagnostic Directives](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0196-diagnostic-directives.md)
+
+ 
+- [SE-0205 withUnsafePointer(to:_:) and withUnsafeBytes(of:_:) for immutable values](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0205-withUnsafePointer-for-lets.md)
+
+ 
+- [SE-0210 Add an offset(of:) method to MemoryLayout](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0210-key-path-offset.md)
+
+ 
+- [SE-0212 Compiler Version Directive](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0212-compiler-version-directive.md)
+
+Package Manager Updates 
+  
+ 
+
+Swift 4.2 introduces new features for the Swift Package Manager:
+
+ 
+- 
+ **Support for batch mode.** Swift targets will be now compiled using the Swift compiler’s batch mode.
+
+ 
+
+ 
+- 
+ **Automatic Xcode project generation.** The generate-xcodeproj has a new –watch option to watch the file system and automatically regenerate the Xcode project if needed. This uses the watchman tool to watch the required files.
+
+ 
+
+ 
+- 
+ **Improved scheme generation logic.** The scheme generation logic is improved and generates schemes as follows:
+
+ 
+ One scheme containing all regular and test targets of the root package.
+
+ 
+- One scheme per executable target containing the test targets whose dependencies intersect with the dependencies of the executable target.
+
+ 
+
+ 
+
+Swift 4.2 also implements the following Package Manager proposals from the Swift Evolution process:
+
+ 
+- [SE-0201 Package Manager Local Dependencies](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0201-package-manager-local-dependencies.md). SwiftPM now supports declaring dependency on a package using its path on disk instead of the git URL. This requires updating the package’s tools version to 4.2.
+
+ 
+- [SE-0208 Package Manager System Library Targets](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0208-package-manager-system-library-targets.md). The PackageDescription API in tools version 4.2 supports a new type of target “system library target”, which moves the current system-module packages feature from package to target level.
+
+ 
+- [SE-0209 Package Manager Swift Language Version API Update](https://github.com/swiftlang/swift-evolution/blob/master/proposals/0209-package-manager-swift-lang-version-update.md). `swiftLanguageVersions` property in PackageDescription manifest API for tools version 4.2 is changed from an array of Integers to an array of SwiftVersion enum.
+
+Migrating to Swift 4.2 
+  
+ 
+
+Swift 4.2 is source compatible with Swift 4, Swift 4.1 and Swift 3. Swift 4.2 will be the last release to provide source compatibility with Swift 3.
+
+To help with moving to Swift 4.2 from earlier releases of Swift, Apple’s Xcode 10 contains a code migrator that can automatically handle many of the needed source changes. There is also a [migration guide](/migration-guide-swift4.2) available to guide you through many of the changes — especially through the ones that are less mechanical and require more direct scrutiny.
+
+Documentation 
+  
+ 
+
+An updated version of [The Swift Programming Language](https://docs.swift.org/swift-book/) for Swift 4.2 is now available on Swift.org. It is also available for free on the [Apple Books store](https://itunes.apple.com/us/book/the-swift-programming-language/id881256329?mt=11).
+
+Platforms 
+  
+ 
+
+Linux 
+  
+ 
+
+Official binaries for Ubuntu 18.04, Ubuntu 16.04 and Ubuntu 14.04 are
+[available for download](/download/).
+
+Apple (Xcode) 
+  
+ 
+
+For development on Apple’s platforms, Swift 4.2 ships as part of [Xcode 10](https://itunes.apple.com/app/xcode/id497799835).
+
+A toolchain is also [available for download](/download/) from Swift.org.
+
+Sources 
+  
+ 
+
+Development on Swift 4.2 was tracked in the swift-4.2-branch on the following repositories on GitHub:
+
+ 
+- [swift](https://github.com/apple/swift)
+
+ 
+- [swift-llvm](https://github.com/apple/swift-llvm)
+
+ 
+- [swift-clang](https://github.com/apple/swift-clang)
+
+ 
+- [swift-lldb](https://github.com/apple/swift-lldb)
+
+ 
+- [swift-cmark](https://github.com/swiftlang/swift-cmark)
+
+ 
+- [swift-corelibs-foundation](https://github.com/swiftlang/swift-corelibs-foundation)
+
+ 
+- [swift-corelibs-libdispatch](https://github.com/apple/swift-corelibs-libdispatch)
+
+ 
+- [swift-corelibs-xctest](https://github.com/swiftlang/swift-corelibs-xctest)
+
+ 
+- [swift-llbuild](https://github.com/swiftlang/swift-llbuild)
+
+ 
+- [swift-package-manager](https://github.com/swiftlang/swift-package-manager)
+
+ 
+- [swift-xcode-playground-support](https://github.com/apple/swift-xcode-playground-support)
+
+ 
+- [swift-compiler-rt](https://github.com/apple/swift-compiler-rt)
+
+ 
+- [swift-integration-tests](https://github.com/swiftlang/swift-integration-tests)
+
+The tag `swift-4.2-RELEASE` designates the specific revisions in those repositories that make up the final version of Swift 4.2.
+
+The `swift-4.2-branch` will remain open, but under the same release management process, to accumulate changes for a potential future bug-fix “dot” release.
+
+ 
+ 
+ 
+
+ 
+ 
+ ## Authors
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ [Ted Kremenek](https://github.com/tkremenek/)
+ 
+ 
+ 
+ 
+ 
+ 
+ Ted Kremenek is a member of the Swift Core Team and manages the Languages and Runtimes group at Apple.
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+
+ ## Continue Reading
+
+ 
+ 
+ 
+ 
+ 
+ 
+- 
+ 
+ ### Introducing Related Projects to Swift Forums
+
+ May 10, 2018
+ 
+ The Swift community is growing and Swift Forums are growing with it.
+
+ 
+ [ More ](/blog/related-projects/)
+ 
+ 
+
+ 
+ 
+- 
+ 
+ ### Swift 5.0 Release Process
+
+ September 25, 2018
+ 
+ This post describes the goals, release process, and estimated schedule for
+Swi..
+ 
+ [ More ](/blog/5.0-release-process/)
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ [ ](/)
+
+ 
+ 
+ 
+- 
+ [Docs](/documentation/)
+ 
+
+ 
+ 
+- 
+ [Community](/community/)
+ 
+
+ 
+ 
+- 
+ [Packages](/packages/)
+ 
+
+ 
+ 
+- 
+ [Blog](/blog/)
+ 
+
+ 
+ 
+- 
+ [Install](/install/)
+ 
+
+ 
+ 
+
+ 
+ ### Tools
+
+ 
+ 
+ 
+- 
+ [Xcode](https://developer.apple.com/xcode/)
+ 
+
+ 
+ 
+- 
+ [Visual Studio Code](/documentation/articles/getting-started-with-vscode-swift.html)
+ 
+
+ 
+ 
+- 
+ [Emacs](/documentation/articles/zero-to-swift-emacs.html)
+ 
+
+ 
+ 
+- 
+ [Neovim](/documentation/articles/zero-to-swift-nvim.html)
+ 
+
+ 
+ 
+- 
+ [Other Editors](https://github.com/swiftlang/sourcekit-lsp/tree/main/Documentation/Editor%20Integration.md)
+ 
+
+ 
+ 
+
+ 
+ ### Community
+
+ 
+ 
+ 
+- 
+ [Overview](/community/)
+ 
+
+ 
+ 
+- 
+ [Swift Evolution](/swift-evolution/)
+ 
+
+ 
+ 
+- 
+ [Diversity](/diversity/)
+ 
+
+ 
+ 
+- 
+ [Mentorship](/mentorship/)
+ 
+
+ 
+ 
+- 
+ [Contributing](/contributing/)
+ 
+
+ 
+ 
+
+ 
+ ### Governance
+
+ 
+ 
+ 
+- 
+ [Code of Conduct](/code-of-conduct/)
+ 
+
+ 
+ 
+- 
+ [License](/legal/license.html)
+ 
+
+ 
+ 
+- 
+ [Security](/support/security.html)
+ 
+
+ 
+ 
+
+ 
+ Color scheme preference
+ 
+ 
+ Light
+ 
+ 
+ 
+ Dark
+ 
+ 
+ 
+ Auto
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ Copyright © 2025 Apple Inc. All rights reserved.
+ 
+ 
+ Swift and the Swift logo are trademarks of Apple Inc.
+ 
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [Privacy Policy](//www.apple.com/privacy/privacy-policy/)
+ 
+
+ 
+ 
+- 
+ [Cookies](//www.apple.com/legal/privacy/en-ww/cookies/)
+ 
+
+ 
+ 
+- 
+ [API](/openapi)
+ 
+
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+- 
+ [*](https://x.com/swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](https://bsky.app/profile/swift.org)
+ 
+
+ 
+ 
+- 
+ [**](https://mastodon.social/@swiftlang)
+ 
+
+ 
+ 
+- 
+ [**](/atom.xml)

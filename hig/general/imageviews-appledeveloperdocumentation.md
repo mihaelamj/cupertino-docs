@@ -40,9 +40,9 @@ An image view can contain rich image data in various formats, like PNG, JPEG, an
 Many tvOS images combine multiple layers with transparency to create a feeling of depth. For guidance, see [Layered images](/design/human-interface-guidelines/images#Layered-images).
 
 ### [visionOS](/design/human-interface-guidelines/image-views#visionOS)
-You can add the appearance of depth to image views in a standard window to give your content more visual substance and improve the experience when people view it from an angle. If you display 3D content in a standard window, the system clips it when it extends too far from the window’s surface; for guidance, see [Windows](/design/human-interface-guidelines/windows).
+Windows in visionOS apps and games can use image views to display 2D and stereoscopic images, as well as spatial photos. If your app uses RealityKit, you can also display images of any type outside of image views next to 3D content, or generate a spatial scene from an existing 2D image. For design guidance, see [Images > visionOS](/design/human-interface-guidelines/images#visionOS); for developer guidance, see [`ImagePresentationComponent`](/documentation/RealityKit/ImagePresentationComponent).
 
-If you want to display true 3D content, use a volume; for guidance, see [visionOS volumes](/design/human-interface-guidelines/windows#visionOS-volumes).
+For guidance on presenting other 3D content in a window or volume, see [Windows > visionOS](/design/human-interface-guidelines/windows#visionOS).
 
 ### [watchOS](/design/human-interface-guidelines/image-views#watchOS)
 **Use SwiftUI to create animations when possible.** Alternatively, you can use WatchKit to animate a sequence of images within an image element if necessary. For developer guidance, see [`WKImageAnimatable`](/documentation/WatchKit/WKImageAnimatable).

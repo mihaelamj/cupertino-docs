@@ -11,7 +11,9 @@ source: hig
 > **Category:** General
 > **Platforms:** iOS, macOS, watchOS, visionOS, tvOS
 
-# Typography
+December 16, 2025
+
+ Added emphasized weights to the Dynamic Type style specifications for each platform. # Typography
 Your typographic choices can help you display legible text, convey an information hierarchy, communicate important content, and express your brand or style.
 
 ## [Ensuring legibility](/design/human-interface-guidelines/typography#Ensuring-legibility)
@@ -212,6 +214,8 @@ visionOS uses bolder versions of the Dynamic Type body and title styles and it i
 SF Compact is the system font in watchOS, and apps can also use NY. In complications, watchOS uses SF Compact Rounded.
 
 ## [Specifications](/design/human-interface-guidelines/typography#Specifications)
+You can display emphasized variants of system text styles using symbolic traits. In SwiftUI, use the [`bold()`](/documentation/SwiftUI/Text/bold()) modifier; in UIKit, use [`traitBold`](/documentation/UIKit/UIFontDescriptor/SymbolicTraits-swift.struct/traitBold) in the [`UIFontDescriptor`](/documentation/UIKit/UIFontDescriptor) API. The emphasized weights can be medium, semibold, bold, or heavy. The following specifications include the emphasized weight for each text style.
+
 ### [iOS, iPadOS Dynamic Type sizes](/design/human-interface-guidelines/typography#iOS-iPadOS-Dynamic-Type-sizes)
 
 - [ xSmall ](#)
@@ -231,6 +235,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -238,6 +244,8 @@ Regular
 31
 
 38
+
+Bold
 
 Title 1
 
@@ -247,6 +255,8 @@ Regular
 
 31
 
+Bold
+
 Title 2
 
 Regular
@@ -254,6 +264,8 @@ Regular
 19
 
 24
+
+Bold
 
 Title 3
 
@@ -263,6 +275,8 @@ Regular
 
 22
 
+Semibold
+
 Headline
 
 Semibold
@@ -270,6 +284,8 @@ Semibold
 14
 
 19
+
+Semibold
 
 Body
 
@@ -279,6 +295,8 @@ Regular
 
 19
 
+Semibold
+
 Callout
 
 Regular
@@ -286,6 +304,8 @@ Regular
 13
 
 18
+
+Semibold
 
 Subhead
 
@@ -295,6 +315,8 @@ Regular
 
 16
 
+Semibold
+
 Footnote
 
 Regular
@@ -302,6 +324,8 @@ Regular
 12
 
 16
+
+Semibold
 
 Caption 1
 
@@ -311,6 +335,8 @@ Regular
 
 13
 
+Semibold
+
 Caption 2
 
 Regular
@@ -318,6 +344,8 @@ Regular
 11
 
 13
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -330,6 +358,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -337,6 +367,8 @@ Regular
 32
 
 39
+
+Bold
 
 Title 1
 
@@ -346,6 +378,8 @@ Regular
 
 32
 
+Bold
+
 Title 2
 
 Regular
@@ -353,6 +387,8 @@ Regular
 20
 
 25
+
+Bold
 
 Title 3
 
@@ -362,6 +398,8 @@ Regular
 
 23
 
+Semibold
+
 Headline
 
 Semibold
@@ -369,6 +407,8 @@ Semibold
 15
 
 20
+
+Semibold
 
 Body
 
@@ -378,6 +418,8 @@ Regular
 
 20
 
+Semibold
+
 Callout
 
 Regular
@@ -385,6 +427,8 @@ Regular
 14
 
 19
+
+Semibold
 
 Subhead
 
@@ -394,6 +438,8 @@ Regular
 
 18
 
+Semibold
+
 Footnote
 
 Regular
@@ -401,6 +447,8 @@ Regular
 12
 
 16
+
+Semibold
 
 Caption 1
 
@@ -410,6 +458,8 @@ Regular
 
 13
 
+Semibold
+
 Caption 2
 
 Regular
@@ -417,6 +467,8 @@ Regular
 11
 
 13
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -429,6 +481,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -436,6 +490,8 @@ Regular
 33
 
 40
+
+Bold
 
 Title 1
 
@@ -445,6 +501,8 @@ Regular
 
 33
 
+Bold
+
 Title 2
 
 Regular
@@ -452,6 +510,8 @@ Regular
 21
 
 26
+
+Bold
 
 Title 3
 
@@ -461,6 +521,8 @@ Regular
 
 24
 
+Semibold
+
 Headline
 
 Semibold
@@ -468,6 +530,8 @@ Semibold
 16
 
 21
+
+Semibold
 
 Body
 
@@ -477,6 +541,8 @@ Regular
 
 21
 
+Semibold
+
 Callout
 
 Regular
@@ -484,6 +550,8 @@ Regular
 15
 
 20
+
+Semibold
 
 Subhead
 
@@ -493,6 +561,8 @@ Regular
 
 19
 
+Semibold
+
 Footnote
 
 Regular
@@ -500,6 +570,8 @@ Regular
 12
 
 16
+
+Semibold
 
 Caption 1
 
@@ -509,6 +581,8 @@ Regular
 
 13
 
+Semibold
+
 Caption 2
 
 Regular
@@ -516,6 +590,8 @@ Regular
 11
 
 13
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -528,6 +604,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -535,6 +613,8 @@ Regular
 34
 
 41
+
+Bold
 
 Title 1
 
@@ -544,6 +624,8 @@ Regular
 
 34
 
+Bold
+
 Title 2
 
 Regular
@@ -551,6 +633,8 @@ Regular
 22
 
 28
+
+Bold
 
 Title 3
 
@@ -560,6 +644,8 @@ Regular
 
 25
 
+Semibold
+
 Headline
 
 Semibold
@@ -567,6 +653,8 @@ Semibold
 17
 
 22
+
+Semibold
 
 Body
 
@@ -576,6 +664,8 @@ Regular
 
 22
 
+Semibold
+
 Callout
 
 Regular
@@ -583,6 +673,8 @@ Regular
 16
 
 21
+
+Semibold
 
 Subhead
 
@@ -592,6 +684,8 @@ Regular
 
 20
 
+Semibold
+
 Footnote
 
 Regular
@@ -599,6 +693,8 @@ Regular
 13
 
 18
+
+Semibold
 
 Caption 1
 
@@ -608,6 +704,8 @@ Regular
 
 16
 
+Semibold
+
 Caption 2
 
 Regular
@@ -615,6 +713,8 @@ Regular
 11
 
 13
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -627,6 +727,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -634,6 +736,8 @@ Regular
 36
 
 43
+
+Bold
 
 Title 1
 
@@ -643,6 +747,8 @@ Regular
 
 37
 
+Bold
+
 Title 2
 
 Regular
@@ -650,6 +756,8 @@ Regular
 24
 
 30
+
+Bold
 
 Title 3
 
@@ -659,6 +767,8 @@ Regular
 
 28
 
+Semibold
+
 Headline
 
 Semibold
@@ -666,6 +776,8 @@ Semibold
 19
 
 24
+
+Semibold
 
 Body
 
@@ -675,6 +787,8 @@ Regular
 
 24
 
+Semibold
+
 Callout
 
 Regular
@@ -682,6 +796,8 @@ Regular
 18
 
 23
+
+Semibold
 
 Subhead
 
@@ -691,6 +807,8 @@ Regular
 
 22
 
+Semibold
+
 Footnote
 
 Regular
@@ -698,6 +816,8 @@ Regular
 15
 
 20
+
+Semibold
 
 Caption 1
 
@@ -707,6 +827,8 @@ Regular
 
 19
 
+Semibold
+
 Caption 2
 
 Regular
@@ -714,6 +836,8 @@ Regular
 13
 
 18
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -726,6 +850,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -733,6 +859,8 @@ Regular
 38
 
 46
+
+Bold
 
 Title 1
 
@@ -742,6 +870,8 @@ Regular
 
 39
 
+Bold
+
 Title 2
 
 Regular
@@ -749,6 +879,8 @@ Regular
 26
 
 32
+
+Bold
 
 Title 3
 
@@ -758,6 +890,8 @@ Regular
 
 30
 
+Semibold
+
 Headline
 
 Semibold
@@ -765,6 +899,8 @@ Semibold
 21
 
 26
+
+Semibold
 
 Body
 
@@ -774,6 +910,8 @@ Regular
 
 26
 
+Semibold
+
 Callout
 
 Regular
@@ -781,6 +919,8 @@ Regular
 20
 
 25
+
+Semibold
 
 Subhead
 
@@ -790,6 +930,8 @@ Regular
 
 24
 
+Semibold
+
 Footnote
 
 Regular
@@ -797,6 +939,8 @@ Regular
 17
 
 22
+
+Semibold
 
 Caption 1
 
@@ -806,6 +950,8 @@ Regular
 
 21
 
+Semibold
+
 Caption 2
 
 Regular
@@ -813,6 +959,8 @@ Regular
 15
 
 20
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -825,6 +973,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -832,6 +982,8 @@ Regular
 40
 
 48
+
+Bold
 
 Title 1
 
@@ -841,6 +993,8 @@ Regular
 
 41
 
+Bold
+
 Title 2
 
 Regular
@@ -848,6 +1002,8 @@ Regular
 28
 
 34
+
+Bold
 
 Title 3
 
@@ -857,6 +1013,8 @@ Regular
 
 32
 
+Semibold
+
 Headline
 
 Semibold
@@ -864,6 +1022,8 @@ Semibold
 23
 
 29
+
+Semibold
 
 Body
 
@@ -873,6 +1033,8 @@ Regular
 
 29
 
+Semibold
+
 Callout
 
 Regular
@@ -880,6 +1042,8 @@ Regular
 22
 
 28
+
+Semibold
 
 Subhead
 
@@ -889,6 +1053,8 @@ Regular
 
 28
 
+Semibold
+
 Footnote
 
 Regular
@@ -896,6 +1062,8 @@ Regular
 19
 
 24
+
+Semibold
 
 Caption 1
 
@@ -905,6 +1073,8 @@ Regular
 
 23
 
+Semibold
+
 Caption 2
 
 Regular
@@ -912,6 +1082,8 @@ Regular
 17
 
 22
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -932,6 +1104,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -939,6 +1113,8 @@ Regular
 44
 
 52
+
+Bold
 
 Title 1
 
@@ -948,6 +1124,8 @@ Regular
 
 46
 
+Bold
+
 Title 2
 
 Regular
@@ -955,6 +1133,8 @@ Regular
 34
 
 41
+
+Bold
 
 Title 3
 
@@ -964,6 +1144,8 @@ Regular
 
 38
 
+Semibold
+
 Headline
 
 Semibold
@@ -971,6 +1153,8 @@ Semibold
 28
 
 34
+
+Semibold
 
 Body
 
@@ -980,6 +1164,8 @@ Regular
 
 34
 
+Semibold
+
 Callout
 
 Regular
@@ -987,6 +1173,8 @@ Regular
 26
 
 32
+
+Semibold
 
 Subhead
 
@@ -996,6 +1184,8 @@ Regular
 
 31
 
+Semibold
+
 Footnote
 
 Regular
@@ -1003,6 +1193,8 @@ Regular
 23
 
 29
+
+Semibold
 
 Caption 1
 
@@ -1012,6 +1204,8 @@ Regular
 
 28
 
+Semibold
+
 Caption 2
 
 Regular
@@ -1019,6 +1213,8 @@ Regular
 20
 
 25
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -1031,6 +1227,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -1038,6 +1236,8 @@ Regular
 48
 
 57
+
+Bold
 
 Title 1
 
@@ -1047,6 +1247,8 @@ Regular
 
 51
 
+Bold
+
 Title 2
 
 Regular
@@ -1054,6 +1256,8 @@ Regular
 39
 
 47
+
+Bold
 
 Title 3
 
@@ -1063,6 +1267,8 @@ Regular
 
 44
 
+Semibold
+
 Headline
 
 Semibold
@@ -1070,6 +1276,8 @@ Semibold
 33
 
 40
+
+Semibold
 
 Body
 
@@ -1079,6 +1287,8 @@ Regular
 
 40
 
+Semibold
+
 Callout
 
 Regular
@@ -1086,6 +1296,8 @@ Regular
 32
 
 39
+
+Semibold
 
 Subhead
 
@@ -1095,6 +1307,8 @@ Regular
 
 37
 
+Semibold
+
 Footnote
 
 Regular
@@ -1102,6 +1316,8 @@ Regular
 27
 
 33
+
+Semibold
 
 Caption 1
 
@@ -1111,6 +1327,8 @@ Regular
 
 32
 
+Semibold
+
 Caption 2
 
 Regular
@@ -1118,6 +1336,8 @@ Regular
 24
 
 30
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -1130,6 +1350,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -1137,6 +1359,8 @@ Regular
 52
 
 61
+
+Bold
 
 Title 1
 
@@ -1146,6 +1370,8 @@ Regular
 
 57
 
+Bold
+
 Title 2
 
 Regular
@@ -1153,6 +1379,8 @@ Regular
 44
 
 52
+
+Bold
 
 Title 3
 
@@ -1162,6 +1390,8 @@ Regular
 
 51
 
+Semibold
+
 Headline
 
 Semibold
@@ -1169,6 +1399,8 @@ Semibold
 40
 
 48
+
+Semibold
 
 Body
 
@@ -1178,6 +1410,8 @@ Regular
 
 48
 
+Semibold
+
 Callout
 
 Regular
@@ -1185,6 +1419,8 @@ Regular
 38
 
 46
+
+Semibold
 
 Subhead
 
@@ -1194,6 +1430,8 @@ Regular
 
 43
 
+Semibold
+
 Footnote
 
 Regular
@@ -1201,6 +1439,8 @@ Regular
 33
 
 40
+
+Semibold
 
 Caption 1
 
@@ -1210,6 +1450,8 @@ Regular
 
 39
 
+Semibold
+
 Caption 2
 
 Regular
@@ -1217,6 +1459,8 @@ Regular
 29
 
 35
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -1229,6 +1473,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -1236,6 +1482,8 @@ Regular
 56
 
 66
+
+Bold
 
 Title 1
 
@@ -1245,6 +1493,8 @@ Regular
 
 62
 
+Bold
+
 Title 2
 
 Regular
@@ -1252,6 +1502,8 @@ Regular
 50
 
 59
+
+Bold
 
 Title 3
 
@@ -1261,6 +1513,8 @@ Regular
 
 58
 
+Semibold
+
 Headline
 
 Semibold
@@ -1268,6 +1522,8 @@ Semibold
 47
 
 56
+
+Semibold
 
 Body
 
@@ -1277,6 +1533,8 @@ Regular
 
 56
 
+Semibold
+
 Callout
 
 Regular
@@ -1284,6 +1542,8 @@ Regular
 44
 
 52
+
+Semibold
 
 Subhead
 
@@ -1293,6 +1553,8 @@ Regular
 
 50
 
+Semibold
+
 Footnote
 
 Regular
@@ -1300,6 +1562,8 @@ Regular
 38
 
 46
+
+Semibold
 
 Caption 1
 
@@ -1309,6 +1573,8 @@ Regular
 
 44
 
+Semibold
+
 Caption 2
 
 Regular
@@ -1316,6 +1582,8 @@ Regular
 34
 
 41
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -1328,6 +1596,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -1335,6 +1605,8 @@ Regular
 60
 
 70
+
+Bold
 
 Title 1
 
@@ -1344,6 +1616,8 @@ Regular
 
 68
 
+Bold
+
 Title 2
 
 Regular
@@ -1351,6 +1625,8 @@ Regular
 56
 
 66
+
+Bold
 
 Title 3
 
@@ -1360,6 +1636,8 @@ Regular
 
 65
 
+Semibold
+
 Headline
 
 Semibold
@@ -1367,6 +1645,8 @@ Semibold
 53
 
 62
+
+Semibold
 
 Body
 
@@ -1376,6 +1656,8 @@ Regular
 
 62
 
+Semibold
+
 Callout
 
 Regular
@@ -1383,6 +1665,8 @@ Regular
 51
 
 60
+
+Semibold
 
 Subhead
 
@@ -1392,6 +1676,8 @@ Regular
 
 58
 
+Semibold
+
 Footnote
 
 Regular
@@ -1399,6 +1685,8 @@ Regular
 44
 
 52
+
+Semibold
 
 Caption 1
 
@@ -1408,6 +1696,8 @@ Regular
 
 51
 
+Semibold
+
 Caption 2
 
 Regular
@@ -1415,6 +1705,8 @@ Regular
 40
 
 48
+
+Semibold
 
 Point size based on image resolution of 144 ppi for @2x and 216 ppi for @3x designs.
 
@@ -1662,6 +1954,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -1669,6 +1963,8 @@ Regular
 30
 
 32.5
+
+Bold
 
 Title 1
 
@@ -1678,6 +1974,8 @@ Regular
 
 30.5
 
+Semibold
+
 Title 2
 
 Regular
@@ -1685,6 +1983,8 @@ Regular
 24
 
 26.5
+
+Semibold
 
 Title 3
 
@@ -1694,6 +1994,8 @@ Regular
 
 19.5
 
+Semibold
+
 Headline
 
 Semibold
@@ -1701,6 +2003,8 @@ Semibold
 14
 
 16.5
+
+Semibold
 
 Body
 
@@ -1710,6 +2014,8 @@ Regular
 
 16.5
 
+Semibold
+
 Caption 1
 
 Regular
@@ -1717,6 +2023,8 @@ Regular
 13
 
 15.5
+
+Semibold
 
 Caption 2
 
@@ -1726,6 +2034,8 @@ Regular
 
 14.5
 
+Semibold
+
 Footnote 1
 
 Regular
@@ -1734,6 +2044,8 @@ Regular
 
 13.5
 
+Semibold
+
 Footnote 2
 
 Regular
@@ -1741,6 +2053,8 @@ Regular
 10
 
 12.5
+
+Semibold
 
 #### [Small (default 38mm)](/design/human-interface-guidelines/typography#Small-default-38mm)
 Style
@@ -1751,6 +2065,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -1758,6 +2074,8 @@ Regular
 32
 
 34.5
+
+Bold
 
 Title 1
 
@@ -1767,6 +2085,8 @@ Regular
 
 32.5
 
+Semibold
+
 Title 2
 
 Regular
@@ -1774,6 +2094,8 @@ Regular
 26
 
 28.5
+
+Semibold
 
 Title 3
 
@@ -1783,6 +2105,8 @@ Regular
 
 20.5
 
+Semibold
+
 Headline
 
 Semibold
@@ -1790,6 +2114,8 @@ Semibold
 15
 
 17.5
+
+Semibold
 
 Body
 
@@ -1799,6 +2125,8 @@ Regular
 
 17.5
 
+Semibold
+
 Caption 1
 
 Regular
@@ -1806,6 +2134,8 @@ Regular
 14
 
 16.5
+
+Semibold
 
 Caption 2
 
@@ -1815,6 +2145,8 @@ Regular
 
 15.5
 
+Semibold
+
 Footnote 1
 
 Regular
@@ -1823,6 +2155,8 @@ Regular
 
 14.5
 
+Semibold
+
 Footnote 2
 
 Regular
@@ -1830,6 +2164,8 @@ Regular
 11
 
 13.5
+
+Semibold
 
 #### [Large (default 40mm/41mm/42mm)](/design/human-interface-guidelines/typography#Large-default-40mm41mm42mm)
 Style
@@ -1840,6 +2176,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -1847,6 +2185,8 @@ Regular
 36
 
 38.5
+
+Bold
 
 Title 1
 
@@ -1856,6 +2196,8 @@ Regular
 
 36.5
 
+Semibold
+
 Title 2
 
 Regular
@@ -1863,6 +2205,8 @@ Regular
 27
 
 30.5
+
+Semibold
 
 Title 3
 
@@ -1872,6 +2216,8 @@ Regular
 
 21.5
 
+Semibold
+
 Headline
 
 Semibold
@@ -1879,6 +2225,8 @@ Semibold
 16
 
 18.5
+
+Semibold
 
 Body
 
@@ -1888,6 +2236,8 @@ Regular
 
 18.5
 
+Semibold
+
 Caption 1
 
 Regular
@@ -1895,6 +2245,8 @@ Regular
 15
 
 17.5
+
+Semibold
 
 Caption 2
 
@@ -1904,6 +2256,8 @@ Regular
 
 16.5
 
+Semibold
+
 Footnote 1
 
 Regular
@@ -1912,6 +2266,8 @@ Regular
 
 15.5
 
+Semibold
+
 Footnote 2
 
 Regular
@@ -1919,6 +2275,8 @@ Regular
 12
 
 14.5
+
+Semibold
 
 #### [xLarge (default 44mm/45mm/49mm)](/design/human-interface-guidelines/typography#xLarge-default-44mm45mm49mm)
 Style
@@ -1929,6 +2287,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -1936,6 +2296,8 @@ Regular
 40
 
 42.5
+
+Bold
 
 Title 1
 
@@ -1945,6 +2307,8 @@ Regular
 
 40.5
 
+Semibold
+
 Title 2
 
 Regular
@@ -1952,6 +2316,8 @@ Regular
 30
 
 32.5
+
+Semibold
 
 Title 3
 
@@ -1961,6 +2327,8 @@ Regular
 
 22.5
 
+Semibold
+
 Headline
 
 Semibold
@@ -1968,6 +2336,8 @@ Semibold
 17
 
 19.5
+
+Semibold
 
 Body
 
@@ -1977,6 +2347,8 @@ Regular
 
 19.5
 
+Semibold
+
 Caption 1
 
 Regular
@@ -1984,6 +2356,8 @@ Regular
 16
 
 18.5
+
+Semibold
 
 Caption 2
 
@@ -1993,6 +2367,8 @@ Regular
 
 17.5
 
+Semibold
+
 Footnote 1
 
 Regular
@@ -2001,6 +2377,8 @@ Regular
 
 16.5
 
+Semibold
+
 Footnote 2
 
 Regular
@@ -2008,6 +2386,8 @@ Regular
 13
 
 15.5
+
+Semibold
 
 #### [xxLarge](/design/human-interface-guidelines/typography#xxLarge)
 Style
@@ -2018,6 +2398,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -2025,6 +2407,8 @@ Regular
 41
 
 43.5
+
+Bold
 
 Title 1
 
@@ -2034,6 +2418,8 @@ Regular
 
 41.5
 
+Semibold
+
 Title 2
 
 Regular
@@ -2041,6 +2427,8 @@ Regular
 31
 
 33.5
+
+Semibold
 
 Title 3
 
@@ -2050,6 +2438,8 @@ Regular
 
 23.5
 
+Semibold
+
 Headline
 
 Semibold
@@ -2057,6 +2447,8 @@ Semibold
 18
 
 20.5
+
+Semibold
 
 Body
 
@@ -2066,6 +2458,8 @@ Regular
 
 20.5
 
+Semibold
+
 Caption 1
 
 Regular
@@ -2073,6 +2467,8 @@ Regular
 17
 
 19.5
+
+Semibold
 
 Caption 2
 
@@ -2082,6 +2478,8 @@ Regular
 
 18.5
 
+Semibold
+
 Footnote 1
 
 Regular
@@ -2090,6 +2488,8 @@ Regular
 
 17.5
 
+Semibold
+
 Footnote 2
 
 Regular
@@ -2097,6 +2497,8 @@ Regular
 14
 
 16.5
+
+Semibold
 
 #### [xxxLarge](/design/human-interface-guidelines/typography#xxxLarge)
 Style
@@ -2107,6 +2509,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -2114,6 +2518,8 @@ Regular
 42
 
 44.5
+
+Bold
 
 Title 1
 
@@ -2123,6 +2529,8 @@ Regular
 
 42.5
 
+Semibold
+
 Title 2
 
 Regular
@@ -2130,6 +2538,8 @@ Regular
 32
 
 34.5
+
+Semibold
 
 Title 3
 
@@ -2139,6 +2549,8 @@ Regular
 
 24.5
 
+Semibold
+
 Headline
 
 Semibold
@@ -2146,6 +2558,8 @@ Semibold
 19
 
 21.5
+
+Semibold
 
 Body
 
@@ -2155,6 +2569,8 @@ Regular
 
 21.5
 
+Semibold
+
 Caption 1
 
 Regular
@@ -2162,6 +2578,8 @@ Regular
 18
 
 20.5
+
+Semibold
 
 Caption 2
 
@@ -2171,6 +2589,8 @@ Regular
 
 19.5
 
+Semibold
+
 Footnote 1
 
 Regular
@@ -2179,6 +2599,8 @@ Regular
 
 18.5
 
+Semibold
+
 Footnote 2
 
 Regular
@@ -2186,6 +2608,8 @@ Regular
 15
 
 17.5
+
+Semibold
 
 ### [watchOS larger accessibility type sizes](/design/human-interface-guidelines/typography#watchOS-larger-accessibility-type-sizes)
 
@@ -2202,6 +2626,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -2209,6 +2635,8 @@ Regular
 44
 
 46.5
+
+Bold
 
 Title 1
 
@@ -2218,6 +2646,8 @@ Regular
 
 44.5
 
+Semibold
+
 Title 2
 
 Regular
@@ -2225,6 +2655,8 @@ Regular
 34
 
 41
+
+Semibold
 
 Title 3
 
@@ -2234,6 +2666,8 @@ Regular
 
 26.5
 
+Semibold
+
 Headline
 
 Semibold
@@ -2241,6 +2675,8 @@ Semibold
 21
 
 23.5
+
+Semibold
 
 Body
 
@@ -2250,6 +2686,8 @@ Regular
 
 23.5
 
+Semibold
+
 Caption 1
 
 Regular
@@ -2257,6 +2695,8 @@ Regular
 18
 
 20.5
+
+Semibold
 
 Caption 2
 
@@ -2266,6 +2706,8 @@ Regular
 
 19.5
 
+Semibold
+
 Footnote 1
 
 Regular
@@ -2274,6 +2716,8 @@ Regular
 
 18.5
 
+Semibold
+
 Footnote 2
 
 Regular
@@ -2281,6 +2725,8 @@ Regular
 15
 
 17.5
+
+Semibold
 
 #### [AX2](/design/human-interface-guidelines/typography#AX2)
 Style
@@ -2291,6 +2737,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -2298,6 +2746,8 @@ Regular
 45
 
 47.5
+
+Bold
 
 Title 1
 
@@ -2307,6 +2757,8 @@ Regular
 
 46
 
+Semibold
+
 Title 2
 
 Regular
@@ -2314,6 +2766,8 @@ Regular
 35
 
 37.5
+
+Semibold
 
 Title 3
 
@@ -2323,6 +2777,8 @@ Regular
 
 27.5
 
+Semibold
+
 Headline
 
 Semibold
@@ -2330,6 +2786,8 @@ Semibold
 22
 
 24.5
+
+Semibold
 
 Body
 
@@ -2339,6 +2797,8 @@ Regular
 
 24.5
 
+Semibold
+
 Caption 1
 
 Regular
@@ -2346,6 +2806,8 @@ Regular
 19
 
 21.5
+
+Semibold
 
 Caption 2
 
@@ -2355,6 +2817,8 @@ Regular
 
 20.5
 
+Semibold
+
 Footnote 1
 
 Regular
@@ -2363,6 +2827,8 @@ Regular
 
 19.5
 
+Semibold
+
 Footnote 2
 
 Regular
@@ -2370,6 +2836,8 @@ Regular
 16
 
 17.5
+
+Semibold
 
 #### [AX3](/design/human-interface-guidelines/typography#AX3)
 Style
@@ -2380,6 +2848,8 @@ Size (points)
 
 Leading (points)
 
+Emphasized weight
+
 Large Title
 
 Regular
@@ -2387,6 +2857,8 @@ Regular
 46
 
 48.5
+
+Bold
 
 Title 1
 
@@ -2396,6 +2868,8 @@ Regular
 
 47
 
+Semibold
+
 Title 2
 
 Regular
@@ -2403,6 +2877,8 @@ Regular
 36
 
 38.5
+
+Semibold
 
 Title 3
 
@@ -2412,6 +2888,8 @@ Regular
 
 28.5
 
+Semibold
+
 Headline
 
 Semibold
@@ -2419,6 +2897,8 @@ Semibold
 23
 
 25.5
+
+Semibold
 
 Body
 
@@ -2428,6 +2908,8 @@ Regular
 
 25.5
 
+Semibold
+
 Caption 1
 
 Regular
@@ -2435,6 +2917,8 @@ Regular
 20
 
 22.5
+
+Semibold
 
 Caption 2
 
@@ -2444,6 +2928,8 @@ Regular
 
 21.5
 
+Semibold
+
 Footnote 1
 
 Regular
@@ -2452,6 +2938,8 @@ Regular
 
 20.5
 
+Semibold
+
 Footnote 2
 
 Regular
@@ -2459,6 +2947,8 @@ Regular
 17
 
 19.5
+
+Semibold
 
 ### [Tracking values](/design/human-interface-guidelines/typography#Tracking-values)
 #### [iOS, iPadOS, visionOS tracking values](/design/human-interface-guidelines/typography#iOS-iPadOS-visionOS-tracking-values)
@@ -5199,6 +5689,10 @@ Not all apps express tracking values as 1/1000 em. Point size based on image res
 Date
 
 Changes
+
+December 16, 2025
+
+Added emphasized weights to the Dynamic Type style specifications for each platform.
 
 March 7, 2025
 

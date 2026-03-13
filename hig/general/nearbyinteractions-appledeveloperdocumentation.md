@@ -2,7 +2,7 @@
 title: "Nearbyinteractions|AppleDeveloperDocumentation"
 category: "general"
 platforms: ["iOS", "macOS", "watchOS", "visionOS", "tvOS"]
-url: "https://developer.apple.com/design/human-interface-guidelines/nearby-interactions"
+url: "https://developer.apple.com/design/human-interface-guidelines/spatial-interactions"
 source: hig
 ---
 

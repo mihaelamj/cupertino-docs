@@ -29,7 +29,7 @@ When you use SwiftUI, you can offer action sheet functionality in all platforms 
 
 **If necessary, provide a Cancel button that lets people reject an action that might destroy data.** Place the Cancel button at the bottom of the action sheet (or in the upper-left corner of the sheet in watchOS). A SwiftUI confirmation dialog includes a Cancel button by default.
 
-**Make destructive choices visually prominent.** Use the destructive style for buttons that perform destructive actions, and place these buttons at the top of the action sheet where they tend to be most noticeable. For developer guidance, see [`destructive`](/documentation/SwiftUI/ButtonRole/destructive) (SwiftUI) or [`UIAlertAction.Style.destructive`](/documentation/UIKit/UIAlertAction/Style-swift.enum/destructive) (UIKit)
+**Make destructive choices visually prominent.** Use the destructive style for buttons that perform destructive actions, and place these buttons at the top of the action sheet where they tend to be most noticeable. For developer guidance, see [`destructive`](/documentation/SwiftUI/ButtonRole/destructive) (SwiftUI) or [`UIAlertAction.Style.destructive`](/documentation/UIKit/UIAlertAction/Style-swift.enum/destructive) (UIKit).
 
 ## [Platform considerations](/design/human-interface-guidelines/action-sheets#Platform-considerations)
 *No additional considerations for macOS or tvOS. Not supported in visionOS.*

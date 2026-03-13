@@ -25,7 +25,7 @@ Liquid Glass forms a distinct functional layer for controls and navigation eleme
 
 **Use Liquid Glass effects sparingly.** Standard components from system frameworks pick up the appearance and behavior of this material automatically. If you apply Liquid Glass effects to a custom control, do so sparingly. Liquid Glass seeks to bring attention to the underlying content, and overusing this material in multiple custom controls can provide a subpar user experience by distracting from that content. Limit these effects to the most important functional elements in your app. For developer guidance, see [Applying Liquid Glass to custom views](/documentation/SwiftUI/Applying-Liquid-Glass-to-custom-views).
 
-**Only use clear Liquid Glass for components that appear over visually rich backgrounds.** Liquid Glass provides two variants — [`regular`](/documentation/SwiftUI/Glass/regular) and [`clear`](/documentation/SwiftUI/Glass/clear) — that you can choose when building custom components or styling some system components.
+**Only use clear Liquid Glass for components that appear over visually rich backgrounds.** Liquid Glass provides two variants — [`regular`](/documentation/SwiftUI/Glass/regular) and [`clear`](/documentation/SwiftUI/Glass/clear) — that you can choose when building custom components or styling some system components. The appearance of these variants can differ in response to certain system settings, like if people choose a preferred look for Liquid Glass in their device’s display settings, or turn on accessibility settings that reduce transparency or increase contrast in the interface.
 
 The *regular* variant blurs and adjusts the luminosity of background content to maintain legibility of text and other foreground elements. Scroll edge effects further enhance legibility by blurring and reducing the opacity of background content. Most system components use this variant. Use the regular variant when background content might create legibility issues, or when components have a significant amount of text, such as alerts, sidebars, or popovers.
 
@@ -135,7 +135,7 @@ In visionOS, windows generally use an unmodifiable system-defined material calle
 
 visionOS doesn’t have a distinct Dark Mode setting. Instead, glass automatically adapts to the luminance of the objects and colors behind it.
 
-**Avoid using opaque colors in a window.** Areas of opacity can block people’s view, making them feel constricted and reducing their awareness of the virtual and physical objects around them.
+**Prefer translucency to opaque colors in windows.** Areas of opacity can block people’s view, making them feel constricted and reducing their awareness of the virtual and physical objects around them.
 
 **If necessary, choose materials that help you create visual separations or indicate interactivity in your app.** If you need to create a custom component, you may need to specify a system material for it. Use the following examples for guidance.
 

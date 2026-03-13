@@ -11,7 +11,9 @@ source: hig
 > **Category:** General
 > **Platforms:** iOS, macOS, watchOS, visionOS, tvOS
 
-# Menus
+December 16, 2025
+
+ Added guidance for presenting menus with breakthrough effects in visionOS. # Menus
 A menu reveals its options when people interact with it, making it a space-efficient way to present commands in your app or game.
 
 Menus are ubiquitous in apps and games, so most people already know how to use them. Whether you use system-provided components or custom ones, people expect menus to behave in familiar ways. For example, people understand that opening a menu reveals one or more *menu items*, each of which represents a command, option, or state that affects the current selection or context. The guidance for labeling and organizing menu items applies to all types of menus in all experiences.
@@ -103,9 +105,11 @@ For developer guidance, see [`preferredElementSize`](/documentation/UIKit/UIMenu
 **Choose a small or medium menu layout when it can help streamline people’s choices.** Consider using the medium layout if your app has three important actions that people often want to perform. For example, Notes uses the medium layout to give people a quick way to perform the Scan, Lock, and Pin actions. Use the small layout only for closely related actions that typically appear as a group, such as Bold, Italic, Underline, and Strikethrough. For each action, use a recognizable symbol that helps people identify the action without a label.
 
 ### [visionOS](/design/human-interface-guidelines/menus#visionOS)
-In visionOS, a menu can display items using the small or large layout styles that iOS and iPadOS define (for guidance, see [iOS, iPadOS](/design/human-interface-guidelines/menus#iOS-iPadOS)). As in macOS, an open menu in a visionOS window can appear outside of the window’s boundaries.
+In visionOS, a menu can display items using the small or large layout styles that iOS and iPadOS define (for guidance, see [iOS, iPadOS](/design/human-interface-guidelines/menus#iOS-iPadOS)). You can present a menu in your app or game from 3D content using a SwiftUI view. To ensure that your menu is always visible to people, even when other content occludes it, you can apply a [breakthrough effect](https://developer.apple.com/documentation/swiftui/view/presentationbreakthrougheffect(_:)). As in macOS, an open menu in a visionOS window can appear outside of the window’s boundaries.
 
-**When possible, prefer displaying a menu near the content it controls.** Because people need to look at a menu item before tapping it, they might miss the item’s effect if the content it controls is too far away.
+**Prefer displaying a menu near the content it controls.** Because people need to look at a menu item before tapping it, they might miss the item’s effect if the content it controls is too far away.
+
+**Prefer the subtle breakthrough effect in most cases.** This effect blends the presentation with its surrounding content, to maintain legibility and usability while preserving the depth and context of the scene. When you select [`automatic`](/documentation/SwiftUI/BreakthroughEffect/automatic) for the breakthrough effect of a menu that overlaps with 3D content, the system applies [`subtle`](/documentation/SwiftUI/BreakthroughEffect/subtle) by default. You can use [`prominent`](/documentation/SwiftUI/BreakthroughEffect/prominent) if it’s important to display a menu prominently over the entire scene in your app or game, but this can disrupt the experience for people and potentially cause discomfort. Alternatively, you can use [`none`](/documentation/SwiftUI/BreakthroughEffect/none) to fully occlude your menu behind other 3D content — for example, in a puzzle game that requires people to navigate around barriers — but this may make it difficult for people to see and access the menu.
 
 ## [Resources](/design/human-interface-guidelines/menus#Resources)
 #### [Related](/design/human-interface-guidelines/menus#Related)
@@ -128,6 +132,10 @@ In visionOS, a menu can display items using the small or large layout styles tha
 Date
 
 Changes
+
+December 16, 2025
+
+Added guidance for presenting menus with breakthrough effects in visionOS.
 
 July 28, 2025
 

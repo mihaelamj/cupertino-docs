@@ -11,7 +11,9 @@ source: hig
 > **Category:** General
 > **Platforms:** iOS, macOS, watchOS, visionOS, tvOS
 
-# Images
+December 16, 2025
+
+ Added guidance for spatial photos and spatial scenes in visionOS. # Images
 To make sure your artwork looks great on all devices you support, learn how the system displays content and how to deliver art at the appropriate scale factors.
 
 ## [Resolution](/design/human-interface-guidelines/images#Resolution)
@@ -70,6 +72,10 @@ Photos
 
 JPEG files, optimized as necessary, or HEIC files
 
+Stereo or spatial photos
+
+Stereo HEIC
+
 Flat icons, interface icons, and other flat artwork that requires high-resolution scaling
 
 PDF or SVG files
@@ -118,13 +124,30 @@ If your app retrieves layered images from a content server at runtime, you must 
 **Always preview layered images.** To ensure your layered images look great on Apple TV, preview them throughout your design process using Xcode, the Parallax Previewer app for macOS, or the Parallax Exporter plug-in for Adobe Photoshop. Pay special attention as scaling and clipping occur, and readjust your images as needed to keep important content safe. After your layered images are final, preview them on an actual TV for the most accurate representation of what people will see. To download Parallax Previewer and Parallax Exporter, see [Resources](https://developer.apple.com/design/resources/#parallax-previewer).
 
 ### [visionOS](/design/human-interface-guidelines/images#visionOS)
-In visionOS, the area an image occupies typically varies when the system dynamically scales it according to the distance and angle at which people view it. This means that an image doesn’t line up 1:1 with screen pixels as it can in other platforms.
+In visionOS, people can view images at a much larger range of sizes than in any other platform, and the system dynamically scales the image resolution to match the current size. Because you can position images at specific angles within someone’s surroundings, image pixels may not line up 1:1 with screen pixels.
 
-**Create a layered app icon.** App icons in visionOS are composed of two to three layers that provide the appearance of depth by moving at subtly different rates when the icon is in focus. For guidance, see visionOS [app icons](/design/human-interface-guidelines/app-icons#visionOS).
+**Create a layered app icon.** App icons in visionOS are composed of two to three layers that provide the appearance of depth by moving at subtly different rates when the icon is in focus. For guidance, see [Layer design](/design/human-interface-guidelines/app-icons#Layer-design).
 
-**Prefer vector-based art.** Avoid bitmap content because it might not look good when the system scales it up. If you use Core Animation layers, see [Drawing sharp layer-based content in visionOS](/documentation/visionOS/drawing-sharp-layer-based-content) for developer guidance.
+**Prefer vector-based art for 2D images.** Avoid bitmap content because it might not look good when the system scales it up. If you use Core Animation layers, see [Drawing sharp layer-based content in visionOS](/documentation/visionOS/drawing-sharp-layer-based-content) for developer guidance.
 
 **If you need to use rasterized images, balance quality with performance as you choose a resolution.** Although a @2x image looks fine at common viewing distances, its fixed resolution means that the system doesn’t dynamically scale it and it might not look sharp from close up. To help a rasterized image look sharp when people view it from a wide range of distances, you can use a higher resolution, but each increase in resolution results in a larger file size and may impact your app’s runtime performance, especially for resolutions over @6x. If you use images that have resolutions higher than @2x, be sure to also apply high-quality image filtering to help balance quality and performance (for developer guidance, see [`filters`](/documentation/QuartzCore/CALayer/filters)).
+
+#### [Spatial photos and spatial scenes](/design/human-interface-guidelines/images#Spatial-photos-and-spatial-scenes)
+In addition to 2D and stereoscopic images, visionOS apps and games can use RealityKit to display spatial photos and spatial scenes. A *spatial photo* is a stereoscopic photo with additional spatial metadata, as captured on iPhone 15 Pro or later, Apple Vision Pro, or other compatible camera. A *spatial scene* is a 3D image generated from a 2D image to add a parallax effect that responds to head movement. For developer guidance, see [`ImagePresentationComponent`](/documentation/RealityKit/ImagePresentationComponent).
+
+**Make sure spatial photos render correctly in your app.** Use the stereo High-Efficiency Image Codec (HEIC) format to display a spatial photo in your app. When you add spatial metadata to a stereo HEIC, visionOS recognizes the photo as spatial and includes visual treatments that help minimize common causes of stereo-viewing discomfort.
+
+**Prefer the feathered glass background effect to display text over spatial photos.** If you need to place text over a spatial photo in your app or game, use the feathered glass background effect. The effect adds contrast to make the text readable, and it blurs out detail to help reduce visual discomfort when people view text over spatial photos. For developer guidance, see [`GlassBackgroundEffect`](/documentation/SwiftUI/GlassBackgroundEffect).
+
+**Take visual comfort into consideration when you make spatial photos from existing 2D content.** When adjusting the spatial metadata of a photo for your app or game, consider how you want people to view your content. Metadata like disparity adjustment can alter how people perceive the 3D scene, and can cause visual discomfort from certain viewing positions. For developer guidance, see [Creating spatial photos and videos with spatial metadata](/documentation/ImageIO/Creating-spatial-photos-and-videos-with-spatial-metadata).
+
+**Display spatial photos and spatial scenes in standalone views.** Avoid displaying spatial photos inline with other content, as this can cause visual discomfort. Instead, showcase spatial photos or spatial scenes in a separate view, like a sheet or window. If you must display stereoscopic images inline, provide generous spacing between the image and any inline content to help people’s eyes adjust to the depth changes.
+
+**Use spatial scenes in your app for specific moments.** Each spatial scene can take up to several seconds to generate from an existing image. Design experiences with this limitation in mind. For instance, the Photos app offers an explicit action to create a spatial scene while immersed in a single photo. Avoid displaying too many spatial scenes at once. Instead, use scroll views, pagination, or explicit actions to move to new photos and keep the visual information hierarchy simple.
+
+**When displaying immersively, prefer minimal UI.** For example, the Spatial Gallery app displays a single piece of content with a small caption and a single Back button, relying on swipe gestures to navigate between items.
+
+**Prefer displaying larger spatial scenes that you center in someone’s field of view.** When people view a spatial scene, they may move their head laterally to view the parallax effect. Smaller spatial scenes provide less of a parallax effect and may not be as impactful to viewers.
 
 ### [watchOS](/design/human-interface-guidelines/images#watchOS)
 **In general, avoid transparency to keep image files small.** If you always composite an image on the same solid background color, it’s more efficient to include the background in the image. However, transparency is necessary in complication images, menu icons, and other interface icons that serve as template images, because the system uses it to determine where to apply color.
@@ -181,6 +204,10 @@ Image scale
 Date
 
 Changes
+
+December 16, 2025
+
+Added guidance for spatial photos and spatial scenes in visionOS.
 
 December 5, 2023
 

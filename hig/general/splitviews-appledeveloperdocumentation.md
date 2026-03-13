@@ -33,7 +33,7 @@ In iPadOS, a split view can include either two vertical panes, like Mail, or thr
 **Account for narrow, compact, and intermediate window widths.** Since iPad windows are fluidly resizable, it’s important to consider the design of a split view layout at multiple widths. In particular, ensure that it’s possible to navigate between the various panes in a logical way. For guidance, see [Layout](/design/human-interface-guidelines/layout). For developer guidance, see [`NavigationSplitView`](/documentation/SwiftUI/NavigationSplitView) and [`UISplitViewController`](/documentation/UIKit/UISplitViewController).
 
 ### [macOS](/design/human-interface-guidelines/split-views#macOS)
-In macOS, you can arrange the panes of a split view horizontally, vertically, or both. A split view includes dividers between panes that can support dragging to resize them. For developer guidance, see [`HSplitView`](/documentation/SwiftUI/HSplitView) and [`VSplitView`](/documentation/SwiftUI/VSplitView).
+In macOS, you can arrange the panes of a split view vertically, horizontally, or both. A split view includes dividers between panes that can support dragging to resize them. For developer guidance, see [`VSplitView`](/documentation/SwiftUI/VSplitView) and [`HSplitView`](/documentation/SwiftUI/HSplitView).
 
 - [ Vertical ](#)
 - [ Horizontal ](#)
@@ -43,7 +43,7 @@ In macOS, you can arrange the panes of a split view horizontally, vertically, or
 
 **Consider letting people hide a pane when it makes sense.** If your app includes an editing area, for example, consider letting people hide other panes to reduce distractions or allow more room for editing — in Keynote, people can hide the navigator and presenter notes panes when they want to edit slide content.
 
-**Provide multiple ways to reveal hidden panes.** For example, you might provide a toolbar button or a menu command —  including a keyboard shortcut — that people can use to restore a hidden pane.
+**Provide multiple ways to reveal hidden panes.** For example, you might provide a toolbar button or a menu command — including a keyboard shortcut — that people can use to restore a hidden pane.
 
 **Prefer the thin divider style.** The thin divider measures one point in width, giving you maximum space for content while remaining easy for people to use. Avoid using thicker divider styles unless you have a specific need. For example, if both sides of a divider present table rows that use strong linear elements that might make a thin divider hard to distinguish, it might work to use a thicker divider. For developer guidance, see [`NSSplitView.DividerStyle`](/documentation/AppKit/NSSplitView/DividerStyle-swift.enum).
 
@@ -57,7 +57,7 @@ In tvOS, a split view can work well to help people filter content. When people c
 **Choose the title’s alignment based on the type of content the secondary pane contains.** Specifically, when the secondary pane contains a content collection, consider centering the title in the window. In contrast, if the secondary pane contains a single main view of important content, consider placing the title above the primary view to give the content more room.
 
 ### [visionOS](/design/human-interface-guidelines/split-views#visionOS)
-**Prefer a split view — not a new window — for offering supplementary information.** A split view gives people convenient access to more information without leaving the current context. Opening new windows to show details related to the current window makes it hard to understand relationships and manage window placement. If you need to request a small amount of information or present a simple task that someone must complete before returning to their main task, consider using a [sheet](/design/human-interface-guidelines/sheets).
+**To display supplementary information, prefer a split view instead of a new window.** A split view gives people convenient access to more information without leaving the current context, whereas a new window may confuse people who are trying to navigate or reposition content. Opening more windows also requires you to carefully manage the relationship between views in your app or game. If you need to request a small amount of information or present a simple task that someone must complete before returning to their main task, use a [sheet](/design/human-interface-guidelines/sheets).
 
 ### [watchOS](/design/human-interface-guidelines/split-views#watchOS)
 In watchOS, the split view displays either the list view or a detail view as a full-screen view.

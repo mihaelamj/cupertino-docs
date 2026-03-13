@@ -25,7 +25,7 @@ People can always rate your app within the App Store.
 
 **Avoid pestering people.** Repeated rating requests can be irritating, and may even negatively influence people’s opinion of your app. Consider allowing at least a week or two between requests, prompting again after people demonstrate additional engagement with your experience.
 
-**Prefer the system-provided prompt.** iOS, iPadOS, and macOS offer a consistent, nonintrusive way for apps and games to request ratings and reviews. When you identify places in your experience where it makes sense to ask for feedback, the system checks for previous feedback and — if there isn’t any — displays an in-app prompt that asks for a rating and an optional written review. People can supply feedback or dismiss the prompt with a single tap or click; they can also opt out of receiving these prompts for all apps they have installed. The system automatically limits the display of the prompt to three occurrences per app within a 365-day period. For developer guidance, see [`SKStoreReviewController`](/documentation/StoreKit/SKStoreReviewController).
+**Prefer the system-provided prompt.** iOS, iPadOS, and macOS offer a consistent, nonintrusive way for apps and games to request ratings and reviews. When you identify places in your experience where it makes sense to ask for feedback, the system checks for previous feedback and — if there isn’t any — displays an in-app prompt that asks for a rating and an optional written review. People can supply feedback or dismiss the prompt with a single tap or click; they can also opt out of receiving these prompts for all apps they have installed. The system automatically limits the display of the prompt to three occurrences per app within a 365-day period. For developer guidance, see [`RequestReviewAction`](/documentation/StoreKit/RequestReviewAction).
 
 **Weigh the benefits of resetting your summary rating against the potential disadvantage of showing fewer ratings.** When you release a new version of your app or game, you can reset the summary of individual ratings you received since the last reset. Although resetting means that the ratings reflect the current version, it also tends to result in having fewer ratings overall, which can discourage some people from downloading your app. For developer guidance, see [Reset app summary rating](https://help.apple.com/app-store-connect/#/devfb7e87af8).
 
@@ -37,7 +37,7 @@ People can always rate your app within the App Store.
 [Ratings, reviews, and responses](https://developer.apple.com/app-store/ratings-and-reviews/)
 
 #### [Developer documentation](/design/human-interface-guidelines/ratings-and-reviews#Developer-documentation)
-[`SKStoreReviewController`](/documentation/StoreKit/SKStoreReviewController) — StoreKit
+[`RequestReviewAction`](/documentation/StoreKit/RequestReviewAction) — StoreKit
 
 ## [Change log](/design/human-interface-guidelines/ratings-and-reviews#Change-log)
 Date
