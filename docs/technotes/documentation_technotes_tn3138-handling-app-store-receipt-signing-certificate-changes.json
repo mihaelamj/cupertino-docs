@@ -1,0 +1,99 @@
+{
+  "abstract" : "Ensure that your app’s local receipt validation is compatible with intermediate certificates that require using the SHA-256 algorithm.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "ee2a436666f2b8b18441af68b08b389bbdb32a35b1e92fe8e549403849e1d002",
+  "crawledAt" : "2026-03-10T22:01:38Z",
+  "id" : "B3047826-2246-474F-B0A7-92F2E532AADF",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nAs part of ongoing efforts to improve security and privacy on Apple platforms, Apple is updating the App Store receipt signing intermediate certificate with one that uses the SHA-256 algorithm. This change affects the sandbox, TestFlight, and App Store environments, on the dates shown below:\n\nThe App Store receipt signing intermediate certificate is in the certificate chain that Apple uses to sign App Store receipts, which are the proof-of-purchase for apps and in-app purchases.\n\nIf your app performs on-device receipt validation, it needs to support SHA-256 algorithm to correctly verify Apple’s certificate chain. For more information, see [https:\/\/developer.apple.com\/documentation\/appstorereceipts\/validating_receipts_on_the_device].\n\nStarting January 24, 2025, apps that perform on-device receipt validation and don’t support a SHA-256 algorithm will fail their on-device receipt validation when the App Store updates the receipt. If your app prevents customers from accessing the app or premium content when receipt validation fails, your customers may lose access to their content.\n\nUpdate your app to support certificates that use the SHA-256 algorithm if your app performs on-device receipt validation.\n\n## Determine if your app is affected\n\nApps that are affected by Apple’s certificate update to SHA-256 include those that do the following:\n\nThe certificate update does not affect any of the following transaction or receipt validation methods:\n\n## Update your app to support SHA-256 certificates\n\nFollow these guidelines to update your app to support certificates that use the SHA-256 algorithm for on-device receipt validation:\n\n## Test your app receipt validation in the sandbox environment\n\nStarting June 20, 2023, the sandbox environment produces app receipts that are signed using the SHA-256 intermediate certificate for apps running in iOS 16.6, tvOS 16.6, watchOS 9.6, and macOS 13.5. Follow these steps to test how your app handles the receipts:\n\nIf your app successfully verifies the receipt and you’ve confirmed that the new receipt uses the updated certificate in its certificate chain, your app is ready for Apple’s SHA-256 intermediate certificate update.\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3138-Handling-App-Store-receipt-signing-certificate-changes\ncrawled: 2026-03-10T22:01:38Z\n---\n\n# TN3138: Handling App Store receipt signing certificate changes\n\n**Article**\n\nEnsure that your app’s local receipt validation is compatible with intermediate certificates that require using the SHA-256 algorithm.\n\n## Overview\n\nAs part of ongoing efforts to improve security and privacy on Apple platforms, Apple is updating the App Store receipt signing intermediate certificate with one that uses the SHA-256 algorithm. This change affects the sandbox, TestFlight, and App Store environments, on the dates shown below:\n\n\n\nThe App Store receipt signing intermediate certificate is in the certificate chain that Apple uses to sign App Store receipts, which are the proof-of-purchase for apps and in-app purchases.\n\n\n\nIf your app performs on-device receipt validation, it needs to support SHA-256 algorithm to correctly verify Apple’s certificate chain. For more information, see [https:\/\/developer.apple.com\/documentation\/appstorereceipts\/validating_receipts_on_the_device].\n\nStarting January 24, 2025, apps that perform on-device receipt validation and don’t support a SHA-256 algorithm will fail their on-device receipt validation when the App Store updates the receipt. If your app prevents customers from accessing the app or premium content when receipt validation fails, your customers may lose access to their content.\n\nUpdate your app to support certificates that use the SHA-256 algorithm if your app performs on-device receipt validation.\n\n## Determine if your app is affected\n\nApps that are affected by Apple’s certificate update to SHA-256 include those that do the following:\n\n- Perform on-device receipt validation, as described in [https:\/\/developer.apple.com\/documentation\/appstorereceipts\/validating_receipts_on_the_device], and\n- Use code to verify the chain of trust that doesn’t support the SHA-256 algorithm or relies on an expectation that the certificate encryption uses only SHA-1.\n\nThe certificate update does not affect any of the following transaction or receipt validation methods:\n\n- Validating app and in-app purchase transactions using [https:\/\/developer.apple.com\/documentation\/storekit\/apptransaction] and [https:\/\/developer.apple.com\/documentation\/storekit\/transaction].\n- Server-to-server receipt verification using the [https:\/\/developer.apple.com\/documentation\/appstorereceipts\/verifyreceipt\/] endpoint. For more information, see [https:\/\/developer.apple.com\/documentation\/appstorereceipts\/validating_receipts_with_the_app_store].\n\n\n\n## Update your app to support SHA-256 certificates\n\nFollow these guidelines to update your app to support certificates that use the SHA-256 algorithm for on-device receipt validation:\n\n1. If your app follows the instructions in [https:\/\/developer.apple.com\/documentation\/appstorereceipts\/validating_receipts_on_the_device], the new certificate affects step 2, which involves verifying the certificate chain. Be sure your app uses the latest certificates from [https:\/\/www.apple.com\/certificateauthority].\n2. Use cryptography code that supports SHA-256 algorithm. If you wrote your own code to verify receipts, update that code to use the SHA-256 algorithm. If your app uses a cryptography library, update the library to the latest version that supports SHA-256 algorithm.\n3. Test your app in the sandbox environment to ensure that your on-device receipt validation succeeds.\n\n## Test your app receipt validation in the sandbox environment\n\nStarting June 20, 2023, the sandbox environment produces app receipts that are signed using the SHA-256 intermediate certificate for apps running in iOS 16.6, tvOS 16.6, watchOS 9.6, and macOS 13.5. Follow these steps to test how your app handles the receipts:\n\n1. On a test device, sign in to the App Store with your Sandbox Apple ID.\n2. Launch the app.\n3. Perform one or more actions that cause the App Store to send an updated receipt to your app, such as the following:\n\n- Make an in-app purchase\n- Call [https:\/\/developer.apple.com\/documentation\/storekit\/skreceiptrefreshrequest]\n- Call [https:\/\/developer.apple.com\/documentation\/storekit\/skpaymentqueue\/1506123-restorecompletedtransactions] or [https:\/\/developer.apple.com\/documentation\/storekit\/skpaymentqueue\/1505992-restorecompletedtransactions].\n4. Verify that Apple signed the receipt with a SHA-256 certificate. Decode your app receipt as a PKCS #7 container, then confirm that the `Receipt Creation Date` string, identified as [https:\/\/developer.apple.com\/library\/archive\/releasenotes\/General\/ValidateAppStoreReceipt\/Chapters\/ReceiptFields.html#\/\/apple_ref\/doc\/uid\/TP40010573-CH106-SW22], is set to June 20, 2023 or later in the sandbox environment. (In the production environment, that date is August 16, 2023 or later.)\n5. Ensure that your app calls its on-device receipt validation code with the new receipt.\n6. Check that your on-device receipt validation succeeds.\n\nIf your app successfully verifies the receipt and you’ve confirmed that the new receipt uses the updated certificate in its certificate chain, your app is ready for Apple’s SHA-256 intermediate certificate update.\n\n\n\n## Revision History\n\n- **2024-10-31** Added the SHA-1 expiry date. Noted that the `verifyReceipt` endpoint is now deprecated. Made other minor editorial changes.\n- **2023-08-29** Updated date timeline.\n- **2023-05-26** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3138: Handling App Store receipt signing certificate changes",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3138-Handling-App-Store-receipt-signing-certificate-changes"
+}

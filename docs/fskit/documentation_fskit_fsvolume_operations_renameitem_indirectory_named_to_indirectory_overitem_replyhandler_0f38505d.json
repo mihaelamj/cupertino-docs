@@ -1,0 +1,67 @@
+{
+  "abstract" : "Renames an item from one path in the file system to another.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "5c5685462c04385badce1dce52faad119376604ecebfeb648eaba7328e1215a2",
+  "crawledAt" : "2026-03-10T15:45:56Z",
+  "declaration" : {
+    "code" : "func renameItem(_ item: FSItem, inDirectory sourceDirectory: FSItem, named sourceName: FSFileName, to destinationName: FSFileName, inDirectory destinationDirectory: FSItem, overItem: FSItem?, replyHandler reply: @escaping @Sendable (FSFileName?, (any Error)?) -> Void)",
+    "language" : "swift"
+  },
+  "id" : "E91DA293-2D79-4050-BDBE-01179A67B95C",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "FSKit",
+  "overview" : "## Discussion\n\nImplement renaming along the lines of this algorithm:",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/FSKit\/FSVolume\/Operations\/renameItem(_:inDirectory:named:to:inDirectory:overItem:replyHandler:)\ncrawled: 2026-03-10T15:45:56Z\n---\n\n# renameItem(_:inDirectory:named:to:inDirectory:overItem:replyHandler:)\n\n**Instance Method**\n\nRenames an item from one path in the file system to another.\n\n## Declaration\n\n```swift\nfunc renameItem(_ item: FSItem, inDirectory sourceDirectory: FSItem, named sourceName: FSFileName, to destinationName: FSFileName, inDirectory destinationDirectory: FSItem, overItem: FSItem?, replyHandler reply: @escaping @Sendable (FSFileName?, (any Error)?) -> Void)\n```\n\n```swift\nfunc renameItem(_ item: FSItem, inDirectory sourceDirectory: FSItem, named sourceName: FSFileName, to destinationName: FSFileName, inDirectory destinationDirectory: FSItem, overItem: FSItem?) async throws -> FSFileName\n```\n\n## Parameters\n\n- **item**: The file system object being renamed.\n- **sourceDirectory**: The directory that currently contains the item to rename.\n- **sourceName**: The name of the item within the source directory.\n- **destinationName**: The new name of the item as it appears in `destinationDirectory`.\n- **destinationDirectory**: The directory to contain the renamed object, which may be the same as `sourceDirectory`.\n- **overItem**: The file system object if the destination exists, as discovered in a prior lookup. If this parameter is non-`nil`, mark `overItem` as deleted, so the file system can free its allocated space on the next call to [doc:\/\/FSKit\/documentation\/FSKit\/FSVolume\/Operations\/reclaimItem(_:replyHandler:)]. After doing so, ensure the operation finishes without errors.\n- **reply**: A block or closure to indicate success or failure. If renaming succeeds, pass the [doc:\/\/FSKit\/documentation\/FSKit\/FSFileName] as it exists within `destinationDirectory` and a `nil` error. If renaming fails, pass the relevant error as the second parameter; FSKit ignores any [doc:\/\/FSKit\/documentation\/FSKit\/FSFileName] in this case. For an `async` Swift implementation, there’s no reply handler; simply return the [doc:\/\/FSKit\/documentation\/FSKit\/FSFileName] or throw an error.\n\n## Discussion\n\nImplement renaming along the lines of this algorithm:\n\n- If `item` is a file:\n\n- If the destination file exists:\n\n- Remove the destination file.\n- If the source and destination directories are the same:\n\n- Rewrite the name in the existing directory.\n- Else:\n\n- Write the new entry in the destination directory.\n- Clear the old directory entry.\n- If `item` is a directory:\n\n- If the destination directory exists:\n\n- If the destination directory isn’t empty:\n\n- Fail the operation with an error of [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSPOSIXErrorDomain] and a code of `ENOTEMPTY`.\n- Else:\n\n- Remove the destination directory.\n- If the source and destination directories are the same:\n\n- Rewrite the name in the existing directory.\n- Else:\n\n- If the destination is a child of the source directory:\n\n- Fail the operation with an error.\n- Else:\n\n- Write the new entry in the destination directory.\n- Update `\".\"` and `\"..\"` in the moved directory.\n- Clear the old directory entry.\n\n## Working with items\n\n- **createItem(named:type:inDirectory:attributes:replyHandler:)**: Creates a new file or directory item.\n- **FSFileName**: The name of a file, expressed as a data buffer.\n- **FSItem.ItemType**: An enumeration of item types, such as file, directory, or symbolic link.\n- **FSItem.SetAttributesRequest**: A request to set attributes on an item.\n- **lookupItem(named:inDirectory:replyHandler:)**: Looks up an item within a directory.\n- **removeItem(_:named:fromDirectory:replyHandler:)**: Removes an existing item from a given directory.\n- **reclaimItem(_:replyHandler:)**: Reclaims an item, releasing any resources allocated for the item.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a new file or directory item.",
+          "name" : "createItem(named:type:inDirectory:attributes:replyHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FSKit\/FSVolume\/Operations\/createItem(named:type:inDirectory:attributes:replyHandler:)"
+        },
+        {
+          "description" : "The name of a file, expressed as a data buffer.",
+          "name" : "FSFileName",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FSKit\/FSFileName"
+        },
+        {
+          "description" : "An enumeration of item types, such as file, directory, or symbolic link.",
+          "name" : "FSItem.ItemType",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FSKit\/FSItem\/ItemType"
+        },
+        {
+          "description" : "A request to set attributes on an item.",
+          "name" : "FSItem.SetAttributesRequest",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FSKit\/FSItem\/SetAttributesRequest"
+        },
+        {
+          "description" : "Looks up an item within a directory.",
+          "name" : "lookupItem(named:inDirectory:replyHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FSKit\/FSVolume\/Operations\/lookupItem(named:inDirectory:replyHandler:)"
+        },
+        {
+          "description" : "Removes an existing item from a given directory.",
+          "name" : "removeItem(_:named:fromDirectory:replyHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FSKit\/FSVolume\/Operations\/removeItem(_:named:fromDirectory:replyHandler:)"
+        },
+        {
+          "description" : "Reclaims an item, releasing any resources allocated for the item.",
+          "name" : "reclaimItem(_:replyHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FSKit\/FSVolume\/Operations\/reclaimItem(_:replyHandler:)"
+        }
+      ],
+      "title" : "Working with items"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "renameItem(_:inDirectory:named:to:inDirectory:overItem:replyHandler:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/FSKit\/FSVolume\/Operations\/renameItem(_:inDirectory:named:to:inDirectory:overItem:replyHandler:)"
+}

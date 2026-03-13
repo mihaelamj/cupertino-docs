@@ -1,0 +1,262 @@
+{
+  "abstract" : "Evaluate return values that most GSS-API functions use to indicate the outcome of an operation.",
+  "codeExamples" : [
+    {
+      "code" : "OM_uint32 major = <# Some GSS call #>\nif (GSS_CALLING_ERROR(major) == GSS_S_CALL_INACCESSIBLE_READ) {\n    \/\/ Handle the error\n}",
+      "language" : "objc"
+    }
+  ],
+  "contentHash" : "e09f0db15e9f670248b2fe3c6afa90e3822c69a66c83a8de1abe4c6085170a60",
+  "crawledAt" : "2026-03-10T15:44:35Z",
+  "id" : "12C68964-1CF0-48ED-AF35-0280154FBA59",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "GSS",
+  "overview" : "## Overview\n\nThe functions of the GSS-API return two status codes. The major status code, delivered as the function’s return value, provides a mechanism-independent status output. A value of [doc:\/\/com.apple.gss\/documentation\/GSS\/GSS_S_COMPLETE] typically indicates success, but the code is actually composed of several fields that enable communicating a more nuanced result.  Always check the major status code to determine if an operation succeeds.\n\nThe minor status code provides additional information, often mechanism-specific, when an operation fails. This result returns using the [doc:\/\/com.apple.gss\/documentation\/GSS\/OM_uint32] pointer given as the function’s first argument. Examine this value to further debug a problem. For example, many functions allocate memory as a side effect of their main task. If memory allocation fails, the entire operation fails. But while the major status indicates a generic problem, a minor status of `ENOMEM` indicates that failed memory allocation is the exact culprit.\n\nThree bitfields bundled together make up major status codes in a single [doc:\/\/com.apple.gss\/documentation\/GSS\/OM_uint32] value. These fields are:\n\nWhen a function successfully runs to completion, it returns zero for all of these fields. As a convenience, you can compare the result directly with the status code [doc:\/\/com.apple.gss\/documentation\/GSS\/GSS_S_COMPLETE] to test for this condition.\n\n\n\nFor any other result, use one of the available extraction macros (such as [doc:\/\/com.apple.gss\/documentation\/GSS\/GSS_CALLING_ERROR]) to obtain a value that you compare against one of the known error codes. For example, you can test for a failure to read one of the function inputs as follows:\n\nUse the [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_display_status(_:_:_:_:_:_:)] function to retrieve a human readable string corresponding to a given status result.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/gss\/function-status\ncrawled: 2026-03-10T15:44:35Z\n---\n\n# Function Status\n\n**API Collection**\n\nEvaluate return values that most GSS-API functions use to indicate the outcome of an operation.\n\n## Overview\n\nThe functions of the GSS-API return two status codes. The major status code, delivered as the function’s return value, provides a mechanism-independent status output. A value of [doc:\/\/com.apple.gss\/documentation\/GSS\/GSS_S_COMPLETE] typically indicates success, but the code is actually composed of several fields that enable communicating a more nuanced result.  Always check the major status code to determine if an operation succeeds.\n\nThe minor status code provides additional information, often mechanism-specific, when an operation fails. This result returns using the [doc:\/\/com.apple.gss\/documentation\/GSS\/OM_uint32] pointer given as the function’s first argument. Examine this value to further debug a problem. For example, many functions allocate memory as a side effect of their main task. If memory allocation fails, the entire operation fails. But while the major status indicates a generic problem, a minor status of `ENOMEM` indicates that failed memory allocation is the exact culprit.\n\nThree bitfields bundled together make up major status codes in a single [doc:\/\/com.apple.gss\/documentation\/GSS\/OM_uint32] value. These fields are:\n\n\n\nWhen a function successfully runs to completion, it returns zero for all of these fields. As a convenience, you can compare the result directly with the status code [doc:\/\/com.apple.gss\/documentation\/GSS\/GSS_S_COMPLETE] to test for this condition.\n\n\n\nFor any other result, use one of the available extraction macros (such as [doc:\/\/com.apple.gss\/documentation\/GSS\/GSS_CALLING_ERROR]) to obtain a value that you compare against one of the known error codes. For example, you can test for a failure to read one of the function inputs as follows:\n\n```objc\nOM_uint32 major = <# Some GSS call #>\nif (GSS_CALLING_ERROR(major) == GSS_S_CALL_INACCESSIBLE_READ) {\n    \/\/ Handle the error\n}\n```\n\nUse the [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_display_status(_:_:_:_:_:_:)] function to retrieve a human readable string corresponding to a given status result.\n\n## Status and Error Creation\n\n- **OM_uint32**: A 32-bit unsigned integer.\n- **OM_uint64**: A 64-bit unsigned integer.\n- **gss_uint32**: A 32-bit unsigned integer.\n- **gss_status_id_t**: A pointer to a status result.\n- **GSS_C_MECH_CODE**: A flag that indicates the status code comes from a call to an underlying mechanism, such as Kerberos.\n- **GSS_C_GSS_CODE**: A flag that indicates the named status code comes from a GSS-API call.\n- **GSS_S_COMPLETE**: The operation completed without error.\n- **gss_display_status(_:_:_:_:_:_:)**: Returns a human readable string for a status code.\n- **GSSCreateError(_:_:_:)**: Returns an error object based on GSS-API major and minor status codes.\n\n## Calling Errors\n\n- **GSS_S_CALL_BAD_STRUCTURE**: Improperly formatted parameter.\n- **GSS_S_CALL_INACCESSIBLE_READ**: A required input parameter could not be read.\n- **GSS_S_CALL_INACCESSIBLE_WRITE**: A required output parameter failed to write.\n\n## Routine Errors\n\n- **GSS_S_BAD_MECH**: Unsupported mechanism.\n- **GSS_S_BAD_NAME**: Invalid name.\n- **GSS_S_BAD_NAMETYPE**: Unsupported name type.\n- **GSS_S_BAD_MIC**: Failed token integrity check.\n- **GSS_S_BAD_SIG**: Failed token integrity check.\n- **GSS_S_BAD_STATUS**: Invalid status selector.\n- **GSS_S_BAD_BINDINGS**: Channel bindings mismatch.\n- **GSS_S_NO_CRED**: No valid credentials.\n- **GSS_S_NO_CONTEXT**: No valid security context.\n- **GSS_S_DEFECTIVE_TOKEN**: Defective token.\n- **GSS_S_DEFECTIVE_CREDENTIAL**: Defective credential.\n- **GSS_S_CREDENTIALS_EXPIRED**: Expired credential.\n- **GSS_S_CONTEXT_EXPIRED**: Expired context.\n- **GSS_S_FAILURE**: An unspecified error.\n- **GSS_S_BAD_QOP**: Unsupported QOP value.\n- **GSS_S_UNAUTHORIZED**: Unauthorized operation.\n- **GSS_S_UNAVAILABLE**: Unavailable operation.\n- **GSS_S_DUPLICATE_ELEMENT**: A duplicate credential element requested.\n- **GSS_S_NAME_NOT_MN**: The name contains multimechanism elements.\n- **GSS_S_BAD_MECH_ATTR**: Unknown mechanism attribute.\n- **GSS_S_CRED_UNAVAIL**: Unavailable credential.\n\n## Masks and Offsets\n\n- **GSS_C_CALLING_ERROR_MASK**: A mask with a width that matches the calling error field.\n- **GSS_C_CALLING_ERROR_OFFSET**: The offset of the calling error field within the major status code.\n- **GSS_C_ROUTINE_ERROR_MASK**: A mask with a width that matches the routine error field.\n- **GSS_C_ROUTINE_ERROR_OFFSET**: The offset of the routine error field within the major status code.\n- **GSS_C_SUPPLEMENTARY_MASK**: A mask with a width that matches the supplementary information field.\n- **GSS_C_SUPPLEMENTARY_OFFSET**: The offset of the supplementary information field within the major status code.\n\n## Memory and Context\n\n- **Allocating and Releasing Objects**: Manage memory and object lifetimes.\n- **Buffer Management**: Allocate and deallocate buffers with structures that hold a variety of data.\n- **Context Services**: Use context services to manage secure operations between endpoints.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A 32-bit unsigned integer.",
+          "name" : "OM_uint32",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/OM_uint32"
+        },
+        {
+          "description" : "A 64-bit unsigned integer.",
+          "name" : "OM_uint64",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/OM_uint64"
+        },
+        {
+          "description" : "A 32-bit unsigned integer.",
+          "name" : "gss_uint32",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/gss_uint32"
+        },
+        {
+          "description" : "A pointer to a status result.",
+          "name" : "gss_status_id_t",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/gss_status_id_t"
+        },
+        {
+          "description" : "A flag that indicates the status code comes from a call to an underlying mechanism, such as Kerberos.",
+          "name" : "GSS_C_MECH_CODE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_C_MECH_CODE"
+        },
+        {
+          "description" : "A flag that indicates the named status code comes from a GSS-API call.",
+          "name" : "GSS_C_GSS_CODE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_C_GSS_CODE"
+        },
+        {
+          "description" : "The operation completed without error.",
+          "name" : "GSS_S_COMPLETE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_COMPLETE"
+        },
+        {
+          "description" : "Returns a human readable string for a status code.",
+          "name" : "gss_display_status(_:_:_:_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/gss_display_status(_:_:_:_:_:_:)"
+        },
+        {
+          "description" : "Returns an error object based on GSS-API major and minor status codes.",
+          "name" : "GSSCreateError(_:_:_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSSCreateError(_:_:_:)"
+        }
+      ],
+      "title" : "Status and Error Creation"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Improperly formatted parameter.",
+          "name" : "GSS_S_CALL_BAD_STRUCTURE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_CALL_BAD_STRUCTURE"
+        },
+        {
+          "description" : "A required input parameter could not be read.",
+          "name" : "GSS_S_CALL_INACCESSIBLE_READ",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_CALL_INACCESSIBLE_READ"
+        },
+        {
+          "description" : "A required output parameter failed to write.",
+          "name" : "GSS_S_CALL_INACCESSIBLE_WRITE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_CALL_INACCESSIBLE_WRITE"
+        }
+      ],
+      "title" : "Calling Errors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Unsupported mechanism.",
+          "name" : "GSS_S_BAD_MECH",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_BAD_MECH"
+        },
+        {
+          "description" : "Invalid name.",
+          "name" : "GSS_S_BAD_NAME",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_BAD_NAME"
+        },
+        {
+          "description" : "Unsupported name type.",
+          "name" : "GSS_S_BAD_NAMETYPE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_BAD_NAMETYPE"
+        },
+        {
+          "description" : "Failed token integrity check.",
+          "name" : "GSS_S_BAD_MIC",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_BAD_MIC"
+        },
+        {
+          "description" : "Failed token integrity check.",
+          "name" : "GSS_S_BAD_SIG",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_BAD_SIG"
+        },
+        {
+          "description" : "Invalid status selector.",
+          "name" : "GSS_S_BAD_STATUS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_BAD_STATUS"
+        },
+        {
+          "description" : "Channel bindings mismatch.",
+          "name" : "GSS_S_BAD_BINDINGS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_BAD_BINDINGS"
+        },
+        {
+          "description" : "No valid credentials.",
+          "name" : "GSS_S_NO_CRED",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_NO_CRED"
+        },
+        {
+          "description" : "No valid security context.",
+          "name" : "GSS_S_NO_CONTEXT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_NO_CONTEXT"
+        },
+        {
+          "description" : "Defective token.",
+          "name" : "GSS_S_DEFECTIVE_TOKEN",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_DEFECTIVE_TOKEN"
+        },
+        {
+          "description" : "Defective credential.",
+          "name" : "GSS_S_DEFECTIVE_CREDENTIAL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_DEFECTIVE_CREDENTIAL"
+        },
+        {
+          "description" : "Expired credential.",
+          "name" : "GSS_S_CREDENTIALS_EXPIRED",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_CREDENTIALS_EXPIRED"
+        },
+        {
+          "description" : "Expired context.",
+          "name" : "GSS_S_CONTEXT_EXPIRED",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_CONTEXT_EXPIRED"
+        },
+        {
+          "description" : "An unspecified error.",
+          "name" : "GSS_S_FAILURE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_FAILURE"
+        },
+        {
+          "description" : "Unsupported QOP value.",
+          "name" : "GSS_S_BAD_QOP",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_BAD_QOP"
+        },
+        {
+          "description" : "Unauthorized operation.",
+          "name" : "GSS_S_UNAUTHORIZED",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_UNAUTHORIZED"
+        },
+        {
+          "description" : "Unavailable operation.",
+          "name" : "GSS_S_UNAVAILABLE",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_UNAVAILABLE"
+        },
+        {
+          "description" : "A duplicate credential element requested.",
+          "name" : "GSS_S_DUPLICATE_ELEMENT",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_DUPLICATE_ELEMENT"
+        },
+        {
+          "description" : "The name contains multimechanism elements.",
+          "name" : "GSS_S_NAME_NOT_MN",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_NAME_NOT_MN"
+        },
+        {
+          "description" : "Unknown mechanism attribute.",
+          "name" : "GSS_S_BAD_MECH_ATTR",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_BAD_MECH_ATTR"
+        },
+        {
+          "description" : "Unavailable credential.",
+          "name" : "GSS_S_CRED_UNAVAIL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_S_CRED_UNAVAIL"
+        }
+      ],
+      "title" : "Routine Errors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A mask with a width that matches the calling error field.",
+          "name" : "GSS_C_CALLING_ERROR_MASK",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_C_CALLING_ERROR_MASK"
+        },
+        {
+          "description" : "The offset of the calling error field within the major status code.",
+          "name" : "GSS_C_CALLING_ERROR_OFFSET",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_C_CALLING_ERROR_OFFSET"
+        },
+        {
+          "description" : "A mask with a width that matches the routine error field.",
+          "name" : "GSS_C_ROUTINE_ERROR_MASK",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_C_ROUTINE_ERROR_MASK"
+        },
+        {
+          "description" : "The offset of the routine error field within the major status code.",
+          "name" : "GSS_C_ROUTINE_ERROR_OFFSET",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_C_ROUTINE_ERROR_OFFSET"
+        },
+        {
+          "description" : "A mask with a width that matches the supplementary information field.",
+          "name" : "GSS_C_SUPPLEMENTARY_MASK",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_C_SUPPLEMENTARY_MASK"
+        },
+        {
+          "description" : "The offset of the supplementary information field within the major status code.",
+          "name" : "GSS_C_SUPPLEMENTARY_OFFSET",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/GSS_C_SUPPLEMENTARY_OFFSET"
+        }
+      ],
+      "title" : "Masks and Offsets"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Manage memory and object lifetimes.",
+          "name" : "Allocating and Releasing Objects",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/allocating-and-releasing-objects"
+        },
+        {
+          "description" : "Allocate and deallocate buffers with structures that hold a variety of data.",
+          "name" : "Buffer Management",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/buffer-management"
+        },
+        {
+          "description" : "Use context services to manage secure operations between endpoints.",
+          "name" : "Context Services",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/context-services"
+        }
+      ],
+      "title" : "Memory and Context"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Function Status",
+  "url" : "https:\/\/developer.apple.com\/documentation\/gss\/function-status"
+}

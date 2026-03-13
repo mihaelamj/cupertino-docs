@@ -1,0 +1,101 @@
+{
+  "abstract" : "Learn how alternate groups collect audio tracks, and how to choose which audio track to use in your app.",
+  "codeExamples" : [
+    {
+      "code" : "for track in try await asset.loadTracks(withMediaType: .audio) {\n    if try await track.load(.isEnabled) {\n        \/\/...\n    }\n}"
+    }
+  ],
+  "contentHash" : "837d1c9ae6ead8abd756bfe3f45da9f787f313f13910a980be752f2a19154215",
+  "crawledAt" : "2026-03-10T22:01:30Z",
+  "id" : "B2377D1A-FAE5-4F20-BAFD-3E9F3956BDF8",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nMovies recorded in QuickTime Movie files and MPEG-4 files by the Camera app on iPhone 16 and iPhone 16 Pro, and by spatial video captures on Apple Vision Pro, may have more than one audio track, containing the same recording in different formats. One track carries Spatial Audio and the other serves as a stereo fallback.\n\nMovie files collect these tracks into [doc:\/\/com.apple.documentation\/documentation\/QuickTime-File-Format\/Preparing_sound_and_subtitle_alternate_groups_for_use_with_Apple_devices], from which at most one track should be used at a time.\n\n## Alternate groups\n\nMovies use [doc:\/\/com.apple.documentation\/documentation\/QuickTime-File-Format\/Preparing_sound_and_subtitle_alternate_groups_for_use_with_Apple_devices] to describe multiple language audio tracks and subtitle tracks. Alternate groups can also indicate the relationship between stereo and surround audio tracks when they are recordings of the same audio source: only one should be played at a time.\n\nA track association (also called a track reference) can indicate that the stereo track is a *fallback track* for the surround track. In general, the older and more compatible formats are fallbacks for the newer and more sophisticated formats.\n\nThe iPhone 16 series and Apple Vision Pro use a similar approach when capturing Spatial Audio, writing QuickTime Movie files with an alternate group containing:\n\nThe stereo track is associated as the fallback track for the Spatial Audio track.\n\n## Enabled tracks\n\nWhen you use [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVAsset] APIs to access tracks in a movies, each track in the asset reports an `isEnabled` property telling you whether the track is marked in the movie file as enabled or disabled.\n\nFor alternate groups, at most one of the tracks will be marked as enabled, indicating a default or expected track in the group. All other tracks in the group will be marked as disabled.\n\nIn the case of alternate groups with a Spatial Audio track, the stereo track is marked enabled, and the Spatial Audio track is marked disabled.\n\n\n\nIf your app examines or uses audio tracks directly, and you have no other specific processing requirements, you can simply skip disabled tracks. To test whether a track is enabled or disabled, use [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVAsynchronousKeyValueLoading\/load(_:isolation:)]:\n\nTo query alternate track groups, use the [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/trackGroups] property.\n\n## Enabled state in movie file tracks\n\nWhen you’re using [doc:\/\/com.apple.documentation\/documentation\/AVFoundation], you can rely on its APIs for parsing and writing movie files.\n\nIf you have reasons to implement parsing and writing yourself, you’ll need to understand where to find the enabled and alternate group state of tracks in the movie file format, whether [doc:\/\/com.apple.documentation\/documentation\/quicktime-file-format] or ISO Base Media File Format (`ISOBMFF`) (ISO\/IEC 14496-12:2020).\n\nQuickTime Movie and `ISOBMFF` files both carry audiovisual media. The QuickTime File Format and `ISOBMFF` are very similar, as the latter was based upon the former. The format organization of QuickTime Movie files uses structures called “atoms”. `ISOBMFF` files uses many of the same structures but calls them “boxes”. You can find descriptions of “Track atom” and “TrackBox”, for instance, by reading the respective specifications.\n\nIn QuickTime Movie files, the enabled state of a QuickTime Movie track is stored as a single bit flag (`0x000001`) in the 3-byte `Flags` field of the [doc:\/\/com.apple.documentation\/documentation\/quicktime-file-format\/Track_header_atom]. In the QuickTime File Format specification this flag is called [doc:\/\/com.apple.documentation\/documentation\/quicktime-file-format\/Track_header_atom\/Flags]. If this bit is set to `1`, the track is enabled. Otherwise, when it is `0`, the track is disabled.\n\nFor MPEG-4 (or more generally `ISOBMFF`) files, the enabled state is carried in the 3-byte `flags` field of the `TrackHeaderBox`. The `track_enabled` flag (`0x000001`) is used to mark the track as enabled. A value of `0` in this position disables the track.\n\n## Alternate group state in movie file tracks\n\nEach movie track can optionally be associated with an alternate group. Typically, only tracks of a particular kind or category will be in the same alternate group. For example, one alternate group might contain only audio tracks. Another alternate group might contain only subtitle or closed caption tracks.\n\nA track’s alternate group is signaled using a 16-bit integer used to associate tracks.\n\nA value of `0` indicates the track is not a member of an alternate group. A non-zero value in one track can be matched to the same value in other tracks to identify alternate group membership.\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3177-understanding-alternate-audio-track-groups-in-movie-files\ncrawled: 2026-03-10T22:01:30Z\n---\n\n# TN3177: Understanding alternate audio track groups in movie files\n\n**Article**\n\nLearn how alternate groups collect audio tracks, and how to choose which audio track to use in your app.\n\n## Overview\n\nMovies recorded in QuickTime Movie files and MPEG-4 files by the Camera app on iPhone 16 and iPhone 16 Pro, and by spatial video captures on Apple Vision Pro, may have more than one audio track, containing the same recording in different formats. One track carries Spatial Audio and the other serves as a stereo fallback.\n\nMovie files collect these tracks into [doc:\/\/com.apple.documentation\/documentation\/QuickTime-File-Format\/Preparing_sound_and_subtitle_alternate_groups_for_use_with_Apple_devices], from which at most one track should be used at a time.\n\n## Alternate groups\n\nMovies use [doc:\/\/com.apple.documentation\/documentation\/QuickTime-File-Format\/Preparing_sound_and_subtitle_alternate_groups_for_use_with_Apple_devices] to describe multiple language audio tracks and subtitle tracks. Alternate groups can also indicate the relationship between stereo and surround audio tracks when they are recordings of the same audio source: only one should be played at a time.\n\nA track association (also called a track reference) can indicate that the stereo track is a *fallback track* for the surround track. In general, the older and more compatible formats are fallbacks for the newer and more sophisticated formats.\n\nThe iPhone 16 series and Apple Vision Pro use a similar approach when capturing Spatial Audio, writing QuickTime Movie files with an alternate group containing:\n\n- a stereo AAC track, and\n- a Spatial Audio track.\n\nThe stereo track is associated as the fallback track for the Spatial Audio track.\n\n\n\n## Enabled tracks\n\nWhen you use [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVAsset] APIs to access tracks in a movies, each track in the asset reports an `isEnabled` property telling you whether the track is marked in the movie file as enabled or disabled.\n\nFor alternate groups, at most one of the tracks will be marked as enabled, indicating a default or expected track in the group. All other tracks in the group will be marked as disabled.\n\nIn the case of alternate groups with a Spatial Audio track, the stereo track is marked enabled, and the Spatial Audio track is marked disabled.\n\n\n\nIf your app examines or uses audio tracks directly, and you have no other specific processing requirements, you can simply skip disabled tracks. To test whether a track is enabled or disabled, use [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVAsynchronousKeyValueLoading\/load(_:isolation:)]:\n\n```\nfor track in try await asset.loadTracks(withMediaType: .audio) {\n    if try await track.load(.isEnabled) {\n        \/\/...\n    }\n}\n```\n\nTo query alternate track groups, use the [doc:\/\/com.apple.documentation\/documentation\/AVFoundation\/AVPartialAsyncProperty\/trackGroups] property.\n\n\n\n\n\n## Enabled state in movie file tracks\n\nWhen you’re using [doc:\/\/com.apple.documentation\/documentation\/AVFoundation], you can rely on its APIs for parsing and writing movie files.\n\nIf you have reasons to implement parsing and writing yourself, you’ll need to understand where to find the enabled and alternate group state of tracks in the movie file format, whether [doc:\/\/com.apple.documentation\/documentation\/quicktime-file-format] or ISO Base Media File Format (`ISOBMFF`) (ISO\/IEC 14496-12:2020).\n\n\n\nQuickTime Movie and `ISOBMFF` files both carry audiovisual media. The QuickTime File Format and `ISOBMFF` are very similar, as the latter was based upon the former. The format organization of QuickTime Movie files uses structures called “atoms”. `ISOBMFF` files uses many of the same structures but calls them “boxes”. You can find descriptions of “Track atom” and “TrackBox”, for instance, by reading the respective specifications.\n\nIn QuickTime Movie files, the enabled state of a QuickTime Movie track is stored as a single bit flag (`0x000001`) in the 3-byte `Flags` field of the [doc:\/\/com.apple.documentation\/documentation\/quicktime-file-format\/Track_header_atom]. In the QuickTime File Format specification this flag is called [doc:\/\/com.apple.documentation\/documentation\/quicktime-file-format\/Track_header_atom\/Flags]. If this bit is set to `1`, the track is enabled. Otherwise, when it is `0`, the track is disabled.\n\nFor MPEG-4 (or more generally `ISOBMFF`) files, the enabled state is carried in the 3-byte `flags` field of the `TrackHeaderBox`. The `track_enabled` flag (`0x000001`) is used to mark the track as enabled. A value of `0` in this position disables the track.\n\n## Alternate group state in movie file tracks\n\nEach movie track can optionally be associated with an alternate group. Typically, only tracks of a particular kind or category will be in the same alternate group. For example, one alternate group might contain only audio tracks. Another alternate group might contain only subtitle or closed caption tracks.\n\nA track’s alternate group is signaled using a 16-bit integer used to associate tracks.\n\n- In QuickTime Movie files, the [doc:\/\/com.apple.documentation\/documentation\/quicktime-file-format\/Track_header_atom] carries a 16-bit integer [doc:\/\/com.apple.documentation\/documentation\/quicktime-file-format\/Track_header_atom\/Alternate_group] field.\n- In `ISOBMFF`, the `TrackHeaderBox` `ISOBMFF` carries a 16-bit integer `alternate_group` field.\n\nA value of `0` indicates the track is not a member of an alternate group. A non-zero value in one track can be matched to the same value in other tracks to identify alternate group membership.\n\n\n\n## Revision History\n\n- **2024-09-26** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3177: Understanding alternate audio track groups in movie files",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3177-understanding-alternate-audio-track-groups-in-movie-files"
+}

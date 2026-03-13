@@ -1,0 +1,110 @@
+{
+  "abstract" : "Review common causes for failing Xcode Cloud builds that originate from helper tools running in a misconfigured build environment.",
+  "codeExamples" : [
+    {
+      "code" : "mkmf.rb can't find header files for ruby at\n\/System\/Library\/Frameworks\/Ruby.framework\/Versions\/2.6\/usr\/lib\/ruby\/include\/ruby.h"
+    },
+    {
+      "code" : "checking for ffi.h... *** extconf.rb failed ***\nCould not create Makefile due to some reason, probably lack of necessary\nlibraries and\/or headers."
+    },
+    {
+      "code" : "\/System\/Library\/Frameworks\/Ruby.framework\/Versions\/2.6\/usr\/lib\/ruby\/2.6.0\/mkmf.rb:467:in `try_do':\nThe compiler failed to generate an executable file. (RuntimeError)\nYou have to install development tools first.\n<Lines removed for the Technote>\n    from \/System\/Library\/Frameworks\/Ruby.framework\/Versions\/2.6\/usr\/lib\/ruby\/2.6.0\/mkmf.rb:1108:in `have_header'\n    from extconf.rb:10:in `system_libffi_usable?'\n    from extconf.rb:42:in `<main>'"
+    },
+    {
+      "code" : "Error: Xcode alone is not sufficient on <macOS name>.\nInstall the Command Line Tools:\nxcode-select --install"
+    }
+  ],
+  "contentHash" : "578e4a2087a73ea7c3e41e53056ffdacd85a137c9362687900b746c335e9dc27",
+  "crawledAt" : "2026-03-10T22:01:44Z",
+  "id" : "EC968772-113E-44AF-8F1C-870EAC309CBA",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nXcode Cloud offers a continuous integration build environment that includes a macOS version and an Xcode version that you configure for each Xcode Cloud workflow. Your project or workspace may depend on helper tools beyond the tools that are included with macOS or Xcode to successfully build your app. If your app’s build requires the installation of additional helper tools into the Xcode Cloud build environment, you use a post-clone script to install the tool for every build.\n\nYou define the build environment by choosing the macOS version, the Xcode version, and helper tools that your app’s build requires. As a side effect of using helper tools, you may encounter build errors specific to these helper tools. Xcode Cloud creates a clean, temporary environment for every build, requiring you to install the helper tools during each build. As a result, installation or build errors caused by helper tools may appear more often in Xcode Cloud than locally on your Mac.\n\n## Review common causes for errors caused by helper tools\n\nApps invoking helper tools as part of the app’s build may encounter an error in a misconfigured build environment. These errors occur because of the following conditions:\n\nWhen a build meets all of these conditions, the build may fail with error messages similar to the following examples.\n\n## Review usage of the helper tool\n\nBefore attempting to resolve the error, first consider removing the helper tool from your app’s build entirely. If you build your app with Xcode Cloud, reduce the amount of additional software installed on every build to lower the build time, and receive build and test results faster.\n\nIn many cases, Xcode provides functionality that can replace the helper tool. In other cases, you can use the Swift package plugin support to add functionality in Xcode. For example, if the helper tool generates source code as part of the build, consider using or creating a Swift package plugin with this functionality instead of a separate helper tool. To use an existing package plugin, add it to your package manifest. For more information about Swift package plugins, see [https:\/\/developer.apple.com\/wwdc22\/110359\/] and [https:\/\/developer.apple.com\/wwdc22\/110401\/]\n\n## Adjust the Xcode Cloud build environment\n\nIf your app builds using Xcode Cloud and you are unable to remove the helper tool, try to resolve the error by modifying the Environment section of a workflow. Select the Latest Release option for both the Xcode and macOS settings. For workflows that do not release to the App Store, select Latest Beta or Release for both the Xcode and macOS settings. By selecting these options, the macOS SDK version in Xcode matches the macOS version on the build machine, which often resolves the build error. See [doc:\/\/com.apple.documentation\/documentation\/Xcode\/Xcode-Cloud-Workflow-Reference] for additional information on configuring workflows.\n\n## Manage the build environment manually\n\nSome build environments require you to manually manage the Xcode version and macOS versions comprising the build environment to resolve the error. These environments include Macs used for development, self-managed continuous integration servers, as well as Xcode Cloud workflows that aren’t able to use the options described in [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3129-resolving-build-errors-from-helper-tools-in-xcode-cloud#Adjust-the-Xcode-Cloud-build-environment]. In these build environments, match the major version number of the macOS SDK in Xcode to the major version number of the macOS installation on the build machine. By matching these version numbers, the helper tool has access to the resources it needs within the macOS SDK.\n\nFor example, if you are using Xcode 13.2, which contains the macOS 12.1 SDK, the build machine must use macOS 12 so the major version numbers match (12). If you build on macOS 11, the helper tool will fail because the major SDK version (12) doesn’t match the major macOS version (11).\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3129-resolving-build-errors-from-helper-tools-in-xcode-cloud\ncrawled: 2026-03-10T22:01:44Z\n---\n\n# TN3129: Resolving build errors from helper tools in Xcode Cloud and other build environments\n\n**Article**\n\nReview common causes for failing Xcode Cloud builds that originate from helper tools running in a misconfigured build environment.\n\n## Overview\n\nXcode Cloud offers a continuous integration build environment that includes a macOS version and an Xcode version that you configure for each Xcode Cloud workflow. Your project or workspace may depend on helper tools beyond the tools that are included with macOS or Xcode to successfully build your app. If your app’s build requires the installation of additional helper tools into the Xcode Cloud build environment, you use a post-clone script to install the tool for every build.\n\nYou define the build environment by choosing the macOS version, the Xcode version, and helper tools that your app’s build requires. As a side effect of using helper tools, you may encounter build errors specific to these helper tools. Xcode Cloud creates a clean, temporary environment for every build, requiring you to install the helper tools during each build. As a result, installation or build errors caused by helper tools may appear more often in Xcode Cloud than locally on your Mac.\n\n\n\n## Review common causes for errors caused by helper tools\n\nApps invoking helper tools as part of the app’s build may encounter an error in a misconfigured build environment. These errors occur because of the following conditions:\n\n- The helper tool is based on Ruby.\n- The helper tool uses a native system extension to access C libraries on macOS.\n- The macOS version of the build machine running the helper tool does not match the macOS SDK version provided by Xcode.\n\nWhen a build meets all of these conditions, the build may fail with error messages similar to the following examples.\n\n```\nmkmf.rb can't find header files for ruby at\n\/System\/Library\/Frameworks\/Ruby.framework\/Versions\/2.6\/usr\/lib\/ruby\/include\/ruby.h\n```\n\n```\nchecking for ffi.h... *** extconf.rb failed ***\nCould not create Makefile due to some reason, probably lack of necessary\nlibraries and\/or headers.\n```\n\n```\n\/System\/Library\/Frameworks\/Ruby.framework\/Versions\/2.6\/usr\/lib\/ruby\/2.6.0\/mkmf.rb:467:in `try_do':\nThe compiler failed to generate an executable file. (RuntimeError)\nYou have to install development tools first.\n<Lines removed for the Technote>\n    from \/System\/Library\/Frameworks\/Ruby.framework\/Versions\/2.6\/usr\/lib\/ruby\/2.6.0\/mkmf.rb:1108:in `have_header'\n    from extconf.rb:10:in `system_libffi_usable?'\n    from extconf.rb:42:in `<main>'\n```\n\n```\nError: Xcode alone is not sufficient on <macOS name>.\nInstall the Command Line Tools:\nxcode-select --install\n```\n\n\n\n## Review usage of the helper tool\n\nBefore attempting to resolve the error, first consider removing the helper tool from your app’s build entirely. If you build your app with Xcode Cloud, reduce the amount of additional software installed on every build to lower the build time, and receive build and test results faster.\n\nIn many cases, Xcode provides functionality that can replace the helper tool. In other cases, you can use the Swift package plugin support to add functionality in Xcode. For example, if the helper tool generates source code as part of the build, consider using or creating a Swift package plugin with this functionality instead of a separate helper tool. To use an existing package plugin, add it to your package manifest. For more information about Swift package plugins, see [https:\/\/developer.apple.com\/wwdc22\/110359\/] and [https:\/\/developer.apple.com\/wwdc22\/110401\/]\n\n## Adjust the Xcode Cloud build environment\n\nIf your app builds using Xcode Cloud and you are unable to remove the helper tool, try to resolve the error by modifying the Environment section of a workflow. Select the Latest Release option for both the Xcode and macOS settings. For workflows that do not release to the App Store, select Latest Beta or Release for both the Xcode and macOS settings. By selecting these options, the macOS SDK version in Xcode matches the macOS version on the build machine, which often resolves the build error. See [doc:\/\/com.apple.documentation\/documentation\/Xcode\/Xcode-Cloud-Workflow-Reference] for additional information on configuring workflows.\n\n## Manage the build environment manually\n\nSome build environments require you to manually manage the Xcode version and macOS versions comprising the build environment to resolve the error. These environments include Macs used for development, self-managed continuous integration servers, as well as Xcode Cloud workflows that aren’t able to use the options described in [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3129-resolving-build-errors-from-helper-tools-in-xcode-cloud#Adjust-the-Xcode-Cloud-build-environment]. In these build environments, match the major version number of the macOS SDK in Xcode to the major version number of the macOS installation on the build machine. By matching these version numbers, the helper tool has access to the resources it needs within the macOS SDK.\n\nFor example, if you are using Xcode 13.2, which contains the macOS 12.1 SDK, the build machine must use macOS 12 so the major version numbers match (12). If you build on macOS 11, the helper tool will fail because the major SDK version (12) doesn’t match the major macOS version (11).\n\n\n\n## Revision History\n\n- **2022-07-19** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3129: Resolving build errors from helper tools in Xcode Cloud and other build environments",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3129-resolving-build-errors-from-helper-tools-in-xcode-cloud"
+}

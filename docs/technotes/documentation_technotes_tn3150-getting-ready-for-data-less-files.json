@@ -1,0 +1,109 @@
+{
+  "abstract" : "Understand dataless files and how to minimize the performance impact as the system materializes them.",
+  "codeExamples" : [
+    {
+      "code" : " 1000 -[NSFileManager contentsOfDirectoryAtPath:error:] + 36 (Foundation + 416570) [0x7ff81ca4fb3a]\n 1000 _NSDirectoryContentsFromCFURLEnumeratorError + 466 (Foundation + 417600) [0x7ff81ca4ff40]\n 1000 _URLEnumeratorGetNextURL + 176 (CoreServicesInternal + 51302) [0x7ff81e465866]\n 1000 _GetDirectoryURLs(_CFURLEnumerator*) + 1223 (CoreServicesInternal + 57378) [0x7ff81e467022]\n 1000 DirEnumRead + 432 (CoreServicesInternal + 58064) [0x7ff81e4672d0]\n 1000 getattrlistbulk + 10 (libsystem_kernel.dylib + 17338) [0x7ff81baed3ba]\n *1000 hndl_unix_scall64 + 22 (kernel + 57910) [0xffffff800021e236]\n *1000 unix_syscall64 + 507 (kernel + 7833867) [0xffffff800098890b]\n *1000 getattrlistbulk + 1570 (kernel + 3070210) [0xffffff80004fd902]\n *1000 apfs_vnop_getattrlistbulk + 272 (apfs + 394110) [0xffffff800356837e]\n *1000 apfs_materialize_dataless_file_ext + 160 (apfs + 738928) [0xffffff80035bc670]"
+    },
+    {
+      "code" : "struct stat fileStat;\nif (stat(yourFilePath, &fileStat) == 0) {\n    if ((fileStat.st_flags & SF_DATALESS) > 0) {\n        \/\/ The file is dataless.\n    } else {\n        \/\/ The file isn't dataless.\n        \/\/ SF_DATALESS is a feature of APFS;\n        \/\/ don't assume IO is local here because network IO can happen on NFS.\n    }\n}",
+      "language" : "c"
+    },
+    {
+      "code" : "int iopolicy = getiopolicy_np(IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES, IOPOL_SCOPE_THREAD);\nif (iopolicy >= 0) {\n    if (setiopolicy_np(IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES, IOPOL_SCOPE_THREAD, IOPOL_MATERIALIZE_DATALESS_FILES_OFF) == 0) {\n        \/\/ Do your work here.\n        \/\/ Detect the EDEADLK error and handle the I\/O failure when accessing dataless files.\n    }\n    \/\/ Restore the iopolicy.\n    setiopolicy_np(IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES, IOPOL_SCOPE_THREAD, iopolicy);\n}",
+      "language" : "c"
+    }
+  ],
+  "contentHash" : "2b5b335a4d4a66fbdd2d01803c2c7845b8a2974c4d9e240db4bf8239f48e97ba",
+  "crawledAt" : "2026-03-10T22:01:40Z",
+  "id" : "F9BD85FA-87E9-47B4-A383-985F49483C9A",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nIn a modern file system, a file’s content may not be available locally on the device. A file that contains only metadata is known as a *dataless* file. The file’s content typically resides on a remote server and is available to people or apps, transparently, when they access the file.\n\nFor example, a person can create a dataless file in iCloud Drive on iOS by selecting a file in the Files app and choosing the Remove Download menu item. That action removes the file’s contents from the local device and frees the used storage space. Later, when a person taps the same file, or an app accesses it, the system redownloads the file’s content and makes it available again — a process known as materialization. File providers typically support dataless files. For more information, see [doc:\/\/com.apple.documentation\/documentation\/FileProvider\/synchronizing-the-file-provider-extension].\n\nMaterializing a dataless file can take time if the file is large or there are poor network conditions. In such a scenario, the app may become unresponsive. If an app’s main queue remains unresponsive for a long time, the system may terminate the app and trigger a watchdog crash. See [doc:\/\/com.apple.documentation\/documentation\/Xcode\/addressing-watchdog-terminations] for details.\n\n## Understand the impact of file materialization\n\nDataless files reduce the amount of storage space a file typically consumes, but accessing a dataless file causes the system to materialize the file. This can take a long time, creating a poor user experience in apps that aren’t ready for it.\n\nThis typically affects apps that store files in their own [doc:\/\/com.apple.documentation\/documentation\/Foundation\/FileManager\/url(forUbiquityContainerIdentifier:)] or access files from network file providers like iCloud Drive. Common symptoms are:\n\nExamples of actions that may result in one or more of these symptoms are enumerating a directory’s contents and checking whether a file exists using [doc:\/\/com.apple.documentation\/documentation\/Foundation\/FileManager\/fileExists(atPath:)].\n\nIf you app encounters one of these symptoms, use Instruments to profile your app and identify the contributing API calls. For example, the following trace shows an app using [doc:\/\/com.apple.documentation\/documentation\/Foundation\/FileManager\/contentsOfDirectory(atPath:)] to retrieve all paths in a directory, and the `apfs_materialize_dataless_file_ext` symbol in the last frame corresponds to the materialization process:\n\n## Prepare your app for dataless file access\n\nThe system, or a person using the device, can make dataless files whenever they determine it’s appropriate, and your app needs to be ready to handle them. Specifically, avoid unnecessarily materializing dataless files and, when your app requires access to a file’s contents, perform that work asynchronously off the main thread. For more information, see [doc:\/\/com.apple.documentation\/documentation\/Foundation\/improving-performance-and-stability-when-accessing-the-file-system].\n\n[doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIDocument] and [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSDocument] automatically access the file system in a coordinated and asynchronous manner. If your app uses those classes to read and write files (and document packages), it will automatically do the right thing with dataless files. (The system still materializes the intermediate folders, if they themselves are dataless.)\n\nIf your app or framework uses low-level POSIX APIs to access the file system and you’re unable to migrate to the preferred methods, consider the following two options:\n\nFor more information about the functions and constants in the above code, see their man pages. [doc:\/\/com.apple.documentation\/documentation\/os\/reading-unix-manual-pages] covers how to read man pages.\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3150-getting-ready-for-data-less-files\ncrawled: 2026-03-10T22:01:40Z\n---\n\n# TN3150: Getting ready for dataless files\n\n**Article**\n\nUnderstand dataless files and how to minimize the performance impact as the system materializes them.\n\n## Overview\n\nIn a modern file system, a file’s content may not be available locally on the device. A file that contains only metadata is known as a *dataless* file. The file’s content typically resides on a remote server and is available to people or apps, transparently, when they access the file.\n\nFor example, a person can create a dataless file in iCloud Drive on iOS by selecting a file in the Files app and choosing the Remove Download menu item. That action removes the file’s contents from the local device and frees the used storage space. Later, when a person taps the same file, or an app accesses it, the system redownloads the file’s content and makes it available again — a process known as materialization. File providers typically support dataless files. For more information, see [doc:\/\/com.apple.documentation\/documentation\/FileProvider\/synchronizing-the-file-provider-extension].\n\nMaterializing a dataless file can take time if the file is large or there are poor network conditions. In such a scenario, the app may become unresponsive. If an app’s main queue remains unresponsive for a long time, the system may terminate the app and trigger a watchdog crash. See [doc:\/\/com.apple.documentation\/documentation\/Xcode\/addressing-watchdog-terminations] for details.\n\n## Understand the impact of file materialization\n\nDataless files reduce the amount of storage space a file typically consumes, but accessing a dataless file causes the system to materialize the file. This can take a long time, creating a poor user experience in apps that aren’t ready for it.\n\nThis typically affects apps that store files in their own [doc:\/\/com.apple.documentation\/documentation\/Foundation\/FileManager\/url(forUbiquityContainerIdentifier:)] or access files from network file providers like iCloud Drive. Common symptoms are:\n\n- Slower frame rates and jitters when someone scrolls a user interface that loads data from one or more files\n- Spins or hangs when performing file system operations\n- Time-out errors (`ETIMEDOUT`) when invoking file system APIs\n- A watchdog termination where the crash report includes reference to the materialization process\n\nExamples of actions that may result in one or more of these symptoms are enumerating a directory’s contents and checking whether a file exists using [doc:\/\/com.apple.documentation\/documentation\/Foundation\/FileManager\/fileExists(atPath:)].\n\nIf you app encounters one of these symptoms, use Instruments to profile your app and identify the contributing API calls. For example, the following trace shows an app using [doc:\/\/com.apple.documentation\/documentation\/Foundation\/FileManager\/contentsOfDirectory(atPath:)] to retrieve all paths in a directory, and the `apfs_materialize_dataless_file_ext` symbol in the last frame corresponds to the materialization process:\n\n```\n 1000 -[NSFileManager contentsOfDirectoryAtPath:error:] + 36 (Foundation + 416570) [0x7ff81ca4fb3a]\n 1000 _NSDirectoryContentsFromCFURLEnumeratorError + 466 (Foundation + 417600) [0x7ff81ca4ff40]\n 1000 _URLEnumeratorGetNextURL + 176 (CoreServicesInternal + 51302) [0x7ff81e465866]\n 1000 _GetDirectoryURLs(_CFURLEnumerator*) + 1223 (CoreServicesInternal + 57378) [0x7ff81e467022]\n 1000 DirEnumRead + 432 (CoreServicesInternal + 58064) [0x7ff81e4672d0]\n 1000 getattrlistbulk + 10 (libsystem_kernel.dylib + 17338) [0x7ff81baed3ba]\n *1000 hndl_unix_scall64 + 22 (kernel + 57910) [0xffffff800021e236]\n *1000 unix_syscall64 + 507 (kernel + 7833867) [0xffffff800098890b]\n *1000 getattrlistbulk + 1570 (kernel + 3070210) [0xffffff80004fd902]\n *1000 apfs_vnop_getattrlistbulk + 272 (apfs + 394110) [0xffffff800356837e]\n *1000 apfs_materialize_dataless_file_ext + 160 (apfs + 738928) [0xffffff80035bc670]\n```\n\n## Prepare your app for dataless file access\n\nThe system, or a person using the device, can make dataless files whenever they determine it’s appropriate, and your app needs to be ready to handle them. Specifically, avoid unnecessarily materializing dataless files and, when your app requires access to a file’s contents, perform that work asynchronously off the main thread. For more information, see [doc:\/\/com.apple.documentation\/documentation\/Foundation\/improving-performance-and-stability-when-accessing-the-file-system].\n\n[doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIDocument] and [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSDocument] automatically access the file system in a coordinated and asynchronous manner. If your app uses those classes to read and write files (and document packages), it will automatically do the right thing with dataless files. (The system still materializes the intermediate folders, if they themselves are dataless.)\n\nIf your app or framework uses low-level POSIX APIs to access the file system and you’re unable to migrate to the preferred methods, consider the following two options:\n\n- Check if a file is dataless and then only access it in a safe context. To do the check, call `stat` or `getattrlist` and examine if `SF_DATALESS` is present in `stat.st_flags`. Be aware that `stat` and `getattrlist` both trigger the materialization of any intermediate folders in the file’s path, if they themselves are dataless.\n\n```c\nstruct stat fileStat;\nif (stat(yourFilePath, &fileStat) == 0) {\n    if ((fileStat.st_flags & SF_DATALESS) > 0) {\n        \/\/ The file is dataless.\n    } else {\n        \/\/ The file isn't dataless.\n        \/\/ SF_DATALESS is a feature of APFS;\n        \/\/ don't assume IO is local here because network IO can happen on NFS.\n    }\n}\n```\n\n- Opt-out of dataless file materialization on a per-thread (or per-process) basis. Call `setiopolicy_np` with `IOPOL_MATERIALIZE_DATALESS_FILES_OFF` as the `iotype` parameter, and `IOPOL_SCOPE_THREAD` or `IOPOL_SCOPE_PROCESS` as the `scope`. If you choose this option, handle any EDEADLK errors that arise when accessing dataless files.\n\n```c\nint iopolicy = getiopolicy_np(IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES, IOPOL_SCOPE_THREAD);\nif (iopolicy >= 0) {\n    if (setiopolicy_np(IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES, IOPOL_SCOPE_THREAD, IOPOL_MATERIALIZE_DATALESS_FILES_OFF) == 0) {\n        \/\/ Do your work here.\n        \/\/ Detect the EDEADLK error and handle the I\/O failure when accessing dataless files.\n    }\n    \/\/ Restore the iopolicy.\n    setiopolicy_np(IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES, IOPOL_SCOPE_THREAD, iopolicy);\n}\n```\n\nFor more information about the functions and constants in the above code, see their man pages. [doc:\/\/com.apple.documentation\/documentation\/os\/reading-unix-manual-pages] covers how to read man pages.\n\n## Revision History\n\n- **2023-05-09** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3150: Getting ready for dataless files",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3150-getting-ready-for-data-less-files"
+}

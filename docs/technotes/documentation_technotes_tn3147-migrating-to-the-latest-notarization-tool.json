@@ -1,0 +1,186 @@
+{
+  "abstract" : "Migrate your notarization workflows to `notarytool` from the deprecated `altool`.",
+  "codeExamples" : [
+    {
+      "code" : "% xcrun notarytool\nOVERVIEW: Manage submissions to the Apple notary service\n…",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcode-select --print-path\n\/Applications\/Xcode.app\/Contents\/Developer",
+      "language" : "shell"
+    },
+    {
+      "code" : "% sudo xcode-select --switch ~\/MyXcodeInstalls\/Xcode13.app",
+      "language" : "shell"
+    },
+    {
+      "code" : "% DEVELOPER_DIR=~\/MyXcodeInstalls\/Xcode13.app\/Contents\/Developer xcrun notarytool\nOVERVIEW: Manage submissions to the Apple notary service\n…",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun altool --username APPLE_ID --team-id TEAM_ID --password PASSWORD …",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool … --apple-id APPLE_ID --team-id TEAM_ID --password PASSWORD …",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun altool --username APPLE_ID --apiIssuer ISSUER_UUID --apiKey API_KEY …",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool … --issuer ISSUER_UUID --key-id API_KEY --key PATH_TO_KEY …",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun altool OLD_CREDENTIALS --notarization-history 0",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool history NEW_CREDENTIALS",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun altool OLD_CREDENTIALS --notarize-app --file PATH_TO_FILE --primary-bundle-id BUNDLE_ID",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool submit NEW_CREDENTIALS PATH_TO_FILE",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun altool OLD_CREDENTIALS --notarization-info SUBMISSION_ID",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool info NEW_CREDENTIALS SUBMISSION_ID",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool log NEW_CREDENTIALS SUBMISSION_ID",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun altool OLD_CREDENTIALS --notarization-history 0",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool history NEW_CREDENTIALS",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool\nOVERVIEW: Manage submissions to the Apple notary service\n\nSUBCOMMANDS:\n…\n  submit                  Submit an archive to the Notary service\n…",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool submit --help\nOVERVIEW: Submit an archive to the Notary service\n\nUSAGE: notarytool submit [<options>] <file-path>\n\nARGUMENTS:\n  <file-path>             Path to the archive\n\nOPTIONS:\n…",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool store-credentials PROFILE --apple-id APPLE_ID --team-id TEAM_ID\n…\nApp-specific password for APPLE_ID: \n…\nCredentials saved to Keychain.\nTo use them, specify `--keychain-profile \"PROFILE\"`",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun notarytool history --keychain-profile PROFILE",
+      "language" : "shell"
+    },
+    {
+      "code" : "% xcrun --find notarytool\n\/Applications\/Xcode.app\/Contents\/Developer\/usr\/bin\/notarytool\n% cp \/Applications\/Xcode.app\/Contents\/Developer\/usr\/bin\/notarytool …whereever…",
+      "language" : "shell"
+    }
+  ],
+  "contentHash" : "9390b33c571f86c14a58d3f653ac8e6128cd0803230d3a07f031f458d13acca5",
+  "crawledAt" : "2026-03-10T22:01:41Z",
+  "id" : "B90C0FD1-3665-4EC2-9F44-72AA088485A4",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nAt [https:\/\/developer.apple.com\/videos\/play\/wwdc2021\/10261\/] Apple introduced `notarytool`, a new tool for interacting with the Apple notary service.  When it comes to notarization, this tool is faster and more reliable than the previous `altool`.  If you’re still notarizing with `altool`, it’s time to switch to `notarytool`.\n\nTo migrate your workflows to `notarytool`:\n\nYou can use `altool` and `notarytool` in parallel.  Feel free to leave your current notarization workflow in place while you experiment with `notarytool`.  Then, when you’re happy with the new workflow, cut over to `notarytool`.  Just make sure you do this before the above-mentioned deadline.\n\nIf you’re not migrating from `altool`—that is, you’re setting up notarization for the first time—ignore this technote and instead start with [doc:\/\/com.apple.documentation\/documentation\/Security\/notarizing-macos-software-before-distribution] and then move on to [doc:\/\/com.apple.documentation\/documentation\/Security\/customizing-the-notarization-workflow].  Or, if you want to notarize from a non-Apple platform, see [https:\/\/developer.apple.com\/documentation\/notaryapi].\n\n## Get the new tool\n\nIf you have Xcode 13 or later then you already have `notarytool`.  Just run it with `xcrun`:\n\nIf `xcrun` can’t find the tool, make sure you have Xcode 13 or later selected:\n\nIf not, select it using the `--switch` command:\n\nIf you want to keep an older version of Xcode selected but use `notarytool` from the newer one, set the `DEVELOPER_DIR` environment variable when you invoke `xcrun`:\n\nIf your version of macOS does not support Xcode 13, see [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3147-migrating-to-the-latest-notarization-tool#Enable-notarization-on-an-older-version-of-macOS].\n\n## Migrate your credentials\n\n`notarytool` supports the same credentials as `altool`: an app-specific password or an App Store Connect API key.\n\n### App-specific password\n\nIf you’re currently authenticating with an app-specific password, your `altool` commands might start like this:\n\nIn this command:\n\nThe equivalent for `notarytool` is:\n\nHere `APPLE_ID`, `TEAM_ID`, and `PASSWORD` are as above.\n\nIf your Apple ID only belongs to one team then you don’t need to supply a Team ID.  However, it’s best practice to include it regardless.  That way, joining another team at some point in the future won’t break your notarization workflow.  To find your Team ID, go to the [https:\/\/developer.apple.com\/account] on the Apple Developer website.\n\nYou can use the same app-specific password for both `altool` and `notarytool`.  You might also choose to create a new app-specific password for `notarytool`.  To do that, follow the steps in [https:\/\/support.apple.com\/en-us\/HT204397].\n\n### App Store Connect API key\n\nIf you’re currently authenticating with an App Store Connect API key, your `altool` commands might start like this:\n\nIn this command:\n\n`altool` uses the key ID to search for the key’s `.p8` file.  For example, it might find a key file at `~\/.appstoreconnect\/private_keys\/AuthKey_T9GPZ92M7K.p8`.\n\nThe equivalent for `notarytool` is:\n\nHere `ISSUER_UUID` and `API_KEY` are as above, and `PATH_TO_KEY` is the path to the key’s `.p8` file.  There’s no need to supply your Apple ID because `notarytool` works that out based on the issuer.\n\nIt’s fine to use the same App Store Connect API key `.p8` file for both `altool` and `notarytool`.  If you previously stored your key in `~\/.appstoreconnect\/private_keys\/AuthKey_API_KEY.p8`, just pass that path to the `--key` option.\n\n## Test your credentials\n\nThe best way to test your credentials is to get a history of recent activity.  In `altool` you might use a command like this:\n\nIn this command, `OLD_CREDENTIALS` is your existing `altool` credentials.\n\nTo test out your `notarytool` credentials, pass them to the `history` subcommand:\n\nReplace `NEW_CREDENTIALS` with the new credentials you worked out in the previous section.\n\n## Convert your notarization operations\n\nOnce you have your credentials sorted out, it’s time to replace each invocation of `altool` with the equivalent one for `notarytool`.  The common notarization operations are:\n\nRemember that `notarytool` only replaces the notarization aspects of `altool`.  If you use `altool` for other tasks, like submitting an app to the App Store, continue to use it for that.\n\n### Submit a file\n\nWhen using `altool`, your command to submit a file to the notary service might look like this:\n\nIn this example, `OLD_CREDENTIALS` is your existing `altool` credentials, `PATH_TO_FILE` is the path of the file you want to notarize, and `BUNDLE_ID` is the bundle ID of the main product in this file.\n\nTo do the same with `notarytool`, use the `submit` subcommand:\n\nHere `PATH_TO_FILE` is as above.  Replace `NEW_CREDENTIALS` with the credentials from earlier.\n\nFor a nice bonus, consider adding the `--wait` option.  With that, `notarytool` won’t return until the notarization is complete and, when it does return, it will output the submission’s status.  If you were previously polling the status to check for completion, add the `--wait` option and remove that logic.\n\n### Check status\n\nWhen using `altool`, your command to check the status of a submission might look like this:\n\nIn this example, `OLD_CREDENTIALS` is your existing `altool` credentials and `SUBMISSION_ID` is the submission ID you got when you submitted the file.\n\nTo do the same with `notarytool`, use the `info` subcommand:\n\nHere `SUBMISSION_ID` is as above.  Replace `NEW_CREDENTIALS` with the credentials from earlier.\n\nThe submissions IDs returned by `notarytool` live in a different namespace than those returned by `altool`.  You can’t check on the status of an `altool` submission with `notarytool`, or vice versa.\n\n### Fetch the notary log\n\nAfter processing your submission the notary service generates a log.  This JSON file holds information about your submission, including errors and warnings.\n\nFetching the notary log with `altool` is a little convoluted.  You first get the status of the request.  If the request is finished, that status includes a `LogFileURL` property.  To get the log, fetch that URL with your preferred HTTP tool, for example, Safari or `curl`.\n\nThings are much easier with `notarytool`.  To fetch the notary log, use the `log` subcommand:\n\nReplace `SUBMISSION_ID` with the submission ID you got when you submitted the file and `NEW_CREDENTIALS` with the credentials from earlier.\n\n### Get history\n\nWhen using `altool`, your command to view a list of recent notarization requests might look like this:\n\nTo do the same with `notarytool`, use the `history` subcommand:\n\nReplace `NEW_CREDENTIALS` with the credentials from earlier.\n\n## Going further\n\nThe new tool has a number of other features to make your life easier.\n\n### Getting help\n\nTo get a list of commands, run `notarytool` with no arguments:\n\nTo get help on a specific command, run that command with the `--help` option:\n\nFor comprehensive help, see the `notarytool` man page.  If you’re unfamiliar with man pages, see [doc:\/\/com.apple.documentation\/documentation\/os\/reading-unix-manual-pages].\n\n### Save credentials in the keychain\n\nWith `altool`, you might have used the `--store-password-in-keychain-item` command to save an app-specific password in the keychain and then referenced it using the `@keychain` prefix.   `notarytool` supports the same workflow, with a slightly different syntax.\n\nTo start, use the `store-credentials` subcommand to save your app-specific password to the keychain:\n\nIn this command:\n\nThe command prompts you to enter your app-specific password.  Once you do that, it checks that the password is valid and, if so, stores the credentials in your keychain with the specified profile.\n\nTo use these credentials in subsequent commands, supply the profile name using the `--keychain-profile` option.  For example, to get a notarization history:\n\nWhile the example above assumes you’re authenticating with an app-specific password, this technique also works with an App Store Connect API key.  See the `notarytool` help for the details.\n\n### Notarizing on a limited system\n\nThe standard way to get `notarytool` is to install Xcode.  If you don’t want to install a full copy of Xcode on your system, get `notarytool` by installing the Command Line Tools package.  This installs the same `notarytool` as the associated Xcode.\n\nThere are two ways to install the package:\n\nOn some systems even the Command Line Tools package is too big.  In that case, it’s fine to extract `notarytool` from either Xcode or the Command Line Tools package and copy it to your system.  On a system that has one of these installed, use `xcrun` to find `notarytool` and then copy it to wherever you want:\n\n### Enable notarization on an older version of macOS\n\nThe first version of Xcode to include `notarytool` is Xcode 13.  It requires macOS 11.3.  It is, however, possible to notarize on earlier systems, all the way back to macOS 10.15.  To do this, copy `notarytool` from a system with Xcode or the Command Line Tools package installed, as described in the previous section.\n\n### Learn about completed submissions\n\nIf you notarize using `altool`, the notary service sends you an email when it’s done processing your submission.  It doesn’t do this when you notarize with `notarytool`.  If you were previously relying on this email to trigger events in your workflow, consider one of the following `submit` subcommand options:\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3147-migrating-to-the-latest-notarization-tool\ncrawled: 2026-03-10T22:01:41Z\n---\n\n# TN3147: Migrating to the latest notarization tool\n\n**Article**\n\nMigrate your notarization workflows to `notarytool` from the deprecated `altool`.\n\n## Overview\n\nAt [https:\/\/developer.apple.com\/videos\/play\/wwdc2021\/10261\/] Apple introduced `notarytool`, a new tool for interacting with the Apple notary service.  When it comes to notarization, this tool is faster and more reliable than the previous `altool`.  If you’re still notarizing with `altool`, it’s time to switch to `notarytool`.\n\n\n\nTo migrate your workflows to `notarytool`:\n\n1. Get the new tool.\n2. Migrate the credentials you use to authenticate with the notary service.\n3. Test your new credentials.\n4. Adopt `notarytool` for each notarization operation you use.\n\nYou can use `altool` and `notarytool` in parallel.  Feel free to leave your current notarization workflow in place while you experiment with `notarytool`.  Then, when you’re happy with the new workflow, cut over to `notarytool`.  Just make sure you do this before the above-mentioned deadline.\n\nIf you’re not migrating from `altool`—that is, you’re setting up notarization for the first time—ignore this technote and instead start with [doc:\/\/com.apple.documentation\/documentation\/Security\/notarizing-macos-software-before-distribution] and then move on to [doc:\/\/com.apple.documentation\/documentation\/Security\/customizing-the-notarization-workflow].  Or, if you want to notarize from a non-Apple platform, see [https:\/\/developer.apple.com\/documentation\/notaryapi].\n\n## Get the new tool\n\nIf you have Xcode 13 or later then you already have `notarytool`.  Just run it with `xcrun`:\n\n```shell\n% xcrun notarytool\nOVERVIEW: Manage submissions to the Apple notary service\n…\n```\n\nIf `xcrun` can’t find the tool, make sure you have Xcode 13 or later selected:\n\n```shell\n% xcode-select --print-path\n\/Applications\/Xcode.app\/Contents\/Developer\n```\n\nIf not, select it using the `--switch` command:\n\n```shell\n% sudo xcode-select --switch ~\/MyXcodeInstalls\/Xcode13.app\n```\n\nIf you want to keep an older version of Xcode selected but use `notarytool` from the newer one, set the `DEVELOPER_DIR` environment variable when you invoke `xcrun`:\n\n```shell\n% DEVELOPER_DIR=~\/MyXcodeInstalls\/Xcode13.app\/Contents\/Developer xcrun notarytool\nOVERVIEW: Manage submissions to the Apple notary service\n…\n```\n\nIf your version of macOS does not support Xcode 13, see [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3147-migrating-to-the-latest-notarization-tool#Enable-notarization-on-an-older-version-of-macOS].\n\n## Migrate your credentials\n\n`notarytool` supports the same credentials as `altool`: an app-specific password or an App Store Connect API key.\n\n### App-specific password\n\nIf you’re currently authenticating with an app-specific password, your `altool` commands might start like this:\n\n```shell\n% xcrun altool --username APPLE_ID --team-id TEAM_ID --password PASSWORD …\n```\n\n\n\nIn this command:\n\n- `APPLE_ID` is your Apple ID.\n- `TEAM_ID` is your Team ID.  You might be using the older `--asc-provider` or `--asc-public-id` options for this.\n- `PASSWORD` is your app-specific password.\n\nThe equivalent for `notarytool` is:\n\n```shell\n% xcrun notarytool … --apple-id APPLE_ID --team-id TEAM_ID --password PASSWORD …\n```\n\nHere `APPLE_ID`, `TEAM_ID`, and `PASSWORD` are as above.\n\nIf your Apple ID only belongs to one team then you don’t need to supply a Team ID.  However, it’s best practice to include it regardless.  That way, joining another team at some point in the future won’t break your notarization workflow.  To find your Team ID, go to the [https:\/\/developer.apple.com\/account] on the Apple Developer website.\n\nYou can use the same app-specific password for both `altool` and `notarytool`.  You might also choose to create a new app-specific password for `notarytool`.  To do that, follow the steps in [https:\/\/support.apple.com\/en-us\/HT204397].\n\n\n\n### App Store Connect API key\n\nIf you’re currently authenticating with an App Store Connect API key, your `altool` commands might start like this:\n\n```shell\n% xcrun altool --username APPLE_ID --apiIssuer ISSUER_UUID --apiKey API_KEY …\n```\n\nIn this command:\n\n- `APPLE_ID` is your Apple ID.\n- `ISSUER_UUID` is your App Store Connect API key issuer, for example, `c055ca8c-e5a8-4836-b61d-aa5794eeb3f4`.\n- `API_KEY` is your App Store Connect API key ID, for example, T9GPZ92M7K.\n\n`altool` uses the key ID to search for the key’s `.p8` file.  For example, it might find a key file at `~\/.appstoreconnect\/private_keys\/AuthKey_T9GPZ92M7K.p8`.\n\n\n\nThe equivalent for `notarytool` is:\n\n```shell\n% xcrun notarytool … --issuer ISSUER_UUID --key-id API_KEY --key PATH_TO_KEY …\n```\n\nHere `ISSUER_UUID` and `API_KEY` are as above, and `PATH_TO_KEY` is the path to the key’s `.p8` file.  There’s no need to supply your Apple ID because `notarytool` works that out based on the issuer.\n\nIt’s fine to use the same App Store Connect API key `.p8` file for both `altool` and `notarytool`.  If you previously stored your key in `~\/.appstoreconnect\/private_keys\/AuthKey_API_KEY.p8`, just pass that path to the `--key` option.\n\n## Test your credentials\n\nThe best way to test your credentials is to get a history of recent activity.  In `altool` you might use a command like this:\n\n```shell\n% xcrun altool OLD_CREDENTIALS --notarization-history 0\n```\n\nIn this command, `OLD_CREDENTIALS` is your existing `altool` credentials.\n\nTo test out your `notarytool` credentials, pass them to the `history` subcommand:\n\n```shell\n% xcrun notarytool history NEW_CREDENTIALS\n```\n\nReplace `NEW_CREDENTIALS` with the new credentials you worked out in the previous section.\n\n\n\n## Convert your notarization operations\n\nOnce you have your credentials sorted out, it’s time to replace each invocation of `altool` with the equivalent one for `notarytool`.  The common notarization operations are:\n\n- Submit a file to the notary service\n- Check on the status of a previous submission\n- Fetch the notary log\n- Get a history of recent activity\n\nRemember that `notarytool` only replaces the notarization aspects of `altool`.  If you use `altool` for other tasks, like submitting an app to the App Store, continue to use it for that.\n\n### Submit a file\n\nWhen using `altool`, your command to submit a file to the notary service might look like this:\n\n```shell\n% xcrun altool OLD_CREDENTIALS --notarize-app --file PATH_TO_FILE --primary-bundle-id BUNDLE_ID\n```\n\nIn this example, `OLD_CREDENTIALS` is your existing `altool` credentials, `PATH_TO_FILE` is the path of the file you want to notarize, and `BUNDLE_ID` is the bundle ID of the main product in this file.\n\nTo do the same with `notarytool`, use the `submit` subcommand:\n\n```shell\n% xcrun notarytool submit NEW_CREDENTIALS PATH_TO_FILE\n```\n\nHere `PATH_TO_FILE` is as above.  Replace `NEW_CREDENTIALS` with the credentials from earlier.\n\n\n\nFor a nice bonus, consider adding the `--wait` option.  With that, `notarytool` won’t return until the notarization is complete and, when it does return, it will output the submission’s status.  If you were previously polling the status to check for completion, add the `--wait` option and remove that logic.\n\n### Check status\n\nWhen using `altool`, your command to check the status of a submission might look like this:\n\n```shell\n% xcrun altool OLD_CREDENTIALS --notarization-info SUBMISSION_ID\n```\n\nIn this example, `OLD_CREDENTIALS` is your existing `altool` credentials and `SUBMISSION_ID` is the submission ID you got when you submitted the file.\n\nTo do the same with `notarytool`, use the `info` subcommand:\n\n```shell\n% xcrun notarytool info NEW_CREDENTIALS SUBMISSION_ID\n```\n\nHere `SUBMISSION_ID` is as above.  Replace `NEW_CREDENTIALS` with the credentials from earlier.\n\n\n\nThe submissions IDs returned by `notarytool` live in a different namespace than those returned by `altool`.  You can’t check on the status of an `altool` submission with `notarytool`, or vice versa.\n\n### Fetch the notary log\n\nAfter processing your submission the notary service generates a log.  This JSON file holds information about your submission, including errors and warnings.\n\n\n\nFetching the notary log with `altool` is a little convoluted.  You first get the status of the request.  If the request is finished, that status includes a `LogFileURL` property.  To get the log, fetch that URL with your preferred HTTP tool, for example, Safari or `curl`.\n\nThings are much easier with `notarytool`.  To fetch the notary log, use the `log` subcommand:\n\n```shell\n% xcrun notarytool log NEW_CREDENTIALS SUBMISSION_ID\n```\n\nReplace `SUBMISSION_ID` with the submission ID you got when you submitted the file and `NEW_CREDENTIALS` with the credentials from earlier.\n\n### Get history\n\nWhen using `altool`, your command to view a list of recent notarization requests might look like this:\n\n```shell\n% xcrun altool OLD_CREDENTIALS --notarization-history 0\n```\n\nTo do the same with `notarytool`, use the `history` subcommand:\n\n```shell\n% xcrun notarytool history NEW_CREDENTIALS\n```\n\nReplace `NEW_CREDENTIALS` with the credentials from earlier.\n\n## Going further\n\nThe new tool has a number of other features to make your life easier.\n\n### Getting help\n\nTo get a list of commands, run `notarytool` with no arguments:\n\n```shell\n% xcrun notarytool\nOVERVIEW: Manage submissions to the Apple notary service\n\nSUBCOMMANDS:\n…\n  submit                  Submit an archive to the Notary service\n…\n```\n\nTo get help on a specific command, run that command with the `--help` option:\n\n```shell\n% xcrun notarytool submit --help\nOVERVIEW: Submit an archive to the Notary service\n\nUSAGE: notarytool submit [<options>] <file-path>\n\nARGUMENTS:\n  <file-path>             Path to the archive\n\nOPTIONS:\n…\n```\n\nFor comprehensive help, see the `notarytool` man page.  If you’re unfamiliar with man pages, see [doc:\/\/com.apple.documentation\/documentation\/os\/reading-unix-manual-pages].\n\n### Save credentials in the keychain\n\nWith `altool`, you might have used the `--store-password-in-keychain-item` command to save an app-specific password in the keychain and then referenced it using the `@keychain` prefix.   `notarytool` supports the same workflow, with a slightly different syntax.\n\nTo start, use the `store-credentials` subcommand to save your app-specific password to the keychain:\n\n```shell\n% xcrun notarytool store-credentials PROFILE --apple-id APPLE_ID --team-id TEAM_ID\n…\nApp-specific password for APPLE_ID: \n…\nCredentials saved to Keychain.\nTo use them, specify `--keychain-profile \"PROFILE\"`\n```\n\nIn this command:\n\n- `PROFILE` is a name that you assign to these credentials.  You might use a value like `MyNotarizationPassword`.\n- `APPLE_ID` is your Apple ID.\n- `TEAM_ID` is your Team ID.\n\nThe command prompts you to enter your app-specific password.  Once you do that, it checks that the password is valid and, if so, stores the credentials in your keychain with the specified profile.\n\nTo use these credentials in subsequent commands, supply the profile name using the `--keychain-profile` option.  For example, to get a notarization history:\n\n```shell\n% xcrun notarytool history --keychain-profile PROFILE\n```\n\n\n\nWhile the example above assumes you’re authenticating with an app-specific password, this technique also works with an App Store Connect API key.  See the `notarytool` help for the details.\n\n### Notarizing on a limited system\n\nThe standard way to get `notarytool` is to install Xcode.  If you don’t want to install a full copy of Xcode on your system, get `notarytool` by installing the Command Line Tools package.  This installs the same `notarytool` as the associated Xcode.\n\nThere are two ways to install the package:\n\n- On the target system, run `xcrun` with the `--install` option.\n- Download it from the [https:\/\/developer.apple.com\/download\/] page.  To get a list of available packages, switch to the More tab at the top right and search for *Command Line Tools*.\n\nOn some systems even the Command Line Tools package is too big.  In that case, it’s fine to extract `notarytool` from either Xcode or the Command Line Tools package and copy it to your system.  On a system that has one of these installed, use `xcrun` to find `notarytool` and then copy it to wherever you want:\n\n```shell\n% xcrun --find notarytool\n\/Applications\/Xcode.app\/Contents\/Developer\/usr\/bin\/notarytool\n% cp \/Applications\/Xcode.app\/Contents\/Developer\/usr\/bin\/notarytool …whereever…\n```\n\n### Enable notarization on an older version of macOS\n\nThe first version of Xcode to include `notarytool` is Xcode 13.  It requires macOS 11.3.  It is, however, possible to notarize on earlier systems, all the way back to macOS 10.15.  To do this, copy `notarytool` from a system with Xcode or the Command Line Tools package installed, as described in the previous section.\n\n\n\n### Learn about completed submissions\n\nIf you notarize using `altool`, the notary service sends you an email when it’s done processing your submission.  It doesn’t do this when you notarize with `notarytool`.  If you were previously relying on this email to trigger events in your workflow, consider one of the following `submit` subcommand options:\n\n- `--wait`, which waits for your submission to complete\n- `--webhook`, which notifies you when your submission is complete\n\n## Revision History\n\n- **2024-02-05** Fixed a broken link.\n- **2023-08-01** Fixed a bug in the `--notarization-history` examples.  Made other minor editorial changes.\n- **2023-05-30** Updated to include the announced end date for `altool`.\n- **2023-04-11** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3147: Migrating to the latest notarization tool",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3147-migrating-to-the-latest-notarization-tool"
+}

@@ -1,0 +1,209 @@
+{
+  "abstract" : "An `MCSession` object enables and manages communication among all peers in a Multipeer Connectivity session.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "865c582d3e90ba7f8ea62dcc8e38c8e2eb85c1bc18e0b1beb1efe1ffff3a8e55",
+  "crawledAt" : "2026-03-10T20:12:38Z",
+  "declaration" : {
+    "code" : "class MCSession",
+    "language" : "swift"
+  },
+  "id" : "62C20014-650B-4A05-8D17-C8750F51FBB1",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Multipeer Connectivity",
+  "overview" : "### Initiating a Session\n\nTo set up a session:\n\nIf you use one of the framework’s browser objects for peer discovery, when a peer accepts an invitation, the session calls its delegate object’s [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSessionDelegate\/session(_:peer:didChange:)] method with [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSessionState\/connected] as the new state, along with an object that tells you which peer became connected. See Creating a Session for related methods.\n\nIf instead you write your own peer discovery code, you are responsible for managing the connection manually. See the [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession#Managing-Peers-Manually] section for more information.\n\n### Communicating with Peers\n\nOnce you have set up the session, your app can send data to other peers by calling one of the following methods, found in Sending Data and Resources:\n\n### Managing Peers Manually\n\nIf instead of using the framework’s browser and advertiser objects to perform peer discovery, you decide to write your own peer discovery code (with `NSNetService` or the Bonjour C API, for example), you can manually connect nearby peers into a session. To do this:\n\nEach peer should serialize its own local `MCPeerID` object with `NSKeyedArchiver`, and the receiving peer should unserialize it with `NSKeyedUnarchiver`.\n\nWhen the completion handler block is called, send the resulting connection data object to that peer.\n\nYou can also cancel an outstanding connection attempt by calling [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession\/cancelConnectPeer(_:)]. These methods are described in the Managing Peers Manually group.\n\n### Disconnecting\n\nTo leave a session, your app must call [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession\/disconnect()]. For more details, see Leaving a Session.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/multipeerconnectivity\/mcsession\ncrawled: 2026-03-10T20:12:38Z\n---\n\n# MCSession\n\n**Class**\n\nAn `MCSession` object enables and manages communication among all peers in a Multipeer Connectivity session.\n\n## Declaration\n\n```swift\nclass MCSession\n```\n\n### Initiating a Session\n\nTo set up a session:\n\n1. Use the [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCPeerID\/init(displayName:)] method of the [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCPeerID] to create a peer ID that represents the local peer, or retrieve a peer ID that you previously archived (to maintain a stable peer ID over time).\n2. Use the peer ID with the method [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession\/init(peer:)] to initialize the session object.\n3. Invite peers to join the session using an [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCNearbyServiceBrowser] object, an [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCBrowserViewController] object, or your own peer discovery code. (Sessions currently support up to 8 peers, including the local peer.)\n4. Set up an [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCNearbyServiceAdvertiser] object or [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCAdvertiserAssistant] object to allow other devices to ask your app to join a session that they create.\n\nIf you use one of the framework’s browser objects for peer discovery, when a peer accepts an invitation, the session calls its delegate object’s [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSessionDelegate\/session(_:peer:didChange:)] method with [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSessionState\/connected] as the new state, along with an object that tells you which peer became connected. See Creating a Session for related methods.\n\nIf instead you write your own peer discovery code, you are responsible for managing the connection manually. See the [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession#Managing-Peers-Manually] section for more information.\n\n### Communicating with Peers\n\nOnce you have set up the session, your app can send data to other peers by calling one of the following methods, found in Sending Data and Resources:\n\n- [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession\/send(_:toPeers:with:)] sends an `NSData` object to the specified peers.\n\nOn each recipient device, the delegate object’s [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSessionDelegate\/session(_:didReceive:fromPeer:)] method is called with the data object when the data has been fully received.\n- [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession\/sendResource(at:withName:toPeer:withCompletionHandler:)] sends the contents from an `NSURL` object to the specified peer. The URL can be either a local file URL or a web URL. The `completionHandler` block is called when the resource is fully received by the recipient peer or when an error occurs during transmission.\n\nThis method returns an `NSProgress` object that you can use to cancel the transfer or check the current status of the transfer.\n\nOn the recipient device, the session calls its delegate object’s [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSessionDelegate\/session(_:didStartReceivingResourceWithName:fromPeer:with:)] method when the device begins receiving the resource, and calls its [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSessionDelegate\/session(_:didFinishReceivingResourceWithName:fromPeer:at:withError:)] method when the resource has been fully received or when an error occurs.\n- [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession\/startStream(withName:toPeer:)] creates a connected byte stream (`NSOutputStream`) that you can use to send data to the specified peer.\n\nOn the recipient device, the session calls its delegate object’s [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSessionDelegate\/session(_:didReceive:withName:fromPeer:)] method with an `NSInputStream` object that represents the other endpoint of communication.\n\nOn both sides, your code must set the stream’s delegate, schedule the stream on a run loop, and open the stream. Your code must also implement stream delegate methods to manage sending and receiving stream data.\n\n\n\n### Managing Peers Manually\n\nIf instead of using the framework’s browser and advertiser objects to perform peer discovery, you decide to write your own peer discovery code (with `NSNetService` or the Bonjour C API, for example), you can manually connect nearby peers into a session. To do this:\n\n1. Establish a connection from your app to nearby peers, and exchange peer IDs with those peers.\n\nEach peer should serialize its own local `MCPeerID` object with `NSKeyedArchiver`, and the receiving peer should unserialize it with `NSKeyedUnarchiver`.\n\n\n\n1. Exchange connection data. After you have obtained the nearby peer’s ID object, call [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession\/nearbyConnectionData(forPeer:withCompletionHandler:)] to obtain a connection data object specific to that nearby peer.\n\nWhen the completion handler block is called, send the resulting connection data object to that peer.\n\n\n\n1. When your app receives connection data from another peer, it must call [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession\/connectPeer(_:withNearbyConnectionData:)] to add that peer to the session.\n\n\n\nYou can also cancel an outstanding connection attempt by calling [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession\/cancelConnectPeer(_:)]. These methods are described in the Managing Peers Manually group.\n\n### Disconnecting\n\nTo leave a session, your app must call [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCSession\/disconnect()]. For more details, see Leaving a Session.\n\n## Creating a Session\n\n- **init(peer:)**: Creates a Multipeer Connectivity session.\n- **init(peer:securityIdentity:encryptionPreference:)**: Creates a Multipeer Connectivity session, providing security information.\n- **delegate**: The delegate object that handles session-related events.\n- **encryptionPreference**: A value indicating whether the connection prefers encrypted connections, unencrypted connections, or has no preference.\n- **myPeerID**: A local identifier that represents the device on which your app is currently running.\n- **securityIdentity**: The security identity of the local peer.\n\n## Managing Peers Manually\n\n- **connectPeer(_:withNearbyConnectionData:)**: Call this method to connect a peer to the session when using your own service discovery code instead of an  `MCNearbyServiceBrowser` or `MCBrowserViewController` object.\n- **cancelConnectPeer(_:)**: Cancels an attempt to connect to a peer.\n- **connectedPeers**: An array of all peers that are currently connected to this session.\n- **nearbyConnectionData(forPeer:withCompletionHandler:)**: Obtains connection data for the specified peer.\n\n## Sending Data and Resources\n\n- **send(_:toPeers:with:)**: Sends a message to nearby peers.\n- **sendResource(at:withName:toPeer:withCompletionHandler:)**: Sends the contents of a URL to a peer.\n- **startStream(withName:toPeer:)**: Opens a byte stream to a nearby peer.\n\n## Leaving a Session\n\n- **disconnect()**: Disconnects the local peer from the session.\n\n## Constants\n\n- **MCSessionSendDataMode**: Indicates whether delivery of data should be guaranteed.\n- **MCSessionState**: Indicates the current state of a given peer within a session.\n- **MCEncryptionPreference**: Indicates whether a session should use encryption when communicating with nearby peers.\n- **MCError.Code**: Error codes found in [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCErrorDomain] error domain `NSError` objects returned by methods in the Multipeer Connectivity framework.\n- **Multipeer Connectivity Error Domain**: The error domain for errors specific to Multipeer Connectivity.\n- **Minimum and Maximum Supported Peers**: Constants that define the minimum and maximum number of peers supported in a session.\n\n## Classes\n\n- **MCAdvertiserAssistant**: The `MCAdvertiserAssistant` is a convenience class that handles advertising, presents incoming invitations to the user, and handles users’ responses. Use this class to provide a user interface for handling invitations when your app does not require programmatic control over the invitation process.\n- **MCBrowserViewController**: The `MCBrowserViewController` class presents nearby devices to the user and enables the user to invite nearby devices to a session. To use this class in iOS or tvOS, call methods from the underlying `UIViewController` class ([doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/prepare(for:sender:)] and [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/performSegue(withIdentifier:sender:)] for storyboards or [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/present(_:animated:completion:)] and [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/dismiss(animated:completion:)] for nib-based views) to present and dismiss the view controller. In macOS, use the comparable `NSViewController` methods [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSViewController\/presentAsSheet(_:)] and [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSViewController\/dismiss(_:)-91my5] instead.\n- **MCNearbyServiceAdvertiser**: The `MCNearbyServiceAdvertiser` class publishes an advertisement for a specific service that your app provides through the Multipeer Connectivity framework and notifies its delegate about invitations from nearby peers.\n- **MCNearbyServiceBrowser**: Searches (by service type) for services offered by nearby devices using infrastructure Wi-Fi, peer-to-peer Wi-Fi, and Bluetooth (in iOS) or Ethernet (in macOS and tvOS), and provides the ability to easily invite those devices to a Multipeer Connectivity session (`MCSession`).\n- **MCPeerID**: An  `MCPeerID` object represents a peer in a multipeer session.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a Multipeer Connectivity session.",
+          "name" : "init(peer:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/init(peer:)"
+        },
+        {
+          "description" : "Creates a Multipeer Connectivity session, providing security information.",
+          "name" : "init(peer:securityIdentity:encryptionPreference:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/init(peer:securityIdentity:encryptionPreference:)"
+        },
+        {
+          "description" : "The delegate object that handles session-related events.",
+          "name" : "delegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/delegate"
+        },
+        {
+          "description" : "A value indicating whether the connection prefers encrypted connections, unencrypted connections, or has no preference.",
+          "name" : "encryptionPreference",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/encryptionPreference"
+        },
+        {
+          "description" : "A local identifier that represents the device on which your app is currently running.",
+          "name" : "myPeerID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/myPeerID"
+        },
+        {
+          "description" : "The security identity of the local peer.",
+          "name" : "securityIdentity",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/securityIdentity"
+        }
+      ],
+      "title" : "Creating a Session"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Call this method to connect a peer to the session when using your own service discovery code instead of an  `MCNearbyServiceBrowser` or `MCBrowserViewController` object.",
+          "name" : "connectPeer(_:withNearbyConnectionData:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/connectPeer(_:withNearbyConnectionData:)"
+        },
+        {
+          "description" : "Cancels an attempt to connect to a peer.",
+          "name" : "cancelConnectPeer(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/cancelConnectPeer(_:)"
+        },
+        {
+          "description" : "An array of all peers that are currently connected to this session.",
+          "name" : "connectedPeers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/connectedPeers"
+        },
+        {
+          "description" : "Obtains connection data for the specified peer.",
+          "name" : "nearbyConnectionData(forPeer:withCompletionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/nearbyConnectionData(forPeer:withCompletionHandler:)"
+        }
+      ],
+      "title" : "Managing Peers Manually"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sends a message to nearby peers.",
+          "name" : "send(_:toPeers:with:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/send(_:toPeers:with:)"
+        },
+        {
+          "description" : "Sends the contents of a URL to a peer.",
+          "name" : "sendResource(at:withName:toPeer:withCompletionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/sendResource(at:withName:toPeer:withCompletionHandler:)"
+        },
+        {
+          "description" : "Opens a byte stream to a nearby peer.",
+          "name" : "startStream(withName:toPeer:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/startStream(withName:toPeer:)"
+        }
+      ],
+      "title" : "Sending Data and Resources"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Disconnects the local peer from the session.",
+          "name" : "disconnect()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSession\/disconnect()"
+        }
+      ],
+      "title" : "Leaving a Session"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Indicates whether delivery of data should be guaranteed.",
+          "name" : "MCSessionSendDataMode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSessionSendDataMode"
+        },
+        {
+          "description" : "Indicates the current state of a given peer within a session.",
+          "name" : "MCSessionState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCSessionState"
+        },
+        {
+          "description" : "Indicates whether a session should use encryption when communicating with nearby peers.",
+          "name" : "MCEncryptionPreference",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCEncryptionPreference"
+        },
+        {
+          "description" : "Error codes found in [doc:\/\/com.apple.multipeerconnectivity\/documentation\/MultipeerConnectivity\/MCErrorDomain] error domain `NSError` objects returned by methods in the Multipeer Connectivity framework.",
+          "name" : "MCError.Code",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCError\/Code"
+        },
+        {
+          "description" : "The error domain for errors specific to Multipeer Connectivity.",
+          "name" : "Multipeer Connectivity Error Domain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/multipeer_connectivity_error_domain"
+        },
+        {
+          "description" : "Constants that define the minimum and maximum number of peers supported in a session.",
+          "name" : "Minimum and Maximum Supported Peers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/minimum_and_maximum_supported_peers"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The `MCAdvertiserAssistant` is a convenience class that handles advertising, presents incoming invitations to the user, and handles users’ responses. Use this class to provide a user interface for handling invitations when your app does not require programmatic control over the invitation process.",
+          "name" : "MCAdvertiserAssistant",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCAdvertiserAssistant"
+        },
+        {
+          "description" : "The `MCBrowserViewController` class presents nearby devices to the user and enables the user to invite nearby devices to a session. To use this class in iOS or tvOS, call methods from the underlying `UIViewController` class ([doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/prepare(for:sender:)] and [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/performSegue(withIdentifier:sender:)] for storyboards or [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/present(_:animated:completion:)] and [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIViewController\/dismiss(animated:completion:)] for nib-based views) to present and dismiss the view controller. In macOS, use the comparable `NSViewController` methods [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSViewController\/presentAsSheet(_:)] and [doc:\/\/com.apple.documentation\/documentation\/AppKit\/NSViewController\/dismiss(_:)-91my5] instead.",
+          "name" : "MCBrowserViewController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCBrowserViewController"
+        },
+        {
+          "description" : "The `MCNearbyServiceAdvertiser` class publishes an advertisement for a specific service that your app provides through the Multipeer Connectivity framework and notifies its delegate about invitations from nearby peers.",
+          "name" : "MCNearbyServiceAdvertiser",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCNearbyServiceAdvertiser"
+        },
+        {
+          "description" : "Searches (by service type) for services offered by nearby devices using infrastructure Wi-Fi, peer-to-peer Wi-Fi, and Bluetooth (in iOS) or Ethernet (in macOS and tvOS), and provides the ability to easily invite those devices to a Multipeer Connectivity session (`MCSession`).",
+          "name" : "MCNearbyServiceBrowser",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCNearbyServiceBrowser"
+        },
+        {
+          "description" : "An  `MCPeerID` object represents a peer in a multipeer session.",
+          "name" : "MCPeerID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MultipeerConnectivity\/MCPeerID"
+        }
+      ],
+      "title" : "Classes"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MCSession",
+  "url" : "https:\/\/developer.apple.com\/documentation\/multipeerconnectivity\/mcsession"
+}

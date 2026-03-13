@@ -1,0 +1,114 @@
+{
+  "abstract" : "Learn techniques to help debug any coordinate space issue.",
+  "codeExamples" : [
+    {
+      "code" : "struct ContentView: View {\n    \n    @State private var uiImage = UIImage()\n    \n    var body: some View {\n        VStack {\n            Image(uiImage: uiImage)\n            Button(\"Hello\") {\n                print(\"World.\")\n            }\n        }\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "view.debugOptions.insert(.showWorldOrigin)",
+      "language" : "swift"
+    },
+    {
+      "code" : "view.debugOptions.insert(.showAnchorOrigins)",
+      "language" : "swift"
+    },
+    {
+      "code" : "import SwiftUI\n\nextension View {\n    \/\/\/ Visualizes the origin of any View for debugging purposes.\n    \/\/\/ The x-axis is red, the y-axis is green.\n    public func showOrigin() -> some View {\n        modifier(CoordinateAxes())\n    }\n}\n\nprivate struct CoordinateAxes: ViewModifier {\n        \n    func body(content: Content) -> some View {\n        content.overlay {\n            \n            GeometryReader { geometry in\n                \n                let size = geometry.size\n                \n                let smallestDim = min(size.width, size.height)\n                \n                \/\/ Set length to be at least 20 points.\n                let length = max(smallestDim * 0.2, 20)\n                let thickness = length \/ 7\n                \n                \/\/ X-axis.\n                Color.red\n                    .frame(width: length, height: thickness)\n                    .position(.init(x: length \/ 2, y: thickness \/ 2))\n                \n                \/\/ Y-axis.\n                Color.green\n                    .frame(width: thickness, height: length)\n                    .position(.init(x: thickness \/ 2, y: length \/ 2))\n            }\n        }\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "82b61c0d381e589b31844d7451d6820efcd2d4a68d72430b88e9bb26015eccab",
+  "crawledAt" : "2026-03-10T22:01:32Z",
+  "id" : "65986715-F0F5-48D7-A893-963E51D507E5",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nWorking with coordinate spaces is an essential part of developing any graphics-based app. Issues related to assumptions or misinterpretations of a coordinate space are difficult to debug, or even identify. Read this technote to discover effective strategies for diagnosing and debugging coordinate space issues.\n\n## Recognize the issue\n\nCoordinate space issues can be difficult to recognize, but there are some common symptoms that can help to diagnose them:\n\nAssume that there is a coordinate space issue that needs to be debugged if you notice any of these symptoms in your app.\n\n## Identify the coordinate spaces involved\n\nCoordinate spaces are ubiquitous in the graphics world. Even simple apps will involve many different coordinate spaces. Identifying the coordinate spaces involved is essential to debugging issues with them.\n\nConsider the following SwiftUI snippet:\n\nThis snippet, while simple, actually involves five different coordinate spaces:\n\n## Create a focused sample\n\nCoordinate space issues are often very complex and difficult to reason about. Creating a focused sample project that visualizes origins, logs transforms and bounding boxes, and utilizes known points is an extremely effective tool for debugging coordinate space issues.\n\n## Visualize the origin\n\nThe best first step towards understanding a coordinate space is to visualize its origin.\n\nProjects targeting visionOS can use [doc:\/\/com.apple.documentation\/documentation\/Xcode\/diagnosing-issues-in-the-appearance-of-your-running-app#Understand-the-relationships-between-objects-in-a-immersive-space]. In other contexts, the exact code to visualize the origin will differ depending on the framework involved.\n\nSome frameworks offer built-in ways to visualize certain origins. For example, `ARView` and `ARSCNView` both have API to visualize the world origin for debugging:\n\n`ARView` has additional API to visualize anchor origins:\n\nOther frameworks may not have origin visualization API to aid in debugging, but it is always possible to write visualization code for any coordinate space. For example, this snippet visualizes the origin of any SwiftUI `View`:\n\nVisualizing an origin could be all that is necessary to realize where the error is.\n\n## Understand input expectations\n\nSometimes an API requires inputs that are already in a particular coordinate space. Otherwise its output is invalid.\n\nConsider the `UIView` method, [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIView\/hitTest(_:with:)]. This method accepts a `CGPoint` as input, and uses it to perform a hit-test on the view. The problem here is that its results aren’t valid for *any* `CGPoint`, you must provide a `CGPoint` in the view’s local coordinate space to get a valid result.\n\nWhen you have results that don’t make sense, it is a good idea to evaluate the APIs you are using to produce the results, and verify that you have provided inputs to them in the coordinate spaces they are expecting.\n\n## Use known points\n\nUsing known points is an effective graphics debugging technique.\n\nConsider an app that runs a `VNDetectRectanglesRequest` on a `CMSampleBuffer` stream, displays the stream in an `AVCaptureVideoPreviewLayer`, and then attempts to draw the detected rectangles on top of the preview layer in an overlay `CALayer`, but the drawing doesn’t appear as expected. After gaining an understanding of each coordinate space involved in the drawing process (the `AVCaptureVideoPreviewLayer`, the overlay `CALayer`, and the `VNRectangleObservation`) by visualizing their origins, it can be helpful to draw a known point, instead of trying to debug this on the fly with a dynamic video stream. In this specific example, you might use `CGRect(x: 0, y: 0, width: 0.25, height: 0.25)` as the input, a rectangle that you would expect to cover one quarter of the preview image when drawn correctly.\n\nBeing consistent with the data you feed through a coordinate conversion pipeline allows you to clearly see the effects of any changes you make when debugging.\n\n## Log transforms and bounding boxes\n\nLogging the transform and bounding box of a visual element is a simple but effective debugging technique.\n\nConsider a scenario where your app is inserting a 3D model into a scene, but you don’t see the 3D model where you expected to see it. By logging the transform and bounding box of the model, you discover that the scale and the bounding box of the model is very large. This is a very good indication that the model is so large that the current viewpoint of the 3D scene is *inside* of the model. You remedy the situation by setting the model’s scale factor to a smaller value.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3124-debugging-coordinate-transformations\ncrawled: 2026-03-10T22:01:32Z\n---\n\n# TN3124: Debugging coordinate space issues\n\n**Article**\n\nLearn techniques to help debug any coordinate space issue.\n\n## Overview\n\nWorking with coordinate spaces is an essential part of developing any graphics-based app. Issues related to assumptions or misinterpretations of a coordinate space are difficult to debug, or even identify. Read this technote to discover effective strategies for diagnosing and debugging coordinate space issues.\n\n## Recognize the issue\n\nCoordinate space issues can be difficult to recognize, but there are some common symptoms that can help to diagnose them:\n\n- Unexpected or absent visual appearance\n- Incorrect behavior of user-interaction\n- Wrong values after a coordinate conversion\n\nAssume that there is a coordinate space issue that needs to be debugged if you notice any of these symptoms in your app.\n\n## Identify the coordinate spaces involved\n\nCoordinate spaces are ubiquitous in the graphics world. Even simple apps will involve many different coordinate spaces. Identifying the coordinate spaces involved is essential to debugging issues with them.\n\nConsider the following SwiftUI snippet:\n\n```swift\nstruct ContentView: View {\n    \n    @State private var uiImage = UIImage()\n    \n    var body: some View {\n        VStack {\n            Image(uiImage: uiImage)\n            Button(\"Hello\") {\n                print(\"World.\")\n            }\n        }\n    }\n}\n```\n\nThis snippet, while simple, actually involves five different coordinate spaces:\n\n1. The local coordinate space of the `VStack`.\n2. The local coordinate space of the `Image`.\n3. The local coordinate space of the `Button`.\n4. The local coordinate space of the `UIImage`.\n5. The global coordinate space of `SwiftUI`.\n\n## Create a focused sample\n\nCoordinate space issues are often very complex and difficult to reason about. Creating a focused sample project that visualizes origins, logs transforms and bounding boxes, and utilizes known points is an extremely effective tool for debugging coordinate space issues.\n\n## Visualize the origin\n\nThe best first step towards understanding a coordinate space is to visualize its origin.\n\n\n\nProjects targeting visionOS can use [doc:\/\/com.apple.documentation\/documentation\/Xcode\/diagnosing-issues-in-the-appearance-of-your-running-app#Understand-the-relationships-between-objects-in-a-immersive-space]. In other contexts, the exact code to visualize the origin will differ depending on the framework involved.\n\nSome frameworks offer built-in ways to visualize certain origins. For example, `ARView` and `ARSCNView` both have API to visualize the world origin for debugging:\n\n```swift\nview.debugOptions.insert(.showWorldOrigin)\n```\n\n`ARView` has additional API to visualize anchor origins:\n\n```swift\nview.debugOptions.insert(.showAnchorOrigins)\n```\n\nOther frameworks may not have origin visualization API to aid in debugging, but it is always possible to write visualization code for any coordinate space. For example, this snippet visualizes the origin of any SwiftUI `View`:\n\n```swift\nimport SwiftUI\n\nextension View {\n    \/\/\/ Visualizes the origin of any View for debugging purposes.\n    \/\/\/ The x-axis is red, the y-axis is green.\n    public func showOrigin() -> some View {\n        modifier(CoordinateAxes())\n    }\n}\n\nprivate struct CoordinateAxes: ViewModifier {\n        \n    func body(content: Content) -> some View {\n        content.overlay {\n            \n            GeometryReader { geometry in\n                \n                let size = geometry.size\n                \n                let smallestDim = min(size.width, size.height)\n                \n                \/\/ Set length to be at least 20 points.\n                let length = max(smallestDim * 0.2, 20)\n                let thickness = length \/ 7\n                \n                \/\/ X-axis.\n                Color.red\n                    .frame(width: length, height: thickness)\n                    .position(.init(x: length \/ 2, y: thickness \/ 2))\n                \n                \/\/ Y-axis.\n                Color.green\n                    .frame(width: thickness, height: length)\n                    .position(.init(x: thickness \/ 2, y: length \/ 2))\n            }\n        }\n    }\n}\n```\n\nVisualizing an origin could be all that is necessary to realize where the error is.\n\n## Understand input expectations\n\nSometimes an API requires inputs that are already in a particular coordinate space. Otherwise its output is invalid.\n\nConsider the `UIView` method, [doc:\/\/com.apple.documentation\/documentation\/UIKit\/UIView\/hitTest(_:with:)]. This method accepts a `CGPoint` as input, and uses it to perform a hit-test on the view. The problem here is that its results aren’t valid for *any* `CGPoint`, you must provide a `CGPoint` in the view’s local coordinate space to get a valid result.\n\nWhen you have results that don’t make sense, it is a good idea to evaluate the APIs you are using to produce the results, and verify that you have provided inputs to them in the coordinate spaces they are expecting.\n\n## Use known points\n\nUsing known points is an effective graphics debugging technique.\n\nConsider an app that runs a `VNDetectRectanglesRequest` on a `CMSampleBuffer` stream, displays the stream in an `AVCaptureVideoPreviewLayer`, and then attempts to draw the detected rectangles on top of the preview layer in an overlay `CALayer`, but the drawing doesn’t appear as expected. After gaining an understanding of each coordinate space involved in the drawing process (the `AVCaptureVideoPreviewLayer`, the overlay `CALayer`, and the `VNRectangleObservation`) by visualizing their origins, it can be helpful to draw a known point, instead of trying to debug this on the fly with a dynamic video stream. In this specific example, you might use `CGRect(x: 0, y: 0, width: 0.25, height: 0.25)` as the input, a rectangle that you would expect to cover one quarter of the preview image when drawn correctly.\n\nBeing consistent with the data you feed through a coordinate conversion pipeline allows you to clearly see the effects of any changes you make when debugging.\n\n## Log transforms and bounding boxes\n\nLogging the transform and bounding box of a visual element is a simple but effective debugging technique.\n\nConsider a scenario where your app is inserting a 3D model into a scene, but you don’t see the 3D model where you expected to see it. By logging the transform and bounding box of the model, you discover that the scale and the bounding box of the model is very large. This is a very good indication that the model is so large that the current viewpoint of the 3D scene is *inside* of the model. You remedy the situation by setting the model’s scale factor to a smaller value.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3124: Debugging coordinate space issues",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3124-debugging-coordinate-transformations"
+}

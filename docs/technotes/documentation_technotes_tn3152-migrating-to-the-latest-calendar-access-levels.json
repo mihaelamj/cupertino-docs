@@ -1,0 +1,99 @@
+{
+  "abstract" : "Follow these guidelines to update your app to use the new Calendar access levels.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "45e5c6ba2e335860ae17b118ccad94a87a21201f0ff4a7adc4c88f6d43893c96",
+  "crawledAt" : "2026-03-10T22:01:39Z",
+  "id" : "ACCF4E94-66AE-4577-9048-9E947857E389",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nThe EventKit framework brings new Calendar access levels in iOS 17, iPadOS 17, macOS 14, Mac Catalyst 17, watchOS 10, and later. The EventKitUI framework provides the ability to add events without requesting access to Calendar in iOS 17, iPadOS 17, Mac Catalyst 17, and later. See [https:\/\/developer.apple.com\/documentation\/eventkit\/accessing_the_event_store] for details. This document describes how to update your app to use these new features. To learn how these changes may affect your existing apps, see [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3153-adopting-api-changes-for-eventKit-in-iOS-macOS-and-watchOS]. Follow these guidelines to support the new features:\n\n**Choose the access level needed to complete your tasks.**\n\n**Build your app with Xcode 15 and link against the SDK matching your app’s platform.** Xcode 15 includes SDKs for iOS 17, macOS 14, and watchOS 10 that provide the new write-only and full access features. For instance, if you are building an iOS app, link your app against the iOS 17 SDK or later. If you are building a watchOS app, link your app against the watchOS 10 SDK or later.\n\n**Replace the calendar usage description keys.** Prior to iOS 17, your app needs to include the [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nscalendarsusagedescription], [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nsremindersusagedescription], and [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nscontactsusagedescription] keys in its `Info.plist` file before it can access the user’s calendar data or reminders. `NSCalendarsUsageDescription` and `NSRemindersUsageDescription` describe how your app intends to use the user’s calendar data or reminders, respectively. You provide a `NSContactsUsageDescription` key when your app uses EventKit UI to access Contacts data. If your app supports earlier versions of an OS, keep the key currently available in your app’s `Info.plist` file.\n\nIf your app requires running on iOS 17, iPadOS 17, macOS 14, Mac Catalyst 17, watchOS 10, or later, remove these keys from the plist file. Add [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nscalendarswriteonlyaccessusagedescription] or [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nscalendarsfullaccessusagedescription] to the plist file, depending on the level of access to events your app needs. Include [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nsremindersfullaccessusagedescription] if your app needs access to reminders. See [https:\/\/developer.apple.com\/documentation\/eventkit\/accessing_the_event_store#2975207] for details.\n\n**Update the authorization status to handle the writeOnly and fullAccess cases.** If your app checks its authorization status for events [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/1507239-authorizationstatus], update it to handle the new [https:\/\/developer.apple.com\/documentation\/eventkit\/ekauthorizationstatus\/writeonly] and [https:\/\/developer.apple.com\/documentation\/eventkit\/ekauthorizationstatus\/fullaccess] cases. Remove the deprecated [https:\/\/developer.apple.com\/documentation\/eventkit\/ekauthorizationstatus\/1451886-authorized] case from your app.\n\n**Replace the deprecated request methods.** The iOS, macOS, and watchOS SDKs bundled in Xcode 15 deprecate the [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/1507547-requestaccess] and [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/1507547-requestaccess] methods. If your app links against the iOS 17 SDK, macOS 14 SDK, or watchOS 10 SDK, calling these deprecated request methods doesn’t prompt the user for access and throws an error message. Remove these methods from your app. Use the new APIs to prompt the user for access in your app:\n\nSee [https:\/\/developer.apple.com\/documentation\/eventkit\/accessing_the_event_store#2975212] for details.\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3152-migrating-to-the-latest-calendar-access-levels\ncrawled: 2026-03-10T22:01:39Z\n---\n\n# TN3152: Migrating to the latest Calendar access levels\n\n**Article**\n\nFollow these guidelines to update your app to use the new Calendar access levels.\n\n## Overview\n\nThe EventKit framework brings new Calendar access levels in iOS 17, iPadOS 17, macOS 14, Mac Catalyst 17, watchOS 10, and later. The EventKitUI framework provides the ability to add events without requesting access to Calendar in iOS 17, iPadOS 17, Mac Catalyst 17, and later. See [https:\/\/developer.apple.com\/documentation\/eventkit\/accessing_the_event_store] for details. This document describes how to update your app to use these new features. To learn how these changes may affect your existing apps, see [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3153-adopting-api-changes-for-eventKit-in-iOS-macOS-and-watchOS]. Follow these guidelines to support the new features:\n\n**Choose the access level needed to complete your tasks.**\n\n- If your app can present [https:\/\/developer.apple.com\/documentation\/eventkitui\/ekeventeditviewcontroller] to let people create events, don’t request access to events.\n- If your app needs to create and save calendar data directly without the user making any later changes, request write-only access to calendar data.\n- If accessing existing events is essential to the core experience of your app, request full access to calendar data.\n- If your app accesses reminder data, request full access to reminders in your app.\n\n**Build your app with Xcode 15 and link against the SDK matching your app’s platform.** Xcode 15 includes SDKs for iOS 17, macOS 14, and watchOS 10 that provide the new write-only and full access features. For instance, if you are building an iOS app, link your app against the iOS 17 SDK or later. If you are building a watchOS app, link your app against the watchOS 10 SDK or later.\n\n**Replace the calendar usage description keys.** Prior to iOS 17, your app needs to include the [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nscalendarsusagedescription], [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nsremindersusagedescription], and [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nscontactsusagedescription] keys in its `Info.plist` file before it can access the user’s calendar data or reminders. `NSCalendarsUsageDescription` and `NSRemindersUsageDescription` describe how your app intends to use the user’s calendar data or reminders, respectively. You provide a `NSContactsUsageDescription` key when your app uses EventKit UI to access Contacts data. If your app supports earlier versions of an OS, keep the key currently available in your app’s `Info.plist` file.\n\nIf your app requires running on iOS 17, iPadOS 17, macOS 14, Mac Catalyst 17, watchOS 10, or later, remove these keys from the plist file. Add [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nscalendarswriteonlyaccessusagedescription] or [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nscalendarsfullaccessusagedescription] to the plist file, depending on the level of access to events your app needs. Include [https:\/\/developer.apple.com\/documentation\/bundleresources\/information_property_list\/nsremindersfullaccessusagedescription] if your app needs access to reminders. See [https:\/\/developer.apple.com\/documentation\/eventkit\/accessing_the_event_store#2975207] for details.\n\n**Update the authorization status to handle the writeOnly and fullAccess cases.** If your app checks its authorization status for events [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/1507239-authorizationstatus], update it to handle the new [https:\/\/developer.apple.com\/documentation\/eventkit\/ekauthorizationstatus\/writeonly] and [https:\/\/developer.apple.com\/documentation\/eventkit\/ekauthorizationstatus\/fullaccess] cases. Remove the deprecated [https:\/\/developer.apple.com\/documentation\/eventkit\/ekauthorizationstatus\/1451886-authorized] case from your app.\n\n**Replace the deprecated request methods.** The iOS, macOS, and watchOS SDKs bundled in Xcode 15 deprecate the [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/1507547-requestaccess] and [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/1507547-requestaccess] methods. If your app links against the iOS 17 SDK, macOS 14 SDK, or watchOS 10 SDK, calling these deprecated request methods doesn’t prompt the user for access and throws an error message. Remove these methods from your app. Use the new APIs to prompt the user for access in your app:\n\n- To request access to reminders, call [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/4162273-requestfullaccesstoreminders] or [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/4162273-requestfullaccesstoreminders] in your app.\n- To request write-only access to events, call [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/4162274-requestwriteonlyaccesstoevents] or [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/4162274-requestwriteonlyaccesstoevents] in your app.\n- To request full access to events, call [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/4162272-requestfullaccesstoevents] or [https:\/\/developer.apple.com\/documentation\/eventkit\/ekeventstore\/4162272-requestfullaccesstoevents] in your app.\n\nSee [https:\/\/developer.apple.com\/documentation\/eventkit\/accessing_the_event_store#2975212] for details.\n\n## Revision History\n\n- **2023-06-06** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3152: Migrating to the latest Calendar access levels",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3152-migrating-to-the-latest-calendar-access-levels"
+}

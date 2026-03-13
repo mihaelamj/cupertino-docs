@@ -1,0 +1,114 @@
+{
+  "abstract" : "Adopt UINavigationBarAppearance for a navigation bar background color that’s consistent on iOS 13 through 18.",
+  "codeExamples" : [
+    {
+      "code" : "UINavigationBar.appearance().isTranslucent = false\nUINavigationBar.appearance().barTintColor = .systemRed",
+      "language" : "swift"
+    },
+    {
+      "code" : "@available(iOS 13.0, *)\nfunc customNavBarAppearance() -> UINavigationBarAppearance {\n    let customNavBarAppearance = UINavigationBarAppearance()\n    \n    \/\/ Apply a red background.\n    customNavBarAppearance.configureWithOpaqueBackground()\n    customNavBarAppearance.backgroundColor = .systemRed\n    \n    \/\/ Apply white colored normal and large titles.\n    customNavBarAppearance.titleTextAttributes = [.foregroundColor: UIColor.white]\n    customNavBarAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]\n\n    \/\/ Apply white color to all the nav bar buttons.\n    let barButtonItemAppearance = UIBarButtonItemAppearance(style: .plain)\n    barButtonItemAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.white]\n    barButtonItemAppearance.disabled.titleTextAttributes = [.foregroundColor: UIColor.lightText]\n    barButtonItemAppearance.highlighted.titleTextAttributes = [.foregroundColor: UIColor.label]\n    barButtonItemAppearance.focused.titleTextAttributes = [.foregroundColor: UIColor.white]\n    customNavBarAppearance.buttonAppearance = barButtonItemAppearance\n    customNavBarAppearance.backButtonAppearance = barButtonItemAppearance\n    customNavBarAppearance.doneButtonAppearance = barButtonItemAppearance\n    \n    return customNavBarAppearance\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {\n    let newNavBarAppearance = customNavBarAppearance()\n        \n    let appearance = UINavigationBar.appearance()\n    appearance.scrollEdgeAppearance = newNavBarAppearance\n    appearance.compactAppearance = newNavBarAppearance\n    appearance.standardAppearance = newNavBarAppearance\n    if #available(iOS 15.0, *) {\n        appearance.compactScrollEdgeAppearance = newNavBarAppearance\n    }\n\n    return true\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "override func viewDidLoad() {\n    super.viewDidLoad()\n\n    let newNavBarAppearance = customNavBarAppearance()\n    navigationController!.navigationBar.scrollEdgeAppearance = newNavBarAppearance\n    navigationController!.navigationBar.compactAppearance = newNavBarAppearance\n    navigationController!.navigationBar.standardAppearance = newNavBarAppearance\n    if #available(iOS 15.0, *) {\n        navigationController!.navigationBar.compactScrollEdgeAppearance = newNavBarAppearance\n    }\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "f5460968e6de27de165349d62056fad85a1cf9472f64254e9f379fbdb22aa3e3",
+  "crawledAt" : "2026-03-10T22:01:48Z",
+  "id" : "28DEE257-D50D-43DA-A6F2-7EFA80D04DF8",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\n[https:\/\/developer.apple.com\/documentation\/uikit\/uinavigationbar] in iOS 15 introduces changes to its appearance settings. It extends the usage of its [https:\/\/developer.apple.com\/documentation\/uikit\/uinavigationbar\/3198027-scrolledgeappearance], which by default produces a transparent background, to all navigation bar styles.\n\nThe iOS 13 SDK introduced an appearance settings class [https:\/\/developer.apple.com\/documentation\/uikit\/uinavigationbarappearance]. If you’re seeing a view controller with appearance issues like a black navigation bar or incorrect status bar content color when building with Xcode 13 and running on iOS 15, adopt `UINavigationBarAppearance`. For a view controller that scrolls its content, use it to apply both `standardAppearance` and `scrollEdgeAppearance` to the `UINavigationBar`.\n\n## Configure the UINavigationBarAppearance\n\nConsider an app that uses `UITableViewController`, and has the following code in `application(_ :didFinishLaunchingWithOptions:)`:\n\nIn iOS 14.x or later, the navigation bar color turns transparent (showing the black background underneath), yet iOS 13 draws the navigation bar in `.systemRed`.\n\nTo standardize the navigation bar’s appearance between these versions of iOS, use the `UINavigationBarAppearance` API. Use the following example to apply an opaque navigation bar colored `.systemRed` with white title text. Setting the text color here is only an example and of course is optional.\n\n## Configure the entire app\n\nTo apply this appearance to the navigation bar throughout the entire app:\n\n## Configure a view controller\n\nTo apply this appearance to the navigation bar of an individual view controller:\n\nIf you’re using storyboards, instead configure both the appearance of the navigation bar and the elements within that bar.\n\nTo change the appearance of the navigation bar:\n\nChoose “standard” and “scroll edge appearances” for the navigation bar, by setting the appearance proxy of `UINavigationBar`: “Standard”, and “ScrollEdge” appearances.\n\nChange the color of the title and button elements:\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3106-customizing-uinavigationbar-appearance\ncrawled: 2026-03-10T22:01:48Z\n---\n\n# TN3106: Customizing the appearance of UINavigationBar\n\n**Article**\n\nAdopt UINavigationBarAppearance for a navigation bar background color that’s consistent on iOS 13 through 18.\n\n## Overview\n\n[https:\/\/developer.apple.com\/documentation\/uikit\/uinavigationbar] in iOS 15 introduces changes to its appearance settings. It extends the usage of its [https:\/\/developer.apple.com\/documentation\/uikit\/uinavigationbar\/3198027-scrolledgeappearance], which by default produces a transparent background, to all navigation bar styles.\n\nThe iOS 13 SDK introduced an appearance settings class [https:\/\/developer.apple.com\/documentation\/uikit\/uinavigationbarappearance]. If you’re seeing a view controller with appearance issues like a black navigation bar or incorrect status bar content color when building with Xcode 13 and running on iOS 15, adopt `UINavigationBarAppearance`. For a view controller that scrolls its content, use it to apply both `standardAppearance` and `scrollEdgeAppearance` to the `UINavigationBar`.\n\n\n\n## Configure the UINavigationBarAppearance\n\nConsider an app that uses `UITableViewController`, and has the following code in `application(_ :didFinishLaunchingWithOptions:)`:\n\n```swift\nUINavigationBar.appearance().isTranslucent = false\nUINavigationBar.appearance().barTintColor = .systemRed\n```\n\nIn iOS 14.x or later, the navigation bar color turns transparent (showing the black background underneath), yet iOS 13 draws the navigation bar in `.systemRed`.\n\nTo standardize the navigation bar’s appearance between these versions of iOS, use the `UINavigationBarAppearance` API. Use the following example to apply an opaque navigation bar colored `.systemRed` with white title text. Setting the text color here is only an example and of course is optional.\n\n```swift\n@available(iOS 13.0, *)\nfunc customNavBarAppearance() -> UINavigationBarAppearance {\n    let customNavBarAppearance = UINavigationBarAppearance()\n    \n    \/\/ Apply a red background.\n    customNavBarAppearance.configureWithOpaqueBackground()\n    customNavBarAppearance.backgroundColor = .systemRed\n    \n    \/\/ Apply white colored normal and large titles.\n    customNavBarAppearance.titleTextAttributes = [.foregroundColor: UIColor.white]\n    customNavBarAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]\n\n    \/\/ Apply white color to all the nav bar buttons.\n    let barButtonItemAppearance = UIBarButtonItemAppearance(style: .plain)\n    barButtonItemAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.white]\n    barButtonItemAppearance.disabled.titleTextAttributes = [.foregroundColor: UIColor.lightText]\n    barButtonItemAppearance.highlighted.titleTextAttributes = [.foregroundColor: UIColor.label]\n    barButtonItemAppearance.focused.titleTextAttributes = [.foregroundColor: UIColor.white]\n    customNavBarAppearance.buttonAppearance = barButtonItemAppearance\n    customNavBarAppearance.backButtonAppearance = barButtonItemAppearance\n    customNavBarAppearance.doneButtonAppearance = barButtonItemAppearance\n    \n    return customNavBarAppearance\n}\n```\n\n## Configure the entire app\n\nTo apply this appearance to the navigation bar throughout the entire app:\n\n```swift\nfunc application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {\n    let newNavBarAppearance = customNavBarAppearance()\n        \n    let appearance = UINavigationBar.appearance()\n    appearance.scrollEdgeAppearance = newNavBarAppearance\n    appearance.compactAppearance = newNavBarAppearance\n    appearance.standardAppearance = newNavBarAppearance\n    if #available(iOS 15.0, *) {\n        appearance.compactScrollEdgeAppearance = newNavBarAppearance\n    }\n\n    return true\n}\n```\n\n## Configure a view controller\n\nTo apply this appearance to the navigation bar of an individual view controller:\n\n```swift\noverride func viewDidLoad() {\n    super.viewDidLoad()\n\n    let newNavBarAppearance = customNavBarAppearance()\n    navigationController!.navigationBar.scrollEdgeAppearance = newNavBarAppearance\n    navigationController!.navigationBar.compactAppearance = newNavBarAppearance\n    navigationController!.navigationBar.standardAppearance = newNavBarAppearance\n    if #available(iOS 15.0, *) {\n        navigationController!.navigationBar.compactScrollEdgeAppearance = newNavBarAppearance\n    }\n}\n```\n\nIf you’re using storyboards, instead configure both the appearance of the navigation bar and the elements within that bar.\n\nTo change the appearance of the navigation bar:\n\nChoose “standard” and “scroll edge appearances” for the navigation bar, by setting the appearance proxy of `UINavigationBar`: “Standard”, and “ScrollEdge” appearances.\n\n1. Open the project’s storyboard file.\n2. Select the `UINavigationBar` from your `UINavigationController` scene.\n3. In the Attributes Inspector pane turn on these Appearances: “Standard”, “Compact”, “Scroll Edge”, and “Compact Scroll Edge”.\n4. For all four appearances, set the “Background” to “System Red Color”, for example.\n\nChange the color of the title and button elements:\n\n1. Change the bar button items color: set the View’s “Tint” color to “White Color”.\n2. Change the Standard Text Attributes “Title” from “Inherited” to “Custom”.\n3. Change the Standard Title Attributes “Title Color” from “Default” to “White Color”. Repeat steps 2 and 3 for: Scroll Edge and Compact Scroll Edge appearances.\n\n## Revision History\n\n- **2025-09-03** Added information about the new design in iOS 26.\n- **2022-03-01** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3106: Customizing the appearance of UINavigationBar",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3106-customizing-uinavigationbar-appearance"
+}

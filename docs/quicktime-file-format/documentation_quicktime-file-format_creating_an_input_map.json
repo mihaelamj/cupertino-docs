@@ -1,0 +1,51 @@
+{
+  "abstract" : "Describe and name sources with an input map.",
+  "codeExamples" : [
+    {
+      "code" : "QTNewAtomContainer(&inputMap);",
+      "language" : "c"
+    },
+    {
+      "code" : "AddTrackReference(theEffectsTrack, firstSourceTrack,\n                 kTrackModifierReference, &referenceIndex);\n \nQTInsertChild(inputMap, kParentAtomIsContainer,\n            kTrackModifierInput, referenceIndex, 0, 0, nil, &inputAtom);",
+      "language" : "c"
+    },
+    {
+      "code" : "inputType = VideoMediaType;\nQTInsertChild(inputMap, inputAtom,\n                kTrackModifierType, 1, 0, sizeof(inputType), &inputType,\n                nil);\n \naType = 'srcA';\nQTInsertChild(inputMap, inputAtom, kEffectDataSourceType, 1, 0,\n            sizeof(aType), &aType, nil);",
+      "language" : "c"
+    }
+  ],
+  "contentHash" : "f8922c2e49220bf3a6ad2b6d5e84c817662693b84a329304f29083e5ceab5f92",
+  "crawledAt" : "2026-03-10T21:33:37Z",
+  "id" : "EFA0D129-7E23-40D0-A24D-976686E3658D",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "QuickTime File Format",
+  "overview" : "## Overview\n\nThe input map is another QT atom container that you attach to the effects track. It describes the sources used in the effect and gives a name to each source. This name is used to refer to the source in the effects description.\n\nAn input map works in concert with track reference atoms in the source tracks. A track reference atom of type `kTrackModifierReference` is added to each source track, which causes that source track’s output to be redirected to the effects track. An input map is added to the effects track to identify the source tracks and give a name to each source, such as `'srcA'` and `'srcB'`. The effect can then refer to the sources by name, specifying that `'srcB'` should slide in over `'srcA'`, for example.\n\n## Structure of an input map\n\nThe input map contains a set of atoms that refer to the tracks used as sources for the effect. Each source track is represented by one track reference atom of type `kTrackModifierInput`.\n\nEach modifier input atom contains two children, one of type `kEffectDataSourceType`, and one of type `kTrackModifierType`, which hold the name and type of the source.\n\nThe name of the source is a unique identifier that you create, which is used in the effect description to reference the track. Any four-character name is valid, as long as it is unique in the set of source names.\n\nThe child atom of type `kTrackModifierType` indicates the type of the track being referenced. For a video track the type is `VideoMediaType`, for a sprite track it is `SpriteMediaType`, and so forth. Video tracks are the most common track type used as sources for effects. Only tracks that have a visible output, such as video and sprite tracks, can be used as sources for an effect. This means, for example, that sound tracks cannot be sources for an effect.\n\nYou refer to a `kTrackModifierInput` atom by its index number, which is returned by the `AddTrackReference` function when you create the atom.\n\n## Building input maps\n\nThe first step in creating an input map is to create a new `QTAtomContainer` to hold the map. You use the standard QuickTime container creation function.\n\nFor each source you are creating, call the `AddTrackReference` function. The track IDs of the effects track and the source track are passed as parameters to `AddTrackReference`, which creates an atom of type `kTrackModifierReference` and returns an index number. You use this index as the ID of the atom when you need to refer to it. You then insert the reference into the input map as an atom of type `kTrackModifierInput`.\n\nThe code in following listing creates a reference to the track `firstSourceTrack`, and adds it to the input map.\n\nThe `QTInsertChild` function returns the offset of the new modifier input atom in the `inputAtom` parameter.\n\nAdd the name and type of the source track to the modifier input atom. Again, calling the `QTInsertChild` function does this, as shown in the following code snippet:\n\nThis process is repeated for each source for the effect.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Creating_an_input_map\ncrawled: 2026-03-10T21:33:37Z\n---\n\n# Creating an input map\n\n**Article**\n\nDescribe and name sources with an input map.\n\n## Overview\n\nThe input map is another QT atom container that you attach to the effects track. It describes the sources used in the effect and gives a name to each source. This name is used to refer to the source in the effects description.\n\nAn input map works in concert with track reference atoms in the source tracks. A track reference atom of type `kTrackModifierReference` is added to each source track, which causes that source track’s output to be redirected to the effects track. An input map is added to the effects track to identify the source tracks and give a name to each source, such as `'srcA'` and `'srcB'`. The effect can then refer to the sources by name, specifying that `'srcB'` should slide in over `'srcA'`, for example.\n\n## Structure of an input map\n\nThe input map contains a set of atoms that refer to the tracks used as sources for the effect. Each source track is represented by one track reference atom of type `kTrackModifierInput`.\n\nEach modifier input atom contains two children, one of type `kEffectDataSourceType`, and one of type `kTrackModifierType`, which hold the name and type of the source.\n\nThe name of the source is a unique identifier that you create, which is used in the effect description to reference the track. Any four-character name is valid, as long as it is unique in the set of source names.\n\n\n\nThe child atom of type `kTrackModifierType` indicates the type of the track being referenced. For a video track the type is `VideoMediaType`, for a sprite track it is `SpriteMediaType`, and so forth. Video tracks are the most common track type used as sources for effects. Only tracks that have a visible output, such as video and sprite tracks, can be used as sources for an effect. This means, for example, that sound tracks cannot be sources for an effect.\n\nYou refer to a `kTrackModifierInput` atom by its index number, which is returned by the `AddTrackReference` function when you create the atom.\n\n## Building input maps\n\nThe first step in creating an input map is to create a new `QTAtomContainer` to hold the map. You use the standard QuickTime container creation function.\n\n```c\nQTNewAtomContainer(&inputMap);\n```\n\nFor each source you are creating, call the `AddTrackReference` function. The track IDs of the effects track and the source track are passed as parameters to `AddTrackReference`, which creates an atom of type `kTrackModifierReference` and returns an index number. You use this index as the ID of the atom when you need to refer to it. You then insert the reference into the input map as an atom of type `kTrackModifierInput`.\n\nThe code in following listing creates a reference to the track `firstSourceTrack`, and adds it to the input map.\n\n```c\nAddTrackReference(theEffectsTrack, firstSourceTrack,\n                 kTrackModifierReference, &referenceIndex);\n \nQTInsertChild(inputMap, kParentAtomIsContainer,\n            kTrackModifierInput, referenceIndex, 0, 0, nil, &inputAtom);\n```\n\nThe `QTInsertChild` function returns the offset of the new modifier input atom in the `inputAtom` parameter.\n\nAdd the name and type of the source track to the modifier input atom. Again, calling the `QTInsertChild` function does this, as shown in the following code snippet:\n\n```c\ninputType = VideoMediaType;\nQTInsertChild(inputMap, inputAtom,\n                kTrackModifierType, 1, 0, sizeof(inputType), &inputType,\n                nil);\n \naType = 'srcA';\nQTInsertChild(inputMap, inputAtom, kEffectDataSourceType, 1, 0,\n            sizeof(aType), &aType, nil);\n```\n\nThis process is repeated for each source for the effect.\n\n## Effect descriptions\n\n- **Structure of an effect description**: An effect description is the sole media sample for an effect track.\n- **Required atoms of an effects description**: Specify the required atoms for your effects description.\n- **Parameter atoms of an effects description**: Customize your effect with parameter atoms.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An effect description is the sole media sample for an effect track.",
+          "name" : "Structure of an effect description",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Structure_of_an_effect_description"
+        },
+        {
+          "description" : "Specify the required atoms for your effects description.",
+          "name" : "Required atoms of an effects description",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Required_atoms_of_an_effects_description"
+        },
+        {
+          "description" : "Customize your effect with parameter atoms.",
+          "name" : "Parameter atoms of an effects description",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Parameter_atoms_of_an_effects_description"
+        }
+      ],
+      "title" : "Effect descriptions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Creating an input map",
+  "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Creating_an_input_map"
+}

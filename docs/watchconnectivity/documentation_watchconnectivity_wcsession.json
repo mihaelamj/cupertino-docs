@@ -1,0 +1,258 @@
+{
+  "abstract" : "The object that initiates communication between a WatchKit extension and its companion iOS app.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "2ed978899840b92f777d8639b5d3f855541e1fd8387eafd8a2e661345cf0e5da",
+  "crawledAt" : "2026-03-10T22:02:15Z",
+  "declaration" : {
+    "code" : "class WCSession",
+    "language" : "swift"
+  },
+  "id" : "09F1C60E-630C-4494-BC98-A3C49D2D40DC",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "Watch Connectivity",
+  "overview" : "## Overview\n\nYour iOS app and watchOS app must both create and configure an instance of this class at some point during their execution. When both session objects are active, the two processes can communicate immediately by sending messages back and forth. When only one session is active, the active session may still send updates and transfer files, but those transfers happen opportunistically in the background.\n\n### Configuring and Activating the Session\n\nTo configure and activate the session, assign a [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/delegate] to the default session object and call that object’s [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/activate()] method, as shown in code snippet below. Your WatchKit extension and iOS app must each configure their own session object. Activating the session establishes a connection between the two apps.\n\nTo support the pairing of multiple watches to the same iPhone, the session delegate of both your apps must implement the activation APIs. Implementing the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate\/session(_:activationDidCompleteWith:error:)] method lets the session know that your app supports asynchronous activation. Implementing the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate\/sessionDidBecomeInactive(_:)] and [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate\/sessionDidDeactivate(_:)] methods in the session delegate of your iOS app is required to manage transitions between different Apple Watches.\n\nApps may initiate transfers only when the session is active—that is, the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/activationState] is set to [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionActivationState\/activated]. Your iOS app should also check the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/isPaired] and [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/isWatchAppInstalled] properties before sending any background messages, and it may need to check other properties as needed. Most of the properties you need to check are valid only while the session is active. At other times, the values of the properties may be undefined. The [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/activationState] property is always valid and contains the current activation state of the session. For details, see the corresponding property description.\n\nFor more information about implementing the methods of the delegate object, see [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate].\n\n### Supporting Communication with Multiple Apple Watches\n\nAn iPhone running iOS 9.3 or later may pair with more than one Apple Watch running watchOS 2.2 or later. In your Watch app, you should support asynchronous activation of the session, but doing so is not required. In your iOS app, you must support asynchronous activation of the session and also monitor the activation and deactivation of the session object. You do this by implementing the following methods in your session delegate:\n\n[\/documentation\/watchconnectivity\/wcsession#1965795] shows the sequence of events that happen when the user switches from one Apple Watch to another. When automatic switching is enabled, only one Apple Watch at a time actually communicates with the iOS app. The Watch app on each watch stays in the active state, but the iOS app moves to the inactive and deactivated states during a switch. Moving to the inactive state gives the session a small amount of time to deliver any data that has already been received. As soon as that data is delivered, the session moves to the deactivated state. At that point, the iOS app must call the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/activate()] method again to connect to the newly active watch, which in this example is now the second Apple Watch.\n\n\n\nYour iOS app can use the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/watchDirectoryURL] property to store data that is specific to only one instance of your Watch app running on a particular Apple Watch. In most cases, the data you display in each instance of your Watch app is the same. However, you might use this directory to store configuration data, preferences, or other data files that your iOS app needs to interact properly with your Watch app. If you do, use the activation and deactivation process to update your iOS app.\n\nFor more information about handling session activation and deactivation, see [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate].\n\n### Communicating with the Counterpart App\n\nYou may initiate data transfers to a counterpart app only when the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/activationState] property is set to [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionActivationState\/activated]. The iOS app should ensure the Watch app is installed before trying to initiate transfers. You initiate transfers in any of the following ways:\n\nWhen sending messages to a counterpart, background messages are placed on a queue and transmitted in order. Incoming messages are similarly queued and delivered to the delegate in the order in which they were received. Data sent using the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/sendMessage(_:replyHandler:errorHandler:)], [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/sendMessageData(_:replyHandler:errorHandler:)], and [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/transferCurrentComplicationUserInfo(_:)] methods has a higher priority and is transmitted right away. All messages received by your app are delivered to the session delegate serially on a background thread.\n\nWhen sending messages, send only the data that your app needs. All transfers involve sending data wireless to the counterpart app, which consumes power. Rather than sending all of your data every time, send only the items that have changed.\n\nBe prepared to handle errors and provide a graceful fallback when data cannot be transferred. Errors can occur if there is insufficient space for the data on the target device, if the data itself is malformed, or if there is a communications error. Check for errors in your handler code and take appropriate actions.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "visionOS",
+    "watchOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/watchconnectivity\/wcsession\ncrawled: 2026-03-10T22:02:15Z\n---\n\n# WCSession\n\n**Class**\n\nThe object that initiates communication between a WatchKit extension and its companion iOS app.\n\n## Declaration\n\n```swift\nclass WCSession\n```\n\n## Overview\n\nYour iOS app and watchOS app must both create and configure an instance of this class at some point during their execution. When both session objects are active, the two processes can communicate immediately by sending messages back and forth. When only one session is active, the active session may still send updates and transfer files, but those transfers happen opportunistically in the background.\n\n\n\n### Configuring and Activating the Session\n\nTo configure and activate the session, assign a [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/delegate] to the default session object and call that object’s [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/activate()] method, as shown in code snippet below. Your WatchKit extension and iOS app must each configure their own session object. Activating the session establishes a connection between the two apps.\n\n\n\nTo support the pairing of multiple watches to the same iPhone, the session delegate of both your apps must implement the activation APIs. Implementing the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate\/session(_:activationDidCompleteWith:error:)] method lets the session know that your app supports asynchronous activation. Implementing the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate\/sessionDidBecomeInactive(_:)] and [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate\/sessionDidDeactivate(_:)] methods in the session delegate of your iOS app is required to manage transitions between different Apple Watches.\n\n\n\nApps may initiate transfers only when the session is active—that is, the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/activationState] is set to [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionActivationState\/activated]. Your iOS app should also check the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/isPaired] and [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/isWatchAppInstalled] properties before sending any background messages, and it may need to check other properties as needed. Most of the properties you need to check are valid only while the session is active. At other times, the values of the properties may be undefined. The [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/activationState] property is always valid and contains the current activation state of the session. For details, see the corresponding property description.\n\nFor more information about implementing the methods of the delegate object, see [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate].\n\n### Supporting Communication with Multiple Apple Watches\n\nAn iPhone running iOS 9.3 or later may pair with more than one Apple Watch running watchOS 2.2 or later. In your Watch app, you should support asynchronous activation of the session, but doing so is not required. In your iOS app, you must support asynchronous activation of the session and also monitor the activation and deactivation of the session object. You do this by implementing the following methods in your session delegate:\n\n- [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate\/session(_:activationDidCompleteWith:error:)]\n- [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate\/sessionDidBecomeInactive(_:)]\n- [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate\/sessionDidDeactivate(_:)]\n\n[\/documentation\/watchconnectivity\/wcsession#1965795] shows the sequence of events that happen when the user switches from one Apple Watch to another. When automatic switching is enabled, only one Apple Watch at a time actually communicates with the iOS app. The Watch app on each watch stays in the active state, but the iOS app moves to the inactive and deactivated states during a switch. Moving to the inactive state gives the session a small amount of time to deliver any data that has already been received. As soon as that data is delivered, the session moves to the deactivated state. At that point, the iOS app must call the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/activate()] method again to connect to the newly active watch, which in this example is now the second Apple Watch.\n\n\n\nYour iOS app can use the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/watchDirectoryURL] property to store data that is specific to only one instance of your Watch app running on a particular Apple Watch. In most cases, the data you display in each instance of your Watch app is the same. However, you might use this directory to store configuration data, preferences, or other data files that your iOS app needs to interact properly with your Watch app. If you do, use the activation and deactivation process to update your iOS app.\n\nFor more information about handling session activation and deactivation, see [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionDelegate].\n\n### Communicating with the Counterpart App\n\nYou may initiate data transfers to a counterpart app only when the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/activationState] property is set to [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSessionActivationState\/activated]. The iOS app should ensure the Watch app is installed before trying to initiate transfers. You initiate transfers in any of the following ways:\n\n- Use the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/updateApplicationContext(_:)] method to communicate recent state information to the counterpart. When the counterpart wakes, it can use this information to update its own state. For example, an iOS app that supports Background App Refresh can use part of its background execution time to update the corresponding Watch app. This method overwrites the previous data dictionary, so use this method when your app needs only the most recent data values.\n- Use the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/sendMessage(_:replyHandler:errorHandler:)] or [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/sendMessageData(_:replyHandler:errorHandler:)] method to transfer data to a reachable counterpart. These methods are intended for immediate communication between your iOS app and WatchKit extension. The [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/isReachable] property must currently be [doc:\/\/com.apple.documentation\/documentation\/Swift\/true] for these methods to succeed.\n- Use the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/transferUserInfo(_:)] method to transfer a dictionary of data in the background. The dictionaries you send are queued for delivery to the counterpart and transfers continue when the current app is suspended or terminated.\n- Use the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/transferFile(_:metadata:)] method to transfer files in the background. Use this method in cases where you want to send more than a dictionary of values. For example, use this method to send images or file-based documents.\n- In iOS, use the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/transferCurrentComplicationUserInfo(_:)] method to send data related to your Watch app’s complication. Use of this method counts against your complication’s time budget.\n\nWhen sending messages to a counterpart, background messages are placed on a queue and transmitted in order. Incoming messages are similarly queued and delivered to the delegate in the order in which they were received. Data sent using the [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/sendMessage(_:replyHandler:errorHandler:)], [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/sendMessageData(_:replyHandler:errorHandler:)], and [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession\/transferCurrentComplicationUserInfo(_:)] methods has a higher priority and is transmitted right away. All messages received by your app are delivered to the session delegate serially on a background thread.\n\n\n\nWhen sending messages, send only the data that your app needs. All transfers involve sending data wireless to the counterpart app, which consumes power. Rather than sending all of your data every time, send only the items that have changed.\n\nBe prepared to handle errors and provide a graceful fallback when data cannot be transferred. Errors can occur if there is insufficient space for the data on the target device, if the data itself is malformed, or if there is a communications error. Check for errors in your handler code and take appropriate actions.\n\n## Getting the Default Session\n\n- **isSupported()**: Returns a Boolean value indicating whether the current iOS device is able to use a session object.\n- **default**: Returns the singleton session object for the current device.\n\n## Configuring the Session\n\n- **delegate**: The delegate for the session object\n- **activate()**: Activates the session asynchronously.\n- **activationState**: The current activation state of the session.\n\n## Getting the Paired Device Information\n\n- **isPaired**: A Boolean indicating whether the current iPhone has a paired Apple Watch.\n- **iOSDeviceNeedsUnlockAfterRebootForReachability**: A Boolean value indicating whether the paired iPhone must be in an unlocked state to be reachable.\n- **isWatchAppInstalled**: A Boolean value indicating whether the currently paired and active Apple Watch has installed the app.\n- **isCompanionAppInstalled**: A Boolean value indicating whether the companion has installed the app.\n- **isComplicationEnabled**: A Boolean value indicating whether the Watch app’s complication is in use on the currently paired and active Apple Watch.\n- **watchDirectoryURL**: A directory for storing information specific to the currently paired and active Apple Watch.\n\n## Determining the Session’s Reachability\n\n- **isReachable**: A Boolean value indicating whether the counterpart app is available for live messaging.\n\n## Managing Background Updates\n\n- **updateApplicationContext(_:)**: Sends a dictionary of values that a paired and active device can use to synchronize its state.\n- **applicationContext**: The most recent contextual data sent to the paired and active device.\n- **receivedApplicationContext**: A dictionary containing the last update data received from a paired and active device.\n\n## Sending Messages\n\n- **sendMessage(_:replyHandler:errorHandler:)**: Sends a message immediately to the paired and active device and optionally handles a response.\n- **sendMessageData(_:replyHandler:errorHandler:)**: Sends a data object immediately to the paired and active device and optionally handles a response.\n\n## Updating Complication Data\n\n- **remainingComplicationUserInfoTransfers**: The number of remaining times you can send complication data from the iOS app to the WatchKit extension.\n- **transferCurrentComplicationUserInfo(_:)**: Sends complication-related data from the iOS app to the WatchKit extension.\n\n## Transferring Data in the Background\n\n- **transferUserInfo(_:)**: Sends the specified data dictionary to the counterpart.\n- **outstandingUserInfoTransfers**: An array of in-progress data transfers.\n\n## Transferring Files in the Background\n\n- **transferFile(_:metadata:)**: Sends the specified file and optional dictionary to the counterpart.\n- **outstandingFileTransfers**: An array of in-progress file transfers.\n- **hasContentPending**: A Boolean value that indicates whether the session has more content to deliver.\n\n## Constants\n\n- **WCSessionActivationState**: Constants indicating the activation state of a session.\n- **WCErrorDomain**: The domain for errors associated with the Watch Connectivity framework.\n- **WCError**: A structure that contains Watch Connectivity error information.\n- **WCError.Code**: Constants for errors during a session.\n\n## Essentials\n\n- **WCSessionDelegate**: A delegate protocol that defines methods for receiving messages sent by a [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession] object.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns a Boolean value indicating whether the current iOS device is able to use a session object.",
+          "name" : "isSupported()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/isSupported()"
+        },
+        {
+          "description" : "Returns the singleton session object for the current device.",
+          "name" : "default",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/default"
+        }
+      ],
+      "title" : "Getting the Default Session"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The delegate for the session object",
+          "name" : "delegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/delegate"
+        },
+        {
+          "description" : "Activates the session asynchronously.",
+          "name" : "activate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/activate()"
+        },
+        {
+          "description" : "The current activation state of the session.",
+          "name" : "activationState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/activationState"
+        }
+      ],
+      "title" : "Configuring the Session"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean indicating whether the current iPhone has a paired Apple Watch.",
+          "name" : "isPaired",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/isPaired"
+        },
+        {
+          "description" : "A Boolean value indicating whether the paired iPhone must be in an unlocked state to be reachable.",
+          "name" : "iOSDeviceNeedsUnlockAfterRebootForReachability",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/iOSDeviceNeedsUnlockAfterRebootForReachability"
+        },
+        {
+          "description" : "A Boolean value indicating whether the currently paired and active Apple Watch has installed the app.",
+          "name" : "isWatchAppInstalled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/isWatchAppInstalled"
+        },
+        {
+          "description" : "A Boolean value indicating whether the companion has installed the app.",
+          "name" : "isCompanionAppInstalled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/isCompanionAppInstalled"
+        },
+        {
+          "description" : "A Boolean value indicating whether the Watch app’s complication is in use on the currently paired and active Apple Watch.",
+          "name" : "isComplicationEnabled",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/isComplicationEnabled"
+        },
+        {
+          "description" : "A directory for storing information specific to the currently paired and active Apple Watch.",
+          "name" : "watchDirectoryURL",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/watchDirectoryURL"
+        }
+      ],
+      "title" : "Getting the Paired Device Information"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value indicating whether the counterpart app is available for live messaging.",
+          "name" : "isReachable",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/isReachable"
+        }
+      ],
+      "title" : "Determining the Session’s Reachability"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sends a dictionary of values that a paired and active device can use to synchronize its state.",
+          "name" : "updateApplicationContext(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/updateApplicationContext(_:)"
+        },
+        {
+          "description" : "The most recent contextual data sent to the paired and active device.",
+          "name" : "applicationContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/applicationContext"
+        },
+        {
+          "description" : "A dictionary containing the last update data received from a paired and active device.",
+          "name" : "receivedApplicationContext",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/receivedApplicationContext"
+        }
+      ],
+      "title" : "Managing Background Updates"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sends a message immediately to the paired and active device and optionally handles a response.",
+          "name" : "sendMessage(_:replyHandler:errorHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/sendMessage(_:replyHandler:errorHandler:)"
+        },
+        {
+          "description" : "Sends a data object immediately to the paired and active device and optionally handles a response.",
+          "name" : "sendMessageData(_:replyHandler:errorHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/sendMessageData(_:replyHandler:errorHandler:)"
+        }
+      ],
+      "title" : "Sending Messages"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The number of remaining times you can send complication data from the iOS app to the WatchKit extension.",
+          "name" : "remainingComplicationUserInfoTransfers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/remainingComplicationUserInfoTransfers"
+        },
+        {
+          "description" : "Sends complication-related data from the iOS app to the WatchKit extension.",
+          "name" : "transferCurrentComplicationUserInfo(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/transferCurrentComplicationUserInfo(_:)"
+        }
+      ],
+      "title" : "Updating Complication Data"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sends the specified data dictionary to the counterpart.",
+          "name" : "transferUserInfo(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/transferUserInfo(_:)"
+        },
+        {
+          "description" : "An array of in-progress data transfers.",
+          "name" : "outstandingUserInfoTransfers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/outstandingUserInfoTransfers"
+        }
+      ],
+      "title" : "Transferring Data in the Background"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Sends the specified file and optional dictionary to the counterpart.",
+          "name" : "transferFile(_:metadata:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/transferFile(_:metadata:)"
+        },
+        {
+          "description" : "An array of in-progress file transfers.",
+          "name" : "outstandingFileTransfers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/outstandingFileTransfers"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the session has more content to deliver.",
+          "name" : "hasContentPending",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSession\/hasContentPending"
+        }
+      ],
+      "title" : "Transferring Files in the Background"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Constants indicating the activation state of a session.",
+          "name" : "WCSessionActivationState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSessionActivationState"
+        },
+        {
+          "description" : "The domain for errors associated with the Watch Connectivity framework.",
+          "name" : "WCErrorDomain",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCErrorDomain"
+        },
+        {
+          "description" : "A structure that contains Watch Connectivity error information.",
+          "name" : "WCError",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCError"
+        },
+        {
+          "description" : "Constants for errors during a session.",
+          "name" : "WCError.Code",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCError\/Code"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A delegate protocol that defines methods for receiving messages sent by a [doc:\/\/com.apple.watchconnectivity\/documentation\/WatchConnectivity\/WCSession] object.",
+          "name" : "WCSessionDelegate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/WatchConnectivity\/WCSessionDelegate"
+        }
+      ],
+      "title" : "Essentials"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "WCSession",
+  "url" : "https:\/\/developer.apple.com\/documentation\/watchconnectivity\/wcsession"
+}

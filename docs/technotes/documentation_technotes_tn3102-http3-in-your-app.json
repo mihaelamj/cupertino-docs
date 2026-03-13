@@ -1,0 +1,105 @@
+{
+  "abstract" : "Get started with iOS 15’s new HTTP\/3 support.",
+  "codeExamples" : [
+    {
+      "code" : "\n\/\/ HTTP3App.swift\n\n@main\nstruct HTTP3App: App {\n    let networkManager = NetworkManager()\n    var body: some Scene {\n        WindowGroup {\n            ContentView(networkManager: networkManager)\n        }\n    }\n}\n\n\/\/ ContentView.swift\n\nimport SwiftUI\nimport os.log\n\nstruct ContentView: View {\n    var networkManager: NetworkManager\n    \n    var body: some View {\n        VStack(alignment: .leading) {\n            Button(\"Test HTTP3\") {\n                networkManager.testHTTP3Request()\n            }.padding(.vertical, 20)\n        }.padding(40)\n    }\n}\n\nstruct ContentView_Previews: PreviewProvider {\n    static var previews: some View {\n        ContentView()\n    }\n}\n\nclass NetworkManager: NSObject, URLSessionDataDelegate {\n    \n    private var session: URLSession!\n    \n    func testHTTP3Request() {\n        \n        if self.session == nil {\n            let config = URLSessionConfiguration.default\n            config.requestCachePolicy = .reloadIgnoringLocalCacheData\n            self.session = URLSession(configuration: config, delegate: self, delegateQueue: .main)\n        }\n        \n        let urlStr = \"https:\/\/google.com\"\n        let url = URL(string: urlStr)!\n        var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 60.0)\n        request.assumesHTTP3Capable = true\n        os_log(\"task will start, url: \\(url.absoluteString)\")\n        self.session.dataTask(with: request) { (data, response, error) in\n            if let error = error as NSError? {\n                os_log(\"task transport error \\(error.domain) \/ \\(error.code)\")\n                return\n            }\n            guard let data = data, let response = response as? HTTPURLResponse else {\n                os_log(\"task response is invalid\")\n                return\n            }\n\n            guard 200 ..< 300 ~= response.statusCode else {\n                print(\"task response status code is invalid; received \\(response.statusCode), but expected 2xx\")\n                return\n            }\n            os_log(\"task finished with status \\(response.statusCode), bytes \\(data.count)\")\n        }.resume()\n        \n    }\n}\n\nextension NetworkManager {\n    \n    func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {\n        let protocols = metrics.transactionMetrics.map { $0.networkProtocolName ?? \"-\" }\n        os_log(\"protocols: \\(protocols)\")\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "task will start, url: <# Your H3 URL Here #>\nprotocols: [\"h3-29\"] \/\/ [\"h3\", \"h2\"]\ntask finished with status 200, bytes 703"
+    }
+  ],
+  "contentHash" : "8a1eb111d060beecf1582a5a2266d69d954f7ef7e17cdeaaeb67d44c37ea3481",
+  "crawledAt" : "2026-03-10T22:01:50Z",
+  "id" : "5C9CF988-00F1-4622-AB28-985D5EEF54F6",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nHTTP\/3 is a major new feature in iOS 15. While you wait for your server to add support for it, here’s how you can test it today in your app:\n\n## Testing notes\n\nAfter running the code above, your app will print something similar to:\n\nThe protocols array shows the protocol used for each HTTP transaction. In this case there was a single `HTTP\/3` transaction. In some cases you may see the protocol being returned as `h2` or even `http1.1`. If this is the case then run the transaction again. This gives URLSession the opportunity to apply the `HTTP\/3` service discovery option that your server sent back on the previous HTTP response.\n\nService discovery for `HTTP\/3` is performed in one of the following ways:\n\nTo attempt to use `HTTP\/3` on the first transaction, set the [https:\/\/developer.apple.com\/documentation\/foundation\/urlrequest\/3738175-assumeshttp3capable] property on the [https:\/\/developer.apple.com\/documentation\/foundation\/urlrequest] being used to execute the data task in [https:\/\/developer.apple.com\/documentation\/foundation\/urlsession].\n\nFor cases where `HTTP\/3` is not supported on the server, or over the network, you will see the protocol fall back to `h2` or `http1.1`. For more information on this, please see the WWDC session for [https:\/\/developer.apple.com\/videos\/play\/wwdc2021\/10094\/].\n\nIf you experience issues while debugging your network transactions, take a look at these requests in the Network Instruments tool to debug what you are seeing being sent back from your server. For more on this, see the article for [https:\/\/developer.apple.com\/documentation\/foundation\/url_loading_system\/analyzing_http_traffic_with_instruments].\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3102-http3-in-your-app\ncrawled: 2026-03-10T22:01:50Z\n---\n\n# TN3102: HTTP\/3 in your app\n\n**Article**\n\nGet started with iOS 15’s new HTTP\/3 support.\n\n## Overview\n\nHTTP\/3 is a major new feature in iOS 15. While you wait for your server to add support for it, here’s how you can test it today in your app:\n\n1. Make sure your test device is running iOS 15 or later (`HTTP\/3` is not supported in the simulator).\n2. In Settings > Developer, under the Networking group, enable `HTTP\/3`.\n3. Using Xcode 13.0 or later, create a new project from the iOS > App template. Set the Language popup to Swift and the Interface popup to SwiftUI.\n4. Change the `HTTP3App.swift` and the `ContentView.swift` files to the code shown below.\n5. Run the app on your device.\n6. Tap your Test button.\n\n```swift\n\n\/\/ HTTP3App.swift\n\n@main\nstruct HTTP3App: App {\n    let networkManager = NetworkManager()\n    var body: some Scene {\n        WindowGroup {\n            ContentView(networkManager: networkManager)\n        }\n    }\n}\n\n\/\/ ContentView.swift\n\nimport SwiftUI\nimport os.log\n\nstruct ContentView: View {\n    var networkManager: NetworkManager\n    \n    var body: some View {\n        VStack(alignment: .leading) {\n            Button(\"Test HTTP3\") {\n                networkManager.testHTTP3Request()\n            }.padding(.vertical, 20)\n        }.padding(40)\n    }\n}\n\nstruct ContentView_Previews: PreviewProvider {\n    static var previews: some View {\n        ContentView()\n    }\n}\n\nclass NetworkManager: NSObject, URLSessionDataDelegate {\n    \n    private var session: URLSession!\n    \n    func testHTTP3Request() {\n        \n        if self.session == nil {\n            let config = URLSessionConfiguration.default\n            config.requestCachePolicy = .reloadIgnoringLocalCacheData\n            self.session = URLSession(configuration: config, delegate: self, delegateQueue: .main)\n        }\n        \n        let urlStr = \"https:\/\/google.com\"\n        let url = URL(string: urlStr)!\n        var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 60.0)\n        request.assumesHTTP3Capable = true\n        os_log(\"task will start, url: \\(url.absoluteString)\")\n        self.session.dataTask(with: request) { (data, response, error) in\n            if let error = error as NSError? {\n                os_log(\"task transport error \\(error.domain) \/ \\(error.code)\")\n                return\n            }\n            guard let data = data, let response = response as? HTTPURLResponse else {\n                os_log(\"task response is invalid\")\n                return\n            }\n\n            guard 200 ..< 300 ~= response.statusCode else {\n                print(\"task response status code is invalid; received \\(response.statusCode), but expected 2xx\")\n                return\n            }\n            os_log(\"task finished with status \\(response.statusCode), bytes \\(data.count)\")\n        }.resume()\n        \n    }\n}\n\nextension NetworkManager {\n    \n    func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {\n        let protocols = metrics.transactionMetrics.map { $0.networkProtocolName ?? \"-\" }\n        os_log(\"protocols: \\(protocols)\")\n    }\n}\n```\n\n## Testing notes\n\nAfter running the code above, your app will print something similar to:\n\n```\ntask will start, url: <# Your H3 URL Here #>\nprotocols: [\"h3-29\"] \/\/ [\"h3\", \"h2\"]\ntask finished with status 200, bytes 703\n```\n\nThe protocols array shows the protocol used for each HTTP transaction. In this case there was a single `HTTP\/3` transaction. In some cases you may see the protocol being returned as `h2` or even `http1.1`. If this is the case then run the transaction again. This gives URLSession the opportunity to apply the `HTTP\/3` service discovery option that your server sent back on the previous HTTP response.\n\nService discovery for `HTTP\/3` is performed in one of the following ways:\n\n- The recommended approach is to configure your DNS server to advertise the HTTPS resource record for `alpn=\"h3,h2\"`.\n- Alternatively, configure your server to respond back with the `Alt-Svc` header that advertises `HTTP\/3`. For example, `Alt-Srv: h3=\":443\"; ma=2592000`.\n\nTo attempt to use `HTTP\/3` on the first transaction, set the [https:\/\/developer.apple.com\/documentation\/foundation\/urlrequest\/3738175-assumeshttp3capable] property on the [https:\/\/developer.apple.com\/documentation\/foundation\/urlrequest] being used to execute the data task in [https:\/\/developer.apple.com\/documentation\/foundation\/urlsession].\n\nFor cases where `HTTP\/3` is not supported on the server, or over the network, you will see the protocol fall back to `h2` or `http1.1`. For more information on this, please see the WWDC session for [https:\/\/developer.apple.com\/videos\/play\/wwdc2021\/10094\/].\n\n\n\nIf you experience issues while debugging your network transactions, take a look at these requests in the Network Instruments tool to debug what you are seeing being sent back from your server. For more on this, see the article for [https:\/\/developer.apple.com\/documentation\/foundation\/url_loading_system\/analyzing_http_traffic_with_instruments].\n\n## Revision History\n\n- **2022-05-24** Made minor editorial changes.\n- **2022-02-08** Republished as TN3102.\n- **2021-06-16** First published as “HTTP\/3 in Your App” on the Apple Developer Forums.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3102: HTTP\/3 in your app",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3102-http3-in-your-app"
+}

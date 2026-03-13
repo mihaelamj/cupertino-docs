@@ -1,0 +1,61 @@
+{
+  "abstract" : "Tells the file provider to create or import an item based on a template.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "fc10cc48890357b1a5df7ded8d98fc192f5035c0cf7d593ec746ed190579a7c3",
+  "crawledAt" : "2026-03-10T15:27:00Z",
+  "declaration" : {
+    "code" : "func createItem(basedOn itemTemplate: NSFileProviderItem, fields: NSFileProviderItemFields, contents url: URL?, options: NSFileProviderCreateItemOptions = [], request: NSFileProviderRequest, completionHandler: @escaping (NSFileProviderItem?, NSFileProviderItemFields, Bool, (any Error)?) -> Void) -> Progress",
+    "language" : "swift"
+  },
+  "id" : "B847930C-DCC6-4C28-938B-ECEE19D0E8B6",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "File Provider",
+  "overview" : "## Return Value\n\nA progress that tracks creating the item in your remote storage and uploading its content. The system automatically calls [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Progress\/cancel()]  on the progress object when an error occurs.\n\n## Discussion\n\nThe system calls this method when the user creates a new item or imports an item into the file provider. The system manages the local copy of the item. You’re responsible for syncing and saving the item to your remote storage.\n\nImplement this method to create an item in your remote storage that matches the template, and then call the callback handler.\n\nThe `itemTemplate` parameter describes the item’s intended state, including:\n\nThe system sets the template’s [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderItemProtocol\/itemIdentifier] to a unique value and guarantees that it remains the same for the specified item. For example, the system can reuse the identifier to replay this method after a crash.\n\nIn general, set the properties in your `createdItem` to match the `itemTemplate`. One exception is the [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderItemProtocol\/itemIdentifier] property; always provide your own identifier for the item. If you reuse an existing identifier, the system replaces the local copy of the old item with the new one.\n\nIf the item is a document, fetch its contents from the `url` parameter. Otherwise, the `url` is `nil`. For symlinks, you can access the content using the template’s [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderItemProtocol\/symlinkTargetPath] parameter. For both symlinks and aliases, make sure to return the correct UTI for the item,  because the UTI can’t be inferred from the item’s filename.\n\nIf you are reimporting an item and the system finds a local copy without any content, it sets the [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderCreateItemOptions\/mayAlreadyExist] option, and sets the `url` to nil. In this case, if you can’t match the item with an existing item from remote storage, pass `nil` as the completion handler’s `createdItem` parameter. The system then deletes the local copy of the item.\n\nIf the attempt to create an item fails because the parent directory doesn’t exist, pass [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderError\/Code\/noSuchItem] to the handler. The system attempts to create the parent directory, and then tries to create the item again.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/FileProvider\/NSFileProviderReplicatedExtension\/createItem(basedOn:fields:contents:options:request:completionHandler:)\ncrawled: 2026-03-10T15:27:00Z\n---\n\n# createItem(basedOn:fields:contents:options:request:completionHandler:)\n\n**Instance Method**\n\nTells the file provider to create or import an item based on a template.\n\n## Declaration\n\n```swift\nfunc createItem(basedOn itemTemplate: NSFileProviderItem, fields: NSFileProviderItemFields, contents url: URL?, options: NSFileProviderCreateItemOptions = [], request: NSFileProviderRequest, completionHandler: @escaping (NSFileProviderItem?, NSFileProviderItemFields, Bool, (any Error)?) -> Void) -> Progress\n```\n\n## Parameters\n\n- **itemTemplate**: An object that defines the state of the new or imported item.\n- **fields**: The fields that you should apply to the new or imported item.\n- **url**: If the item is a file with the [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderItemFields\/contents] field set, this is the URL to the item’s content. Otherwise, it’s `nil`.\n- **options**: The item creation options.\n- **request**: An object that identifies the context of that request, such as the requesting app.\n- **completionHandler**: A block that you call after uploading the item to your remote storage. You pass the following parameters:\n\n\n\n## Return Value\n\nA progress that tracks creating the item in your remote storage and uploading its content. The system automatically calls [doc:\/\/com.apple.documentation\/documentation\/Foundation\/Progress\/cancel()]  on the progress object when an error occurs.\n\n## Discussion\n\nThe system calls this method when the user creates a new item or imports an item into the file provider. The system manages the local copy of the item. You’re responsible for syncing and saving the item to your remote storage.\n\nImplement this method to create an item in your remote storage that matches the template, and then call the callback handler.\n\nThe `itemTemplate` parameter describes the item’s intended state, including:\n\n\n\nThe system sets the template’s [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderItemProtocol\/itemIdentifier] to a unique value and guarantees that it remains the same for the specified item. For example, the system can reuse the identifier to replay this method after a crash.\n\nIn general, set the properties in your `createdItem` to match the `itemTemplate`. One exception is the [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderItemProtocol\/itemIdentifier] property; always provide your own identifier for the item. If you reuse an existing identifier, the system replaces the local copy of the old item with the new one.\n\nIf the item is a document, fetch its contents from the `url` parameter. Otherwise, the `url` is `nil`. For symlinks, you can access the content using the template’s [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderItemProtocol\/symlinkTargetPath] parameter. For both symlinks and aliases, make sure to return the correct UTI for the item,  because the UTI can’t be inferred from the item’s filename.\n\nIf you are reimporting an item and the system finds a local copy without any content, it sets the [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderCreateItemOptions\/mayAlreadyExist] option, and sets the `url` to nil. In this case, if you can’t match the item with an existing item from remote storage, pass `nil` as the completion handler’s `createdItem` parameter. The system then deletes the local copy of the item.\n\nIf the attempt to create an item fails because the parent directory doesn’t exist, pass [doc:\/\/com.apple.fileprovider\/documentation\/FileProvider\/NSFileProviderError\/Code\/noSuchItem] to the handler. The system attempts to create the parent directory, and then tries to create the item again.\n\n## Managing Items\n\n- **NSFileProviderCreateItemOptions**: Options for creating items.\n- **modifyItem(_:baseVersion:changedFields:contents:options:request:completionHandler:)**: Tells the file provider that an item’s content or metadata changed.\n- **NSFileProviderModifyItemOptions**: Options for modifying items.\n- **deleteItem(identifier:baseVersion:options:request:completionHandler:)**: Tells the file provider to delete an item forever.\n- **NSFileProviderDeleteItemOptions**: Options for deleting items.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Options for creating items.",
+          "name" : "NSFileProviderCreateItemOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FileProvider\/NSFileProviderCreateItemOptions"
+        },
+        {
+          "description" : "Tells the file provider that an item’s content or metadata changed.",
+          "name" : "modifyItem(_:baseVersion:changedFields:contents:options:request:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FileProvider\/NSFileProviderReplicatedExtension\/modifyItem(_:baseVersion:changedFields:contents:options:request:completionHandler:)"
+        },
+        {
+          "description" : "Options for modifying items.",
+          "name" : "NSFileProviderModifyItemOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FileProvider\/NSFileProviderModifyItemOptions"
+        },
+        {
+          "description" : "Tells the file provider to delete an item forever.",
+          "name" : "deleteItem(identifier:baseVersion:options:request:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FileProvider\/NSFileProviderReplicatedExtension\/deleteItem(identifier:baseVersion:options:request:completionHandler:)"
+        },
+        {
+          "description" : "Options for deleting items.",
+          "name" : "NSFileProviderDeleteItemOptions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/FileProvider\/NSFileProviderDeleteItemOptions"
+        }
+      ],
+      "title" : "Managing Items"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "createItem(basedOn:fields:contents:options:request:completionHandler:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/FileProvider\/NSFileProviderReplicatedExtension\/createItem(basedOn:fields:contents:options:request:completionHandler:)"
+}

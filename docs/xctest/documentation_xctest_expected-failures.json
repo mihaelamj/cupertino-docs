@@ -1,0 +1,120 @@
+{
+  "abstract" : "Anticipate known test failures to prevent failing tests from affecting your workflows.",
+  "codeExamples" : [
+    {
+      "code" : "func testExpectedFailure() throws {\n    let thingThatFails: Bool = false\n    XCTExpectFailure(\"Working on a fix for this problem.\")\n    XCTAssertTrue(thingThatFails, \"This is not working right now.\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func testExpectedFailureInBlock() throws {\n    let thingThatFails: Bool = false\n    XCTExpectFailure(\"Working on a fix for this problem.\") {\n        XCTAssertTrue(thingThatFails, \"This is not working right now.\")\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func testExpectedFailureDisabledWithOptions() throws {\n    var thingThatFails: Bool = true\n    let options = XCTExpectedFailure.Options()\n    \n    #if !targetEnvironment(macCatalyst)\n    thingThatFails = false\n    options.isEnabled = false\n    #endif\n    \n    XCTExpectFailure(\"Working on a fix for this problem.\", options: options) {\n        XCTAssertTrue(thingThatFails, \"Thing that fails failed.\")\n    }\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func testExpectedFailureWithOptions() throws {    let thingThatFails: Bool = false\n    let options = XCTExpectedFailure.Options()\n    options.issueMatcher = { issue in\n        issue.type == .assertionFailure && issue.compactDescription.contains(\"SPECIFIC BROKEN THING\")\n    }\n    \n    XCTExpectFailure(\"Working on a fix for this problem.\", options: options)\n    \n    XCTAssertTrue(true, \"This always works.\")\n    XCTAssertTrue(thingThatFails, \"SPECIFIC BROKEN THING failed.\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "func testExpectedIntermittentFailure() throws {\n    let testResultOfSomeActivity = performSomeActivity()\n\n    let options = XCTExpectedFailure.Options()\n    options.isStrict = false\n    XCTExpectFailure(\"Working on a fix for this intermittent problem.\", options: options)\n\n    XCTAssertTrue(true, \"This always works.\")\n    XCTAssertTrue(testResultOfSomeActivity, \"This only seems to work half the time.\")\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "532c254256d10fb9b9c0267f7082d4062c61960700daa92076ec257697ffe30e",
+  "crawledAt" : "2026-03-10T23:03:28Z",
+  "id" : "CCF3CC33-4277-42F7-91E9-27C0979E5553",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "XCTest",
+  "overview" : "## Overview\n\nWhen you have a workflow that requires all of your tests to pass before continuing, issues that you can’t fix quickly, and cause your tests to fail, create a difficult situation: either you stop using your workflow, or you disable the failing tests to allow your workflow to continue.\n\nConfigure your test to handle an expected assertion failure by calling `XCTExpectFailure` with a reason for the expected failure before the assertion you expect to fail.\n\nIf any assertions fail in a test after you call `XCTExpectFailure`, Xcode marks the test as an expected failure instead of a test failure.\n\n\n\nIf no assertion failures occur, Xcode marks the test as failing because the expected failure doesn’t occur. Remove the expected failure to have Xcode mark the test as passing in future tests, or use the expected failure options below to refine your expected failure.\n\nTo specify which assertion you expect to fail, call `XCTExpectFailure` with a block that contains the assertion.\n\nAlternatively, provide options when calling `XCTExpectFailure` to disable the expectation in circumstances you specify, such as when a test only passes in a target environment for Mac Catalyst.\n\nSpecify an `issueMatcher` closure to match an assertion. Add code in the closure to examine the issue provided by the assertion failure:\n\nIf you set an expected failure for a test that fails occasionally and unpredictably, set `isStrict` to `false` to prevent an unmatched expectation from causing a test failure.\n\nWhen you call `XCTExpectFailure` multiple times in the same test, the following rules apply:\n\nThe test system records a test failure for each `XCTExpectFailure` call that did not match a test failure. To avoid this, remove the unmatched `XCTExpectFailure` calls from your tests. If your test fails intermittently and you don’t want the test system to record an unmatched `XCTExpectFailure` call as a test failure, set `isStrict` to false in options you provide to your `XCTExpectFailure` call.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/XCTest\/expected-failures\ncrawled: 2026-03-10T23:03:28Z\n---\n\n# Expected Failures\n\n**API Collection**\n\nAnticipate known test failures to prevent failing tests from affecting your workflows.\n\n## Overview\n\nWhen you have a workflow that requires all of your tests to pass before continuing, issues that you can’t fix quickly, and cause your tests to fail, create a difficult situation: either you stop using your workflow, or you disable the failing tests to allow your workflow to continue.\n\nConfigure your test to handle an expected assertion failure by calling `XCTExpectFailure` with a reason for the expected failure before the assertion you expect to fail.\n\n```swift\nfunc testExpectedFailure() throws {\n    let thingThatFails: Bool = false\n    XCTExpectFailure(\"Working on a fix for this problem.\")\n    XCTAssertTrue(thingThatFails, \"This is not working right now.\")\n}\n```\n\nIf any assertions fail in a test after you call `XCTExpectFailure`, Xcode marks the test as an expected failure instead of a test failure.\n\n\n\nIf no assertion failures occur, Xcode marks the test as failing because the expected failure doesn’t occur. Remove the expected failure to have Xcode mark the test as passing in future tests, or use the expected failure options below to refine your expected failure.\n\nTo specify which assertion you expect to fail, call `XCTExpectFailure` with a block that contains the assertion.\n\n```swift\nfunc testExpectedFailureInBlock() throws {\n    let thingThatFails: Bool = false\n    XCTExpectFailure(\"Working on a fix for this problem.\") {\n        XCTAssertTrue(thingThatFails, \"This is not working right now.\")\n    }\n}\n```\n\nAlternatively, provide options when calling `XCTExpectFailure` to disable the expectation in circumstances you specify, such as when a test only passes in a target environment for Mac Catalyst.\n\n```swift\nfunc testExpectedFailureDisabledWithOptions() throws {\n    var thingThatFails: Bool = true\n    let options = XCTExpectedFailure.Options()\n    \n    #if !targetEnvironment(macCatalyst)\n    thingThatFails = false\n    options.isEnabled = false\n    #endif\n    \n    XCTExpectFailure(\"Working on a fix for this problem.\", options: options) {\n        XCTAssertTrue(thingThatFails, \"Thing that fails failed.\")\n    }\n}\n```\n\nSpecify an `issueMatcher` closure to match an assertion. Add code in the closure to examine the issue provided by the assertion failure:\n\n- If the issue matches what you expect, return `true` from the closure.\n- Otherwise, return `false,` then the test system records a test failure for your unmatched expected failure.\n\n```swift\nfunc testExpectedFailureWithOptions() throws {    let thingThatFails: Bool = false\n    let options = XCTExpectedFailure.Options()\n    options.issueMatcher = { issue in\n        issue.type == .assertionFailure && issue.compactDescription.contains(\"SPECIFIC BROKEN THING\")\n    }\n    \n    XCTExpectFailure(\"Working on a fix for this problem.\", options: options)\n    \n    XCTAssertTrue(true, \"This always works.\")\n    XCTAssertTrue(thingThatFails, \"SPECIFIC BROKEN THING failed.\")\n}\n```\n\nIf you set an expected failure for a test that fails occasionally and unpredictably, set `isStrict` to `false` to prevent an unmatched expectation from causing a test failure.\n\n```swift\nfunc testExpectedIntermittentFailure() throws {\n    let testResultOfSomeActivity = performSomeActivity()\n\n    let options = XCTExpectedFailure.Options()\n    options.isStrict = false\n    XCTExpectFailure(\"Working on a fix for this intermittent problem.\", options: options)\n\n    XCTAssertTrue(true, \"This always works.\")\n    XCTAssertTrue(testResultOfSomeActivity, \"This only seems to work half the time.\")\n}\n```\n\nWhen you call `XCTExpectFailure` multiple times in the same test, the following rules apply:\n\n- If you call `XCTExpectFailure` with a closure, the test system restricts the scope for matching failures to the code in the closure.\n- If you call `XCTExpectFailure` without a closure, the test system compares a test failure to the matcher for each `XCTExpectFailure` call in the test, from the most recent call to oldest. If the test finds a match, it associates the test failure with the matching `XCTExpectFailure` call.\n\nThe test system records a test failure for each `XCTExpectFailure` call that did not match a test failure. To avoid this, remove the unmatched `XCTExpectFailure` calls from your tests. If your test fails intermittently and you don’t want the test system to record an unmatched `XCTExpectFailure` call as a test failure, set `isStrict` to false in options you provide to your `XCTExpectFailure` call.\n\n\n\n## Expected Failures\n\n- **XCTExpectedFailure**: An object that represents an expected test failure.\n- **XCTExpectedFailure.Options**: Options that determine how the test matches the expected failure to an actual test failure, and whether an unfulfilled expected failure results in a test failure.\n- **XCTExpectFailure(_:options:)**: Instructs the test to expect a failure in an upcoming assertion, with options to customize expected failure checking and handling.\n- **XCTExpectFailure(_:enabled:strict:issueMatcher:)**: Instructs the test to expect a failure in an upcoming assertion, with parameters to customize expected failure checking and handling.\n- **XCTExpectFailure(_:options:failingBlock:)**: Instructs the test to expect a failure in an assertion in the provided block of code, with options to customize expected failure checking and handling.\n- **XCTExpectFailure(_:enabled:strict:failingBlock:issueMatcher:)**: Instructs the test to expect a failure in an assertion in the provided block of code, with parameters to customize expected failure checking and handling.\n\n## Test assertions\n\n- **Boolean Assertions**: Test a condition that generates a true or false result.\n- **Nil and Non-Nil Assertions**: Check whether a test condition has, or doesn’t have, a value.\n- **Equality and Inequality Assertions**: Check whether two values are equal or unequal.\n- **Comparable Value Assertions**: Compare two values to determine whether one is larger or smaller than the other.\n- **Error Assertions**: Check whether a function call throws, or doesn’t throw, an error.\n- **NSException Assertions**: Check whether a function call throws, or doesn’t throw, an exception.\n- **Unconditional Test Failures**: Generate a failure immediately and unconditionally.\n- **Methods for Skipping Tests**: Skip tests when meeting specified conditions.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that represents an expected test failure.",
+          "name" : "XCTExpectedFailure",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTExpectedFailure"
+        },
+        {
+          "description" : "Options that determine how the test matches the expected failure to an actual test failure, and whether an unfulfilled expected failure results in a test failure.",
+          "name" : "XCTExpectedFailure.Options",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTExpectedFailure\/Options"
+        },
+        {
+          "description" : "Instructs the test to expect a failure in an upcoming assertion, with options to customize expected failure checking and handling.",
+          "name" : "XCTExpectFailure(_:options:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTExpectFailure(_:options:)"
+        },
+        {
+          "description" : "Instructs the test to expect a failure in an upcoming assertion, with parameters to customize expected failure checking and handling.",
+          "name" : "XCTExpectFailure(_:enabled:strict:issueMatcher:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTExpectFailure(_:enabled:strict:issueMatcher:)"
+        },
+        {
+          "description" : "Instructs the test to expect a failure in an assertion in the provided block of code, with options to customize expected failure checking and handling.",
+          "name" : "XCTExpectFailure(_:options:failingBlock:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTExpectFailure(_:options:failingBlock:)"
+        },
+        {
+          "description" : "Instructs the test to expect a failure in an assertion in the provided block of code, with parameters to customize expected failure checking and handling.",
+          "name" : "XCTExpectFailure(_:enabled:strict:failingBlock:issueMatcher:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTExpectFailure(_:enabled:strict:failingBlock:issueMatcher:)"
+        }
+      ],
+      "title" : "Expected Failures"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Test a condition that generates a true or false result.",
+          "name" : "Boolean Assertions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/boolean-assertions"
+        },
+        {
+          "description" : "Check whether a test condition has, or doesn’t have, a value.",
+          "name" : "Nil and Non-Nil Assertions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/nil-and-non-nil-assertions"
+        },
+        {
+          "description" : "Check whether two values are equal or unequal.",
+          "name" : "Equality and Inequality Assertions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/equality-and-inequality-assertions"
+        },
+        {
+          "description" : "Compare two values to determine whether one is larger or smaller than the other.",
+          "name" : "Comparable Value Assertions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/comparable-value-assertions"
+        },
+        {
+          "description" : "Check whether a function call throws, or doesn’t throw, an error.",
+          "name" : "Error Assertions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/error-assertions"
+        },
+        {
+          "description" : "Check whether a function call throws, or doesn’t throw, an exception.",
+          "name" : "NSException Assertions",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/nsexception-assertions"
+        },
+        {
+          "description" : "Generate a failure immediately and unconditionally.",
+          "name" : "Unconditional Test Failures",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/unconditional-test-failures"
+        },
+        {
+          "description" : "Skip tests when meeting specified conditions.",
+          "name" : "Methods for Skipping Tests",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/methods-for-skipping-tests"
+        }
+      ],
+      "title" : "Test assertions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Expected Failures",
+  "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/expected-failures"
+}

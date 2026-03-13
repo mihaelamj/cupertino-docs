@@ -1,0 +1,43 @@
+{
+  "abstract" : "Creates a GRU operation and returns the value and optionally the training state tensor.",
+  "codeExamples" : [
+    {
+      "code" : "for t = 0 to T-1 \n  z[t] = fz( (h[t-1] m) R^T + x[t] W^T + b ),\n  r[t] = fr( (h[t-1] m) R^T + x[t] W^T + b ),\n  c[t] = (h[t-1] r[t] m) R^T\n  o[t] = fo( c[t] + x[t] W^T + b )\n  h[t] = z[t]h[t-1] + (1-z[t])o[t]",
+      "language" : "md"
+    },
+    {
+      "code" : "  c[t] = ( (h[t-1] m) R^T + b2 ) r[t]",
+      "language" : "md"
+    },
+    {
+      "code" : "  h[t] = (1-z[t])h[t-1] + z[t]o[t].",
+      "language" : "md"
+    }
+  ],
+  "contentHash" : "a7d5f4425b294973f17949a6e4073d80094c578edec312dd866057b982074747",
+  "crawledAt" : "2026-03-10T20:12:16Z",
+  "declaration" : {
+    "code" : "func GRU(_ source: MPSGraphTensor, recurrentWeight: MPSGraphTensor, inputWeight: MPSGraphTensor?, bias: MPSGraphTensor?, initState: MPSGraphTensor?, mask: MPSGraphTensor?, secondaryBias: MPSGraphTensor?, descriptor: MPSGraphGRUDescriptor, name: String?) -> [MPSGraphTensor]",
+    "language" : "swift"
+  },
+  "id" : "18BB6547-EC04-47BB-B607-6B6270F55DF7",
+  "kind" : "method",
+  "language" : "swift",
+  "module" : "Metal Performance Shaders Graph",
+  "overview" : "## Return Value\n\nA valid `MPSGraphTensor` array of size 1 or 2 depending on value of  `descriptor.training`. The layout of the state output is [T,N,H] or [T,N,2H] for bidirectional, and the layout of the `trainingState` output is [T,N,3H] or [T,N,6H] for bidirectional.\n\n## Discussion\n\nThis operation returns tensors `h` and optionally `z` that are defined recursively as follows:\n\nIf `resetAfter = YES` then `c[t]` is replaced by\n\nIf `flipZ = YES` then `h[t]` is replaced by\n\n`W` is optional `inputWeight`, `R` is `recurrentWeight`, `b` is optional  `bias`, `m` is optional `mask`, `x[t]` is `source` `h[t]` is the first output, `z[t]` is the second output (optional) and `h[-1]` is `initState`. `b2` is an optional `resetBias` vector, only used when `resetAfter = YES`. See [doc:\/\/com.apple.metalperformanceshadersgraph\/documentation\/MetalPerformanceShadersGraph\/MPSGraphGRUDescriptor] for different `activation` options for `f()`.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MetalPerformanceShadersGraph\/MPSGraph\/GRU(_:recurrentWeight:inputWeight:bias:initState:mask:secondaryBias:descriptor:name:)\ncrawled: 2026-03-10T20:12:16Z\n---\n\n# GRU(_:recurrentWeight:inputWeight:bias:initState:mask:secondaryBias:descriptor:name:)\n\n**Instance Method**\n\nCreates a GRU operation and returns the value and optionally the training state tensor.\n\n## Declaration\n\n```swift\nfunc GRU(_ source: MPSGraphTensor, recurrentWeight: MPSGraphTensor, inputWeight: MPSGraphTensor?, bias: MPSGraphTensor?, initState: MPSGraphTensor?, mask: MPSGraphTensor?, secondaryBias: MPSGraphTensor?, descriptor: MPSGraphGRUDescriptor, name: String?) -> [MPSGraphTensor]\n```\n\n## Parameters\n\n- **source**: A tensor containing the source data `x[t]` with the data layout [T,N,I]. In case `inputWeight = nil` and `bidirectional = NO` then the layout is [T,N,3H] and for `inputWeight = nil` and `bidirectional = YES` the layout is [T,N,6H].\n- **recurrentWeight**: A tensor containing the recurrent weights `R`. For `bidirectional` the layout is [2,3H,H] and otherwise it is [3H,H].\n- **inputWeight**: A tensor containing the input weights matrix `W` - optional, if missing the operation assumes a diagonal unit-matrix. For `bidirectional` the layout is [6H,I] and otherwise it is [3H,I].\n- **bias**: A tensor containing the bias `b` - optional, if missing the operation assumes zeroes. For `bidirectional` the layout is [6H] and otherwise it is [3H].\n- **initState**: The initial internal state of the LSTM `h[-1]` - optional, if missing the operation assumes zeroes. For `bidirectional` the layout is [N,2H] and otherwise it is [N,H].\n- **mask**: A tensor containing the mask `m` - optional, if missing the operation assumes ones. Useful for dropout.\n- **secondaryBias**: A tensor containing the secondary bias vector `b2` - optional, if missing the operation assumes zeroes. Only used with `reset_after = YES`. Shape is [H], ie. a vector for each gate, or [2H] for bidirectional.\n- **descriptor**: A descriptor that defines the parameters for the GRU operation.\n- **name**: The name for the operation.\n\n## Return Value\n\nA valid `MPSGraphTensor` array of size 1 or 2 depending on value of  `descriptor.training`. The layout of the state output is [T,N,H] or [T,N,2H] for bidirectional, and the layout of the `trainingState` output is [T,N,3H] or [T,N,6H] for bidirectional.\n\n## Discussion\n\nThis operation returns tensors `h` and optionally `z` that are defined recursively as follows:\n\n```md\nfor t = 0 to T-1 \n  z[t] = fz( (h[t-1] m) R^T + x[t] W^T + b ),\n  r[t] = fr( (h[t-1] m) R^T + x[t] W^T + b ),\n  c[t] = (h[t-1] r[t] m) R^T\n  o[t] = fo( c[t] + x[t] W^T + b )\n  h[t] = z[t]h[t-1] + (1-z[t])o[t]\n```\n\nIf `resetAfter = YES` then `c[t]` is replaced by\n\n```md\n  c[t] = ( (h[t-1] m) R^T + b2 ) r[t]\n```\n\nIf `flipZ = YES` then `h[t]` is replaced by\n\n```md\n  h[t] = (1-z[t])h[t-1] + z[t]o[t].\n```\n\n`W` is optional `inputWeight`, `R` is `recurrentWeight`, `b` is optional  `bias`, `m` is optional `mask`, `x[t]` is `source` `h[t]` is the first output, `z[t]` is the second output (optional) and `h[-1]` is `initState`. `b2` is an optional `resetBias` vector, only used when `resetAfter = YES`. See [doc:\/\/com.apple.metalperformanceshadersgraph\/documentation\/MetalPerformanceShadersGraph\/MPSGraphGRUDescriptor] for different `activation` options for `f()`.\n\n",
+  "sections" : [
+
+  ],
+  "source" : "appleJSON",
+  "title" : "GRU(_:recurrentWeight:inputWeight:bias:initState:mask:secondaryBias:descriptor:name:)",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MetalPerformanceShadersGraph\/MPSGraph\/GRU(_:recurrentWeight:inputWeight:bias:initState:mask:secondaryBias:descriptor:name:)"
+}

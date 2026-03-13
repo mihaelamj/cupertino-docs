@@ -1,0 +1,99 @@
+{
+  "abstract" : "Learn the expected use cases for Network Extension packet tunnel providers, and about use cases that are not supported.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "ee035f55d84dce7dbac3f44c3686e2102f462fcbfa98e8a9f1334b84969547e2",
+  "crawledAt" : "2026-03-10T22:01:47Z",
+  "id" : "E725BFB9-B7A9-4093-BD1E-5A5DF7A73F9D",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\n[doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEPacketTunnelProvider] is very powerful and useful on Apple platforms. It has many valid use cases such as providing users access to secure resources and securing network traffic on an insecure network. While this API is very powerful, there are certain use cases that do not line up with its intended purpose. This technote briefly explains the recommended use cases for packet tunnel providers, along with common scenarios that are unsupported.\n\n## Recommended use cases for packet tunnel providers\n\nRecommended use cases for a packet tunnel provider include:\n\n## Unsupported uses of packet tunnel providers\n\nWhile there are many reasons to use a packet tunnel provider, there are also many unsupported uses of this API. If you find yourself implementing any one of the code paths below, consider using one of the suggested alternatives:\n\nAvoiding the unsupported scenarios will save your project many edges cases and bugs during the development and deployment process.\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3120-expected-use-cases-for-network-extension-packet-tunnel-providers\ncrawled: 2026-03-10T22:01:47Z\n---\n\n# TN3120: Expected use cases for Network Extension packet tunnel providers\n\n**Article**\n\nLearn the expected use cases for Network Extension packet tunnel providers, and about use cases that are not supported.\n\n## Overview\n\n[doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEPacketTunnelProvider] is very powerful and useful on Apple platforms. It has many valid use cases such as providing users access to secure resources and securing network traffic on an insecure network. While this API is very powerful, there are certain use cases that do not line up with its intended purpose. This technote briefly explains the recommended use cases for packet tunnel providers, along with common scenarios that are unsupported.\n\n## Recommended use cases for packet tunnel providers\n\nRecommended use cases for a packet tunnel provider include:\n\n- Do use a packet tunnel provider to access secure resources on an isolated network. For example, use `NEPacketTunnelProvider` to implement an iOS or macOS VPN client that tunnels network traffic through a VPN connection into a private enterprise network. This can be done by tunneling specific destination IP and DNS traffic to the isolated network.\n- Do use a packet tunnel provider to secure network access while on an insecure network.  For example, use `NEPacketTunnelProvider` to implement an iOS or macOS VPN client that tunnels network traffic through a public VPN service that provides access to the wider internet.  Common techniques used to achieve this functionality include creating a full tunnel VPN that routes all traffic to the remote VPN server that then forwards the traffic to its final destination.\n\n## Unsupported uses of packet tunnel providers\n\nWhile there are many reasons to use a packet tunnel provider, there are also many unsupported uses of this API. If you find yourself implementing any one of the code paths below, consider using one of the suggested alternatives:\n\n- Do not use a packet tunnel provider to implement a network content filter. Packets that are read from [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEPacketTunnelFlow] are meant to be sent over a tunnel connection to a remote server for injection into a remote network. They are not meant to be dropped or re-injected back into the system. Doing so is a content filter action, as supported by one of the Network Extension [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/content-filter-providers]. On iOS, implement a connection-based content filter using [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEFilterDataProvider] and [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEFilterControlProvider]. On macOS, implement a connection-based content filter with `NEFilterDataProvider` or a packet-based content filter with [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEFilterPacketProvider]. On macOS, using both providers at the same time is supported.\n\nFor information on how to deploy a content filter, see [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3134-network-extension-provider-deployment].  If those options don’t work for your product, consider creating a [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/url-filters].\n- Do not use a packet tunnel provider to intercept all DNS traffic on the system.\nFor small sets of DNS traffic inside your isolated network, this is reasonable. However, trying to intercept all DNS traffic on the system can result in endless edge cases and problems during development and deployment. As an alternative use the [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEDNSProxyProvider] or the [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/dns-settings] APIs.  These APIs were built for handling all DNS traffic on the system.\n- Do not use a packet tunnel provider to selectively claim traffic for the packet tunnel and proxy all other traffic elsewhere. Traffic that is claimed by a `NEPacketTunnelProvider` is meant to be sent through the tunnel connection and not be routed through another interface via a proxy.  The recommended alternative is to implement a [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NETransparentProxyProvider] on macOS.  On iOS, consider either claiming the network traffic that’s needed for your tunnel with [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NETunnelProviderManager] or claiming traffic by destination IP with [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/NEIPv4Settings\/includedRoutes].  To learn more about how the system routes VPN traffic, see [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/routing-your-vpn-network-traffic].\n- Do not use a packet tunnel provider to host a network listener or proxy server.\nThere is no reasonable alternative here other than using one of the [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/app-proxy-provider] APIs.  This path is simply not a recommended use case for a packet tunnel provider or any other Network Extension.\n\nAvoiding the unsupported scenarios will save your project many edges cases and bugs during the development and deployment process.\n\n## Revision History\n\n- **2025-07-22** Added a reference to the new [doc:\/\/com.apple.documentation\/documentation\/NetworkExtension\/url-filters] mechanism.  Added links to documents that further explain specific topics.  Fixed a broken link.  Made other minor editorial changes.\n- **2022-05-24** Made minor editorial changes.\n- **2022-03-29** Added additional links to APIs.\n- **2022-03-22** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3120: Expected use cases for Network Extension packet tunnel providers",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3120-expected-use-cases-for-network-extension-packet-tunnel-providers"
+}

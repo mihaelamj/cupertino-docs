@@ -1,0 +1,74 @@
+{
+  "abstract" : "An atom that expresses profiles or feature codes for features that occur in the movie.",
+  "codeExamples" : [
+    {
+      "code" : "aligned(8) class ProfileAtom\n    extends FullAtom('prfl') {\n    unsigned int(32) feature-record-count;\n    for (i=1; i<feature-record-count; i++) {\n        unsigned int(32) reserved = 0;\n        unsigned int(32) part-ID;\n        unsigned int(32) feature-code;\n        unsigned int(32) feature-value\n    }\n}",
+      "language" : "c"
+    }
+  ],
+  "contentHash" : "6e5289881a8e64b7da42b65e0845f9f170d106c4bb911898f4579b8d4d72f13e",
+  "crawledAt" : "2026-03-10T21:36:53Z",
+  "id" : "D7F6E036-48B8-465F-AC60-1499B9BDDCD3",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "QuickTime File Format",
+  "overview" : "## Overview\n\nAt the movie level, the profile atom must occur within the movie atom before the movie header atom. A reader may stop the search for the profile atom once the profile atom or the movie header atom is found. Because new atoms may be introduced into the movie atom (type `'moov'`) in the future, a reader must not expect the first child atom of the movie atom to be either the profile (type `'prfl'`) or the movie header (`'mvhd'`) atom. This rule allows for new atoms in the future but still accommodates readers that do not want to perform an exhaustive enumeration of all the child atoms in a movie atom.\n\nThe profile atom expresses profiles or feature codes for features that occur in the movie. The list is not necessarily exhaustive, and there may be multiple profile values recorded for the same profile code. For example, if there are two independent sequences of MPEG-4 video in the movie, using different profile-level IDs, both might be recorded here.\n\nEach feature is either universal or is documented in a specific specification, identified by a brand as used in the file type atom. The only brands that should occur in a given profile atom are the universal brand or brands that occur in the file type atom in the same file.\n\nFeature value ranges should in general never include an unknown point; if the value of a feature is unknown, the feature should be absent from the profile atom.\n\nFeature values should be deducible by fairly simple inspection of the rest of the movie: for example, extracting the profile-level ID from a video header, or calculations using information from the sample table (for example, overall average bit rate by summing the sample sizes and the sample durations). It is not appropriate to have features which cannot be computed, or only computed with difficulty (e.g. a buffer model estimation which requires emulating a video decoder on the entire bit stream). The algorithm to extract or deduce the feature value from the rest of the file must be defined.\n\nEmpty slots in the profile atom structure must be filled with zeroes.\n\nIf there are multiple parts of the file to which the same feature apply, yet they have different feature values, then either there must be entries for each occurrence or none at all. For example, if there are two MPEG-4 visual sequences, using different visual profiles, there are either two profile entries in the profile table (one for each sequence) or none at all. Features must not be partially documented.\n\nProfile atoms may also occur at the track level. A track-level profile atom must occur within the track atom before the track header atom (`'tkhd'`). A reader should stop searching for a track’s profile atom if either the profile or the track header atom is found, ignoring any other atoms present.\n\nA track profile atom should only summarize features within that track. If track profile atoms exist, a movie profile atom can be built largely by copying feature entries from the profile atom of the movie’s tracks to the profile atom at the movie level. It is possible to have multiple track profiles with different values which must be resolved to a single value for the movie as whole, however—such as multiple video tracks with different maximum bit rates—so not all features can be copied directly from the track to the movie profile. Additionally, the movie profile may summarize features that cannot occur at the track level, such as total movie bit rate.\n\nWhen building a movie profile, you must include either all instances of a track-level feature or no instances of that feature. For example, if you have multiple video tracks that use different codecs, you must either include an entry at the movie level for each codec, or put no codec feature entries at the movie level at all.\n\nThe following table shows the layout of the profile atom.\n\n## Syntax\n\n## Semantics\n\nThe profile atom is a full atom, so it has an 8-bit version and 24 bits of flags. For this specification, the version is `0` and the flags have the value `0`. A reader compliant with this specification should treat any profile atom with a nonzero version value as if it did not exist.\n\nFor more information on setting feature entries, see [doc:\/\/com.apple.qtff\/documentation\/quicktime-file-format\/Profile_atom\/Feature_entries].",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/profile_atom\ncrawled: 2026-03-10T21:36:53Z\n---\n\n# Profile atom ('prfl')\n\n**Atom**\n\nAn atom that expresses profiles or feature codes for features that occur in the movie.\n\n## Overview\n\n\n\nAt the movie level, the profile atom must occur within the movie atom before the movie header atom. A reader may stop the search for the profile atom once the profile atom or the movie header atom is found. Because new atoms may be introduced into the movie atom (type `'moov'`) in the future, a reader must not expect the first child atom of the movie atom to be either the profile (type `'prfl'`) or the movie header (`'mvhd'`) atom. This rule allows for new atoms in the future but still accommodates readers that do not want to perform an exhaustive enumeration of all the child atoms in a movie atom.\n\nThe profile atom expresses profiles or feature codes for features that occur in the movie. The list is not necessarily exhaustive, and there may be multiple profile values recorded for the same profile code. For example, if there are two independent sequences of MPEG-4 video in the movie, using different profile-level IDs, both might be recorded here.\n\nEach feature is either universal or is documented in a specific specification, identified by a brand as used in the file type atom. The only brands that should occur in a given profile atom are the universal brand or brands that occur in the file type atom in the same file.\n\nFeature value ranges should in general never include an unknown point; if the value of a feature is unknown, the feature should be absent from the profile atom.\n\nFeature values should be deducible by fairly simple inspection of the rest of the movie: for example, extracting the profile-level ID from a video header, or calculations using information from the sample table (for example, overall average bit rate by summing the sample sizes and the sample durations). It is not appropriate to have features which cannot be computed, or only computed with difficulty (e.g. a buffer model estimation which requires emulating a video decoder on the entire bit stream). The algorithm to extract or deduce the feature value from the rest of the file must be defined.\n\nEmpty slots in the profile atom structure must be filled with zeroes.\n\nIf there are multiple parts of the file to which the same feature apply, yet they have different feature values, then either there must be entries for each occurrence or none at all. For example, if there are two MPEG-4 visual sequences, using different visual profiles, there are either two profile entries in the profile table (one for each sequence) or none at all. Features must not be partially documented.\n\nProfile atoms may also occur at the track level. A track-level profile atom must occur within the track atom before the track header atom (`'tkhd'`). A reader should stop searching for a track’s profile atom if either the profile or the track header atom is found, ignoring any other atoms present.\n\nA track profile atom should only summarize features within that track. If track profile atoms exist, a movie profile atom can be built largely by copying feature entries from the profile atom of the movie’s tracks to the profile atom at the movie level. It is possible to have multiple track profiles with different values which must be resolved to a single value for the movie as whole, however—such as multiple video tracks with different maximum bit rates—so not all features can be copied directly from the track to the movie profile. Additionally, the movie profile may summarize features that cannot occur at the track level, such as total movie bit rate.\n\nWhen building a movie profile, you must include either all instances of a track-level feature or no instances of that feature. For example, if you have multiple video tracks that use different codecs, you must either include an entry at the movie level for each codec, or put no codec feature entries at the movie level at all.\n\nThe following table shows the layout of the profile atom.\n\n\n\n## Syntax\n\n```c\naligned(8) class ProfileAtom\n    extends FullAtom('prfl') {\n    unsigned int(32) feature-record-count;\n    for (i=1; i<feature-record-count; i++) {\n        unsigned int(32) reserved = 0;\n        unsigned int(32) part-ID;\n        unsigned int(32) feature-code;\n        unsigned int(32) feature-value\n    }\n}\n```\n\n## Semantics\n\nThe profile atom is a full atom, so it has an 8-bit version and 24 bits of flags. For this specification, the version is `0` and the flags have the value `0`. A reader compliant with this specification should treat any profile atom with a nonzero version value as if it did not exist.\n\nFor more information on setting feature entries, see [doc:\/\/com.apple.qtff\/documentation\/quicktime-file-format\/Profile_atom\/Feature_entries].\n\n## Data fields\n\n- **Size**: A 32-bit integer that specifies the number of bytes in this atom.\n- **Type**: A 32-bit integer that identifies the atom type.\n- **Version**: An 8-bit integer that holds the version.\n- **Flags**: An 8-bit integer with flags.\n- **Number of feature entries**: A 32-bit integer that indicates how many feature entries are in the atom.\n- **Feature entries**: A list of feature entries.\n\n## Building a profile atom\n\n- **About this appendix**\n- **Universal features**: Features that you include in any file that includes a profile atom.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A 32-bit integer that specifies the number of bytes in this atom.",
+          "name" : "Size",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Profile_atom\/Size"
+        },
+        {
+          "description" : "A 32-bit integer that identifies the atom type.",
+          "name" : "Type",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Profile_atom\/Type"
+        },
+        {
+          "description" : "An 8-bit integer that holds the version.",
+          "name" : "Version",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Profile_atom\/Version"
+        },
+        {
+          "description" : "An 8-bit integer with flags.",
+          "name" : "Flags",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Profile_atom\/Flags"
+        },
+        {
+          "description" : "A 32-bit integer that indicates how many feature entries are in the atom.",
+          "name" : "Number of feature entries",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Profile_atom\/Number_of_feature_entries"
+        },
+        {
+          "description" : "A list of feature entries.",
+          "name" : "Feature entries",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Profile_atom\/Feature_entries"
+        }
+      ],
+      "title" : "Data fields"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "About this appendix",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/About_this_appendix"
+        },
+        {
+          "description" : "Features that you include in any file that includes a profile atom.",
+          "name" : "Universal features",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Universal_features"
+        }
+      ],
+      "title" : "Building a profile atom"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Profile atom ('prfl')",
+  "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/profile_atom"
+}

@@ -1,0 +1,58 @@
+{
+  "abstract" : "Provide additional information about a QuickTime VR movie using custom atoms.",
+  "codeExamples" : [
+    {
+      "code" : "QTVRInterceptProc MyProc = NewQTVRInterceptProc (MyHotSpot);\nQTVRInstallInterceptProc (qtvr, kQTVRTriggerHotSpotSelector, myProc,  0, 0);\n \npascal void MyHotSpot (QTVRInstance qtvr, QTVRInterceptPtr qtvrMsg,\n                        SInt32 refCon, Boolean *cancel)\n{\n    UInt32 hotSpotID = (UInt32) qtvrMsg->parameter[0];\n    QTAtomContainer nodeInfo =\n            (QTAtomContainer) qtvrMsg->parameter[1];\n    QTAtom hotSpotAtom = (QTAtom) qtvrMsg->parameter[2];\n    OSType hotSpotType;\n    CustomData myCustomData;\n    QTAtom myAtom;\n \n    QTVRGetHotSpotType (qtvr, hotSpotID, &hotSpotType);\n    if (hotSpotType != kMyAtomType) return;\n \n    \/\/ It's our type of hot spot - don't let anyone else handle  it\n    *cancel = true;\n \n    \/\/ Find our custom atom\n    myAtom = QTFindChildByID (nodeInfo, hotSpotAtom, kMyAtomType,  1, nil);\n    if (myAtom != 0) {\n        OSErr err;\n        \/\/ Copy the custom data into our structure\n        err = QTCopyAtomDataToPtr (nodeInfo, myAtom, false,\n                        sizeof(CustomData), &myCustomData, nil);\n        if (err == noErr)\n            \/\/ Do something with it\n            DoMyHotSpotStuff (hotSpotID, &myCustomData);\n    }\n}",
+      "language" : "c"
+    }
+  ],
+  "contentHash" : "2220af3a824d2975b2f196a7391e1f1fad6285e88c4f20cdc39a61cdf37ff62d",
+  "crawledAt" : "2026-03-10T21:35:01Z",
+  "id" : "4E321E1F-D39D-4877-A1FD-339C6D476D16",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "QuickTime File Format",
+  "overview" : "## Overview\n\nIf you author a QuickTime VR movie, you may choose to add custom atoms to either the VR world or node information atom containers. Those atoms can be extracted within an application to provide additional information that the application may use.\n\nInformation that pertains to the entire scene might be stored in a custom atom within the VR world atom container. Node-specific information could be stored in the individual node information atom containers or as sibling atoms to the node location atoms within the VR world.\n\nCustom hot spot atoms should be stored as siblings to the hot spot information atoms in the node information atom container. Generally, its atom type is the same as the custom hot spot type. You can set up an intercept procedure in your application in order to process clicks on the custom hot spots.\n\nIf you use custom atoms, you should install your hot spot intercept procedure when you open the movie. The following listing is an example of such an intercept procedure.\n\nYour intercept procedure is called for clicks on any hot spot. You should check to see if it is your type of hot spot and, if so, extract the custom hot spot atom and do whatever is appropriate for your hot spot type (`DoMyHotSpotStuff`).\n\nWhen you no longer need the intercept procedure you should call `QTVRInstallInterceptProc` again with the same selector and a nil procedure pointer and then call `DisposeRoutineDescriptor` on `myProc`.\n\nApple reserves all hot spot and atom types with lowercase letters. Your custom hot spot type should contain all uppercase letters.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Adding_custom_atoms_in_a_QuickTime_VR_movie\ncrawled: 2026-03-10T21:35:01Z\n---\n\n# Adding custom atoms in a QuickTime VR movie\n\n**Article**\n\nProvide additional information about a QuickTime VR movie using custom atoms.\n\n## Overview\n\nIf you author a QuickTime VR movie, you may choose to add custom atoms to either the VR world or node information atom containers. Those atoms can be extracted within an application to provide additional information that the application may use.\n\nInformation that pertains to the entire scene might be stored in a custom atom within the VR world atom container. Node-specific information could be stored in the individual node information atom containers or as sibling atoms to the node location atoms within the VR world.\n\nCustom hot spot atoms should be stored as siblings to the hot spot information atoms in the node information atom container. Generally, its atom type is the same as the custom hot spot type. You can set up an intercept procedure in your application in order to process clicks on the custom hot spots.\n\nIf you use custom atoms, you should install your hot spot intercept procedure when you open the movie. The following listing is an example of such an intercept procedure.\n\n```c\nQTVRInterceptProc MyProc = NewQTVRInterceptProc (MyHotSpot);\nQTVRInstallInterceptProc (qtvr, kQTVRTriggerHotSpotSelector, myProc,  0, 0);\n \npascal void MyHotSpot (QTVRInstance qtvr, QTVRInterceptPtr qtvrMsg,\n                        SInt32 refCon, Boolean *cancel)\n{\n    UInt32 hotSpotID = (UInt32) qtvrMsg->parameter[0];\n    QTAtomContainer nodeInfo =\n            (QTAtomContainer) qtvrMsg->parameter[1];\n    QTAtom hotSpotAtom = (QTAtom) qtvrMsg->parameter[2];\n    OSType hotSpotType;\n    CustomData myCustomData;\n    QTAtom myAtom;\n \n    QTVRGetHotSpotType (qtvr, hotSpotID, &hotSpotType);\n    if (hotSpotType != kMyAtomType) return;\n \n    \/\/ It's our type of hot spot - don't let anyone else handle  it\n    *cancel = true;\n \n    \/\/ Find our custom atom\n    myAtom = QTFindChildByID (nodeInfo, hotSpotAtom, kMyAtomType,  1, nil);\n    if (myAtom != 0) {\n        OSErr err;\n        \/\/ Copy the custom data into our structure\n        err = QTCopyAtomDataToPtr (nodeInfo, myAtom, false,\n                        sizeof(CustomData), &myCustomData, nil);\n        if (err == noErr)\n            \/\/ Do something with it\n            DoMyHotSpotStuff (hotSpotID, &myCustomData);\n    }\n}\n```\n\nYour intercept procedure is called for clicks on any hot spot. You should check to see if it is your type of hot spot and, if so, extract the custom hot spot atom and do whatever is appropriate for your hot spot type (`DoMyHotSpotStuff`).\n\nWhen you no longer need the intercept procedure you should call `QTVRInstallInterceptProc` again with the same selector and a nil procedure pointer and then call `DisposeRoutineDescriptor` on `myProc`.\n\nApple reserves all hot spot and atom types with lowercase letters. Your custom hot spot type should contain all uppercase letters.\n\n## Storing QuickTime VR files\n\n- **Single-node panoramic movies**: Store a QTVR track, a panorama track, and a panorama image track in a single-node panoramic movie.\n- **Single-node object movies**: Store a QTVR track, an object track, and an object image track in a single-node object movie.\n- **Multinode movies**: Store any number of object and panoramic nodes in a multinode QuickTime VR movie.\n- **Getting the name of a QuickTime VR node**: Retrieve information from a QuickTime VR node with QuickTime atom container functions.\n- **Adding atom containers in a QuickTime VR Movie**: Add node information to your QuickTime VR world.\n- **Optimizing QuickTime VR movies for web playback**: Prevent having to download an entire movie before starting playback.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Store a QTVR track, a panorama track, and a panorama image track in a single-node panoramic movie.",
+          "name" : "Single-node panoramic movies",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Single-node_panoramic_movies"
+        },
+        {
+          "description" : "Store a QTVR track, an object track, and an object image track in a single-node object movie.",
+          "name" : "Single-node object movies",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Single-node_object_movies"
+        },
+        {
+          "description" : "Store any number of object and panoramic nodes in a multinode QuickTime VR movie.",
+          "name" : "Multinode movies",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Multinode_movies"
+        },
+        {
+          "description" : "Retrieve information from a QuickTime VR node with QuickTime atom container functions.",
+          "name" : "Getting the name of a QuickTime VR node",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Getting_the_name_of_a_QuickTime_VR_node"
+        },
+        {
+          "description" : "Add node information to your QuickTime VR world.",
+          "name" : "Adding atom containers in a QuickTime VR Movie",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Adding_atom_containers_in_a_QuickTime_VR_Movie"
+        },
+        {
+          "description" : "Prevent having to download an entire movie before starting playback.",
+          "name" : "Optimizing QuickTime VR movies for web playback",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Optimizing_QuickTime_VR_movies_for_web_playback"
+        }
+      ],
+      "title" : "Storing QuickTime VR files"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Adding custom atoms in a QuickTime VR movie",
+  "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Adding_custom_atoms_in_a_QuickTime_VR_movie"
+}

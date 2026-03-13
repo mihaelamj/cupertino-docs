@@ -1,0 +1,40 @@
+{
+  "abstract" : "Initializes the controller in response to a call from the framework.",
+  "codeExamples" : [
+    {
+      "code" : "IMPL ( ExampleSCSIDext, UserInitializeController )\n{\n    kern_return_t    ret;\n    \n    \/\/ Perform any needed initialization here\n\n    \/\/ Open a new PCI session.\n    ret = ivars->fPCIDevice->Open ( this, 0 );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    \/\/ Create and set dispatch queues.\n    ret = SetDispatchQueue ( \"AuxiliaryQueue\", ivars->fAuxQueue );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    ret = SetDispatchQueue ( \"InterruptQueue\", ivars->fIntQueue );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    \/\/ Register for interrupts.\n    ret = IOInterruptDispatchSource::Create ( ivars->fPCIDevice,\n                                             index,\n                                             ivars->fIntQueue,\n                                             &ivars->fIntSource );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    ret = CreateActionInterruptOccurred ( sizeof ( void  * ),\n                                          &ivars->fInterruptCompletion );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n    \n    ret = ivars->fIntSource->SetHandler ( ivars->fInterruptCompletion );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    \/\/ Perform any further initialization here.\n\n}",
+      "language" : "objc"
+    }
+  ],
+  "contentHash" : "4dd0846bde5e64feff428e1f4a53216c3ca8d845195b09e0f51e01b41ab76994",
+  "crawledAt" : "2026-03-10T21:51:19Z",
+  "declaration" : {
+    "code" : "virtual kern_return_t UserInitializeController();",
+    "language" : "swift"
+  },
+  "id" : "40201885-C0BA-4DFC-A305-CEF99BDCC653",
+  "kind" : "method",
+  "language" : "occ",
+  "module" : "SCSIControllerDriverKit",
+  "overview" : "## Return Value\n\nA value that indicates the result of initialization. [doc:\/\/com.apple.documentation\/documentation\/DriverKit\/kIOReturnSuccess] indicates success. For error definitions, see [doc:\/\/com.apple.documentation\/documentation\/iokit\/iokit_constants].\n\n## Discussion\n\nThe first method in the dext that the framework calls is [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserInitializeController], which it only calls once per instantiation. Use this method to perform all necessary initialization that the hardware requires before it can accept requests to execute. Make all necessary resource allocations during this method call.\n\n### Queuing Considerations\n\nFor best results, use a model with three dispatch queues. DriverKit creates a default queue for you, and you’ll also need to create interrupt auxiliary queues. Because DriverKit dispatch queues are serial, this arrangement prevents calls from DriverKit, interrupts, and I\/O work from competing with one another on the same thread.\n\nThe following example shows how to implement [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserInitializeController] to set up the queues. After opening the PCI device session, it creates the auxiliary and interrupt queues, and then uses the interrupt queue to register for interrupts.",
+  "platforms" : [
+    "Unsupported OS: driverkit"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/scsicontrollerdriverkit\/iouserscsiparallelinterfacecontroller\/userinitializecontroller\ncrawled: 2026-03-10T21:51:19Z\n---\n\n# UserInitializeController\n\n**Instance Method**\n\nInitializes the controller in response to a call from the framework.\n\n## Declaration\n\n```swift\nvirtual kern_return_t UserInitializeController();\n```\n\n## Return Value\n\nA value that indicates the result of initialization. [doc:\/\/com.apple.documentation\/documentation\/DriverKit\/kIOReturnSuccess] indicates success. For error definitions, see [doc:\/\/com.apple.documentation\/documentation\/iokit\/iokit_constants].\n\n## Discussion\n\nThe first method in the dext that the framework calls is [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserInitializeController], which it only calls once per instantiation. Use this method to perform all necessary initialization that the hardware requires before it can accept requests to execute. Make all necessary resource allocations during this method call.\n\n### Queuing Considerations\n\nFor best results, use a model with three dispatch queues. DriverKit creates a default queue for you, and you’ll also need to create interrupt auxiliary queues. Because DriverKit dispatch queues are serial, this arrangement prevents calls from DriverKit, interrupts, and I\/O work from competing with one another on the same thread.\n\nThe following example shows how to implement [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserInitializeController] to set up the queues. After opening the PCI device session, it creates the auxiliary and interrupt queues, and then uses the interrupt queue to register for interrupts.\n\n```objc\nIMPL ( ExampleSCSIDext, UserInitializeController )\n{\n    kern_return_t    ret;\n    \n    \/\/ Perform any needed initialization here\n\n    \/\/ Open a new PCI session.\n    ret = ivars->fPCIDevice->Open ( this, 0 );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    \/\/ Create and set dispatch queues.\n    ret = SetDispatchQueue ( \"AuxiliaryQueue\", ivars->fAuxQueue );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    ret = SetDispatchQueue ( \"InterruptQueue\", ivars->fIntQueue );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    \/\/ Register for interrupts.\n    ret = IOInterruptDispatchSource::Create ( ivars->fPCIDevice,\n                                             index,\n                                             ivars->fIntQueue,\n                                             &ivars->fIntSource );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    ret = CreateActionInterruptOccurred ( sizeof ( void  * ),\n                                          &ivars->fInterruptCompletion );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n    \n    ret = ivars->fIntSource->SetHandler ( ivars->fInterruptCompletion );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    \/\/ Perform any further initialization here.\n\n}\n```\n\n## Managing Controllers\n\n- **UserStartController**: Starts the controller in response to a call from the framework.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Starts the controller in response to a call from the framework.",
+          "name" : "UserStartController",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserStartController"
+        }
+      ],
+      "title" : "Managing Controllers"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "UserInitializeController",
+  "url" : "https:\/\/developer.apple.com\/documentation\/scsicontrollerdriverkit\/iouserscsiparallelinterfacecontroller\/userinitializecontroller"
+}

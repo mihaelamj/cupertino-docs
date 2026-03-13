@@ -1,0 +1,106 @@
+{
+  "abstract" : "Ensure that every Mach-O image has a UUID, and that every distinct Mach-O image has its own unique UUID.",
+  "codeExamples" : [
+    {
+      "code" : "% dwarfdump --uuid \/usr\/bin\/true \nUUID: E3F22F87-0B68-3B06-A845-8402D70B8FE9 (x86_64) \/usr\/bin\/true\nUUID: B6A1C19C-94AC-3659-AD62-BDF1839A8683 (arm64e) \/usr\/bin\/true",
+      "language" : "shell"
+    },
+    {
+      "code" : "% otool -l -arch x86_64 \/usr\/bin\/true | grep -B 1 -A 2 LC_UUID \nLoad command 8\n     cmd LC_UUID\n cmdsize 24\n    uuid E3F22F87-0B68-3B06-A845-8402D70B8FE9",
+      "language" : "shell"
+    }
+  ],
+  "contentHash" : "8ce2a35b159568ff91d1c339e5e24c66ed532da57220902d355f0c512be33612",
+  "crawledAt" : "2026-03-10T22:01:29Z",
+  "id" : "A6EBD5EA-8125-48C6-960D-DA2EE5C4673A",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nMach-O is the executable image format on Apple platforms.  A Mach-O image is a Mach-O file that the system can load and execute without further processing.  This includes executables, frameworks, dynamic libraries, and bundles.\n\nA Mach-O image should contain a UUID that identifies the image.  This build UUID is vital to various subsystems.  For example, the build UUID connects an image to its debug symbol (`dSYM`) file, as explained in [doc:\/\/com.apple.documentation\/documentation\/Xcode\/building-your-app-to-include-debugging-information] and [doc:\/\/com.apple.documentation\/documentation\/Xcode\/adding-identifiable-symbol-names-to-a-crash-report].\n\nMost Mach-O images are created by the Apple linker (`ld`).  If you use Xcode, it invokes the Apple linker as part of its build process.  The Apple linker sets the build UUID to a unique value, so most developers never run into build UUID problems.  However, you might run into problems if:\n\nThis technote explains how to investigate and resolve such problems.\n\n## Display the build UUID\n\nTo view a Mach-O image’s build UUID, run the `dwarfdump` command with the `--uuid` option:\n\nIn a universal binary each architecture has its own build UUID.\n\nAlternatively, run the `otool` command to display the `LC_UUID` load command:\n\nBy default the Apple linker sets the build UUID based on a hash of the built code.  This promotes reproducible builds.\n\nThe `-random_uuid` option tells the linker to generate a random build UUID.  This is rarely used; see the `ld` man page for more about it.\n\nThe `-no_uuid` option tells the linker to add no build UUID.  The next section explains why this is a bad idea.\n\nThere’s no Apple command to explicitly set a Mach-O image’s build UUID after the fact.\n\nIf a Mach-O image is signed, that signature covers the build UUID.\n\n## Ensure each Mach-O image has a build UUID\n\nEvery Mach-O image should have a build UUID.  While it’s possible to create an image without a UUID, this is almost always a bad idea:\n\nIf you suspect that your Mach-O image is missing its build UUID, run `dwarfdump` to check for its presence.  See the previous section for an example of how to do this.\n\nIf that confirms that your Mach-O image is in fact missing its build UUID, investigate how the image was created.  There are two common cases:\n\n## Use unique build UUIDs\n\nEach distinct Mach-O image must have its own unique build UUID.\n\nConsider one of the critical use cases for build UUIDs, namely symbolication.  If two different Mach-O images had the same build UUID, you wouldn’t be able to match up an image with the correct debug symbol (`dSYM`) file.\n\nNormally this isn’t a problem because both UUID generation approaches described above—hash-based UUIDs and random UUIDs—result in a unique build UUID.  However, there’s a subtlety around the concept of *distinct*.\n\nImagine you ship a dynamic library that’s embedded in multiple apps.  Each copy of this library has the same build UUID, and that’s absolutely fine.\n\nThings get trickier when it comes to apps.  Imagine you’re shipping multiple apps based on the same code.  For example, you might have a *Pro* and a *Light* variant of your app built from the same code, or you might have a single app that you reskin for multiple clients.\n\nBy definition, each app has a unique bundle ID; the bundle ID is the primary mechanism used to distinguish between different apps.  However, some OS subsystems use a process’s main executable UUID—the build UUID of the Mach-O executable that the process is running—as a shortcut to identify the app.  If you have two apps with different bundle IDs and the same main executable UUID, you might encounter weird problems with those subsystems.  For example, the network subsystem might apply constraints for one of your apps to the other app (r. 30421029).\n\nNormally this isn’t a problem because every app is built from different source code, which produces different built code, which hashes to a different UUID.  You run into problems when you use exactly the same code to build your app, or you build your app’s executable once and then reskin it by changing just resources.\n\nIf you encounter weird problems after installing two variants of your app on the same device, especially when it comes to the network subsystem, check that the main executable of each app has a different build UUID.  Use `dwarfdump` for this, as explained earlier.\n\n## Force a unique main executable UUID\n\nIf `dwarfdump` reveals that two of your apps have the same main executable UUID, fix that before distributing your apps.  How you do that depends on how your app is built.\n\nThe easiest fix is to build both apps from source code.  Typically, the linker assigns each app a unique build UUID because:\n\nIf that doesn’t resolve the issue, add some unique code to each app.\n\nOnce you’re done, run `dwarfdump` to confirm that you’ve achieved your ultimate goal of giving each app a unique main executable UUID.\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3178-checking-for-and-resolving-build-uuid-problems\ncrawled: 2026-03-10T22:01:29Z\n---\n\n# TN3178: Checking for and resolving build UUID problems\n\n**Article**\n\nEnsure that every Mach-O image has a UUID, and that every distinct Mach-O image has its own unique UUID.\n\n## Overview\n\nMach-O is the executable image format on Apple platforms.  A Mach-O image is a Mach-O file that the system can load and execute without further processing.  This includes executables, frameworks, dynamic libraries, and bundles.\n\n\n\nA Mach-O image should contain a UUID that identifies the image.  This build UUID is vital to various subsystems.  For example, the build UUID connects an image to its debug symbol (`dSYM`) file, as explained in [doc:\/\/com.apple.documentation\/documentation\/Xcode\/building-your-app-to-include-debugging-information] and [doc:\/\/com.apple.documentation\/documentation\/Xcode\/adding-identifiable-symbol-names-to-a-crash-report].\n\nMost Mach-O images are created by the Apple linker (`ld`).  If you use Xcode, it invokes the Apple linker as part of its build process.  The Apple linker sets the build UUID to a unique value, so most developers never run into build UUID problems.  However, you might run into problems if:\n\n- Your Mach-O image has no build UUID.\n- You use the same Mach-O executable for multiple apps.\n\nThis technote explains how to investigate and resolve such problems.\n\n## Display the build UUID\n\nTo view a Mach-O image’s build UUID, run the `dwarfdump` command with the `--uuid` option:\n\n```shell\n% dwarfdump --uuid \/usr\/bin\/true \nUUID: E3F22F87-0B68-3B06-A845-8402D70B8FE9 (x86_64) \/usr\/bin\/true\nUUID: B6A1C19C-94AC-3659-AD62-BDF1839A8683 (arm64e) \/usr\/bin\/true\n```\n\nIn a universal binary each architecture has its own build UUID.\n\nAlternatively, run the `otool` command to display the `LC_UUID` load command:\n\n```shell\n% otool -l -arch x86_64 \/usr\/bin\/true | grep -B 1 -A 2 LC_UUID \nLoad command 8\n     cmd LC_UUID\n cmdsize 24\n    uuid E3F22F87-0B68-3B06-A845-8402D70B8FE9\n```\n\n\n\nBy default the Apple linker sets the build UUID based on a hash of the built code.  This promotes reproducible builds.\n\n\n\nThe `-random_uuid` option tells the linker to generate a random build UUID.  This is rarely used; see the `ld` man page for more about it.\n\nThe `-no_uuid` option tells the linker to add no build UUID.  The next section explains why this is a bad idea.\n\nThere’s no Apple command to explicitly set a Mach-O image’s build UUID after the fact.\n\nIf a Mach-O image is signed, that signature covers the build UUID.\n\n## Ensure each Mach-O image has a build UUID\n\nEvery Mach-O image should have a build UUID.  While it’s possible to create an image without a UUID, this is almost always a bad idea:\n\n- An image without a build UUID might encounter problems during development.  For example, Apple’s crash reporter can’t symbolicate an address in an image that has no UUID.\n- A Mach-O executable without a build UUID might encounter weird problems at runtime, for example, when it interacts with the network subsystem.\n\nIf you suspect that your Mach-O image is missing its build UUID, run `dwarfdump` to check for its presence.  See the previous section for an example of how to do this.\n\nIf that confirms that your Mach-O image is in fact missing its build UUID, investigate how the image was created.  There are two common cases:\n\n- If you created the image with the Apple linker, check to see if the link command includes the `-no_uuid` option.  If it does, remove that option.\n- Some third-party tools create Mach-O images without a build UUID.  If you’re using third-party tooling, consult its documentation for advice on how to configure it to add a UUID.\n\n## Use unique build UUIDs\n\nEach distinct Mach-O image must have its own unique build UUID.\n\nConsider one of the critical use cases for build UUIDs, namely symbolication.  If two different Mach-O images had the same build UUID, you wouldn’t be able to match up an image with the correct debug symbol (`dSYM`) file.\n\nNormally this isn’t a problem because both UUID generation approaches described above—hash-based UUIDs and random UUIDs—result in a unique build UUID.  However, there’s a subtlety around the concept of *distinct*.\n\nImagine you ship a dynamic library that’s embedded in multiple apps.  Each copy of this library has the same build UUID, and that’s absolutely fine.\n\nThings get trickier when it comes to apps.  Imagine you’re shipping multiple apps based on the same code.  For example, you might have a *Pro* and a *Light* variant of your app built from the same code, or you might have a single app that you reskin for multiple clients.\n\nBy definition, each app has a unique bundle ID; the bundle ID is the primary mechanism used to distinguish between different apps.  However, some OS subsystems use a process’s main executable UUID—the build UUID of the Mach-O executable that the process is running—as a shortcut to identify the app.  If you have two apps with different bundle IDs and the same main executable UUID, you might encounter weird problems with those subsystems.  For example, the network subsystem might apply constraints for one of your apps to the other app (r. 30421029).\n\nNormally this isn’t a problem because every app is built from different source code, which produces different built code, which hashes to a different UUID.  You run into problems when you use exactly the same code to build your app, or you build your app’s executable once and then reskin it by changing just resources.\n\nIf you encounter weird problems after installing two variants of your app on the same device, especially when it comes to the network subsystem, check that the main executable of each app has a different build UUID.  Use `dwarfdump` for this, as explained earlier.\n\n## Force a unique main executable UUID\n\nIf `dwarfdump` reveals that two of your apps have the same main executable UUID, fix that before distributing your apps.  How you do that depends on how your app is built.\n\nThe easiest fix is to build both apps from source code.  Typically, the linker assigns each app a unique build UUID because:\n\n- Most apps contain some Swift code.\n- In Swift, the name mangling includes the module name.\n- The module name defaults to the app name, which is different for each app.\n\n\n\nIf that doesn’t resolve the issue, add some unique code to each app.\n\nOnce you’re done, run `dwarfdump` to confirm that you’ve achieved your ultimate goal of giving each app a unique main executable UUID.\n\n## Revision History\n\n- **2024-10-08** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3178: Checking for and resolving build UUID problems",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3178-checking-for-and-resolving-build-uuid-problems"
+}

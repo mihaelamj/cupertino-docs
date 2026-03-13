@@ -1,0 +1,50 @@
+{
+  "abstract" : "A concatenation of one or more atoms that structure a timed metadata media sample.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "c5e429329f195281b05066dc182a8ec6a37a666d22ca91c447fd1ae11ca50c3b",
+  "crawledAt" : "2026-03-10T21:34:26Z",
+  "id" : "FE89879A-0968-4F07-A345-49B5043A18FC",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "QuickTime File Format",
+  "overview" : "## Overview\n\nA timed metadata media sample is structured as a concatenation of one or more atoms. Typically each atom will contain a metadata value corresponding to a key signaled in the timed metadata sample description.\n\nIf no value for a particular key is present in the timed metadata media sample at a given time, the interpretation should be that there is no metadata of that type at the specified time. Timed metadata values for that key for other times (such as from a previous timed metadata media sample) should not be interpreted as applying to the given time.\n\nIf no values for any key are present for a time range, one approach is to include a `“NULL”` or unreferenced metadata media sample (see Unreferenced or `NULL` timed metadata sample data in [doc:\/\/com.apple.qtff\/documentation\/QuickTime-File-Format\/Constant-size_timed_metadata_sample_data]) for the time range. A zero-byte timed metadata media sample cannot be used because all sample sizes must be one or more bytes. Alternatively, “empty edit” track edit list entries could be used to indicate there is no metadata for a range of movie time.\n\nIn general, however, it is preferable to include a NULL metadata media sample data instead of using a track edit with an empty edit list to indicate the absence of metadata. Some readers may be unprepared for complex edits (more than one edit list entry and\/or a non-contiguous presentation media time).\n\n## Timed metadata media sample structure\n\nThe timed metadata media sample data consists of some number of concatenated atoms. A `local_key_id` value defines the atom type for each of the atoms. The `local_key_id` value corresponds to a `local_key_id` defined for a metadata key atom in the metadata key table atom for the timed metadata sample. No special interpretation is made regarding the 32-bit value of `local_key_id`. Its interpretation is based solely on what is defined in the corresponding metadata key of the associated metadata sample description.\n\nThe `local_key_id` value `0` is reserved and can be used as a placeholder atom in the media sample. Such an atom has no prescribed contents. (See [doc:\/\/com.apple.qtff\/documentation\/quicktime-file-format\/Metadata_key_atom].)\n\nThe `local_key_id` value `0xFFFFFFFF` is also reserved. In the future, this may be documented to hold a particular payload. This `local_key_id` should not be used or interpreted otherwise. If a reader finds an atom with `local_key_id` of `0xFFFFFFFF` and does not understand its format, the atom should be ignored.\n\nA timed metadata media sample may contain atoms with types other than those defined in the metadata key table atom and other than the two reserved values `0` and `0xFFFFFFFF`. Although this practice is discouraged, any instances of such atoms may be interpreted according to their conventional meaning (such as `‘free’`) or in a private way so long as they are not advertised as keys.\n\nExample:\n\nConsider the metadata format for a geographic point location using coordinates as defined in ISO-6709. The timed metadata media sample created for this data might have a `local_key_id` value of `‘wher’` and the resulting metadata sample would contain the information (such as “+27.5916+086.5640+8850\/”) in a corresponding `‘wher’` atom. There is no interpretation of this atom type or a requirement that it be `‘wher’`.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Timed_metadata_sample_data_format\ncrawled: 2026-03-10T21:34:26Z\n---\n\n# Timed metadata sample data format\n\n**Article**\n\nA concatenation of one or more atoms that structure a timed metadata media sample.\n\n## Overview\n\nA timed metadata media sample is structured as a concatenation of one or more atoms. Typically each atom will contain a metadata value corresponding to a key signaled in the timed metadata sample description.\n\nIf no value for a particular key is present in the timed metadata media sample at a given time, the interpretation should be that there is no metadata of that type at the specified time. Timed metadata values for that key for other times (such as from a previous timed metadata media sample) should not be interpreted as applying to the given time.\n\n\n\nIf no values for any key are present for a time range, one approach is to include a `“NULL”` or unreferenced metadata media sample (see Unreferenced or `NULL` timed metadata sample data in [doc:\/\/com.apple.qtff\/documentation\/QuickTime-File-Format\/Constant-size_timed_metadata_sample_data]) for the time range. A zero-byte timed metadata media sample cannot be used because all sample sizes must be one or more bytes. Alternatively, “empty edit” track edit list entries could be used to indicate there is no metadata for a range of movie time.\n\nIn general, however, it is preferable to include a NULL metadata media sample data instead of using a track edit with an empty edit list to indicate the absence of metadata. Some readers may be unprepared for complex edits (more than one edit list entry and\/or a non-contiguous presentation media time).\n\n## Timed metadata media sample structure\n\nThe timed metadata media sample data consists of some number of concatenated atoms. A `local_key_id` value defines the atom type for each of the atoms. The `local_key_id` value corresponds to a `local_key_id` defined for a metadata key atom in the metadata key table atom for the timed metadata sample. No special interpretation is made regarding the 32-bit value of `local_key_id`. Its interpretation is based solely on what is defined in the corresponding metadata key of the associated metadata sample description.\n\nThe `local_key_id` value `0` is reserved and can be used as a placeholder atom in the media sample. Such an atom has no prescribed contents. (See [doc:\/\/com.apple.qtff\/documentation\/quicktime-file-format\/Metadata_key_atom].)\n\nThe `local_key_id` value `0xFFFFFFFF` is also reserved. In the future, this may be documented to hold a particular payload. This `local_key_id` should not be used or interpreted otherwise. If a reader finds an atom with `local_key_id` of `0xFFFFFFFF` and does not understand its format, the atom should be ignored.\n\nA timed metadata media sample may contain atoms with types other than those defined in the metadata key table atom and other than the two reserved values `0` and `0xFFFFFFFF`. Although this practice is discouraged, any instances of such atoms may be interpreted according to their conventional meaning (such as `‘free’`) or in a private way so long as they are not advertised as keys.\n\nExample:\n\nConsider the metadata format for a geographic point location using coordinates as defined in ISO-6709. The timed metadata media sample created for this data might have a `local_key_id` value of `‘wher’` and the resulting metadata sample would contain the information (such as “+27.5916+086.5640+8850\/”) in a corresponding `‘wher’` atom. There is no interpretation of this atom type or a requirement that it be `‘wher’`.\n\n## Storing timed metadata media\n\n- **Overview of timed metadata**: Synchronize metadata references to media tracks for particular media time periods with timed metadata.\n- **Timed metadata sample description**: An atom that defines how to interpret timed metadata media samples.\n- **Constant-size timed metadata sample data**: Create metadata tracks with samples that have the same size.\n- **Combining multiple streams of metadata into the same track**: Introduce new metadata samples with the union of all metadata values from combined tracks.\n- **Movie-level relationships among tracks**: Handling tracks with more than one associated metadata track.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Synchronize metadata references to media tracks for particular media time periods with timed metadata.",
+          "name" : "Overview of timed metadata",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Overview_of_timed_metadata"
+        },
+        {
+          "description" : "An atom that defines how to interpret timed metadata media samples.",
+          "name" : "Timed metadata sample description",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Timed_metadata_sample_descriptions"
+        },
+        {
+          "description" : "Create metadata tracks with samples that have the same size.",
+          "name" : "Constant-size timed metadata sample data",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Constant-size_timed_metadata_sample_data"
+        },
+        {
+          "description" : "Introduce new metadata samples with the union of all metadata values from combined tracks.",
+          "name" : "Combining multiple streams of metadata into the same track",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Combining_multiple_streams_of_metadata_into_the_same_track"
+        },
+        {
+          "description" : "Handling tracks with more than one associated metadata track.",
+          "name" : "Movie-level relationships among tracks",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Movie-level_relationships_among_tracks"
+        }
+      ],
+      "title" : "Storing timed metadata media"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Timed metadata sample data format",
+  "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Timed_metadata_sample_data_format"
+}

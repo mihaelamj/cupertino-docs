@@ -1,0 +1,118 @@
+{
+  "abstract" : "Test your apps against EventKit API changes in macOS Ventura 13.",
+  "codeExamples" : [
+    {
+      "code" : "let calendar = EKCalendar(for: .event, eventStore: eventStore)",
+      "language" : "swift"
+    },
+    {
+      "code" : "Event title: Marathon  \nStart date: June 18, 2022 at 12:00:00 AM PDT\nEnd date: June 18, 2022 at 11:59:59 PM PDT",
+      "language" : "json"
+    },
+    {
+      "code" : "Event title: Marathon  \nStart date: June 18, 2022 at 12:00:00 AM PDT\nEnd date: June 19, 2022 at 12:00:00 AM PDT",
+      "language" : "json"
+    },
+    {
+      "code" : "\/\/ Fetch all sources associated with the event store.\nlet sources = eventStore.sources\n\nsources.forEach { source in\n    \/\/ Let's check whether source is a delegate event source.\n    let name = (source.isDelegate) ? \"Delegate Source\" : \"Source\"\n    print(\"\\(name): \\(source.title)\")\n}\n\/\/ Prints \"Source: iCloud\"\n\/\/ Prints \"Delegate Source: Calculus Office Hours\"",
+      "language" : "swift"
+    },
+    {
+      "code" : "let reminder = EKReminder(eventStore: eventStore)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "7a57aa555b8051c0e38bd752f3a4b45699d4970a9f44368b51358044adcab5e4",
+  "crawledAt" : "2026-03-10T22:01:44Z",
+  "id" : "69BE2420-244F-43DF-A5F5-F02818D4C06A",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nIn macOS Ventura 13, the EventKit framework has seen significant changes. This document highlights some of the notable changes. To learn about related changes in iOS 16, see [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3132-changes-EventKit-and-EventKitUI-in-iOS16].\n\nFor apps running on systems prior to macOS Ventura 13, the legacy behavior remains in place when using EventKit. When you run your app on macOS Ventura 13, and have built it with Xcode 14 and linked against the macOS 13 SDK, you may see behavior that you are unfamiliar with when using EventKit. To identify these changes in behavior, thoroughly test your app for each major OS version it supports. Confirm that your implementation of EventKit behaves as you expect in each OS version and update your code where needed. If you notice an unexpected behavior in EventKit, report it using [https:\/\/developer.apple.com\/bug-reporting\/].\n\n## EKCalendar\n\nThe inherited initializer `init()` throws an exception when attempting to create a new calendar. Use [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKCalendar\/init(for:eventStore:)] instead.\n\nIn the legacy behavior, this inherited initializer returns an unusable `EKCalendar` object.\n\n## EKCalendarItem\n\n### Fetching recurrence rules\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKCalendarItem\/recurrenceRules] property returns an empty array if the calendar item doesn’t have any recurrence rules.\n\nIn the legacy behavior, `recurrenceRules` returns `nil` if the calendar item doesn’t have any recurrence rules.\n\n### Updating time zones\n\nChanging the time zone of an event no longer changes the absolute time at which it occurs.\n\n## EKEvent\n\n### Creating events\n\nThe inherited initializer `init()` throws an exception when attempting to create a new event. Use [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEvent\/init(eventStore:)] to create new events.\n\nIn the legacy behavior, this inherited initializer returns an unusable `EKEvent` object.\n\n### Event identifiers\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEvent\/eventIdentifier] property now returns identifiers in a new format. The previous identifier format will continue to work.\n\n### End date of all-day events\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEvent\/endDate] property of all-day events returns a time of `11:59:59 PM` on the last day of this event.\n\nIn the legacy behavior, this property returns a time of `12:00:00 AM` on the day after the event.\n\n## EKEventStore\n\n### Accessing sources\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/sources] property now contains delegate sources.\n\n### Fetching events\n\n[doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/events(matching:)] and [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/enumerateEvents(matching:using:)] no longer necessarily return events sorted by start date.\n\n### Accessing calendar events\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/calendarItem(withIdentifier:)], [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/calendarItems(withExternalIdentifier:)], and [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/event(withIdentifier:)] methods may return different occurrences of an event or reminder with a given identifier in some cases. For instance, when the first occurrence of a recurring event was modified and the specified identifier refers to this occurrence. In this case, use the given identifier to fetch the unmodified version of the event’s first occurrence.\n\n### Committing changes\n\nWhen you call [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/saveCalendar(_:commit:)], [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/removeCalendar(_:commit:)], [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/save(_:span:commit:)], [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/remove(_:span:commit:)], [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/save(_:commit:)], or [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/remove(_:commit:)] methods with the `commit` parameter set to `true`, [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore] attempts to immediately save and commit your changes to the event store. If the commit fails, `EKEventStore` automatically rolls back all changes that been saved but aren’t yet committed to the event store.\n\nIn the legacy behavior, uncommitted objects remain saved in the event store.\n\n## EKReminder\n\nThe inherited initializer `init()` throws an exception when attempting to create a new reminder. Use [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKReminder\/init(eventStore:)] instead.\n\nIn the legacy behavior, this inherited initializer returns an unusable `EKReminder` object.\n\n## EKSource\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKSource\/isDelegate] property indicates whether the source is an event source delegated to the user.\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3130-changes-to-eventKit-in-macOS13-ventura\ncrawled: 2026-03-10T22:01:44Z\n---\n\n# TN3130: Changes to EventKit in macOS Ventura 13\n\n**Article**\n\nTest your apps against EventKit API changes in macOS Ventura 13.\n\n## Overview\n\nIn macOS Ventura 13, the EventKit framework has seen significant changes. This document highlights some of the notable changes. To learn about related changes in iOS 16, see [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3132-changes-EventKit-and-EventKitUI-in-iOS16].\n\nFor apps running on systems prior to macOS Ventura 13, the legacy behavior remains in place when using EventKit. When you run your app on macOS Ventura 13, and have built it with Xcode 14 and linked against the macOS 13 SDK, you may see behavior that you are unfamiliar with when using EventKit. To identify these changes in behavior, thoroughly test your app for each major OS version it supports. Confirm that your implementation of EventKit behaves as you expect in each OS version and update your code where needed. If you notice an unexpected behavior in EventKit, report it using [https:\/\/developer.apple.com\/bug-reporting\/].\n\n## EKCalendar\n\nThe inherited initializer `init()` throws an exception when attempting to create a new calendar. Use [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKCalendar\/init(for:eventStore:)] instead.\n\n```swift\nlet calendar = EKCalendar(for: .event, eventStore: eventStore)\n```\n\nIn the legacy behavior, this inherited initializer returns an unusable `EKCalendar` object.\n\n## EKCalendarItem\n\n### Fetching recurrence rules\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKCalendarItem\/recurrenceRules] property returns an empty array if the calendar item doesn’t have any recurrence rules.\n\nIn the legacy behavior, `recurrenceRules` returns `nil` if the calendar item doesn’t have any recurrence rules.\n\n### Updating time zones\n\nChanging the time zone of an event no longer changes the absolute time at which it occurs.\n\n## EKEvent\n\n### Creating events\n\nThe inherited initializer `init()` throws an exception when attempting to create a new event. Use [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEvent\/init(eventStore:)] to create new events.\n\nIn the legacy behavior, this inherited initializer returns an unusable `EKEvent` object.\n\n### Event identifiers\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEvent\/eventIdentifier] property now returns identifiers in a new format. The previous identifier format will continue to work.\n\n### End date of all-day events\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEvent\/endDate] property of all-day events returns a time of `11:59:59 PM` on the last day of this event.\n\n```json\nEvent title: Marathon  \nStart date: June 18, 2022 at 12:00:00 AM PDT\nEnd date: June 18, 2022 at 11:59:59 PM PDT\n```\n\nIn the legacy behavior, this property returns a time of `12:00:00 AM` on the day after the event.\n\n```json\nEvent title: Marathon  \nStart date: June 18, 2022 at 12:00:00 AM PDT\nEnd date: June 19, 2022 at 12:00:00 AM PDT\n```\n\n## EKEventStore\n\n### Accessing sources\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/sources] property now contains delegate sources.\n\n```swift\n\/\/ Fetch all sources associated with the event store.\nlet sources = eventStore.sources\n\nsources.forEach { source in\n    \/\/ Let's check whether source is a delegate event source.\n    let name = (source.isDelegate) ? \"Delegate Source\" : \"Source\"\n    print(\"\\(name): \\(source.title)\")\n}\n\/\/ Prints \"Source: iCloud\"\n\/\/ Prints \"Delegate Source: Calculus Office Hours\"\n```\n\n### Fetching events\n\n[doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/events(matching:)] and [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/enumerateEvents(matching:using:)] no longer necessarily return events sorted by start date.\n\n### Accessing calendar events\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/calendarItem(withIdentifier:)], [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/calendarItems(withExternalIdentifier:)], and [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/event(withIdentifier:)] methods may return different occurrences of an event or reminder with a given identifier in some cases. For instance, when the first occurrence of a recurring event was modified and the specified identifier refers to this occurrence. In this case, use the given identifier to fetch the unmodified version of the event’s first occurrence.\n\n### Committing changes\n\nWhen you call [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/saveCalendar(_:commit:)], [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/removeCalendar(_:commit:)], [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/save(_:span:commit:)], [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/remove(_:span:commit:)], [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/save(_:commit:)], or [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore\/remove(_:commit:)] methods with the `commit` parameter set to `true`, [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKEventStore] attempts to immediately save and commit your changes to the event store. If the commit fails, `EKEventStore` automatically rolls back all changes that been saved but aren’t yet committed to the event store.\n\nIn the legacy behavior, uncommitted objects remain saved in the event store.\n\n## EKReminder\n\nThe inherited initializer `init()` throws an exception when attempting to create a new reminder. Use [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKReminder\/init(eventStore:)] instead.\n\n```swift\nlet reminder = EKReminder(eventStore: eventStore)\n```\n\nIn the legacy behavior, this inherited initializer returns an unusable `EKReminder` object.\n\n## EKSource\n\nThe [doc:\/\/com.apple.documentation\/documentation\/EventKit\/EKSource\/isDelegate] property indicates whether the source is an event source delegated to the user.\n\n## Revision History\n\n- **2022-08-16** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3130: Changes to EventKit in macOS Ventura 13",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3130-changes-to-eventKit-in-macOS13-ventura"
+}

@@ -1,0 +1,95 @@
+{
+  "abstract" : "Associate volume purchases with users or devices using endpoints for Mobile Device Management (MDM), provided by the Volume Purchase Program (VPP).",
+  "codeExamples" : [
+    {
+      "code" : "eyJ0b2tlbiI6InQxWG9VenBMRXRwZGxhK25zeENkd3JjdDBSandkaWNOaGRreW5STW05VVAyc2hSYTBMUnVGcVpQM0pLQmJUTWxDSE42ajNta1R6WVlQbVVkVXJXV2x3PT0iLCJleHBEYXRlIjoiMjAxNC0wOC0xNVQxODoxMzo1Mi0wNzAwIiwib3JnTmFtZSI6Ik9SRy4yMDA5MDcxNjAwIn0=",
+      "language" : "swift"
+    },
+    {
+      "code" : "{\n  \"token\": \"t1XoUzpLEtpdla+nsxCdwrct0RjwdicNhdkynRMm9UP2shRa0LRuFqZP3JKBbTMlCHN6j3mkTzYYPmUdUrWWlw==\",\n  \"expDate\": \"2014-08-15T18:13:52-0700\",\n  \"orgName\": \"ORG2009071600\"\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\"tokenExpDate\":\"2013-07-26T18􏰁12􏰁09-0700\" ",
+      "language" : "swift"
+    },
+    {
+      "code" : "\"user\":{\n  \"userId\": 1,\n  \"clientUserIdStr\": \"810C9B91-DF83-41DA-80A1-408AD7F081A8\",\n  \"itsIdHash\": \"C2Wwd8LcIaE2v6f2\/mvu82Gs\/Lc=\",\n  \"status\": \"Associated\",\n  \"licenses\": [\n    {\n      \"licenseId\": 2,\n      \"adamId\": 408709785,\n      \"productTypeId\": 7,\n      \"pricingParam\": \"STDQ\",\n      \"productTypeName\": \"Software\",\n      \"isIrrevocable\": false\n    },\n    {\n      \"licenseId\": 4,\n      \"adamId\": 497799835,\n      \"productTypeId\": 7,\n      \"pricingParam\": \"STDQ\",\n      \"productTypeName\": \"Software\",\n      \"isIrrevocable\": false\n    }\n  ]\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "Retry-After = \"Retry-After\" \":\" ( HTTP-date | delta-seconds ) ",
+      "language" : "swift"
+    },
+    {
+      "code" : "Retry-After: Fri, 31 Dec 1999 23:59:59 GMT",
+      "language" : "swift"
+    },
+    {
+      "code" : "Retry-After: 120",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "c2a6ede8efefc38b3084b643399b064a3fe36c5d446a4b05db15a71473a95006",
+  "crawledAt" : "2026-03-10T15:29:50Z",
+  "id" : "27DFD759-45F8-4106-8936-D958A32877E4",
+  "kind" : "collection",
+  "language" : "data",
+  "module" : "Device Management",
+  "overview" : "## Overview\n\nVolume Purchase Program (VPP) allows an organization to manage and assign apps to users. If a user no longer needs an app, you can reclaim the app license and assign it to a different user. VPP can also assign a license to a device’s serial number, so an Apple Account is not required to download the app.\n\n### Authentication\n\nAll endpoints (except for [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Service-Configuration]) require an `sToken` parameter to authenticate.\n\nContent managers can download a location-based `sToken` from the settings page in [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/upgrading-to-apple-school-manager-asm-and-apple-business-manager-abm], and upload it into their MDM. This grants the MDM access to the licenses available at that location.\n\n\n\nThe MDM server should store the location-based token along with its other private, protected properties and pass this token in the `sToken` field of all VPP API requests.\n\nThe `sToken` itself is a JSON object in Base64 encoding. When decoded, the resulting JSON object contains three fields: `token`, `expDate`, and `orgName`. For example, the following is an `sToken` value:\n\nAfter Base64 decoding, this is the JSON:\n\nThe `expDate` field contains the expiration date of the token in ISO 8601 format. The `orgName` field contains the name of the organization for which the token is issued.\n\nIf the provided token is within the expiration warning period (currently 15 days before the expiration date), then the response contains an additional field, `tokenExpDate`. The value of this field is the expiration date in ISO 8601 format. For example:\n\nIf this field is present in the response, it should serve as a reminder that it is time to get a new sToken in order to avoid any service disruption.\n\n### Read-Only Access\n\nYou can tailor different sets of privileges for individual content managers using Managed Apple Accounts. This allows a fine range of control over what these users can do. For example, a content manager that only has the “Read Only” privileges can use the [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-a-User], [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-Users-5boi1], and [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-Assets-44p83] endpoints, but can’t use the [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Retire-a-User] or [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Manage-Licenses] endpoints. You can also assign content managers “Can Purchase” and\/or “Can Manage” privileges, so that an individual content manager can manage licenses but not buy them.\n\n### Responses\n\nAs a convention, fields with null values are not included in responses. For example, the user object has an optional `email` field. The following example doesn’t have the `email` field in the user object, so the `email` field value is null.\n\nIf the user doesn’t have any licenses, the `licenses` field will not be included in the response. The license object in this context is a subfield of the user object. To avoid a cyclic reference, the user object is not included in the license object. But if the license is the top object returned, it includes a user object with `userId` and `clientUserIdStr` fields and, if the user is already associated with an iTunes account, an `itsIdHash` field.\n\n### Initial Import of Assigned Licenses\n\nYou don’t need to sync every license for a specific VPP account. You only need to track the asset counts and assignments. There is also no need to record the Apple license IDs; in fact, this isn’t recommended because it creates an unnecessary dependence on an internal data model, which can change. The recommended procedure to import licenses is to import license counts and then import the current assignments for each asset. Accomplish this in the following way:\n\nSee [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/retrieving-a-large-record-set] for more information about using the `batchToken` and `sinceModifiedToken`.\n\n### Retry-After Header\n\nThe VPP service may return a `503 Service Unavailable` status to clients whose requests result in an unusually high load on the VPP service, or when the VPP service is experiencing loads beyond its current request response capacity. A `Retry-After` header may be included in this response, indicating how long the client must wait before making additional requests. Clients who make requests before this time may be rejected for even longer periods of time, or (in extreme cases) may have their VPP account suspended.\n\nAvoid triggering the `Retry-After` header by setting the `assignedOnly` parameter `true` in calls to [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-Licenses].\n\nThe `Retry-After` response-header field may also be used with any 3xx (Redirection) response to indicate the minimum time the user-agent is asked to wait before issuing the redirected request (see RFC 2616: HTTP\/1.1, Section 14.37). The value of this field can be either an HTTP-date or an integer number of seconds (in decimal) after the time of the response.\n\nTwo examples of usage are:\n\nIn the latter example, the delay is 2 minutes.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/DeviceManagement\/managing-apps-and-books-through-web-services-legacy\ncrawled: 2026-03-10T15:29:50Z\n---\n\n# Managing Apps and Books Through Web Services\n\nAssociate volume purchases with users or devices using endpoints for Mobile Device Management (MDM), provided by the Volume Purchase Program (VPP).\n\n## Overview\n\nVolume Purchase Program (VPP) allows an organization to manage and assign apps to users. If a user no longer needs an app, you can reclaim the app license and assign it to a different user. VPP can also assign a license to a device’s serial number, so an Apple Account is not required to download the app.\n\n### Authentication\n\nAll endpoints (except for [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Service-Configuration]) require an `sToken` parameter to authenticate.\n\nContent managers can download a location-based `sToken` from the settings page in [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/upgrading-to-apple-school-manager-asm-and-apple-business-manager-abm], and upload it into their MDM. This grants the MDM access to the licenses available at that location.\n\n\n\nThe MDM server should store the location-based token along with its other private, protected properties and pass this token in the `sToken` field of all VPP API requests.\n\nThe `sToken` itself is a JSON object in Base64 encoding. When decoded, the resulting JSON object contains three fields: `token`, `expDate`, and `orgName`. For example, the following is an `sToken` value:\n\n```swift\neyJ0b2tlbiI6InQxWG9VenBMRXRwZGxhK25zeENkd3JjdDBSandkaWNOaGRreW5STW05VVAyc2hSYTBMUnVGcVpQM0pLQmJUTWxDSE42ajNta1R6WVlQbVVkVXJXV2x3PT0iLCJleHBEYXRlIjoiMjAxNC0wOC0xNVQxODoxMzo1Mi0wNzAwIiwib3JnTmFtZSI6Ik9SRy4yMDA5MDcxNjAwIn0=\n```\n\nAfter Base64 decoding, this is the JSON:\n\n```swift\n{\n  \"token\": \"t1XoUzpLEtpdla+nsxCdwrct0RjwdicNhdkynRMm9UP2shRa0LRuFqZP3JKBbTMlCHN6j3mkTzYYPmUdUrWWlw==\",\n  \"expDate\": \"2014-08-15T18:13:52-0700\",\n  \"orgName\": \"ORG2009071600\"\n}\n```\n\nThe `expDate` field contains the expiration date of the token in ISO 8601 format. The `orgName` field contains the name of the organization for which the token is issued.\n\nIf the provided token is within the expiration warning period (currently 15 days before the expiration date), then the response contains an additional field, `tokenExpDate`. The value of this field is the expiration date in ISO 8601 format. For example:\n\n```swift\n\"tokenExpDate\":\"2013-07-26T18􏰁12􏰁09-0700\" \n```\n\nIf this field is present in the response, it should serve as a reminder that it is time to get a new sToken in order to avoid any service disruption.\n\n### Read-Only Access\n\nYou can tailor different sets of privileges for individual content managers using Managed Apple Accounts. This allows a fine range of control over what these users can do. For example, a content manager that only has the “Read Only” privileges can use the [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-a-User], [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-Users-5boi1], and [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-Assets-44p83] endpoints, but can’t use the [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Retire-a-User] or [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Manage-Licenses] endpoints. You can also assign content managers “Can Purchase” and\/or “Can Manage” privileges, so that an individual content manager can manage licenses but not buy them.\n\n\n\n### Responses\n\nAs a convention, fields with null values are not included in responses. For example, the user object has an optional `email` field. The following example doesn’t have the `email` field in the user object, so the `email` field value is null.\n\n```swift\n\"user\":{\n  \"userId\": 1,\n  \"clientUserIdStr\": \"810C9B91-DF83-41DA-80A1-408AD7F081A8\",\n  \"itsIdHash\": \"C2Wwd8LcIaE2v6f2\/mvu82Gs\/Lc=\",\n  \"status\": \"Associated\",\n  \"licenses\": [\n    {\n      \"licenseId\": 2,\n      \"adamId\": 408709785,\n      \"productTypeId\": 7,\n      \"pricingParam\": \"STDQ\",\n      \"productTypeName\": \"Software\",\n      \"isIrrevocable\": false\n    },\n    {\n      \"licenseId\": 4,\n      \"adamId\": 497799835,\n      \"productTypeId\": 7,\n      \"pricingParam\": \"STDQ\",\n      \"productTypeName\": \"Software\",\n      \"isIrrevocable\": false\n    }\n  ]\n}\n```\n\nIf the user doesn’t have any licenses, the `licenses` field will not be included in the response. The license object in this context is a subfield of the user object. To avoid a cyclic reference, the user object is not included in the license object. But if the license is the top object returned, it includes a user object with `userId` and `clientUserIdStr` fields and, if the user is already associated with an iTunes account, an `itsIdHash` field.\n\n### Initial Import of Assigned Licenses\n\nYou don’t need to sync every license for a specific VPP account. You only need to track the asset counts and assignments. There is also no need to record the Apple license IDs; in fact, this isn’t recommended because it creates an unnecessary dependence on an internal data model, which can change. The recommended procedure to import licenses is to import license counts and then import the current assignments for each asset. Accomplish this in the following way:\n\n1. Send a request to [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-Assets-44p83] with `includeLicenseCounts=true`. This returns the current license count by `adamID` in the requested location.\n2. For each `adamId` in the [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/GetVppAssetResponse] from step 1, send a request to [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-Assignments-158kc]. Record the `adamIdStr`, `pricingParam` and `clientUserIdStr` or `serialNumber` for each assignment in the [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/VppAssignmentsResponse]. Also record the `currentPageIndex` and `totalPages`.\n3. Send another request to [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-Assignments-158kc] that includes the `nextPageIndex` value from step 2 as `pageIndex`, and record the values as described in step 2.\n4. Repeat step 3 until `currentPageIndex` is equal to `totalPages` in the [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/VppAssignmentsResponse].\n\nSee [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/retrieving-a-large-record-set] for more information about using the `batchToken` and `sinceModifiedToken`.\n\n### Retry-After Header\n\nThe VPP service may return a `503 Service Unavailable` status to clients whose requests result in an unusually high load on the VPP service, or when the VPP service is experiencing loads beyond its current request response capacity. A `Retry-After` header may be included in this response, indicating how long the client must wait before making additional requests. Clients who make requests before this time may be rejected for even longer periods of time, or (in extreme cases) may have their VPP account suspended.\n\nAvoid triggering the `Retry-After` header by setting the `assignedOnly` parameter `true` in calls to [doc:\/\/com.apple.devicemanagement\/documentation\/DeviceManagement\/Get-Licenses].\n\nThe `Retry-After` response-header field may also be used with any 3xx (Redirection) response to indicate the minimum time the user-agent is asked to wait before issuing the redirected request (see RFC 2616: HTTP\/1.1, Section 14.37). The value of this field can be either an HTTP-date or an integer number of seconds (in decimal) after the time of the response.\n\n```swift\nRetry-After = \"Retry-After\" \":\" ( HTTP-date | delta-seconds ) \n```\n\nTwo examples of usage are:\n\n```swift\nRetry-After: Fri, 31 Dec 1999 23:59:59 GMT\n```\n\n```swift\nRetry-After: 120\n```\n\nIn the latter example, the delay is 2 minutes.\n\n## Large Record Sets\n\n- **Retrieving a Large Record Set**: Efficiently work with large record sets.\n\n## Managed Apple Accounts\n\n- **Associating an Apple Account with a Volume Purchase Program (VPP) User**: Manage Apple Accounts within your organization effectively.\n\n## VPP Account Protection\n\n- **Protecting Your VPP Account**: Ensure a Volume Purchase Program (VPP) account is not managed or reset by another product.\n\n## Getting Started\n\n- **Upgrading to Apple School Manager (ASM) and Apple Business Manager (ABM)**: Manage devices and content across an organization user base with a single destination.\n- **Interpreting Error Codes**: Investigate service request errors and troubleshoot solutions.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Efficiently work with large record sets.",
+          "name" : "Retrieving a Large Record Set",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/retrieving-a-large-record-set"
+        }
+      ],
+      "title" : "Large Record Sets"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Manage Apple Accounts within your organization effectively.",
+          "name" : "Associating an Apple Account with a Volume Purchase Program (VPP) User",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/associating-an-apple-id-with-a-volume-purchase-program-vpp-user"
+        }
+      ],
+      "title" : "Managed Apple Accounts"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Ensure a Volume Purchase Program (VPP) account is not managed or reset by another product.",
+          "name" : "Protecting Your VPP Account",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/protecting-your-vpp-account"
+        }
+      ],
+      "title" : "VPP Account Protection"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Manage devices and content across an organization user base with a single destination.",
+          "name" : "Upgrading to Apple School Manager (ASM) and Apple Business Manager (ABM)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/upgrading-to-apple-school-manager-asm-and-apple-business-manager-abm"
+        },
+        {
+          "description" : "Investigate service request errors and troubleshoot solutions.",
+          "name" : "Interpreting Error Codes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/interpreting-error-codes"
+        }
+      ],
+      "title" : "Getting Started"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Managing Apps and Books Through Web Services",
+  "url" : "https:\/\/developer.apple.com\/documentation\/DeviceManagement\/managing-apps-and-books-through-web-services-legacy"
+}

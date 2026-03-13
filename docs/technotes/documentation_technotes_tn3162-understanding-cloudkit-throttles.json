@@ -1,0 +1,107 @@
+{
+  "abstract" : "Learn how to identify and handle CloudKit throttles.",
+  "codeExamples" : [
+    {
+      "code" : "[\n    \"CKErrorShouldThrottleClient\": 1, \n    \"RequestUUID\": B59F1738-B330-4F27-A2AE-3C95572BC9F4, \n    \"NSLocalizedDescription\": Request failed with http status code 503, \n    \"CKRetryAfter\": 30, \n    \"CKErrorDescription\": Request failed with http status code 503, \n    \"NSDebugDescription\": CKInternalErrorDomain: 2022, \n    \"NSUnderlyingError\": <CKError 0x60000040c060: \"Service Unavailable\" (2022); \n        \"Request failed with http status code 503\"; \n        uuid = B59F1738-B330-4F27-A2AE-3C95572BC9F4; \n        Retry after 30.0 seconds>\n]"
+    },
+    {
+      "code" : "{\n    \"reason\": \"Database throttled, retry later\",\n    \"retryAfter\": 110207,\n    \"serverErrorCode\": \"THROTTLED\",\n    \"error_code\": \"THROTTLED\",\n    \"messageForDeveloper\": \"Database throttled, retry later\",\n    \"uuid\": wsThrottles_000029fa-7fd4-4eac-a5de-970942d10b7f\n}"
+    },
+    {
+      "code" : "<CKError 0x600003ba77b0: \"Request Rate Limited\" (7\/2008); \n\"This operation has been rate limited due to an earlier error: Request failed with http status code 503\"; \nRetry after 51.6 seconds>"
+    }
+  ],
+  "contentHash" : "318b6c6d087d92d717901cbfb12c73e1ea2c4eaa272665420c288165b68d8cfd",
+  "crawledAt" : "2026-03-10T22:01:35Z",
+  "id" : "242CFC22-7988-4011-BEB4-CEDB8D980424",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nThe CloudKit infrastructure is shared by all apps and services. The resources are finite, and so high utilization from one app can negatively affect others. To avoid this kind of impact and optimize the overall experience, CloudKit implements a number of limits and controls on incoming traffic, which are known as *throttles*.\n\nCloudKit can enforce throttles when it deems necessary on any app or service that uses the [doc:\/\/com.apple.documentation\/documentation\/CloudKit] framework, [https:\/\/developer.apple.com\/library\/archive\/documentation\/DataManagement\/Conceptual\/CloudKitWebServicesReference\/index.html], [doc:\/\/com.apple.documentation\/documentation\/CloudKitJS], [doc:\/\/com.apple.documentation\/documentation\/CoreData\/NSPersistentCloudKitContainer], and [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSUbiquitousKeyValueStore]. This technote discusses how to identify CloudKit throttles with representative error messages and how to handle them.\n\n## Identify CloudKit throttles\n\nThe CloudKit server throttles a request from an app in the following cases:\n\nWhen the CloudKit server enforces throttles, it returns an error with a `retryAfter` value, which indicates how long the app should wait before retrying the request. For apps that use the CloudKit framework, the error is converted to [doc:\/\/com.apple.documentation\/documentation\/CloudKit\/CKError\/serviceUnavailable], with information shown in the following example:\n\nFor apps that use CloudKit Web Services or CloudKit JS, the error is conveyed in a server response with a body like the following example:\n\nCloudKit on the device side can work with the server to enforce throttles as well. This prevents CloudKit requests from being sent to the server, and saves networking and server resources. When an app hits this kind of throttle, its CloudKit operation ([doc:\/\/com.apple.documentation\/documentation\/CloudKit\/CKOperation]) gets a [doc:\/\/com.apple.documentation\/documentation\/CloudKit\/CKError\/requestRateLimited] error, as shown in the following example:\n\nUse these example messages to determine if your app hits CloudKit throttles. If you use the CloudKit framework, check if any CloudKit operation returns an `.serviceUnavailable` or `.requestRateLimited` error.  For CloudKit Web Services or CloudKit JS, check if any response from the CloudKit server contains the `THROTTLED` error. Apps that use `NSPersistentCloudKitContainer` and `NSUbiquitousKeyValueStore` don’t perform CloudKit operations directly, so you need to look into a sysdiagnose. To capture and analyze a sysdiagnose, see [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3163-understanding-the-synchronization-of-NSPersistentCloudKitContainer#Capture-and-analyze-a-sysdiagnose]\n\n## Handle CloudKit throttles\n\nCloudKit throttles are implemented to balance the use of CloudKit resources and achieve the best overall user experience of the service. When an app hits throttles, CloudKit stops accepting its requests until the throttles expire. There is no API for an app to configure the expiration time.\n\nThe best strategy to handle CloudKit throttles is to avoid them in the first place, and respect the `retryAfter` time if they happen. For apps that use the CloudKit framework, consider the following:\n\nSimilarly, apps that use CloudKit Web Services or CloudKit JS need to gracefully handle the throttle error the CloudKit server returns, and honor the `retry-after` time.\n\nApps that use `NSPersistentCloudKitContainer` and `NSUbiquitousKeyValueStore` automatically recover when the throttles expire. If they get throttled frequently, consider re-designing their architecture and workflow to avoid hitting the request rate limit.\n\nA retried request is not guaranteed to succeed. It may be throttled again, with a new `retry-after` time, for the same reason. If your CloudKit requests keep getting throttled, even though your app doesn’t have a lot of CloudKit traffic, and the device, networking, and [https:\/\/www.apple.com\/support\/systemstatus\/] are all in a good state, consider [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3163-understanding-the-synchronization-of-NSPersistentCloudKitContainer#Provide-actionable-feedback].\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3162-understanding-CloudKit-throttles\ncrawled: 2026-03-10T22:01:35Z\n---\n\n# TN3162: Understanding CloudKit throttles\n\n**Article**\n\nLearn how to identify and handle CloudKit throttles.\n\n## Overview\n\nThe CloudKit infrastructure is shared by all apps and services. The resources are finite, and so high utilization from one app can negatively affect others. To avoid this kind of impact and optimize the overall experience, CloudKit implements a number of limits and controls on incoming traffic, which are known as *throttles*.\n\nCloudKit can enforce throttles when it deems necessary on any app or service that uses the [doc:\/\/com.apple.documentation\/documentation\/CloudKit] framework, [https:\/\/developer.apple.com\/library\/archive\/documentation\/DataManagement\/Conceptual\/CloudKitWebServicesReference\/index.html], [doc:\/\/com.apple.documentation\/documentation\/CloudKitJS], [doc:\/\/com.apple.documentation\/documentation\/CoreData\/NSPersistentCloudKitContainer], and [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSUbiquitousKeyValueStore]. This technote discusses how to identify CloudKit throttles with representative error messages and how to handle them.\n\n## Identify CloudKit throttles\n\nThe CloudKit server throttles a request from an app in the following cases:\n\n- The app issues many CloudKit requests in a short time frame, and hits the rate limit.\n- The app uses CloudKit in an inappropriate pattern, such as simultaneously triggering recurring spikes in request rates from many devices.\n\nWhen the CloudKit server enforces throttles, it returns an error with a `retryAfter` value, which indicates how long the app should wait before retrying the request. For apps that use the CloudKit framework, the error is converted to [doc:\/\/com.apple.documentation\/documentation\/CloudKit\/CKError\/serviceUnavailable], with information shown in the following example:\n\n```\n[\n    \"CKErrorShouldThrottleClient\": 1, \n    \"RequestUUID\": B59F1738-B330-4F27-A2AE-3C95572BC9F4, \n    \"NSLocalizedDescription\": Request failed with http status code 503, \n    \"CKRetryAfter\": 30, \n    \"CKErrorDescription\": Request failed with http status code 503, \n    \"NSDebugDescription\": CKInternalErrorDomain: 2022, \n    \"NSUnderlyingError\": <CKError 0x60000040c060: \"Service Unavailable\" (2022); \n        \"Request failed with http status code 503\"; \n        uuid = B59F1738-B330-4F27-A2AE-3C95572BC9F4; \n        Retry after 30.0 seconds>\n]\n```\n\nFor apps that use CloudKit Web Services or CloudKit JS, the error is conveyed in a server response with a body like the following example:\n\n```\n{\n    \"reason\": \"Database throttled, retry later\",\n    \"retryAfter\": 110207,\n    \"serverErrorCode\": \"THROTTLED\",\n    \"error_code\": \"THROTTLED\",\n    \"messageForDeveloper\": \"Database throttled, retry later\",\n    \"uuid\": wsThrottles_000029fa-7fd4-4eac-a5de-970942d10b7f\n}\n```\n\nCloudKit on the device side can work with the server to enforce throttles as well. This prevents CloudKit requests from being sent to the server, and saves networking and server resources. When an app hits this kind of throttle, its CloudKit operation ([doc:\/\/com.apple.documentation\/documentation\/CloudKit\/CKOperation]) gets a [doc:\/\/com.apple.documentation\/documentation\/CloudKit\/CKError\/requestRateLimited] error, as shown in the following example:\n\n```\n<CKError 0x600003ba77b0: \"Request Rate Limited\" (7\/2008); \n\"This operation has been rate limited due to an earlier error: Request failed with http status code 503\"; \nRetry after 51.6 seconds>\n```\n\nUse these example messages to determine if your app hits CloudKit throttles. If you use the CloudKit framework, check if any CloudKit operation returns an `.serviceUnavailable` or `.requestRateLimited` error.  For CloudKit Web Services or CloudKit JS, check if any response from the CloudKit server contains the `THROTTLED` error. Apps that use `NSPersistentCloudKitContainer` and `NSUbiquitousKeyValueStore` don’t perform CloudKit operations directly, so you need to look into a sysdiagnose. To capture and analyze a sysdiagnose, see [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3163-understanding-the-synchronization-of-NSPersistentCloudKitContainer#Capture-and-analyze-a-sysdiagnose]\n\n\n\n## Handle CloudKit throttles\n\nCloudKit throttles are implemented to balance the use of CloudKit resources and achieve the best overall user experience of the service. When an app hits throttles, CloudKit stops accepting its requests until the throttles expire. There is no API for an app to configure the expiration time.\n\nThe best strategy to handle CloudKit throttles is to avoid them in the first place, and respect the `retryAfter` time if they happen. For apps that use the CloudKit framework, consider the following:\n\n- Minimize the number of CloudKit operations and avoid doing many operations in a short time frame.\n- Handle errors for every CloudKit operation. When hitting a `.requestRateLimited` or `.serviceUnavailable` error, retrieve the [doc:\/\/com.apple.documentation\/documentation\/CloudKit\/CKErrorRetryAfterKey] value from the [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSError\/userInfo] dictionary, and use it as the number of seconds to wait before retrying the operation.\n- For operations that are not critical for the current launch session, schedule them as background tasks using the [doc:\/\/com.apple.documentation\/documentation\/BackgroundTasks] framework to have the system run the operations when it determines appropriate.\n\n\n\nSimilarly, apps that use CloudKit Web Services or CloudKit JS need to gracefully handle the throttle error the CloudKit server returns, and honor the `retry-after` time.\n\nApps that use `NSPersistentCloudKitContainer` and `NSUbiquitousKeyValueStore` automatically recover when the throttles expire. If they get throttled frequently, consider re-designing their architecture and workflow to avoid hitting the request rate limit.\n\nA retried request is not guaranteed to succeed. It may be throttled again, with a new `retry-after` time, for the same reason. If your CloudKit requests keep getting throttled, even though your app doesn’t have a lot of CloudKit traffic, and the device, networking, and [https:\/\/www.apple.com\/support\/systemstatus\/] are all in a good state, consider [doc:\/\/com.apple.technotes\/documentation\/Technotes\/tn3163-understanding-the-synchronization-of-NSPersistentCloudKitContainer#Provide-actionable-feedback].\n\n## Revision History\n\n- **2024-02-20** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3162: Understanding CloudKit throttles",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3162-understanding-CloudKit-throttles"
+}

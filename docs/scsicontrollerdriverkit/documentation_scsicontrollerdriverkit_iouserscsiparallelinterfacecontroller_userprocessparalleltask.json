@@ -1,0 +1,50 @@
+{
+  "abstract" : "Processes a parallel task in response to a call from the framework.",
+  "codeExamples" : [
+    {
+      "code" : "kern_return_t\nIMPL ( ExampleSCSIDext, UserProcessParallelTask )\n{\n    kern_return_t     ret          = kIOReturnError;\n    TaskData *        taskData     = NULL;\n\n    taskData = ivars->fTaskArray[parallelRequest.fControllerTaskIdentifier];\n\n    \/\/ Set all the metadata for this IO.\n    taskData->fRequestedTransferCount = parallelRequest.fRequestedTransferCount;\n    taskData->fTransferDirection = parallelRequest.fTransferDirection;\n    PrepareScatterGatherList ( taskData, parallelRequest.fBufferIOVMAddr );\n    …\n\n    \/\/ Retain and stash the completion callback.\n    completion->retain ( );\n    taskData->fAction = completion;\n    \n    \/\/ Submit the request to the hardware.\n    ret = PostSCSIRequest ( taskData );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    \/\/ Set the response and return.\n    *response = kSCSIServiceResponse_Request_In_Process;\n\n    return ret;\n}",
+      "language" : "objc"
+    }
+  ],
+  "contentHash" : "2f2fac05a013747d871aa26ceb6b9953ac4343ce03cffc2f14d1972fdd856676",
+  "crawledAt" : "2026-03-10T21:51:19Z",
+  "declaration" : {
+    "code" : "virtual kern_return_t UserProcessParallelTask(SCSIUserParallelTask parallelRequest, uint32_t *response, OSAction *completion);",
+    "language" : "swift"
+  },
+  "id" : "8BEF1323-CF86-4793-BE56-9F8DB7BE03BB",
+  "kind" : "method",
+  "language" : "occ",
+  "module" : "SCSIControllerDriverKit",
+  "overview" : "## Discussion\n\nThe system calls this method to put a command on the bus, sending all information necessary to process the request in the `parallelRequest` parameter. Your HBA-specific subclass must implement this method.\n\nThe following example shows a minimal implementation of [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserProcessParallelTask]:",
+  "platforms" : [
+    "Unsupported OS: driverkit"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/scsicontrollerdriverkit\/iouserscsiparallelinterfacecontroller\/userprocessparalleltask\ncrawled: 2026-03-10T21:51:19Z\n---\n\n# UserProcessParallelTask\n\n**Instance Method**\n\nProcesses a parallel task in response to a call from the framework.\n\n## Declaration\n\n```swift\nvirtual kern_return_t UserProcessParallelTask(SCSIUserParallelTask parallelRequest, uint32_t *response, OSAction *completion);\n```\n\n## Parameters\n\n- **parallelRequest**: A [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/SCSIUserParallelTask] object that contains all necessary request information.\n- **response**: A service response for the request.\n- **completion**: An [doc:\/\/com.apple.documentation\/documentation\/DriverKit\/OSAction] object that the dext class uses to complete the request.\n\n## Discussion\n\nThe system calls this method to put a command on the bus, sending all information necessary to process the request in the `parallelRequest` parameter. Your HBA-specific subclass must implement this method.\n\nThe following example shows a minimal implementation of [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/UserProcessParallelTask]:\n\n1. The example starts by using the `parallelRequest` parameter’s [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/SCSIUserParallelTask\/fControllerTaskIdentifier] to look up task data, which it stores in a hypothetical convenience type called `TaskData`.\n2. Next, it sets the metadata for this I\/O operation. The kernel generates one long phsyical segment with [doc:\/\/com.apple.scsicontrollerdriverkit\/documentation\/SCSIControllerDriverKit\/SCSIUserParallelTask\/fBufferIOVMAddr] as its start address, as seen here in the call to a hypothetical `PrepareScatterGatherList()` function. You may need to prepare a custom scatter gather list if your hardware specification requires you to split this up into multiple segments.\n3. After that, the example retains and stashes  the `completion` callback for later.\n4. Finally, the code posts the request to the hardware by calling `PostSCSIRequest()`, another hypothetical convenience function. Assuming this call returns [doc:\/\/com.apple.documentation\/documentation\/DriverKit\/kIOReturnSuccess], the example sets the `response` in-out parameter to [doc:\/\/com.apple.documentation\/documentation\/DriverKit\/SCSIServiceResponse\/kSCSIServiceResponse_Request_In_Process], to indicate to the kernel that the request is underway.\n\n```objc\nkern_return_t\nIMPL ( ExampleSCSIDext, UserProcessParallelTask )\n{\n    kern_return_t     ret          = kIOReturnError;\n    TaskData *        taskData     = NULL;\n\n    taskData = ivars->fTaskArray[parallelRequest.fControllerTaskIdentifier];\n\n    \/\/ Set all the metadata for this IO.\n    taskData->fRequestedTransferCount = parallelRequest.fRequestedTransferCount;\n    taskData->fTransferDirection = parallelRequest.fTransferDirection;\n    PrepareScatterGatherList ( taskData, parallelRequest.fBufferIOVMAddr );\n    …\n\n    \/\/ Retain and stash the completion callback.\n    completion->retain ( );\n    taskData->fAction = completion;\n    \n    \/\/ Submit the request to the hardware.\n    ret = PostSCSIRequest ( taskData );\n    __Require ( ( kIOReturnSuccess == ret ), Exit );\n\n    \/\/ Set the response and return.\n    *response = kSCSIServiceResponse_Request_In_Process;\n\n    return ret;\n}\n```\n\n## Managing Tasks\n\n- **SCSIUserParallelTask**: The properties of a parallel task to perform.\n- **ParallelTaskCompletion**: Indicates to the system that the extension has completed an asynchronous request.\n- **SCSIUserParallelResponse**: The properties of a completed request.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The properties of a parallel task to perform.",
+          "name" : "SCSIUserParallelTask",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/SCSIUserParallelTask"
+        },
+        {
+          "description" : "Indicates to the system that the extension has completed an asynchronous request.",
+          "name" : "ParallelTaskCompletion",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/IOUserSCSIParallelInterfaceController\/ParallelTaskCompletion"
+        },
+        {
+          "description" : "The properties of a completed request.",
+          "name" : "SCSIUserParallelResponse",
+          "url" : "https:\/\/developer.apple.com\/documentation\/SCSIControllerDriverKit\/SCSIUserParallelResponse"
+        }
+      ],
+      "title" : "Managing Tasks"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "UserProcessParallelTask",
+  "url" : "https:\/\/developer.apple.com\/documentation\/scsicontrollerdriverkit\/iouserscsiparallelinterfacecontroller\/userprocessparalleltask"
+}

@@ -1,0 +1,272 @@
+{
+  "abstract" : "An object that determines which audio to play.",
+  "codeExamples" : [
+    {
+      "code" : "\/\/ Create a channel layout for audio types that contain no channel metadata. \nlet stereoLayout = AVAudioChannelLayout(layoutTag: kAudioChannelLayoutTag_Stereo)    \n\n\/\/ Load an audio file from the bundle.\nlet bangSoundURL = Bundle.main.url(forResource: \"bangSound\", withExtension: \"wav\")!\n\n\/\/ Create and register a sound asset.\nvar bangSoundAsset:PHASESoundAsset!\ndo { \n    bangSoundAsset = try engine.assetRegistry.registerSoundAsset(\n        url: bangSoundURL, \n        identifier: \"bangSound\", \n        assetType: .resident, \n        channelLayout: stereoLayout,\n        normalizationMode: .dynamic)\n} catch { print(\"Failed to register the sound asset.\") }\n\n\/\/ Create a mixer that routes sound directly to the output.\nlet stereoMixer = PHASEChannelMixerDefinition(channelLayout:stereoLayout!)\n\n\/\/ Create a sound event node.\nlet bangSoundSamplerNode = PHASESamplerNodeDefinition(\n    soundAssetIdentifier: bangSoundAsset.identifier, \n    mixerDefinition: stereoMixer, identifier:\"bangSoundNode\")\n\n\/\/ Add the sound event node to the asset registry and retrieve the asset object.\nvar bangSoundSoundEventAsset: PHASESoundEventNodeAsset! \ndo {\n    bangSoundEventAsset = try engine.assetRegistry.registerSoundEventAsset(\n        rootNode: bangSoundSamplerNode, identifier:\"bangSoundTree\")\n} catch { print (\"Failed to register the sound event node.\") }",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Create a playable sound event from the template sound event asset.\nvar bangSoundEvent: PHASESoundEvent!\ndo {\n        bangSoundEvent = try PHASESoundEvent(engine:engine, \n        assetIdentifier: bangSoundEventAsset.identifier)\n} catch { print (\"Failed to create the sound event.\") }\n\n\/\/ Play the one-shot sound event.\nbangSoundEvent.start()",
+      "language" : "swift"
+    }
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "c21ce602988896aba6b5eea7782037dae24c8aac5d25eee1c9af1f5cf567fffa",
+  "crawledAt" : "2026-03-10T21:36:48Z",
+  "declaration" : {
+    "code" : "class PHASESoundEvent",
+    "language" : "swift"
+  },
+  "id" : "9CFEC796-AB9D-4B67-8105-102A9D07CE6B",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "PHASE",
+  "overview" : "## Overview\n\nA sound event represents a logic tree, or hierarchy, that defines what, when, and how the framework plays a sound at runtime. You configure the tree with conditions based on your app’s state. When you invoke a sound event’s root node at runtime, the framework navigates the tree by branching based on the logic, landing on a playable node that sends the right audio to the output device:\n\nFor sound event nodes that play audio, the asset’s [doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASESamplerNodeDefinition\/playbackMode] determines whether the audio loops. One-time sound events stop automatically at the end of the audio data. Looping sound events (those with [doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASESamplerNodeDefinition\/playbackMode] `=` [doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASEPlaybackMode\/looping]) require you to explicitly call [doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASESoundEvent\/stopAndInvalidate()] to stop the audio.\n\n### Playing a one-shot channel-based sound\n\nApps create a sound event by requesting one from a sound event node asset. To create a sound event node asset, combine a sound asset (the source audio data) with a mixer object (which combines sound layers for output) to create a node, and add the node to the asset registry. By creating a sound event from a sampler node ([doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASESamplerNodeDefinition]), the following code plays an audio file once before discarding it.\n\nThe resulting node asset represents a template for audio that’s ready for playback. To play the audio, spawn a sound event off of the node asset and call [doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASESoundEvent\/start(completion:)] to invoke the sound event.",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/phase\/phasesoundevent\ncrawled: 2026-03-10T21:36:48Z\n---\n\n# PHASESoundEvent\n\n**Class**\n\nAn object that determines which audio to play.\n\n## Declaration\n\n```swift\nclass PHASESoundEvent\n```\n\n## Overview\n\nA sound event represents a logic tree, or hierarchy, that defines what, when, and how the framework plays a sound at runtime. You configure the tree with conditions based on your app’s state. When you invoke a sound event’s root node at runtime, the framework navigates the tree by branching based on the logic, landing on a playable node that sends the right audio to the output device:\n\n- To invoke a specific one-time sound, create a sound event from a single sampler node.\n- To invoke a sound event that tailors its sound based on your app’s state, define a sound event hierarchy containing one or more control nodes; see [doc:\/\/com.apple.phase\/documentation\/PHASE\/sound-event-nodes]. For example, to play either footsteps or a jumping noise depending on the hero’s state, you configure a switch node that navigates based on the hero’s hypothetical `isJumping` metaparameter.\n\nFor sound event nodes that play audio, the asset’s [doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASESamplerNodeDefinition\/playbackMode] determines whether the audio loops. One-time sound events stop automatically at the end of the audio data. Looping sound events (those with [doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASESamplerNodeDefinition\/playbackMode] `=` [doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASEPlaybackMode\/looping]) require you to explicitly call [doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASESoundEvent\/stopAndInvalidate()] to stop the audio.\n\n### Playing a one-shot channel-based sound\n\nApps create a sound event by requesting one from a sound event node asset. To create a sound event node asset, combine a sound asset (the source audio data) with a mixer object (which combines sound layers for output) to create a node, and add the node to the asset registry. By creating a sound event from a sampler node ([doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASESamplerNodeDefinition]), the following code plays an audio file once before discarding it.\n\n```swift\n\/\/ Create a channel layout for audio types that contain no channel metadata. \nlet stereoLayout = AVAudioChannelLayout(layoutTag: kAudioChannelLayoutTag_Stereo)    \n\n\/\/ Load an audio file from the bundle.\nlet bangSoundURL = Bundle.main.url(forResource: \"bangSound\", withExtension: \"wav\")!\n\n\/\/ Create and register a sound asset.\nvar bangSoundAsset:PHASESoundAsset!\ndo { \n    bangSoundAsset = try engine.assetRegistry.registerSoundAsset(\n        url: bangSoundURL, \n        identifier: \"bangSound\", \n        assetType: .resident, \n        channelLayout: stereoLayout,\n        normalizationMode: .dynamic)\n} catch { print(\"Failed to register the sound asset.\") }\n\n\/\/ Create a mixer that routes sound directly to the output.\nlet stereoMixer = PHASEChannelMixerDefinition(channelLayout:stereoLayout!)\n\n\/\/ Create a sound event node.\nlet bangSoundSamplerNode = PHASESamplerNodeDefinition(\n    soundAssetIdentifier: bangSoundAsset.identifier, \n    mixerDefinition: stereoMixer, identifier:\"bangSoundNode\")\n\n\/\/ Add the sound event node to the asset registry and retrieve the asset object.\nvar bangSoundSoundEventAsset: PHASESoundEventNodeAsset! \ndo {\n    bangSoundEventAsset = try engine.assetRegistry.registerSoundEventAsset(\n        rootNode: bangSoundSamplerNode, identifier:\"bangSoundTree\")\n} catch { print (\"Failed to register the sound event node.\") }\n```\n\nThe resulting node asset represents a template for audio that’s ready for playback. To play the audio, spawn a sound event off of the node asset and call [doc:\/\/com.apple.phase\/documentation\/PHASE\/PHASESoundEvent\/start(completion:)] to invoke the sound event.\n\n```swift\n\/\/ Create a playable sound event from the template sound event asset.\nvar bangSoundEvent: PHASESoundEvent!\ndo {\n        bangSoundEvent = try PHASESoundEvent(engine:engine, \n        assetIdentifier: bangSoundEventAsset.identifier)\n} catch { print (\"Failed to create the sound event.\") }\n\n\/\/ Play the one-shot sound event.\nbangSoundEvent.start()\n```\n\n\n\n## Creating a Sound Event\n\n- **init(engine:assetIdentifier:)**: Creates a sound event node with the given asset.\n- **init(engine:assetIdentifier:mixerParameters:)**: Creates a sound event node with the given asset and mixer parameters.\n\n## Configuring Mixers and Metaparameters\n\n- **mixers**: Nodes in the event tree that control the volume of their child nodes.\n- **metaParameters**: The object’s meta parameters.\n\n## Preparing Playback\n\n- **prepare(completion:)**: Enables a sound event to play and runs the argument code when the sound event plays back.\n- **PHASESoundEvent.PrepareHandlerReason**: Indicates the results of sound-event preparation.\n- **prepareState**: The status of sound-event preparation.\n- **PHASESoundEvent.PrepareState**: Indicates the state of sound-event preparation.\n\n## Checking Playback Status\n\n- **renderingState**: The sound event’s playback status.\n- **PHASESoundEvent.RenderingState**: The playback status of audio.\n\n## Providing Buffered Data\n\n- **pushStreamNodes**: A collection of audio streams for playback.\n\n## Starting Playback\n\n- **start(completion:)**: Invokes the sound event and runs the specified code on completion.\n- **PHASESoundEvent.StartHandlerReason**: Indicates the status after starting a sound event.\n\n## Seeking a Time\n\n- **seek(to:completion:)**: Advances the sound event’s playback position to a specific time.\n- **PHASESoundEvent.SeekHandlerReason**: Indicates the status after a sound event changes its playback position.\n\n## Pausing Playback\n\n- **pause()**: Pauses the sound event.\n- **resume()**: Resumes the sound event.\n\n## Stopping Playback\n\n- **stopAndInvalidate()**: Stops a sound event and prevents it from resuming.\n- **isIndefinite**: A Boolean value that indicates whether the sound loops or stops on its own.\n\n## Instance Properties\n\n- **pullStreamNodes**\n\n## Instance Methods\n\n- **resume(at:)**\n- **seek(to:resumeAt:completion:)**\n- **start(at:completion:)**\n\n## Audio Selection and Playback\n\n- **PHASESoundAsset**: A sound resource stored in the asset registry.\n- **PHASESoundEvent.RenderingState**: The playback status of audio.\n- **PHASESoundEventNodeDefinition**: A base class for sound event nodes that connect to form a node hierarchy.\n- **PHASESoundEventNodeAsset**: A template object for sounds that can play in reaction to environmental state.\n- **PHASEAsset**: A base class that adds a name to framework assets.\n- **Sound Event Nodes**: Objects that connect to form a hierarchical tree of audio actions.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a sound event node with the given asset.",
+          "name" : "init(engine:assetIdentifier:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/init(engine:assetIdentifier:)"
+        },
+        {
+          "description" : "Creates a sound event node with the given asset and mixer parameters.",
+          "name" : "init(engine:assetIdentifier:mixerParameters:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/init(engine:assetIdentifier:mixerParameters:)"
+        }
+      ],
+      "title" : "Creating a Sound Event"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Nodes in the event tree that control the volume of their child nodes.",
+          "name" : "mixers",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/mixers"
+        },
+        {
+          "description" : "The object’s meta parameters.",
+          "name" : "metaParameters",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/metaParameters"
+        }
+      ],
+      "title" : "Configuring Mixers and Metaparameters"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Enables a sound event to play and runs the argument code when the sound event plays back.",
+          "name" : "prepare(completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/prepare(completion:)"
+        },
+        {
+          "description" : "Indicates the results of sound-event preparation.",
+          "name" : "PHASESoundEvent.PrepareHandlerReason",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/PrepareHandlerReason"
+        },
+        {
+          "description" : "The status of sound-event preparation.",
+          "name" : "prepareState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/prepareState-swift.property"
+        },
+        {
+          "description" : "Indicates the state of sound-event preparation.",
+          "name" : "PHASESoundEvent.PrepareState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/PrepareState-swift.enum"
+        }
+      ],
+      "title" : "Preparing Playback"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The sound event’s playback status.",
+          "name" : "renderingState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/renderingState-swift.property"
+        },
+        {
+          "description" : "The playback status of audio.",
+          "name" : "PHASESoundEvent.RenderingState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/RenderingState-swift.enum"
+        }
+      ],
+      "title" : "Checking Playback Status"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A collection of audio streams for playback.",
+          "name" : "pushStreamNodes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/pushStreamNodes"
+        }
+      ],
+      "title" : "Providing Buffered Data"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Invokes the sound event and runs the specified code on completion.",
+          "name" : "start(completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/start(completion:)"
+        },
+        {
+          "description" : "Indicates the status after starting a sound event.",
+          "name" : "PHASESoundEvent.StartHandlerReason",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/StartHandlerReason"
+        }
+      ],
+      "title" : "Starting Playback"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Advances the sound event’s playback position to a specific time.",
+          "name" : "seek(to:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/seek(to:completion:)"
+        },
+        {
+          "description" : "Indicates the status after a sound event changes its playback position.",
+          "name" : "PHASESoundEvent.SeekHandlerReason",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/SeekHandlerReason"
+        }
+      ],
+      "title" : "Seeking a Time"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Pauses the sound event.",
+          "name" : "pause()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/pause()"
+        },
+        {
+          "description" : "Resumes the sound event.",
+          "name" : "resume()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/resume()"
+        }
+      ],
+      "title" : "Pausing Playback"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Stops a sound event and prevents it from resuming.",
+          "name" : "stopAndInvalidate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/stopAndInvalidate()"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the sound loops or stops on its own.",
+          "name" : "isIndefinite",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/isIndefinite"
+        }
+      ],
+      "title" : "Stopping Playback"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "pullStreamNodes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/pullStreamNodes"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "resume(at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/resume(at:)"
+        },
+        {
+          "description" : "",
+          "name" : "seek(to:resumeAt:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/seek(to:resumeAt:completion:)"
+        },
+        {
+          "description" : "",
+          "name" : "start(at:completion:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/start(at:completion:)"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A sound resource stored in the asset registry.",
+          "name" : "PHASESoundAsset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundAsset"
+        },
+        {
+          "description" : "The playback status of audio.",
+          "name" : "PHASESoundEvent.RenderingState",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEvent\/RenderingState-swift.enum"
+        },
+        {
+          "description" : "A base class for sound event nodes that connect to form a node hierarchy.",
+          "name" : "PHASESoundEventNodeDefinition",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEventNodeDefinition"
+        },
+        {
+          "description" : "A template object for sounds that can play in reaction to environmental state.",
+          "name" : "PHASESoundEventNodeAsset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASESoundEventNodeAsset"
+        },
+        {
+          "description" : "A base class that adds a name to framework assets.",
+          "name" : "PHASEAsset",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/PHASEAsset"
+        },
+        {
+          "description" : "Objects that connect to form a hierarchical tree of audio actions.",
+          "name" : "Sound Event Nodes",
+          "url" : "https:\/\/developer.apple.com\/documentation\/PHASE\/sound-event-nodes"
+        }
+      ],
+      "title" : "Audio Selection and Playback"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "PHASESoundEvent",
+  "url" : "https:\/\/developer.apple.com\/documentation\/phase\/phasesoundevent"
+}

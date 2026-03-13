@@ -1,0 +1,553 @@
+{
+  "abstract" : "A JavaScript value.",
+  "codeExamples" : [
+
+  ],
+  "conformsTo" : [
+    "CVarArg",
+    "CustomDebugStringConvertible",
+    "CustomStringConvertible",
+    "Equatable",
+    "Hashable",
+    "NSObjectProtocol"
+  ],
+  "contentHash" : "6aa401165a089b4782432d1f47f313f4b4dc35e742fe92ba100ec0ba13b05ba8",
+  "crawledAt" : "2026-03-10T17:05:19Z",
+  "declaration" : {
+    "code" : "class JSValue",
+    "language" : "swift"
+  },
+  "id" : "BF3426DC-F66E-4E14-87AC-B671793D87A5",
+  "kind" : "class",
+  "language" : "swift",
+  "module" : "JavaScriptCore",
+  "overview" : "## Overview\n\nYou use the [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] class to convert basic values, such as numbers and strings, between JavaScript and Objective-C or Swift representations to pass data between native code and JavaScript code. You can also use this class to create JavaScript objects that wrap native objects of custom classes or JavaScript functions with implementations that native methods or blocks provide.\n\nEach [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] instance originates from a [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSContext] object that represents the JavaScript execution environment containing that value. The value holds a strong reference to its [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue\/context] object — as long as it retains any value for a particular [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSContext] instance, that context remains alive. When you invoke an instance method on a [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] object, and that method returns another [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] object, the returned value belongs to the same context as the original value.\n\nEach JavaScript value also has an association (indirectly via the [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue\/context] property) with a specific [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSVirtualMachine] object that represents the underlying set of execution resources for its context. You can pass [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] instances only to methods on [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] and [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSContext] instances on the same virtual machine — attempting to pass a value to a different virtual machine raises an Objective-C exception.\n\n### Convert Between JavaScript and Native Types\n\nWhen you use the [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] methods for creating, reading, and converting JavaScript values, JavaScriptCore automatically converts native values to JavaScript values and vice versa, using the rules below.\n\nWhen you convert an object, method, or block, JavaScriptCore implicitly converts the types and values of object properties and method parameters using the rules below:",
+  "platforms" : [
+    "iOS",
+    "iPadOS",
+    "Mac Catalyst",
+    "macOS",
+    "tvOS",
+    "visionOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/javascriptcore\/jsvalue\ncrawled: 2026-03-10T17:05:19Z\n---\n\n# JSValue\n\n**Class**\n\nA JavaScript value.\n\n## Declaration\n\n```swift\nclass JSValue\n```\n\n## Overview\n\nYou use the [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] class to convert basic values, such as numbers and strings, between JavaScript and Objective-C or Swift representations to pass data between native code and JavaScript code. You can also use this class to create JavaScript objects that wrap native objects of custom classes or JavaScript functions with implementations that native methods or blocks provide.\n\nEach [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] instance originates from a [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSContext] object that represents the JavaScript execution environment containing that value. The value holds a strong reference to its [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue\/context] object — as long as it retains any value for a particular [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSContext] instance, that context remains alive. When you invoke an instance method on a [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] object, and that method returns another [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] object, the returned value belongs to the same context as the original value.\n\nEach JavaScript value also has an association (indirectly via the [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue\/context] property) with a specific [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSVirtualMachine] object that represents the underlying set of execution resources for its context. You can pass [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] instances only to methods on [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] and [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSContext] instances on the same virtual machine — attempting to pass a value to a different virtual machine raises an Objective-C exception.\n\n### Convert Between JavaScript and Native Types\n\nWhen you use the [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue] methods for creating, reading, and converting JavaScript values, JavaScriptCore automatically converts native values to JavaScript values and vice versa, using the rules below.\n\n- [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSDictionary] objects or Swift dictionaries and the keys they contain become JavaScript objects with matching named properties and vice versa. JavaScriptCore recursively copies and converts the values for keys.\n- [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSArray] objects or Swift arrays become JavaScript arrays and vice versa, with elements that JavaScriptCore recursively copies and converts.\n- Objective-C blocks (or Swift closures with the `@convention(block)` attribute) become JavaScript `Function` objects, with parameter and return types that JavaScriptCore converts using the same rules as values. Converting a JavaScript function with a backing from a native block or method returns that block or method; all other JavaScript functions convert as empty dictionaries.\n- For all other native object types (and class types or metatypes), JavaScriptCore creates a JavaScript wrapper object with a constructor prototype chain that reflects the native class hierarchy. By default, the JavaScript wrapper for a native object doesn’t make that object’s properties and methods available in JavaScript. To choose properties and methods for export to JavaScript, see [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSExport].\n\nWhen you convert an object, method, or block, JavaScriptCore implicitly converts the types and values of object properties and method parameters using the rules below:\n\n\n\n## Creating JavaScript Values\n\n- **init(object:in:)**: Creates a JavaScript value by converting the specified native object.\n- **init(bool:in:)**: Creates a JavaScript representation of the specified Boolean value.\n- **init(double:in:)**: Creates a JavaScript representation of the specified floating-point value.\n- **init(int32:in:)**: Creates a JavaScript representation of the specified signed integer value.\n- **init(uInt32:in:)**: Creates a JavaScript representation of the specified unsigned integer value.\n- **init(newObjectIn:)**: Creates a new, empty JavaScript object value.\n- **init(newArrayIn:)**: Creates a new, empty JavaScript array value.\n- **init(newRegularExpressionFromPattern:flags:in:)**: Creates a JavaScript regular expression value from the specified pattern.\n- **init(newErrorFromMessage:in:)**: Creates a JavaScript error value with the specified error message.\n- **init(undefinedIn:)**: Creates a JavaScript `undefined` value.\n- **init(nullIn:)**: Creates a JavaScript `null` value.\n- **init(point:inContext:)**: Creates a JavaScript representation of the specified point.\n- **init(range:inContext:)**: Creates a JavaScript representation of the specified range.\n- **init(rect:inContext:)**: Creates a JavaScript representation of the specified rectangle.\n- **init(size:inContext:)**: Creates a JavaScript representation of the specified width and height.\n- **init(newSymbolFromDescription:in:)**: Creates a unique symbol object.\n- **init(newPromiseIn:fromExecutor:)**: Creates a promise object using the specified executor callback.\n- **init(newPromiseRejectedWithReason:in:)**: Creates a rejected promise object with the specified value.\n- **init(newPromiseResolvedWithResult:in:)**: Creates a resolved promise object with the specified value.\n\n## Reading and Converting JavaScript Values\n\n- **toObject()**: Converts the JavaScript value to a native object.\n- **toObjectOf(_:)**: Converts the JavaScript value to a native object of the specified class.\n- **toBool()**: Converts the JavaScript value to a native Boolean value.\n- **toDouble()**: Converts the JavaScript value to a native floating-point value.\n- **toInt32()**: Converts the JavaScript value to a native signed integer value.\n- **toUInt32()**: Converts the JavaScript value to a native unsigned integer value.\n- **toNumber()**: Converts the JavaScript value to a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSNumber] object.\n- **toString()**: Converts the JavaScript value to a native string.\n- **toDate()**: Converts the JavaScript value to a date object.\n- **toArray()**: Converts the JavaScript value to an array.\n- **toDictionary()**: Converts the JavaScript value to a dictionary.\n- **toPoint()**: Converts the value to a point structure.\n- **toRange()**: Converts the value to a range.\n- **toRect()**: Converts the value to a rectangle structure.\n- **toSize()**: Converts the value to a size.\n\n## Determining the Type of a JavaScript Value\n\n- **isUndefined**: A Boolean value that indicates whether the instance corresponds to the JavaScript `undefined` value.\n- **isNull**: A Boolean value that indicates whether the instance corresponds to the JavaScript `null` value.\n- **isBoolean**: A Boolean value that indicates whether the instance is a JavaScript Boolean value.\n- **isNumber**: A Boolean value that indicates whether the instance is a JavaScript numeric value.\n- **isString**: A Boolean value that indicates whether the instance is a JavaScript `String` object.\n- **isObject**: A Boolean value that indicates whether the instance is a JavaScript object.\n- **isArray**: A Boolean value that indicates whether the instance is a JavaScript array value.\n- **isDate**: A Boolean value that indicates whether the instance is a JavaScript `Date` object.\n- **isSymbol**: A Boolean value that indicates whether the instance is a symbol.\n\n## Comparing JavaScript Values\n\n- **isEqual(to:)**: Compares the value to another for strict equality.\n- **isEqualWithTypeCoercion(to:)**: Compares the value to another for equivalence, allowing type conversion.\n- **isInstance(of:)**: Returns a Boolean value indicating whether the value is an instance of another JavaScript object value.\n\n## Working with Function and Constructor Values\n\n- **call(withArguments:)**: Invokes the value as a JavaScript function.\n- **construct(withArguments:)**: Invokes the value as a JavaScript constructor.\n- **invokeMethod(_:withArguments:)**: Calls the named JavaScript method on the value.\n\n## Working with Container Values\n\n- **defineProperty(_:descriptor:)**: Defines a property on the JavaScript object value or modifies a property’s definition.\n- **hasProperty(_:)**: Returns a Boolean value indicating whether the JavaScript value has a defined property with the specified name.\n- **deleteProperty(_:)**: Deletes the named property from the JavaScript object value.\n- **atIndex(_:)**: Returns the value at the specified numeric index in the JavaScript object value.\n- **setValue(_:at:)**: Sets the value at the specified numeric index in the JavaScript object value.\n- **forProperty(_:)**: Returns the value of the named property in the JavaScript object value.\n- **setValue(_:forProperty:)**: Sets the value of the named property in the JavaScript object value.\n- **JSValueProperty**: A type that identifies a property of a JavaScript value.\n\n## Accessing a Value’s JavaScript Context\n\n- **context**: The JavaScript context hosting this value.\n\n## Accessing Values with Subscript Syntax\n\n- **objectAtIndexedSubscript(_:)**: Returns the value’s JavaScript property at the specified index, allowing subscript syntax.\n- **setObject(_:atIndexedSubscript:)**: Sets the value’s JavaScript property at the specified index, allowing subscript syntax.\n- **objectForKeyedSubscript(_:)**: Returns the value’s JavaScript property named with the specified key, allowing subscript syntax.\n- **setObject(_:forKeyedSubscript:)**: Sets the value’s JavaScript property named with the specified key, allowing subscript syntax.\n\n## Working with the C JavaScriptCore API\n\n- **jsValueRef**: Returns the C representation of the JavaScript value.\n- **init(JSValueRef:inContext:)**: Creates a JavaScript value object from the equivalent C representation.\n\n## Constants\n\n- **Property Descriptor Keys**: Keys for the native dictionary representation of a JavaScript property descriptor, used with the [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue\/defineProperty(_:descriptor:)] method.\n\n## Initializers\n\n- **init(jsValueRef:in:)**\n- **init(newBigIntFrom:in:)**\n- **init(newBigIntFrom:in:)**\n- **init(newBigIntFrom:in:)**\n- **init(newBigIntFrom:in:)**\n- **init(point:in:)**\n- **init(range:in:)**\n- **init(rect:in:)**\n- **init(size:in:)**\n\n## Instance Properties\n\n- **isBigInt**\n\n## Instance Methods\n\n- **compare(_:)**\n- **compare(_:)**\n- **compare(_:)**\n- **compare(_:)**\n- **toInt64()**\n- **toUInt64()**\n\n## Default Implementations\n\n- **JSValue Implementations**\n\n## JavaScript Code\n\n- **JSManagedValue**: A JavaScript value with conditional retain behavior to provide automatic memory management.\n\n## Inherits From\n\n- NSObject\n\n## Conforms To\n\n- CVarArg\n- CustomDebugStringConvertible\n- CustomStringConvertible\n- Equatable\n- Hashable\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Creates a JavaScript value by converting the specified native object.",
+          "name" : "init(object:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(object:in:)"
+        },
+        {
+          "description" : "Creates a JavaScript representation of the specified Boolean value.",
+          "name" : "init(bool:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(bool:in:)"
+        },
+        {
+          "description" : "Creates a JavaScript representation of the specified floating-point value.",
+          "name" : "init(double:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(double:in:)"
+        },
+        {
+          "description" : "Creates a JavaScript representation of the specified signed integer value.",
+          "name" : "init(int32:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(int32:in:)"
+        },
+        {
+          "description" : "Creates a JavaScript representation of the specified unsigned integer value.",
+          "name" : "init(uInt32:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(uInt32:in:)"
+        },
+        {
+          "description" : "Creates a new, empty JavaScript object value.",
+          "name" : "init(newObjectIn:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newObjectIn:)"
+        },
+        {
+          "description" : "Creates a new, empty JavaScript array value.",
+          "name" : "init(newArrayIn:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newArrayIn:)"
+        },
+        {
+          "description" : "Creates a JavaScript regular expression value from the specified pattern.",
+          "name" : "init(newRegularExpressionFromPattern:flags:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newRegularExpressionFromPattern:flags:in:)"
+        },
+        {
+          "description" : "Creates a JavaScript error value with the specified error message.",
+          "name" : "init(newErrorFromMessage:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newErrorFromMessage:in:)"
+        },
+        {
+          "description" : "Creates a JavaScript `undefined` value.",
+          "name" : "init(undefinedIn:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(undefinedIn:)"
+        },
+        {
+          "description" : "Creates a JavaScript `null` value.",
+          "name" : "init(nullIn:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(nullIn:)"
+        },
+        {
+          "description" : "Creates a JavaScript representation of the specified point.",
+          "name" : "init(point:inContext:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(point:inContext:)"
+        },
+        {
+          "description" : "Creates a JavaScript representation of the specified range.",
+          "name" : "init(range:inContext:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(range:inContext:)"
+        },
+        {
+          "description" : "Creates a JavaScript representation of the specified rectangle.",
+          "name" : "init(rect:inContext:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(rect:inContext:)"
+        },
+        {
+          "description" : "Creates a JavaScript representation of the specified width and height.",
+          "name" : "init(size:inContext:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(size:inContext:)"
+        },
+        {
+          "description" : "Creates a unique symbol object.",
+          "name" : "init(newSymbolFromDescription:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newSymbolFromDescription:in:)"
+        },
+        {
+          "description" : "Creates a promise object using the specified executor callback.",
+          "name" : "init(newPromiseIn:fromExecutor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newPromiseIn:fromExecutor:)"
+        },
+        {
+          "description" : "Creates a rejected promise object with the specified value.",
+          "name" : "init(newPromiseRejectedWithReason:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newPromiseRejectedWithReason:in:)"
+        },
+        {
+          "description" : "Creates a resolved promise object with the specified value.",
+          "name" : "init(newPromiseResolvedWithResult:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newPromiseResolvedWithResult:in:)"
+        }
+      ],
+      "title" : "Creating JavaScript Values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Converts the JavaScript value to a native object.",
+          "name" : "toObject()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toObject()"
+        },
+        {
+          "description" : "Converts the JavaScript value to a native object of the specified class.",
+          "name" : "toObjectOf(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toObjectOf(_:)"
+        },
+        {
+          "description" : "Converts the JavaScript value to a native Boolean value.",
+          "name" : "toBool()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toBool()"
+        },
+        {
+          "description" : "Converts the JavaScript value to a native floating-point value.",
+          "name" : "toDouble()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toDouble()"
+        },
+        {
+          "description" : "Converts the JavaScript value to a native signed integer value.",
+          "name" : "toInt32()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toInt32()"
+        },
+        {
+          "description" : "Converts the JavaScript value to a native unsigned integer value.",
+          "name" : "toUInt32()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toUInt32()"
+        },
+        {
+          "description" : "Converts the JavaScript value to a [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSNumber] object.",
+          "name" : "toNumber()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toNumber()"
+        },
+        {
+          "description" : "Converts the JavaScript value to a native string.",
+          "name" : "toString()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toString()"
+        },
+        {
+          "description" : "Converts the JavaScript value to a date object.",
+          "name" : "toDate()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toDate()"
+        },
+        {
+          "description" : "Converts the JavaScript value to an array.",
+          "name" : "toArray()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toArray()"
+        },
+        {
+          "description" : "Converts the JavaScript value to a dictionary.",
+          "name" : "toDictionary()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toDictionary()"
+        },
+        {
+          "description" : "Converts the value to a point structure.",
+          "name" : "toPoint()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toPoint()"
+        },
+        {
+          "description" : "Converts the value to a range.",
+          "name" : "toRange()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toRange()"
+        },
+        {
+          "description" : "Converts the value to a rectangle structure.",
+          "name" : "toRect()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toRect()"
+        },
+        {
+          "description" : "Converts the value to a size.",
+          "name" : "toSize()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toSize()"
+        }
+      ],
+      "title" : "Reading and Converting JavaScript Values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A Boolean value that indicates whether the instance corresponds to the JavaScript `undefined` value.",
+          "name" : "isUndefined",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isUndefined"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the instance corresponds to the JavaScript `null` value.",
+          "name" : "isNull",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isNull"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the instance is a JavaScript Boolean value.",
+          "name" : "isBoolean",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isBoolean"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the instance is a JavaScript numeric value.",
+          "name" : "isNumber",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isNumber"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the instance is a JavaScript `String` object.",
+          "name" : "isString",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isString"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the instance is a JavaScript object.",
+          "name" : "isObject",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isObject"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the instance is a JavaScript array value.",
+          "name" : "isArray",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isArray"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the instance is a JavaScript `Date` object.",
+          "name" : "isDate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isDate"
+        },
+        {
+          "description" : "A Boolean value that indicates whether the instance is a symbol.",
+          "name" : "isSymbol",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isSymbol"
+        }
+      ],
+      "title" : "Determining the Type of a JavaScript Value"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Compares the value to another for strict equality.",
+          "name" : "isEqual(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isEqual(to:)"
+        },
+        {
+          "description" : "Compares the value to another for equivalence, allowing type conversion.",
+          "name" : "isEqualWithTypeCoercion(to:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isEqualWithTypeCoercion(to:)"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the value is an instance of another JavaScript object value.",
+          "name" : "isInstance(of:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isInstance(of:)"
+        }
+      ],
+      "title" : "Comparing JavaScript Values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Invokes the value as a JavaScript function.",
+          "name" : "call(withArguments:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/call(withArguments:)"
+        },
+        {
+          "description" : "Invokes the value as a JavaScript constructor.",
+          "name" : "construct(withArguments:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/construct(withArguments:)"
+        },
+        {
+          "description" : "Calls the named JavaScript method on the value.",
+          "name" : "invokeMethod(_:withArguments:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/invokeMethod(_:withArguments:)"
+        }
+      ],
+      "title" : "Working with Function and Constructor Values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Defines a property on the JavaScript object value or modifies a property’s definition.",
+          "name" : "defineProperty(_:descriptor:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/defineProperty(_:descriptor:)"
+        },
+        {
+          "description" : "Returns a Boolean value indicating whether the JavaScript value has a defined property with the specified name.",
+          "name" : "hasProperty(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/hasProperty(_:)"
+        },
+        {
+          "description" : "Deletes the named property from the JavaScript object value.",
+          "name" : "deleteProperty(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/deleteProperty(_:)"
+        },
+        {
+          "description" : "Returns the value at the specified numeric index in the JavaScript object value.",
+          "name" : "atIndex(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/atIndex(_:)"
+        },
+        {
+          "description" : "Sets the value at the specified numeric index in the JavaScript object value.",
+          "name" : "setValue(_:at:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/setValue(_:at:)"
+        },
+        {
+          "description" : "Returns the value of the named property in the JavaScript object value.",
+          "name" : "forProperty(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/forProperty(_:)"
+        },
+        {
+          "description" : "Sets the value of the named property in the JavaScript object value.",
+          "name" : "setValue(_:forProperty:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/setValue(_:forProperty:)"
+        },
+        {
+          "description" : "A type that identifies a property of a JavaScript value.",
+          "name" : "JSValueProperty",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValueProperty"
+        }
+      ],
+      "title" : "Working with Container Values"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The JavaScript context hosting this value.",
+          "name" : "context",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/context"
+        }
+      ],
+      "title" : "Accessing a Value’s JavaScript Context"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the value’s JavaScript property at the specified index, allowing subscript syntax.",
+          "name" : "objectAtIndexedSubscript(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/objectAtIndexedSubscript(_:)"
+        },
+        {
+          "description" : "Sets the value’s JavaScript property at the specified index, allowing subscript syntax.",
+          "name" : "setObject(_:atIndexedSubscript:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/setObject(_:atIndexedSubscript:)"
+        },
+        {
+          "description" : "Returns the value’s JavaScript property named with the specified key, allowing subscript syntax.",
+          "name" : "objectForKeyedSubscript(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/objectForKeyedSubscript(_:)"
+        },
+        {
+          "description" : "Sets the value’s JavaScript property named with the specified key, allowing subscript syntax.",
+          "name" : "setObject(_:forKeyedSubscript:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/setObject(_:forKeyedSubscript:)"
+        }
+      ],
+      "title" : "Accessing Values with Subscript Syntax"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns the C representation of the JavaScript value.",
+          "name" : "jsValueRef",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/jsValueRef"
+        },
+        {
+          "description" : "Creates a JavaScript value object from the equivalent C representation.",
+          "name" : "init(JSValueRef:inContext:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(JSValueRef:inContext:)"
+        }
+      ],
+      "title" : "Working with the C JavaScriptCore API"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Keys for the native dictionary representation of a JavaScript property descriptor, used with the [doc:\/\/com.apple.javascriptcore\/documentation\/JavaScriptCore\/JSValue\/defineProperty(_:descriptor:)] method.",
+          "name" : "Property Descriptor Keys",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/property-descriptor-keys"
+        }
+      ],
+      "title" : "Constants"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "init(jsValueRef:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(jsValueRef:in:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(newBigIntFrom:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newBigIntFrom:in:)-1f0xs"
+        },
+        {
+          "description" : "",
+          "name" : "init(newBigIntFrom:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newBigIntFrom:in:)-7worq"
+        },
+        {
+          "description" : "",
+          "name" : "init(newBigIntFrom:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newBigIntFrom:in:)-8l9iv"
+        },
+        {
+          "description" : "",
+          "name" : "init(newBigIntFrom:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(newBigIntFrom:in:)-r38z"
+        },
+        {
+          "description" : "",
+          "name" : "init(point:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(point:in:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(range:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(range:in:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(rect:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(rect:in:)"
+        },
+        {
+          "description" : "",
+          "name" : "init(size:in:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/init(size:in:)"
+        }
+      ],
+      "title" : "Initializers"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "isBigInt",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/isBigInt"
+        }
+      ],
+      "title" : "Instance Properties"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "compare(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/compare(_:)-35b2t"
+        },
+        {
+          "description" : "",
+          "name" : "compare(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/compare(_:)-5w184"
+        },
+        {
+          "description" : "",
+          "name" : "compare(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/compare(_:)-64n3k"
+        },
+        {
+          "description" : "",
+          "name" : "compare(_:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/compare(_:)-9d4zq"
+        },
+        {
+          "description" : "",
+          "name" : "toInt64()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toInt64()"
+        },
+        {
+          "description" : "",
+          "name" : "toUInt64()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/toUInt64()"
+        }
+      ],
+      "title" : "Instance Methods"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "",
+          "name" : "JSValue Implementations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSValue\/JSValue-Implementations"
+        }
+      ],
+      "title" : "Default Implementations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A JavaScript value with conditional retain behavior to provide automatic memory management.",
+          "name" : "JSManagedValue",
+          "url" : "https:\/\/developer.apple.com\/documentation\/JavaScriptCore\/JSManagedValue"
+        }
+      ],
+      "title" : "JavaScript Code"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSObject"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "JSValue",
+  "url" : "https:\/\/developer.apple.com\/documentation\/javascriptcore\/jsvalue"
+}

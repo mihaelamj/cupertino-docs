@@ -1,0 +1,99 @@
+{
+  "abstract" : "Verify that asynchronous code behaves as expected.",
+  "codeExamples" : [
+    {
+      "code" : "func testDownloadWebDataWithConcurrency() async throws {\n    \/\/ Create a URL for a webpage to download.\n    let url = URL(string: \"https:\/\/apple.com\")!\n    \n    \/\/ Use an asynchronous function to download the webpage.\n    let dataAndResponse: (data: Data, response: URLResponse) = try await URLSession.shared.data(from: url, delegate: nil)\n    \n    \/\/ Assert that the actual response matches the expected response.\n    let httpResponse = try XCTUnwrap(dataAndResponse.response as? HTTPURLResponse, \"Expected an HTTPURLResponse.\")\n    XCTAssertEqual(httpResponse.statusCode, 200, \"Expected a 200 OK response.\")\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "\/\/ Create an expectation for an asynchronous task.\nlet expectation = XCTestExpectation(description: \"Open a file asynchronously.\")",
+      "language" : "swift"
+    },
+    {
+      "code" : "let fileManager = ExampleFileManager()\n\n\/\/ Perform the asynchronous task.\nfileManager.openFileAsync(with: \"exampleFilename\") { file, error in\n    \/\/...\n}\n\n\/\/ Wait for the expectation to fulfill or time out.\nwait(for: [expectation], timeout: 10.0)",
+      "language" : "swift"
+    },
+    {
+      "code" : "fileManager.openFileAsync(with: \"exampleFilename\") { file, error in\n\n    \/\/ Assert that the asynchronous task worked.\n    XCTAssertNotNil(file, \"Expected to load a file.\")\n\n    \/\/ Assert that no errors occurred opening the file asynchronously.\n    XCTAssertNil(error, \"Expected no errors loading a file.\")\n    \n    \/\/ Fulfill the expectation.\n    expectation.fulfill()\n}\n",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "feb0cea407d5cac2eae1d65d76cd203786e6d38ff935af59f62fe0e052e8332b",
+  "crawledAt" : "2026-03-10T23:03:28Z",
+  "id" : "1B23BD7C-90AF-49C1-B834-CFF54F0F2E43",
+  "kind" : "collection",
+  "language" : "swift",
+  "module" : "XCTest",
+  "overview" : "## Overview\n\nAsynchronous code doesn’t execute directly within the current flow of code. This might be because the code runs on a different thread or dispatch queue, in a delegate method, or in a callback, or because it’s a Swift function marked with `async`.\n\n`XCTest` provides two approaches for testing asynchronous code. For Swift code that uses `async` and `await` for concurrency, you mark your test methods `async` or `async` `throws` to test asynchronously. For any other types of asynchronous code, within your test you create one or more *expectations*, which are objects that XCTest uses to handle waiting. Then you *fulfill* those expectations when the asynchronous code finishes running to tell XCTest to stop waiting. Your test method waits until all expectations are fulfilled or a specified timeout expires.\n\n### Build Asynchronous Tests with Swift Concurrency\n\nTo test Swift code that uses `async` and `await` for concurrency, mark your test method `async` or `async` `throws`. `XCTest` executes your test method asynchronously so that your test waits until `async` calls complete.\n\nWhen the asynchronous task completes, perform assertions to confirm that the task’s actual results meet your expected results.\n\nIf your test encounters a thrown error, `XCTest` records a test failure.\n\n### Build Asynchronous Tests with Expectations\n\nWhen you can’t use Swift `async`, use expectations to test asynchronous code. For example, use expectations when there isn’t a Swift `async` alternative available or when your asynchronous code runs in:\n\nBefore you perform an asynchronous task in your test method, create an instance of [doc:\/\/com.apple.xctest\/documentation\/XCTest\/XCTestExpectation] with a description of the task.\n\nStart the asynchronous task, and then tell the test to wait for the expectation to complete within an amount of time you specify.\n\nWhen the asynchronous task returns (for example, in a callback), perform assertions to confirm that the task’s actual results meet your expected results. When the task completes, call the [doc:\/\/com.apple.xctest\/documentation\/XCTest\/XCTestExpectation\/fulfill()] method on the expectation to indicate to the test that it can stop waiting and proceed with the next test.\n\nIf the test doesn’t execute the `fulfill()` method before the wait statement’s timeout expires, `XCTest` records a test failure.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/XCTest\/asynchronous-tests-and-expectations\ncrawled: 2026-03-10T23:03:28Z\n---\n\n# Asynchronous Tests and Expectations\n\n**API Collection**\n\nVerify that asynchronous code behaves as expected.\n\n## Overview\n\nAsynchronous code doesn’t execute directly within the current flow of code. This might be because the code runs on a different thread or dispatch queue, in a delegate method, or in a callback, or because it’s a Swift function marked with `async`.\n\n`XCTest` provides two approaches for testing asynchronous code. For Swift code that uses `async` and `await` for concurrency, you mark your test methods `async` or `async` `throws` to test asynchronously. For any other types of asynchronous code, within your test you create one or more *expectations*, which are objects that XCTest uses to handle waiting. Then you *fulfill* those expectations when the asynchronous code finishes running to tell XCTest to stop waiting. Your test method waits until all expectations are fulfilled or a specified timeout expires.\n\n### Build Asynchronous Tests with Swift Concurrency\n\nTo test Swift code that uses `async` and `await` for concurrency, mark your test method `async` or `async` `throws`. `XCTest` executes your test method asynchronously so that your test waits until `async` calls complete.\n\n```swift\nfunc testDownloadWebDataWithConcurrency() async throws {\n    \/\/ Create a URL for a webpage to download.\n    let url = URL(string: \"https:\/\/apple.com\")!\n    \n    \/\/ Use an asynchronous function to download the webpage.\n    let dataAndResponse: (data: Data, response: URLResponse) = try await URLSession.shared.data(from: url, delegate: nil)\n    \n    \/\/ Assert that the actual response matches the expected response.\n    let httpResponse = try XCTUnwrap(dataAndResponse.response as? HTTPURLResponse, \"Expected an HTTPURLResponse.\")\n    XCTAssertEqual(httpResponse.statusCode, 200, \"Expected a 200 OK response.\")\n}\n```\n\nWhen the asynchronous task completes, perform assertions to confirm that the task’s actual results meet your expected results.\n\nIf your test encounters a thrown error, `XCTest` records a test failure.\n\n\n\n### Build Asynchronous Tests with Expectations\n\nWhen you can’t use Swift `async`, use expectations to test asynchronous code. For example, use expectations when there isn’t a Swift `async` alternative available or when your asynchronous code runs in:\n\n- Objective-C\n- An asynchronous block in a dispatch queue\n- A delegate method\n- An asynchronous callback, closure, or completion block\n- A `Future` or `Promise` in Swift Combine\n- A situation where it needs to complete within a specific amount of time\n\nBefore you perform an asynchronous task in your test method, create an instance of [doc:\/\/com.apple.xctest\/documentation\/XCTest\/XCTestExpectation] with a description of the task.\n\n```swift\n\/\/ Create an expectation for an asynchronous task.\nlet expectation = XCTestExpectation(description: \"Open a file asynchronously.\")\n```\n\nStart the asynchronous task, and then tell the test to wait for the expectation to complete within an amount of time you specify.\n\n```swift\nlet fileManager = ExampleFileManager()\n\n\/\/ Perform the asynchronous task.\nfileManager.openFileAsync(with: \"exampleFilename\") { file, error in\n    \/\/...\n}\n\n\/\/ Wait for the expectation to fulfill or time out.\nwait(for: [expectation], timeout: 10.0)\n```\n\nWhen the asynchronous task returns (for example, in a callback), perform assertions to confirm that the task’s actual results meet your expected results. When the task completes, call the [doc:\/\/com.apple.xctest\/documentation\/XCTest\/XCTestExpectation\/fulfill()] method on the expectation to indicate to the test that it can stop waiting and proceed with the next test.\n\n```swift\nfileManager.openFileAsync(with: \"exampleFilename\") { file, error in\n\n    \/\/ Assert that the asynchronous task worked.\n    XCTAssertNotNil(file, \"Expected to load a file.\")\n\n    \/\/ Assert that no errors occurred opening the file asynchronously.\n    XCTAssertNil(error, \"Expected no errors loading a file.\")\n    \n    \/\/ Fulfill the expectation.\n    expectation.fulfill()\n}\n\n```\n\nIf the test doesn’t execute the `fulfill()` method before the wait statement’s timeout expires, `XCTest` records a test failure.\n\n## Expectations\n\n- **XCTestExpectation**: An expected outcome in an asynchronous test.\n\n## Key Value Observing Expectations\n\n- **XCTKVOExpectation**: An expectation that a specific key-value observing (KVO) condition fulfills.\n- **XCTKeyPathExpectation**: An expectation that a specific key-value observing (KVO) condition fulfills.\n\n## Notification-Based Expectations\n\n- **XCTNSNotificationExpectation**: An expectation that is fulfilled when an expected `NSNotification` is received.\n- **XCTDarwinNotificationExpectation**: An expectation that is fulfilled when an expected Darwin notification is received.\n\n## Predicate-Based Expectations\n\n- **XCTNSPredicateExpectation**: An expectation that’s fulfilled when an `NSPredicate` is satisfied.\n\n## Expectation Waiters\n\n- **XCTWaiter**: Waits for the fulfillment of a group of expectations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An expected outcome in an asynchronous test.",
+          "name" : "XCTestExpectation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTestExpectation"
+        }
+      ],
+      "title" : "Expectations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An expectation that a specific key-value observing (KVO) condition fulfills.",
+          "name" : "XCTKVOExpectation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTKVOExpectation"
+        },
+        {
+          "description" : "An expectation that a specific key-value observing (KVO) condition fulfills.",
+          "name" : "XCTKeyPathExpectation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTKeyPathExpectation"
+        }
+      ],
+      "title" : "Key Value Observing Expectations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An expectation that is fulfilled when an expected `NSNotification` is received.",
+          "name" : "XCTNSNotificationExpectation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTNSNotificationExpectation"
+        },
+        {
+          "description" : "An expectation that is fulfilled when an expected Darwin notification is received.",
+          "name" : "XCTDarwinNotificationExpectation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTDarwinNotificationExpectation"
+        }
+      ],
+      "title" : "Notification-Based Expectations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An expectation that’s fulfilled when an `NSPredicate` is satisfied.",
+          "name" : "XCTNSPredicateExpectation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTNSPredicateExpectation"
+        }
+      ],
+      "title" : "Predicate-Based Expectations"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Waits for the fulfillment of a group of expectations.",
+          "name" : "XCTWaiter",
+          "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/XCTWaiter"
+        }
+      ],
+      "title" : "Expectation Waiters"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Asynchronous Tests and Expectations",
+  "url" : "https:\/\/developer.apple.com\/documentation\/XCTest\/asynchronous-tests-and-expectations"
+}

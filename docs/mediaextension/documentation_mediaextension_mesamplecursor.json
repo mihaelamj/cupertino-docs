@@ -1,0 +1,188 @@
+{
+  "abstract" : "A protocol that defines the information to provide about samples within a track of a media asset, and enables stepping through samples in the track in decode or presentation order.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "160be1ff9799aa451e5878cb3e80db416ec87ec884b408fcbc00b93ade9b9357",
+  "crawledAt" : "2026-03-10T17:01:13Z",
+  "declaration" : {
+    "code" : "protocol MESampleCursor : NSCopying, NSObjectProtocol",
+    "language" : "swift"
+  },
+  "id" : "0C76CE7A-5480-4152-945F-D68C9F2EF741",
+  "kind" : "protocol",
+  "language" : "swift",
+  "module" : "MediaExtension",
+  "overview" : "## Overview\n\nThis object delivers sample data either by providing sample location and sample chunk information, or by directly generating a sample buffer.\n\n### Delivering sample data\n\nAn [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor] object can return sample data to [doc:\/\/com.apple.documentation\/documentation\/CoreMedia] in two ways:\n\nReview the following information that explains these approaches and which one to use for typical scenarios.\n\n#### Allowing Core Media to read the sample data\n\nThis is the preferred method to deliver sample data. It allows Core Media to optimize data I\/O read operations, and potentially combine multiple smaller reads into a single larger read for better performance. There are four methods available to deliver the required sample location information:\n\nThis is the baseline method to return sample location information. For formats with individually-stored samples such as video, Core Media calls this method to find each sample location.\n\nFor formats with samples stored in groups, blocks, or chunks such as audio, use this method to indicate details about the number of samples stored in each group. After determining the chunk information, Core Media calls [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()] to locate individual samples within the chunk. [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor] objects for these formats need to implement both [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()] and [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/chunkDetails()].\n\nIn some cases it’s not possible to directly determine the sample location and return it through [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()]. Instead, there’s a two-step process to determine the sample location: call [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/estimatedSampleLocation()] to obtain a coarse estimation, and then call [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/refineSampleLocation(_:refinementData:refinementDataLength:refinedLocation:)] to find the exact location. Implement both methods to support this approach.\n\nThis method returns the exact sample location information as a second step after it receives the coarse estimate from [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/estimatedSampleLocation()]. Implement both methods to support this approach.\n\n#### Reading the sample buffers directly\n\nWhen it’s not possible to let Core Media read the sample data using location information, the [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor] object needs to read the sample data itself using the [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MEByteSource] to deliver the sample data buffers. This is less efficient for data I\/O because there’s no way for Core Media to optimize read operations.\n\nThe method [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)] delivers sample data buffers directly, so it allows the [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor] object flexibility to read and unpack the samples from the media. The sample cursor needs to use the [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MEByteSource] directly to seek and read in the sample data. This method can deliver sample buffers either with one sample, such as for video tracks, or with blocks of samples, such as for audio tracks. It’s also suitable for use with synthesized samples that use metadata from the media, such as for timecode tracks.\n\n#### Choosing the best approach\n\nChoose the best approach in these typical scenarios:\n\nThe `MESampleCursor` object implements [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()] and [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/chunkDetails()] to allow Core Media to locate the chunks and find samples inside the chunks.\n\nThe `MESampleCursor` object implements [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()], [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/chunkDetails()], and [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)]. For contiguous samples, [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()] returns the samples to read. For non-contiguous samples, [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()] fails with the error [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MEError-swift.struct\/Code\/locationNotAvailable] and Core Media then uses [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)] to read the samples.\n\nThe `MESampleCursor` object implements [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/estimatedSampleLocation()] and [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/refineSampleLocation(_:refinementData:refinementDataLength:refinedLocation:)] (instead of [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()]). If it’s not possible to determine the sample location using either the one-step or two-step approach, the `MESampleCursor` object implements [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)] to directly deliver sample buffers.\n\nIf Core Media can’t directly read the sample data, then the `MESampleCursor` object implements [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)] to read the data itself, unpack or prepare it, and deliver it in sample buffers.",
+  "platforms" : [
+    "macOS"
+  ],
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\ncrawled: 2026-03-10T17:01:13Z\n---\n\n# MESampleCursor\n\n**Protocol**\n\nA protocol that defines the information to provide about samples within a track of a media asset, and enables stepping through samples in the track in decode or presentation order.\n\n## Declaration\n\n```swift\nprotocol MESampleCursor : NSCopying, NSObjectProtocol\n```\n\n## Overview\n\nThis object delivers sample data either by providing sample location and sample chunk information, or by directly generating a sample buffer.\n\n### Delivering sample data\n\nAn [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor] object can return sample data to [doc:\/\/com.apple.documentation\/documentation\/CoreMedia] in two ways:\n\n- Return information about the sample data location in the media and let Core Media read the data.\n- Read the data and return sample buffers directly.\n\nReview the following information that explains these approaches and which one to use for typical scenarios.\n\n#### Allowing Core Media to read the sample data\n\nThis is the preferred method to deliver sample data. It allows Core Media to optimize data I\/O read operations, and potentially combine multiple smaller reads into a single larger read for better performance. There are four methods available to deliver the required sample location information:\n\n1. [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()]\n\nThis is the baseline method to return sample location information. For formats with individually-stored samples such as video, Core Media calls this method to find each sample location.\n\n1. [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/chunkDetails()]\n\nFor formats with samples stored in groups, blocks, or chunks such as audio, use this method to indicate details about the number of samples stored in each group. After determining the chunk information, Core Media calls [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()] to locate individual samples within the chunk. [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor] objects for these formats need to implement both [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()] and [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/chunkDetails()].\n\n1. [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/estimatedSampleLocation()]\n\nIn some cases it’s not possible to directly determine the sample location and return it through [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()]. Instead, there’s a two-step process to determine the sample location: call [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/estimatedSampleLocation()] to obtain a coarse estimation, and then call [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/refineSampleLocation(_:refinementData:refinementDataLength:refinedLocation:)] to find the exact location. Implement both methods to support this approach.\n\n1. [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/refineSampleLocation(_:refinementData:refinementDataLength:refinedLocation:)]\n\nThis method returns the exact sample location information as a second step after it receives the coarse estimate from [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/estimatedSampleLocation()]. Implement both methods to support this approach.\n\n#### Reading the sample buffers directly\n\nWhen it’s not possible to let Core Media read the sample data using location information, the [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor] object needs to read the sample data itself using the [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MEByteSource] to deliver the sample data buffers. This is less efficient for data I\/O because there’s no way for Core Media to optimize read operations.\n\nThe method [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)] delivers sample data buffers directly, so it allows the [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor] object flexibility to read and unpack the samples from the media. The sample cursor needs to use the [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MEByteSource] directly to seek and read in the sample data. This method can deliver sample buffers either with one sample, such as for video tracks, or with blocks of samples, such as for audio tracks. It’s also suitable for use with synthesized samples that use metadata from the media, such as for timecode tracks.\n\n#### Choosing the best approach\n\nChoose the best approach in these typical scenarios:\n\n1. The media stores the samples in groups interleaved among other samples.\n\nThe `MESampleCursor` object implements [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()] and [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/chunkDetails()] to allow Core Media to locate the chunks and find samples inside the chunks.\n\n1. The media stores the samples in blocks interleaved among other samples, but some blocks are non-contiguous.\n\nThe `MESampleCursor` object implements [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()], [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/chunkDetails()], and [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)]. For contiguous samples, [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()] returns the samples to read. For non-contiguous samples, [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()] fails with the error [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MEError-swift.struct\/Code\/locationNotAvailable] and Core Media then uses [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)] to read the samples.\n\n1. It’s not possible to determine sample location in one step.\n\nThe `MESampleCursor` object implements [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/estimatedSampleLocation()] and [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/refineSampleLocation(_:refinementData:refinementDataLength:refinedLocation:)] (instead of [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()]). If it’s not possible to determine the sample location using either the one-step or two-step approach, the `MESampleCursor` object implements [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)] to directly deliver sample buffers.\n\n1. It’s necessary to unpack or prepare sample data before delivering it.\n\nIf Core Media can’t directly read the sample data, then the `MESampleCursor` object implements [doc:\/\/com.apple.mediaextension\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)] to read the data itself, unpack or prepare it, and deliver it in sample buffers.\n\n## Inspecting a sample cursor\n\n- **presentationTimeStamp**: The presentation timestamp (PTS) of the sample at the current position of the cursor.\n- **decodeTimeStamp**: The decode timestamp (DTS) of the sample at the current position of the cursor.\n- **currentSampleDuration**: The decode duration of the sample at the current position.\n- **currentSampleFormatDescription**: The format description for the sample at the current position of the cursor.\n- **syncInfo**: Decoder synchronization information about the sample the cursor points to.\n- **dependencyInfo**: Dependency information about the sample the cursor points to.\n- **hevcDependencyInfo**: Additional information that’s necessary to recover complete sample dependency information.\n- **decodeTimeOfLastSampleReachableByForwardSteppingThatIsAlreadyLoadedByByteSource**: The duration of the playable content starting from the cursor position.\n\n## Stepping through samples\n\n- **samplesWithEarlierDTSsMayHaveLaterPTSs(than:)**: Tests for an earlier boundary in sample reordering.\n- **samplesWithLaterDTSsMayHaveEarlierPTSs(than:)**: Tests for a later boundary in sample reordering.\n- **estimatedSampleLocation()**: Returns an estimate of the sample location indicated by the cursor.\n- **refineSampleLocation(_:refinementData:refinementDataLength:refinedLocation:)**: Produces an exact sample location based on the estimated sample location and refinement data that you specify.\n- **stepByDecodeTime(_:completionHandler:)**: Moves the cursor on the decode timeline by the delta decode time that you specify.\n- **stepByPresentationTime(_:completionHandler:)**: Moves the cursor on the presentation timeline by the delta presentation time that you specify.\n- **stepInDecodeOrder(by:completionHandler:)**: Moves the cursor a given number of samples in decode order.\n- **stepInPresentationOrder(by:completionHandler:)**: Moves the cursor a given number of samples in presentation order.\n\n## Sending samples to a pipeline\n\n- **chunkDetails()**: Returns information about the chunk that holds the sample indicated by the cursor.\n- **sampleLocation()**: Returns the location and byte source of the sample indicated by the cursor.\n- **loadSampleBufferContainingSamples(to:completionHandler:)**: Builds a sample buffer that contains the samples at the cursor that you specify.\n\n## RAW processing metadata\n\n- **loadPostDecodeProcessingMetadata(completionHandler:)**: Asynchronously loads a dictionary that represents frame level metadata for post decode processing.\n\n## Sample cursors\n\n- **MESampleLocation**: An object that provides information about the sample location with the media.\n- **MESampleCursorChunk**: An object that provides information about the chunk of media at the location of a sample.\n- **MEEstimatedSampleLocation**: An object that provides information about the estimated sample location with the media.\n- **MEHEVCDependencyInfo**: An object that provides information about the HEVC dependency attributes of a sample.\n\n## Inherits From\n\n- NSCopying\n- NSObjectProtocol\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "The presentation timestamp (PTS) of the sample at the current position of the cursor.",
+          "name" : "presentationTimeStamp",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/presentationTimeStamp"
+        },
+        {
+          "description" : "The decode timestamp (DTS) of the sample at the current position of the cursor.",
+          "name" : "decodeTimeStamp",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/decodeTimeStamp"
+        },
+        {
+          "description" : "The decode duration of the sample at the current position.",
+          "name" : "currentSampleDuration",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/currentSampleDuration"
+        },
+        {
+          "description" : "The format description for the sample at the current position of the cursor.",
+          "name" : "currentSampleFormatDescription",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/currentSampleFormatDescription"
+        },
+        {
+          "description" : "Decoder synchronization information about the sample the cursor points to.",
+          "name" : "syncInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/syncInfo"
+        },
+        {
+          "description" : "Dependency information about the sample the cursor points to.",
+          "name" : "dependencyInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/dependencyInfo"
+        },
+        {
+          "description" : "Additional information that’s necessary to recover complete sample dependency information.",
+          "name" : "hevcDependencyInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/hevcDependencyInfo"
+        },
+        {
+          "description" : "The duration of the playable content starting from the cursor position.",
+          "name" : "decodeTimeOfLastSampleReachableByForwardSteppingThatIsAlreadyLoadedByByteSource",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/decodeTimeOfLastSampleReachableByForwardSteppingThatIsAlreadyLoadedByByteSource"
+        }
+      ],
+      "title" : "Inspecting a sample cursor"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Tests for an earlier boundary in sample reordering.",
+          "name" : "samplesWithEarlierDTSsMayHaveLaterPTSs(than:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/samplesWithEarlierDTSsMayHaveLaterPTSs(than:)"
+        },
+        {
+          "description" : "Tests for a later boundary in sample reordering.",
+          "name" : "samplesWithLaterDTSsMayHaveEarlierPTSs(than:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/samplesWithLaterDTSsMayHaveEarlierPTSs(than:)"
+        },
+        {
+          "description" : "Returns an estimate of the sample location indicated by the cursor.",
+          "name" : "estimatedSampleLocation()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/estimatedSampleLocation()"
+        },
+        {
+          "description" : "Produces an exact sample location based on the estimated sample location and refinement data that you specify.",
+          "name" : "refineSampleLocation(_:refinementData:refinementDataLength:refinedLocation:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/refineSampleLocation(_:refinementData:refinementDataLength:refinedLocation:)"
+        },
+        {
+          "description" : "Moves the cursor on the decode timeline by the delta decode time that you specify.",
+          "name" : "stepByDecodeTime(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/stepByDecodeTime(_:completionHandler:)"
+        },
+        {
+          "description" : "Moves the cursor on the presentation timeline by the delta presentation time that you specify.",
+          "name" : "stepByPresentationTime(_:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/stepByPresentationTime(_:completionHandler:)"
+        },
+        {
+          "description" : "Moves the cursor a given number of samples in decode order.",
+          "name" : "stepInDecodeOrder(by:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/stepInDecodeOrder(by:completionHandler:)"
+        },
+        {
+          "description" : "Moves the cursor a given number of samples in presentation order.",
+          "name" : "stepInPresentationOrder(by:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/stepInPresentationOrder(by:completionHandler:)"
+        }
+      ],
+      "title" : "Stepping through samples"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Returns information about the chunk that holds the sample indicated by the cursor.",
+          "name" : "chunkDetails()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/chunkDetails()"
+        },
+        {
+          "description" : "Returns the location and byte source of the sample indicated by the cursor.",
+          "name" : "sampleLocation()",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/sampleLocation()"
+        },
+        {
+          "description" : "Builds a sample buffer that contains the samples at the cursor that you specify.",
+          "name" : "loadSampleBufferContainingSamples(to:completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/loadSampleBufferContainingSamples(to:completionHandler:)"
+        }
+      ],
+      "title" : "Sending samples to a pipeline"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Asynchronously loads a dictionary that represents frame level metadata for post decode processing.",
+          "name" : "loadPostDecodeProcessingMetadata(completionHandler:)",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor\/loadPostDecodeProcessingMetadata(completionHandler:)"
+        }
+      ],
+      "title" : "RAW processing metadata"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An object that provides information about the sample location with the media.",
+          "name" : "MESampleLocation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleLocation"
+        },
+        {
+          "description" : "An object that provides information about the chunk of media at the location of a sample.",
+          "name" : "MESampleCursorChunk",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursorChunk"
+        },
+        {
+          "description" : "An object that provides information about the estimated sample location with the media.",
+          "name" : "MEEstimatedSampleLocation",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MEEstimatedSampleLocation"
+        },
+        {
+          "description" : "An object that provides information about the HEVC dependency attributes of a sample.",
+          "name" : "MEHEVCDependencyInfo",
+          "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MEHEVCDependencyInfo"
+        }
+      ],
+      "title" : "Sample cursors"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "name" : "NSCopying"
+        },
+        {
+          "name" : "NSObjectProtocol"
+        }
+      ],
+      "title" : "Inherits From"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "MESampleCursor",
+  "url" : "https:\/\/developer.apple.com\/documentation\/MediaExtension\/MESampleCursor"
+}

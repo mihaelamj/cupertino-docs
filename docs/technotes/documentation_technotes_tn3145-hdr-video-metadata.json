@@ -1,0 +1,105 @@
+{
+  "abstract" : "Learn about the usage and requirements of “Ambient Viewing Environment” metadata with HLG and \/ or Dolby Vision™ Profile 8.4 playback.",
+  "codeExamples" : [
+    {
+      "code" : "class AmbientViewingEnvironmentBox extends Box('amve') { \n    unsigned int(32) ambient_illuminance;\n    unsigned int(16) ambient_light_x;\n    unsigned int(16) ambient_light_y;\n}"
+    },
+    {
+      "code" : "\/\/Retrieving the ambient viewing environment atom (`'amve'`) from a CMSampleBuffer.\nlet ambientViewingEnvironment = sampleBuffer.formatDescription?.extensions[.ambentViewingEnvironment]",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "88c32fb17e19857169ecbc36303f9cf0b90a48f652b721fbb4e66d35dd19cf64",
+  "crawledAt" : "2026-03-10T22:01:41Z",
+  "id" : "617D5723-4035-4ACF-B318-48EF42CB0439",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nStarting with iPhone 12, apps can capture, play back, edit and export HDR Video with Dolby Vision.\n\nThe normal office or home lighting when using an iPhone indoors is around 314 lux (a measurement of light level intensity). This is significantly different than most of the theatrical movie content graded by professional colorists, which is typically done in a dark room with a 5 nit surround. In order to provide an optimal viewing experience, it’s useful to differentiate between the two types of content for wider viewing conditions. This is especially beneficial when playing back HDR contents on mobile devices where the ambient lighting condition can change dramatically.\n\nThere’s an existing definition in the ISOBMFF (ISO\/IEC 14496-12) document:\n\n**12.1.9 Ambient viewing environment**\n\n**12.1.9.1 Definition**\n\nThe AmbientViewingEnvironmentBox box may be used to provide information about the characteristics of the nominal ambient viewing environment for the display of the associated video content and may be present in a VisualSampleEntry. The syntax elements of the ambient viewing environment box may assist the receiving system in adapting the received video content for local display in viewing environments that may be similar or may substantially differ from those assumed or intended when mastering the video content. It is functionally equivalent to, and shall be as described in, the ambient viewing environment SEI message in (ITU-T H.265 |I ISO\/IEC 23008-2).\n\nNote: This is a Box, not a FullBox (similar to PixelAspectRatioBox).\n\n**12.1.9.2 Syntax**\n\nSemantics for `ambient_illuminance`, `ambient_light_x` and `ambient_light_y` values are in the HVEC (ITU-T H.265 | ISO\/IEC 23008-2) document.\n\n## Dolby Vision Profile 8.4\n\niOS 14 and macOS 11 introduced support for Dolby Vision Profile 8.4. Refer to Dolby Vision Streams within the ISOBMFF for the syntax and semantics of the metadata stored within the Dolby Decoder Configuration Record (`'dvvC'`).\n\n### Constraints on Sample Description \/ Sample Entry\n\n\n\n## Capture\n\nStarting with iPhone 12, camera-captured content in Dolby Vision Profile 8.4 and \/ or HLG format contains the ‘amve’ format description extension in the file (kCMFormatDescriptionExtension_AmbientViewingEnvironment). This is based on ISO\/IEC 23008- 2:2017, D.2.39 ambient viewing environment SEI message.\n\n## Playing Back HDR Video\n\nPlayback using AVPlayer will provide optimal tone mapping on any Apple device. If your application uses `AVSampleBufferDisplayLayer` or `VTDecompressionSession`, you should take extra steps to ensure the `ambientViewingEnvironment` is attached to the `CMSampleBuffer` or `CVPixelBuffer` that are then provided to `enqueueSampleBuffer`.\n\nDuring playback using `AVSampleBufferDisplayLayer`, the `FormatDescription` attached to the `CMSampleBuffer` may contain the `kCMFormatDescriptionExtension_AmbientViewingEnvironment`.\n\nHDR-rendering applications may check the parameters in the values in the ambient Viewing Environment atoms (`'amve'`) and pick the correct ambient adaptation strategy for their usage cases.\n\n## Exporting HDR Video\n\nIt is important to preserve the ambient viewing environment metadata during transcoding, as removing this information will result in the video not being displayed correctly on Apple devices due to extra bright imagery. Apple APIs will by default preserve the ambient viewing environment metadata when exporting HDR Video in Dolby Vision Profile 8.4. If you create a new pixel buffer, you need to make sure to take the ambient viewing environment extension from the source and attach it to the new pixel buffer.\n\n## Incorporating HDR Video in your apps.\n\nRefer to [https:\/\/developer.apple.com\/av-foundation\/Incorporating-HDR-video-with-Dolby-Vision-into-your-apps.pdf] for additional information on how to safely preview, edit, and export HDR content, as well as how to convert it to SDR.\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3145-HDR-video-metadata\ncrawled: 2026-03-10T22:01:41Z\n---\n\n# TN3145: HDR video metadata\n\n**Article**\n\nLearn about the usage and requirements of “Ambient Viewing Environment” metadata with HLG and \/ or Dolby Vision™ Profile 8.4 playback.\n\n## Overview\n\nStarting with iPhone 12, apps can capture, play back, edit and export HDR Video with Dolby Vision.\n\nThe normal office or home lighting when using an iPhone indoors is around 314 lux (a measurement of light level intensity). This is significantly different than most of the theatrical movie content graded by professional colorists, which is typically done in a dark room with a 5 nit surround. In order to provide an optimal viewing experience, it’s useful to differentiate between the two types of content for wider viewing conditions. This is especially beneficial when playing back HDR contents on mobile devices where the ambient lighting condition can change dramatically.\n\n\n\nThere’s an existing definition in the ISOBMFF (ISO\/IEC 14496-12) document:\n\n**12.1.9 Ambient viewing environment**\n\n**12.1.9.1 Definition**\n\nThe AmbientViewingEnvironmentBox box may be used to provide information about the characteristics of the nominal ambient viewing environment for the display of the associated video content and may be present in a VisualSampleEntry. The syntax elements of the ambient viewing environment box may assist the receiving system in adapting the received video content for local display in viewing environments that may be similar or may substantially differ from those assumed or intended when mastering the video content. It is functionally equivalent to, and shall be as described in, the ambient viewing environment SEI message in (ITU-T H.265 |I ISO\/IEC 23008-2).\n\nNote: This is a Box, not a FullBox (similar to PixelAspectRatioBox).\n\n**12.1.9.2 Syntax**\n\n```\nclass AmbientViewingEnvironmentBox extends Box('amve') { \n    unsigned int(32) ambient_illuminance;\n    unsigned int(16) ambient_light_x;\n    unsigned int(16) ambient_light_y;\n}\n```\n\nSemantics for `ambient_illuminance`, `ambient_light_x` and `ambient_light_y` values are in the HVEC (ITU-T H.265 | ISO\/IEC 23008-2) document.\n\n## Dolby Vision Profile 8.4\n\niOS 14 and macOS 11 introduced support for Dolby Vision Profile 8.4. Refer to Dolby Vision Streams within the ISOBMFF for the syntax and semantics of the metadata stored within the Dolby Decoder Configuration Record (`'dvvC'`).\n\n### Constraints on Sample Description \/ Sample Entry\n\n- The codec type shall be `'hvc1'`.\n- HEVC shall be encoded at Main10 Profile.\n- Dolby Vision Profile 8.4.\n- Only Single-track files are supported.\n- The Dolby Decoder Configuration Record (`'dvvC'`) shall be present.\n- The color (`'colr'`) atom with these values shall be present.\n\n- Color Primaries shall be set to 9 (indicating ITU-R BT.2020).\n- Color Transfer Function Index shall be set to 18 (indicating ITU-R BT.2100 HLG).\n- Color Matrix Index shall be set to 9 (indicating ITU-R BT.2020).\n- The ambient viewing environment atom (`'amve'`) shall be present.\n\n\n\n## Capture\n\nStarting with iPhone 12, camera-captured content in Dolby Vision Profile 8.4 and \/ or HLG format contains the ‘amve’ format description extension in the file (kCMFormatDescriptionExtension_AmbientViewingEnvironment). This is based on ISO\/IEC 23008- 2:2017, D.2.39 ambient viewing environment SEI message.\n\n```swift\n\/\/Retrieving the ambient viewing environment atom (`'amve'`) from a CMSampleBuffer.\nlet ambientViewingEnvironment = sampleBuffer.formatDescription?.extensions[.ambentViewingEnvironment]\n```\n\n## Playing Back HDR Video\n\nPlayback using AVPlayer will provide optimal tone mapping on any Apple device. If your application uses `AVSampleBufferDisplayLayer` or `VTDecompressionSession`, you should take extra steps to ensure the `ambientViewingEnvironment` is attached to the `CMSampleBuffer` or `CVPixelBuffer` that are then provided to `enqueueSampleBuffer`.\n\nDuring playback using `AVSampleBufferDisplayLayer`, the `FormatDescription` attached to the `CMSampleBuffer` may contain the `kCMFormatDescriptionExtension_AmbientViewingEnvironment`.\n\nHDR-rendering applications may check the parameters in the values in the ambient Viewing Environment atoms (`'amve'`) and pick the correct ambient adaptation strategy for their usage cases.\n\n## Exporting HDR Video\n\nIt is important to preserve the ambient viewing environment metadata during transcoding, as removing this information will result in the video not being displayed correctly on Apple devices due to extra bright imagery. Apple APIs will by default preserve the ambient viewing environment metadata when exporting HDR Video in Dolby Vision Profile 8.4. If you create a new pixel buffer, you need to make sure to take the ambient viewing environment extension from the source and attach it to the new pixel buffer.\n\n## Incorporating HDR Video in your apps.\n\nRefer to [https:\/\/developer.apple.com\/av-foundation\/Incorporating-HDR-video-with-Dolby-Vision-into-your-apps.pdf] for additional information on how to safely preview, edit, and export HDR content, as well as how to convert it to SDR.\n\n## Revision History\n\n- **2023-12-12** Clarified support for HLG capture formats. Made other minor editorial changes.\n- **2023-03-07** First published.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3145: HDR video metadata",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3145-HDR-video-metadata"
+}

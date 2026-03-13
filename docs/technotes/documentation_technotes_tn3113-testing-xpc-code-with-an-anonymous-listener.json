@@ -1,0 +1,122 @@
+{
+  "abstract" : "Use an anonymous XPC listener to simplify your XPC testing and debugging.",
+  "codeExamples" : [
+    {
+      "code" : "class MyListener {\n\n    init() {\n        self.listener = NSXPCListener.service()\n    }\n\n    let listener: NSXPCListener\n    \n    … more code …\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "init(listener: NSXPCListener = .service()) {\n    self.listener = listener\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let myListener = MyListener(listener: .anonymous())",
+      "language" : "swift"
+    },
+    {
+      "code" : "class MyConnection {\n\n    init() {\n        self.connection = NSXPCConnection(serviceName: \"com.example.MyService\")\n    }\n\n    let connection: NSXPCConnection\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "init(connection: NSXPCConnection = .init(serviceName: \"com.example.MyService\")) {\n    self.connection = connection\n}",
+      "language" : "swift"
+    },
+    {
+      "code" : "let connection = NSXPCConnection(listenerEndpoint: myListener.listener.endpoint)\nlet myConnection = MyConnection(connection: connection)",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "0080f3b1b649253735e21030238fcbe9c50b86ec8605a588da6326119d25ff7b",
+  "crawledAt" : "2026-03-10T22:01:46Z",
+  "id" : "993B0D90-18FE-41C9-BA2F-EFA9BBF4FF73",
+  "kind" : "article",
+  "language" : "swift",
+  "overview" : "## Overview\n\nTesting and debugging XPC code is tricky because there are two processes involved.  Imagine you have an app with an embedded XPC service.  To debug this you have to run two instances of the debugger, one connected to the app and another to the service, and then switch between them.  This works, but it’s quite inconvenient.  Fortunately there is a better way, a technique that allows you to test and debug all your XPC code in a single process.\n\nThis technique involves two key concepts:\n\nImagine you’re building an app with an embedded XPC service.  You have a `MyListener` class that manages your XPC listener within the XPC service, and a `MyConnection` class that manages the connection on the app side of things.  Add both of those classes, and all their support code, to your test program.  Then change `MyListener` to accept an `NSXPCListener` instance.  For example, your `MyListener` class might look like this:\n\nChange its initialiser to look like this:\n\nThis uses the XPC service’s listener by default, but allows you to override that by passing in a value to the `listener` parameter.\n\nNow, in your test program, call [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSXPCListener\/anonymous()] to create a anonymous listener and pass that to your listener abstraction:\n\nOn the client side, your `MyConnection` class might look like this:\n\nChange the initialiser to look like this:\n\nThis sets up a connection to the XPC service’s listener by default, but allows you to override that by passing in a value to the `connection` parameter.\n\nFinally, in your test program, use [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSXPCConnection\/init(listenerEndpoint:)] to create a connection to your anonymous listener:\n\nYou now have an XPC connection between your client code and your listener, with all the code running in the same test program.  This makes it much easier to debug your XPC code.  And the same technique is perfect for unit tests.\n\n## Revision History",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/Technotes\/tn3113-testing-xpc-code-with-an-anonymous-listener\ncrawled: 2026-03-10T22:01:46Z\n---\n\n# TN3113: Testing and debugging XPC code with an anonymous listener\n\n**Article**\n\nUse an anonymous XPC listener to simplify your XPC testing and debugging.\n\n## Overview\n\nTesting and debugging XPC code is tricky because there are two processes involved.  Imagine you have an app with an embedded XPC service.  To debug this you have to run two instances of the debugger, one connected to the app and another to the service, and then switch between them.  This works, but it’s quite inconvenient.  Fortunately there is a better way, a technique that allows you to test and debug all your XPC code in a single process.\n\n\n\nThis technique involves two key concepts:\n\n- Put your XPC listener and XPC client code in the same test program.  The specifics of this program are up to you: It might be a simple test app that you create specifically for this purpose, or it might be an Xcode unit test bundle, or it might be some other kind of program.\n- Use an anonymous XPC listener to connect your XPC listener and client code.\n\nImagine you’re building an app with an embedded XPC service.  You have a `MyListener` class that manages your XPC listener within the XPC service, and a `MyConnection` class that manages the connection on the app side of things.  Add both of those classes, and all their support code, to your test program.  Then change `MyListener` to accept an `NSXPCListener` instance.  For example, your `MyListener` class might look like this:\n\n```swift\nclass MyListener {\n\n    init() {\n        self.listener = NSXPCListener.service()\n    }\n\n    let listener: NSXPCListener\n    \n    … more code …\n}\n```\n\n\n\nChange its initialiser to look like this:\n\n```swift\ninit(listener: NSXPCListener = .service()) {\n    self.listener = listener\n}\n```\n\nThis uses the XPC service’s listener by default, but allows you to override that by passing in a value to the `listener` parameter.\n\nNow, in your test program, call [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSXPCListener\/anonymous()] to create a anonymous listener and pass that to your listener abstraction:\n\n```swift\nlet myListener = MyListener(listener: .anonymous())\n```\n\nOn the client side, your `MyConnection` class might look like this:\n\n```swift\nclass MyConnection {\n\n    init() {\n        self.connection = NSXPCConnection(serviceName: \"com.example.MyService\")\n    }\n\n    let connection: NSXPCConnection\n}\n```\n\nChange the initialiser to look like this:\n\n```swift\ninit(connection: NSXPCConnection = .init(serviceName: \"com.example.MyService\")) {\n    self.connection = connection\n}\n```\n\nThis sets up a connection to the XPC service’s listener by default, but allows you to override that by passing in a value to the `connection` parameter.\n\nFinally, in your test program, use [doc:\/\/com.apple.documentation\/documentation\/Foundation\/NSXPCConnection\/init(listenerEndpoint:)] to create a connection to your anonymous listener:\n\n```swift\nlet connection = NSXPCConnection(listenerEndpoint: myListener.listener.endpoint)\nlet myConnection = MyConnection(connection: connection)\n```\n\nYou now have an XPC connection between your client code and your listener, with all the code running in the same test program.  This makes it much easier to debug your XPC code.  And the same technique is perfect for unit tests.\n\n## Revision History\n\n- **2022-04-12** Added syntax highlighting to the code listings (r. 89366505).\n- **2022-02-08** Republished as TN3113.  Expanded the introduction to clarify the overall concept.  Made other minor editorial changes.\n- **2021-11-09** First published as ”Testing and Debugging XPC Code With an Anonymous Listener” on Apple Developer Forums.\n\n## Latest\n\n- **TN3179: Understanding local network privacy**: Learn how local network privacy affects your software.\n- **TN3190: USB audio device design considerations**: Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.\n- **TN3194: Handling account deletions and revoking tokens for Sign in with Apple**: Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.\n- **TN3193: Managing the on-device foundation model’s context window**: Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.\n- **TN3115: Bluetooth State Restoration app relaunch rules**: Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.\n- **TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key**: Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.\n- **TN3151: Choosing the right networking API**: Learn which networking API is best for you.\n- **TN3111: iOS Wi-Fi API overview**: Explore the various Wi-Fi APIs available on iOS and their expected use cases.\n- **TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS**: Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.\n- **TN3134: Network Extension provider deployment**: Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.\n- **TN3189: Managing Mail background traffic load**: Identify iOS Mail background traffic and manage its impact on your IMAP server.\n- **TN3187: Migrating to the UIKit scene-based life cycle**: Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.\n- **TN3188: Troubleshooting In-App Purchases availability in the App Store**: Verify your In-App Purchases are approved and available for sale in the App Store.\n- **TN3186: Troubleshooting In-App Purchases availability in the sandbox**: Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.\n- **TN3185: Troubleshooting In-App Purchases availability in Xcode**: Inspect your active StoreKit configuration file for unexpected configurations.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Learn how local network privacy affects your software.",
+          "name" : "TN3179: Understanding local network privacy",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3179-understanding-local-network-privacy"
+        },
+        {
+          "description" : "Learn the best techniques for designing devices that conform to the USB Audio Device Class specifications.",
+          "name" : "TN3190: USB audio device design considerations",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3190-USB-audio-device-design-considerations"
+        },
+        {
+          "description" : "Learn the best techniques for managing Sign in with Apple user sessions and responding to account deletion requests.",
+          "name" : "TN3194: Handling account deletions and revoking tokens for Sign in with Apple",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple"
+        },
+        {
+          "description" : "Learn how to budget for the context window limit of Apple’s on-device foundation model and handle the error when reaching the limit.",
+          "name" : "TN3193: Managing the on-device foundation model’s context window",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3193-managing-the-on-device-foundation-model-s-context-window"
+        },
+        {
+          "description" : "Learn about the conditions under which an iOS app will be relaunched by Bluetooth State Restoration.",
+          "name" : "TN3115: Bluetooth State Restoration app relaunch rules",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3115-bluetooth-state-restoration-app-relaunch-rules"
+        },
+        {
+          "description" : "Support iPad multitasking and dynamic resizing while updating your app to remove the deprecated full-screen compatibility mode.",
+          "name" : "TN3192: Migrating your iPad app from the deprecated UIRequiresFullScreen key",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3192-Migrating-your-app-from-the-deprecated-UIRequiresFullScreen-key"
+        },
+        {
+          "description" : "Learn which networking API is best for you.",
+          "name" : "TN3151: Choosing the right networking API",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3151-choosing-the-right-networking-api"
+        },
+        {
+          "description" : "Explore the various Wi-Fi APIs available on iOS and their expected use cases.",
+          "name" : "TN3111: iOS Wi-Fi API overview",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3111-ios-wifi-api-overview"
+        },
+        {
+          "description" : "Learn which extensions to the RFC 3501 IMAP protocol are supported by Mail for iOS, iPadOS, and visionOS.",
+          "name" : "TN3191: IMAP extensions supported by Mail for iOS, iPadOS, and visionOS",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3191-imap-extensions-supported-by-mail"
+        },
+        {
+          "description" : "Explore the platforms, packaging, OS versions, and device configurations for Network Extension provider deployment.",
+          "name" : "TN3134: Network Extension provider deployment",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3134-network-extension-provider-deployment"
+        },
+        {
+          "description" : "Identify iOS Mail background traffic and manage its impact on your IMAP server.",
+          "name" : "TN3189: Managing Mail background traffic load",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3189-managing-mail-background-traffic-load"
+        },
+        {
+          "description" : "Update your app to receive scene-based life-cycle events and manage your user interface using scene objects and methods.",
+          "name" : "TN3187: Migrating to the UIKit scene-based life cycle",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3187-Migrating-to-the-UIKit-scene-based-life-cycle"
+        },
+        {
+          "description" : "Verify your In-App Purchases are approved and available for sale in the App Store.",
+          "name" : "TN3188: Troubleshooting In-App Purchases availability in the App Store",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3188-troubleshooting-in-app-purchases-availability-in-the-app-store"
+        },
+        {
+          "description" : "Identify common configurations that make your In-App Purchases unavailable in the sandbox environment.",
+          "name" : "TN3186: Troubleshooting In-App Purchases availability in the sandbox",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3186-troubleshooting-in-app-purchases-availability-in-the-sandbox"
+        },
+        {
+          "description" : "Inspect your active StoreKit configuration file for unexpected configurations.",
+          "name" : "TN3185: Troubleshooting In-App Purchases availability in Xcode",
+          "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3185-troubleshooting-in-app-purchases-availability-in-xcode"
+        }
+      ],
+      "title" : "Latest"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "TN3113: Testing and debugging XPC code with an anonymous listener",
+  "url" : "https:\/\/developer.apple.com\/documentation\/Technotes\/tn3113-testing-xpc-code-with-an-anonymous-listener"
+}

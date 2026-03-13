@@ -1,0 +1,43 @@
+{
+  "abstract" : "Manage memory and object lifetimes.",
+  "codeExamples" : [
+    {
+      "code" : "import GSS\n\nlet minor_status = UnsafeMutablePointer<OM_uint32>.allocate(capacity: 1)\nlet gss_buffer_set = UnsafeMutablePointer<gss_buffer_set_t>.allocate(capacity: 1)\nif gss_create_empty_buffer_set(minor_status, gss_buffer_set) == GSS_S_COMPLETE {\n    \/\/ buffer has been created.\n    \/\/ use it and release it when done.\n    gss_release_buffer_set(minor_status, gss_buffer_set)\n}",
+      "language" : "swift"
+    }
+  ],
+  "contentHash" : "db7693f292f015243df2a8ebd574142fb2d4565004a3afca2c9266771baa2fcb",
+  "crawledAt" : "2026-03-10T15:44:34Z",
+  "id" : "A6E889D3-C6EE-466A-98FA-8DF3FD5E9F84",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "GSS",
+  "overview" : "## Overview\n\nThe GSS-API defines certain objects as C data structures containing elements using dynamically allocated memory. These include names, buffers, contexts, and credentials, as well as the collection objects that hold buffer sets and Object Identifier (OID) sets. The API provides functions for both allocating and freeing the memory associated with these objects.\n\nMany GSS-API functions create structures on your behalf and return them to you with pointer parameters. You then become responsible for managing the associated memory. When you’re done with such objects, you use one of the release or destroy functions to return its memory to the system.\n\n### Allocate and Release an Empty Buffer\n\nPrepare an empty buffer set with a call to the [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_create_empty_buffer_set(_:_:)] function, and release it with [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_release_buffer_set(_:_:)] when done.\n\n### Acquire and Release Credential Memory\n\nWhen releasing the memory associated with a credential returned to you by the [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_acquire_cred(_:_:_:_:_:_:_:_:)] function,  use the [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_release_cred(_:_:)] function. This only releases the memory back to the heap, however, potentially leaving traces of the data behind. To actively purge the credential and only then release the memory, use the [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_destroy_cred(_:_:)] function instead. This function is more secure for objects that might contain sensitive information.\n\n### Handle OID Objects as Static Memory\n\nAn exception to the memory management rule is the OID object [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_OID] (not the same as a set of OID objects, [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_OID_set]). While an implementation of GSS-API could theoretically allocate memory for OID objects dynamically, Apple’s implementation always returns statically allocated OID objects to you. You use these as-is, and never need to explicitly create or release them. As a result, in practice you never need to call the functions [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_duplicate_oid(_:_:_:)] or [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_release_oid(_:_:)].",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/gss\/allocating-and-releasing-objects\ncrawled: 2026-03-10T15:44:34Z\n---\n\n# Allocating and Releasing Objects\n\n**Article**\n\nManage memory and object lifetimes.\n\n## Overview\n\nThe GSS-API defines certain objects as C data structures containing elements using dynamically allocated memory. These include names, buffers, contexts, and credentials, as well as the collection objects that hold buffer sets and Object Identifier (OID) sets. The API provides functions for both allocating and freeing the memory associated with these objects.\n\nMany GSS-API functions create structures on your behalf and return them to you with pointer parameters. You then become responsible for managing the associated memory. When you’re done with such objects, you use one of the release or destroy functions to return its memory to the system.\n\n### Allocate and Release an Empty Buffer\n\nPrepare an empty buffer set with a call to the [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_create_empty_buffer_set(_:_:)] function, and release it with [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_release_buffer_set(_:_:)] when done.\n\n```swift\nimport GSS\n\nlet minor_status = UnsafeMutablePointer<OM_uint32>.allocate(capacity: 1)\nlet gss_buffer_set = UnsafeMutablePointer<gss_buffer_set_t>.allocate(capacity: 1)\nif gss_create_empty_buffer_set(minor_status, gss_buffer_set) == GSS_S_COMPLETE {\n    \/\/ buffer has been created.\n    \/\/ use it and release it when done.\n    gss_release_buffer_set(minor_status, gss_buffer_set)\n}\n```\n\n### Acquire and Release Credential Memory\n\nWhen releasing the memory associated with a credential returned to you by the [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_acquire_cred(_:_:_:_:_:_:_:_:)] function,  use the [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_release_cred(_:_:)] function. This only releases the memory back to the heap, however, potentially leaving traces of the data behind. To actively purge the credential and only then release the memory, use the [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_destroy_cred(_:_:)] function instead. This function is more secure for objects that might contain sensitive information.\n\n### Handle OID Objects as Static Memory\n\nAn exception to the memory management rule is the OID object [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_OID] (not the same as a set of OID objects, [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_OID_set]). While an implementation of GSS-API could theoretically allocate memory for OID objects dynamically, Apple’s implementation always returns statically allocated OID objects to you. You use these as-is, and never need to explicitly create or release them. As a result, in practice you never need to call the functions [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_duplicate_oid(_:_:_:)] or [doc:\/\/com.apple.gss\/documentation\/GSS\/gss_release_oid(_:_:)].\n\n## Memory and Context\n\n- **Function Status**: Evaluate return values that most GSS-API functions use to indicate the outcome of an operation.\n- **Buffer Management**: Allocate and deallocate buffers with structures that hold a variety of data.\n- **Context Services**: Use context services to manage secure operations between endpoints.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Evaluate return values that most GSS-API functions use to indicate the outcome of an operation.",
+          "name" : "Function Status",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/function-status"
+        },
+        {
+          "description" : "Allocate and deallocate buffers with structures that hold a variety of data.",
+          "name" : "Buffer Management",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/buffer-management"
+        },
+        {
+          "description" : "Use context services to manage secure operations between endpoints.",
+          "name" : "Context Services",
+          "url" : "https:\/\/developer.apple.com\/documentation\/GSS\/context-services"
+        }
+      ],
+      "title" : "Memory and Context"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Allocating and Releasing Objects",
+  "url" : "https:\/\/developer.apple.com\/documentation\/gss\/allocating-and-releasing-objects"
+}

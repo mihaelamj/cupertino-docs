@@ -1,0 +1,100 @@
+{
+  "abstract" : "Seek with a QuickTime file using child atoms.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "90790104372cf894a61a813e9615099385c9e3900db91257389129ce4143a4bb",
+  "crawledAt" : "2026-03-10T21:31:50Z",
+  "id" : "1E5421E7-737E-4F27-B886-BE06B1220132",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "QuickTime File Format",
+  "overview" : "## Overview\n\nSeeking with a QuickTime file is accomplished primarily by using the child atoms contained in the sample table atom. If an edit list is present, it must also be consulted. If you want to seek a given track to a time `T`, where `T` is in the time scale of the movie header atom, you could perform the following operations:",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Seeking_with_a_QuickTime_file\ncrawled: 2026-03-10T21:31:50Z\n---\n\n# Seeking with a QuickTime file\n\n**Article**\n\nSeek with a QuickTime file using child atoms.\n\n## Overview\n\nSeeking with a QuickTime file is accomplished primarily by using the child atoms contained in the sample table atom. If an edit list is present, it must also be consulted. If you want to seek a given track to a time `T`, where `T` is in the time scale of the movie header atom, you could perform the following operations:\n\n1. If the track contains an edit list, determine which edit contains the time `T` by iterating over the edits. The start time of the edit in the movie time scale must then be subtracted from the time `T` to generate `T'`, the duration into the edit in the movie time scale. `T'` is next converted to the time scale of the track’s media to generate `T''`. Finally, the time in the media scale to use is calculated by adding the media start time of the edit to `T''`.\n2. The time-to-sample atom for a track indicates what times are associated with which sample for that track. Use this atom to find the first sample prior to the given time.\n3. The sample that was located in step 1 may not be a random access point. Locating the nearest random access point requires consulting two atoms. The sync sample table indicates which samples are in fact random access points. Using this table, you can locate which is the first sync sample prior to the specified time. The absence of the sync sample table indicates that all samples are synchronization points, and makes this problem easy. The shadow sync atom gives the opportunity for a content author to provide samples that are not delivered in the normal course of delivery, but which can be inserted to provide additional random access points. This improves random access without impacting bit rate during normal delivery. This atom maps samples that are not random access points to alternate samples which are. Also consult this table, if present, to find the first shadow sync sample prior to the sample in question. Having consulted the sync sample table and the shadow sync table, you probably wish to seek to whichever resultant sample is closest to, but prior to, the sample found in step 1.\n4. At this point you know the sample that will be used for random access. Use the sample-to-chunk table to determine in which chunk this sample is located.\n5. Knowing which chunk contained the sample in question, use the chunk offset atom to figure out where that chunk begins.\n6. Starting from this offset, you can use the information contained in the sample-to-chunk atom and the sample size atom to figure out where within this chunk the sample in question is located. This is the desired information.\n\n## Describing samples\n\n- **Sample table atom ('stbl')**: An atom that contains information for converting from media time to sample number to sample location.\n- **Sample description atom ('stsd')**: An atom that stores information that allows you to decode samples in the media.\n- **Time-to-sample atom ('stts')**: An atom that stores duration information for a media’s samples, providing a mapping from a time in a media to the corresponding data sample.\n- **Creating video tracks at 30 frames per second**: Configure your time-to-sample atom for 30 frames per second.\n- **Creating video tracks at 29.97 frames per second**: Configure your time-to-sample atom for 29.97 frames per second.\n- **Creating sound tracks at 44.1 kHz**: Configure your time-to-sample atom for sound at 44.1 kHz.\n- **Composition offset atom ('ctts')**: An atom you use to specify out-of-order video samples.\n- **Composition shift least greatest atom ('cslg')**: An atom that summarizes the calculated minimum and maximum offsets between decode and composition time, as well as the start and end times, for all samples.\n- **Using composition offset and composition shift least greatest atoms**: Calculate the offset shift when you store an out of order video stream’s sample table.\n- **Sync sample atom ('stss')**: An atom that identifies the key frames in the media.\n- **Partial sync sample atom ('stps')**: An atom that lists the partial sync samples.\n- **Sample-to-chunk atom ('stsc')**: An atom that stores chunk information for the samples in a media.\n- **Referencing two data files with a single track**: Use multiple sample descriptions reference data in multiple files for a track.\n- **Sample size atom ('stsz')**: An atom you use to specify the size of each sample in the media.\n- **Chunk offset atom ('stco')**: An atom that identifies the location of each chunk of data in the media’s data stream.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "An atom that contains information for converting from media time to sample number to sample location.",
+          "name" : "Sample table atom ('stbl')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sample_table_atom"
+        },
+        {
+          "description" : "An atom that stores information that allows you to decode samples in the media.",
+          "name" : "Sample description atom ('stsd')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sample_description_atom"
+        },
+        {
+          "description" : "An atom that stores duration information for a media’s samples, providing a mapping from a time in a media to the corresponding data sample.",
+          "name" : "Time-to-sample atom ('stts')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Time-to-sample_atom"
+        },
+        {
+          "description" : "Configure your time-to-sample atom for 30 frames per second.",
+          "name" : "Creating video tracks at 30 frames per second",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Creating_video_tracks_at_30_frames_per_second"
+        },
+        {
+          "description" : "Configure your time-to-sample atom for 29.97 frames per second.",
+          "name" : "Creating video tracks at 29.97 frames per second",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Creating_video_tracks_at_2997_frames_per_second"
+        },
+        {
+          "description" : "Configure your time-to-sample atom for sound at 44.1 kHz.",
+          "name" : "Creating sound tracks at 44.1 kHz",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Creating_sound_tracks_at_441_kHz"
+        },
+        {
+          "description" : "An atom you use to specify out-of-order video samples.",
+          "name" : "Composition offset atom ('ctts')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Composition_offset_atom"
+        },
+        {
+          "description" : "An atom that summarizes the calculated minimum and maximum offsets between decode and composition time, as well as the start and end times, for all samples.",
+          "name" : "Composition shift least greatest atom ('cslg')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Composition_shift_least_greatest_atom"
+        },
+        {
+          "description" : "Calculate the offset shift when you store an out of order video stream’s sample table.",
+          "name" : "Using composition offset and composition shift least greatest atoms",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Using_composition_offset_and_composition_shift_least_greatest_atoms"
+        },
+        {
+          "description" : "An atom that identifies the key frames in the media.",
+          "name" : "Sync sample atom ('stss')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sync_sample_atom"
+        },
+        {
+          "description" : "An atom that lists the partial sync samples.",
+          "name" : "Partial sync sample atom ('stps')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Partial_sync_sample_atom"
+        },
+        {
+          "description" : "An atom that stores chunk information for the samples in a media.",
+          "name" : "Sample-to-chunk atom ('stsc')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sample-to-chunk_atom"
+        },
+        {
+          "description" : "Use multiple sample descriptions reference data in multiple files for a track.",
+          "name" : "Referencing two data files with a single track",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Referencing_two_data_files_with_a_single_track"
+        },
+        {
+          "description" : "An atom you use to specify the size of each sample in the media.",
+          "name" : "Sample size atom ('stsz')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sample_size_atom"
+        },
+        {
+          "description" : "An atom that identifies the location of each chunk of data in the media’s data stream.",
+          "name" : "Chunk offset atom ('stco')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Chunk_offset_atom"
+        }
+      ],
+      "title" : "Describing samples"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Seeking with a QuickTime file",
+  "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Seeking_with_a_QuickTime_file"
+}

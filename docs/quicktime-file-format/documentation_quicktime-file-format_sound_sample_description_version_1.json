@@ -1,0 +1,121 @@
+{
+  "abstract" : "An extended sound sample description that supports compressed audio, and includes the ability to add atoms to the sound description.",
+  "codeExamples" : [
+
+  ],
+  "contentHash" : "5c53e76b1211de654cdb51dd5bb4af094fdb399ae7471856bd4db3d64cb3d49c",
+  "crawledAt" : "2026-03-10T21:36:25Z",
+  "id" : "E496B645-A653-4C39-B0E5-B1D4645B20A2",
+  "kind" : "unknown",
+  "language" : "swift",
+  "module" : "QuickTime File Format",
+  "overview" : "## Overview\n\nThe version field in the sample description is set to `1` for this version of the sound description structure. In version 1 of the sound description, introduced in QuickTime 3, the sound description record is extended by 4 fields, each 4 bytes long, and includes the ability to add atoms to the sound description.\n\nThese added fields are used to support out-of-band configuration settings for decompression and to allow some parsing of compressed QuickTime sound tracks without requiring the services of a decompressor.\n\nThese fields introduce the idea of a *packet*. For uncompressed audio, a packet is a sample from a single channel. For compressed audio, this field has no real meaning; by convention, it is treated as 1\/number-of-channels.\n\nThese fields also introduce the idea of a *frame*. For uncompressed audio, a frame is one sample from each channel. For compressed audio, a frame is a compressed group of samples whose format is dependent on the compressor.\n\nThe four new fields are:\n\nWhen capturing or compressing audio using the QuickTime API, the value of these fields can be obtained by calling the Apple Sound Manager’s `GetCompression` function. Historically, the value returned for the bytes per frame field was not always reliable, however, so this field was set by multiplying bytes per packet by the number of channels.\n\nTo facilitate playback on devices that support only one or two channels of audio in `'raw '` or `'twos'` format (such as most early Macintosh and Windows computers), all other uncompressed audio formats are treated as compressed formats, allowing a simple “decompressor” component to perform the necessary format conversion during playback. The audio samples are treated as opaque compressed frames for these data types, and the fields for sample size and bytes per sample are not meaningful.\n\nThe new fields correspond to the `CompressionInfo` structure used by the Macintosh Sound Manager (which uses 16-bit values) to describe the compression ratio of fixed ratio audio compression algorithms. If these fields are not used, they are set to `0`. File readers only need to check to see if `samplesPerPacket` is `0`.\n\n## Redefined sample tables\n\nIf the compression ID in the sample description is set to `–2`, the sound track uses redefined sample tables optimized for compressed audio.\n\nUnlike video media, the data structures for QuickTime sound media were originally designed for uncompressed samples. The extended version 1 sound description structure provides a great deal of support for compressed audio, but it does not deal directly with the sample table atoms that point to the media data.\n\nThe ordinary sample tables do not point to compressed frames, which are the fundamental units of compressed audio data. Instead, they appear to point to individual uncompressed audio samples, each one byte in size, within the compressed frames. When used with the QuickTime API, QuickTime compensates for this fiction in a largely transparent manner, but attempting to parse the sound samples using the original sample tables alone can be quite complicated.\n\nWith the introduction of support for the playback of variable bit-rate (VBR) audio in QuickTime 4.1, the contents of a number of these fields were redefined, so that a frame of compressed audio is treated as a single media sample. The sample-to-chunk and chunk offset atoms point to compressed frames, and the sample size table documents the size of the frames. The size is constant for CBR audio, but can vary for VBR.\n\nThe time-to-sample table documents the duration of the frames. If the time scale is set to the sampling rate, which is typical, the duration equals the number of uncompressed samples in each frame, which is usually constant even for VBR (it is common to use a fixed frame duration). If a different media timescale is used, it is necessary to convert from timescale units to sampling rate units to calculate the number of samples.\n\nThis change in the meaning of the sample tables allows you to use the tables accurately to find compressed frames.\n\nTo indicate that this new meaning is used, a version 1 sound description is used and the compression ID field is set to `–2`. The `samplesPerPacket` field and the `bytesPerSample` field are not necessarily meaningful for variable bit rate audio, but these fields should be set correctly in cases where the values are constant; the other two new fields (`bytesPerPacket` and `bytesPerFrame`) are reserved and should be set to `0`.\n\nIf the compression ID field is set to zero, the sample tables describe uncompressed audio samples and cannot be used directly to find and manipulate compressed audio frames. QuickTime has built-in support that allows programmers to act as if these sample tables pointed to uncompressed 1-byte audio samples.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\ncrawled: 2026-03-10T21:36:25Z\n---\n\n# Sound sample description version 1 ('stsd')\n\n**Atom**\n\nAn extended sound sample description that supports compressed audio, and includes the ability to add atoms to the sound description.\n\n## Overview\n\nThe version field in the sample description is set to `1` for this version of the sound description structure. In version 1 of the sound description, introduced in QuickTime 3, the sound description record is extended by 4 fields, each 4 bytes long, and includes the ability to add atoms to the sound description.\n\nThese added fields are used to support out-of-band configuration settings for decompression and to allow some parsing of compressed QuickTime sound tracks without requiring the services of a decompressor.\n\nThese fields introduce the idea of a *packet*. For uncompressed audio, a packet is a sample from a single channel. For compressed audio, this field has no real meaning; by convention, it is treated as 1\/number-of-channels.\n\nThese fields also introduce the idea of a *frame*. For uncompressed audio, a frame is one sample from each channel. For compressed audio, a frame is a compressed group of samples whose format is dependent on the compressor.\n\n\n\nThe four new fields are:\n\n- [doc:\/\/com.apple.qtff\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Samples_per_packet]\n- [doc:\/\/com.apple.qtff\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Bytes_per_packet]\n- [doc:\/\/com.apple.qtff\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Bytes_per_frame]\n- [doc:\/\/com.apple.qtff\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Bytes_per_sample]\n\nWhen capturing or compressing audio using the QuickTime API, the value of these fields can be obtained by calling the Apple Sound Manager’s `GetCompression` function. Historically, the value returned for the bytes per frame field was not always reliable, however, so this field was set by multiplying bytes per packet by the number of channels.\n\nTo facilitate playback on devices that support only one or two channels of audio in `'raw '` or `'twos'` format (such as most early Macintosh and Windows computers), all other uncompressed audio formats are treated as compressed formats, allowing a simple “decompressor” component to perform the necessary format conversion during playback. The audio samples are treated as opaque compressed frames for these data types, and the fields for sample size and bytes per sample are not meaningful.\n\nThe new fields correspond to the `CompressionInfo` structure used by the Macintosh Sound Manager (which uses 16-bit values) to describe the compression ratio of fixed ratio audio compression algorithms. If these fields are not used, they are set to `0`. File readers only need to check to see if `samplesPerPacket` is `0`.\n\n## Redefined sample tables\n\nIf the compression ID in the sample description is set to `–2`, the sound track uses redefined sample tables optimized for compressed audio.\n\nUnlike video media, the data structures for QuickTime sound media were originally designed for uncompressed samples. The extended version 1 sound description structure provides a great deal of support for compressed audio, but it does not deal directly with the sample table atoms that point to the media data.\n\nThe ordinary sample tables do not point to compressed frames, which are the fundamental units of compressed audio data. Instead, they appear to point to individual uncompressed audio samples, each one byte in size, within the compressed frames. When used with the QuickTime API, QuickTime compensates for this fiction in a largely transparent manner, but attempting to parse the sound samples using the original sample tables alone can be quite complicated.\n\nWith the introduction of support for the playback of variable bit-rate (VBR) audio in QuickTime 4.1, the contents of a number of these fields were redefined, so that a frame of compressed audio is treated as a single media sample. The sample-to-chunk and chunk offset atoms point to compressed frames, and the sample size table documents the size of the frames. The size is constant for CBR audio, but can vary for VBR.\n\nThe time-to-sample table documents the duration of the frames. If the time scale is set to the sampling rate, which is typical, the duration equals the number of uncompressed samples in each frame, which is usually constant even for VBR (it is common to use a fixed frame duration). If a different media timescale is used, it is necessary to convert from timescale units to sampling rate units to calculate the number of samples.\n\nThis change in the meaning of the sample tables allows you to use the tables accurately to find compressed frames.\n\nTo indicate that this new meaning is used, a version 1 sound description is used and the compression ID field is set to `–2`. The `samplesPerPacket` field and the `bytesPerSample` field are not necessarily meaningful for variable bit rate audio, but these fields should be set correctly in cases where the values are constant; the other two new fields (`bytesPerPacket` and `bytesPerFrame`) are reserved and should be set to `0`.\n\nIf the compression ID field is set to zero, the sample tables describe uncompressed audio samples and cannot be used directly to find and manipulate compressed audio frames. QuickTime has built-in support that allows programmers to act as if these sample tables pointed to uncompressed 1-byte audio samples.\n\n## Data fields\n\n- **Sample description size**: A 32-bit integer indicating the number of bytes in the sample description.\n- **Data format**: A 32-bit integer indicating the format of the stored data.\n- **Reserved**: Six bytes.\n- **Data reference index**: A 16-bit integer that contains the index of the data reference to use to retrieve data associated with samples that use this sample description.\n- **Version**: A 16-bit integer that holds the sample description version.\n- **Revision level**: A 16-bit integer.\n- **Vendor**: A 32-bit integer.\n- **Number of channels**: A 16-bit integer that indicates the number of sound channels used by the sound sample.\n- **Sample size**: A 16-bit integer that specifies the number of bits in each uncompressed sound sample.\n- **Compression ID**: A 16-bit integer.\n- **Packet size**: A 16-bit integer.\n- **Sample rate**: A 32-bit unsigned fixed-point number (16.16) that indicates the rate at which the sound samples were obtained.\n- **Samples per packet**: The number of uncompressed frames generated by a compressed frame, where an uncompressed frame is one sample from each channel.\n- **Bytes per packet**: For uncompressed audio, the number of bytes in a sample for a single channel.\n- **Bytes per frame**: The number of bytes in a frame.\n- **Bytes per sample**: The size of an uncompressed sample in bytes.\n\n## Using sample descriptions\n\n- **Sound sample description version 0 ('stsd')**: A sound sample description that supports only uncompressed audio in raw or twos-complement format.\n- **Sound sample description version 2 ('stsd')**: An updated sound sample description that adds high resolution audio.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A 32-bit integer indicating the number of bytes in the sample description.",
+          "name" : "Sample description size",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Sample_description_size"
+        },
+        {
+          "description" : "A 32-bit integer indicating the format of the stored data.",
+          "name" : "Data format",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Data_format"
+        },
+        {
+          "description" : "Six bytes.",
+          "name" : "Reserved",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Reserved"
+        },
+        {
+          "description" : "A 16-bit integer that contains the index of the data reference to use to retrieve data associated with samples that use this sample description.",
+          "name" : "Data reference index",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Data_reference_index"
+        },
+        {
+          "description" : "A 16-bit integer that holds the sample description version.",
+          "name" : "Version",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Version"
+        },
+        {
+          "description" : "A 16-bit integer.",
+          "name" : "Revision level",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Revision_level"
+        },
+        {
+          "description" : "A 32-bit integer.",
+          "name" : "Vendor",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Vendor"
+        },
+        {
+          "description" : "A 16-bit integer that indicates the number of sound channels used by the sound sample.",
+          "name" : "Number of channels",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Number_of_channels"
+        },
+        {
+          "description" : "A 16-bit integer that specifies the number of bits in each uncompressed sound sample.",
+          "name" : "Sample size",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Sample_size"
+        },
+        {
+          "description" : "A 16-bit integer.",
+          "name" : "Compression ID",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Compression_ID"
+        },
+        {
+          "description" : "A 16-bit integer.",
+          "name" : "Packet size",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Packet_size"
+        },
+        {
+          "description" : "A 32-bit unsigned fixed-point number (16.16) that indicates the rate at which the sound samples were obtained.",
+          "name" : "Sample rate",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Sample_rate"
+        },
+        {
+          "description" : "The number of uncompressed frames generated by a compressed frame, where an uncompressed frame is one sample from each channel.",
+          "name" : "Samples per packet",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Samples_per_packet"
+        },
+        {
+          "description" : "For uncompressed audio, the number of bytes in a sample for a single channel.",
+          "name" : "Bytes per packet",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Bytes_per_packet"
+        },
+        {
+          "description" : "The number of bytes in a frame.",
+          "name" : "Bytes per frame",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Bytes_per_frame"
+        },
+        {
+          "description" : "The size of an uncompressed sample in bytes.",
+          "name" : "Bytes per sample",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1\/Bytes_per_sample"
+        }
+      ],
+      "title" : "Data fields"
+    },
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "A sound sample description that supports only uncompressed audio in raw or twos-complement format.",
+          "name" : "Sound sample description version 0 ('stsd')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_0"
+        },
+        {
+          "description" : "An updated sound sample description that adds high resolution audio.",
+          "name" : "Sound sample description version 2 ('stsd')",
+          "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_2"
+        }
+      ],
+      "title" : "Using sample descriptions"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Sound sample description version 1 ('stsd')",
+  "url" : "https:\/\/developer.apple.com\/documentation\/quicktime-file-format\/Sound_sample_description_version_1"
+}

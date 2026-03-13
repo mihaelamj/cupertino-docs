@@ -1,0 +1,58 @@
+{
+  "abstract" : "Retrieve information from a QuickTime VR node with QuickTime atom container functions.",
+  "codeExamples" : [
+    {
+      "code" : "OSErr MyGetNodeName (QTVRInstance theInstance, UInt32 theNodeID,\n                                                                 StringPtr  theStringPtr)\n{\n    OSErr                   theErr = noErr;\n    QTAtomContainer         theNodeInfo;\n    QTVRNodeHeaderAtomPtr   theNodeHeader;\n    QTAtom                  theNodeHeaderAtom = 0;\n \n    \/\/Get the node information atom container.\n    theErr = QTVRGetNodeInfo(theInstance, theNodeID, &theNodeInfo);\n \n    \/\/Get the node header atom.\n    if (!theErr)\n        theNodeHeaderAtom = QTFindChildByID(theNodeInfo, kParentAtomIsContainer,\n                                                    kQTVRNodeHeaderAtomType,  1,  nil);\n    if (theNodeHeaderAtom != 0) {\n        QTLockContainer(theNodeInfo);\n \n        \/\/Get a pointer to the node header atom data.\n        theErr = QTGetAtomDataPtr(theNodeInfo, theNodeHeaderAtom,  nil,\n                                                            (Ptr  *)&theNodeHeader);\n        \/\/See if there is a name atom.\n        if (!theErr && theNodeHeader->nameAtomID != 0)  {\n            QTAtom theNameAtom;\n            theNameAtom = QTFindChildByID(theNodeInfo, kParentAtomIsContainer,\n                                kQTVRStringAtomType, theNodeHeader->nameAtomID,  nil);\n            if (theNameAtom != 0) {\n                VRStringAtomPtr theStringAtomPtr;\n \n                \/\/Get a pointer to the name atom data; copy it into  the string.\n                theErr = QTGetAtomDataPtr(theNodeInfo, theNameAtom,  nil,\n                                                            (Ptr  *)&theStringAtomPtr);\n                if (!theErr) {\n                    short theLen = theStringAtomPtr->stringLength;\n                    if (theLen > 255)\n                        theLen = 255;\n                    BlockMove(theStringAtomPtr->string, &theStringPtr[1],  theLen);\n                    theStringPtr[0] = theLen;\n                }\n            }\n        }\n        QTUnlockContainer(theNodeInfo);\n    }\n \n    QTDisposeAtomContainer(theNodeInfo);\n    return(theErr);\n}",
+      "language" : "c"
+    }
+  ],
+  "contentHash" : "cc2770965b526e0f2d327818f289c9649223be6b05cb9804ef148882c0ccd442",
+  "crawledAt" : "2026-03-10T21:35:01Z",
+  "id" : "7C231CF3-16CD-4432-A1E4-189D8CFC0DC1",
+  "kind" : "article",
+  "language" : "swift",
+  "module" : "QuickTime File Format",
+  "overview" : "## Overview\n\nYou can use standard QuickTime atom container functions to retrieve the information in a QuickTime VR node header atom. For example, the `MyGetNodeName` function defined in the following listing returns the name of a node, given its node ID.\n\nThe `MyGetNodeName` function defined in the preceeding listing retrieves the node information atom container (by calling `QTVRGetNodeInfo`) and then looks inside that container for the node header atom with atom ID `1`. If it finds one, it locks the container and then gets a pointer to the node header atom data. The desired information, the node name, is contained in the string atom whose atom ID is specified by the `nameAtomID` field of the node header structure. Accordingly, the `MyGetNodeName` function then calls `QTFindChildByID` once again to find that string atom. If the string atom is found, `MyGetNodeName` calls `QTGetAtomDataPtr` to get a pointer to the string atom data. Finally, `MyGetNodeName` copies the string data into the appropriate location and cleans up after itself before returning.",
+  "rawMarkdown" : "---\nsource: https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Getting_the_name_of_a_QuickTime_VR_node\ncrawled: 2026-03-10T21:35:01Z\n---\n\n# Getting the name of a QuickTime VR node\n\n**Article**\n\nRetrieve information from a QuickTime VR node with QuickTime atom container functions.\n\n## Overview\n\nYou can use standard QuickTime atom container functions to retrieve the information in a QuickTime VR node header atom. For example, the `MyGetNodeName` function defined in the following listing returns the name of a node, given its node ID.\n\n```c\nOSErr MyGetNodeName (QTVRInstance theInstance, UInt32 theNodeID,\n                                                                 StringPtr  theStringPtr)\n{\n    OSErr                   theErr = noErr;\n    QTAtomContainer         theNodeInfo;\n    QTVRNodeHeaderAtomPtr   theNodeHeader;\n    QTAtom                  theNodeHeaderAtom = 0;\n \n    \/\/Get the node information atom container.\n    theErr = QTVRGetNodeInfo(theInstance, theNodeID, &theNodeInfo);\n \n    \/\/Get the node header atom.\n    if (!theErr)\n        theNodeHeaderAtom = QTFindChildByID(theNodeInfo, kParentAtomIsContainer,\n                                                    kQTVRNodeHeaderAtomType,  1,  nil);\n    if (theNodeHeaderAtom != 0) {\n        QTLockContainer(theNodeInfo);\n \n        \/\/Get a pointer to the node header atom data.\n        theErr = QTGetAtomDataPtr(theNodeInfo, theNodeHeaderAtom,  nil,\n                                                            (Ptr  *)&theNodeHeader);\n        \/\/See if there is a name atom.\n        if (!theErr && theNodeHeader->nameAtomID != 0)  {\n            QTAtom theNameAtom;\n            theNameAtom = QTFindChildByID(theNodeInfo, kParentAtomIsContainer,\n                                kQTVRStringAtomType, theNodeHeader->nameAtomID,  nil);\n            if (theNameAtom != 0) {\n                VRStringAtomPtr theStringAtomPtr;\n \n                \/\/Get a pointer to the name atom data; copy it into  the string.\n                theErr = QTGetAtomDataPtr(theNodeInfo, theNameAtom,  nil,\n                                                            (Ptr  *)&theStringAtomPtr);\n                if (!theErr) {\n                    short theLen = theStringAtomPtr->stringLength;\n                    if (theLen > 255)\n                        theLen = 255;\n                    BlockMove(theStringAtomPtr->string, &theStringPtr[1],  theLen);\n                    theStringPtr[0] = theLen;\n                }\n            }\n        }\n        QTUnlockContainer(theNodeInfo);\n    }\n \n    QTDisposeAtomContainer(theNodeInfo);\n    return(theErr);\n}\n```\n\nThe `MyGetNodeName` function defined in the preceeding listing retrieves the node information atom container (by calling `QTVRGetNodeInfo`) and then looks inside that container for the node header atom with atom ID `1`. If it finds one, it locks the container and then gets a pointer to the node header atom data. The desired information, the node name, is contained in the string atom whose atom ID is specified by the `nameAtomID` field of the node header structure. Accordingly, the `MyGetNodeName` function then calls `QTFindChildByID` once again to find that string atom. If the string atom is found, `MyGetNodeName` calls `QTGetAtomDataPtr` to get a pointer to the string atom data. Finally, `MyGetNodeName` copies the string data into the appropriate location and cleans up after itself before returning.\n\n## Storing QuickTime VR files\n\n- **Single-node panoramic movies**: Store a QTVR track, a panorama track, and a panorama image track in a single-node panoramic movie.\n- **Single-node object movies**: Store a QTVR track, an object track, and an object image track in a single-node object movie.\n- **Multinode movies**: Store any number of object and panoramic nodes in a multinode QuickTime VR movie.\n- **Adding custom atoms in a QuickTime VR movie**: Provide additional information about a QuickTime VR movie using custom atoms.\n- **Adding atom containers in a QuickTime VR Movie**: Add node information to your QuickTime VR world.\n- **Optimizing QuickTime VR movies for web playback**: Prevent having to download an entire movie before starting playback.\n\n",
+  "sections" : [
+    {
+      "content" : "",
+      "items" : [
+        {
+          "description" : "Store a QTVR track, a panorama track, and a panorama image track in a single-node panoramic movie.",
+          "name" : "Single-node panoramic movies",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Single-node_panoramic_movies"
+        },
+        {
+          "description" : "Store a QTVR track, an object track, and an object image track in a single-node object movie.",
+          "name" : "Single-node object movies",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Single-node_object_movies"
+        },
+        {
+          "description" : "Store any number of object and panoramic nodes in a multinode QuickTime VR movie.",
+          "name" : "Multinode movies",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Multinode_movies"
+        },
+        {
+          "description" : "Provide additional information about a QuickTime VR movie using custom atoms.",
+          "name" : "Adding custom atoms in a QuickTime VR movie",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Adding_custom_atoms_in_a_QuickTime_VR_movie"
+        },
+        {
+          "description" : "Add node information to your QuickTime VR world.",
+          "name" : "Adding atom containers in a QuickTime VR Movie",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Adding_atom_containers_in_a_QuickTime_VR_Movie"
+        },
+        {
+          "description" : "Prevent having to download an entire movie before starting playback.",
+          "name" : "Optimizing QuickTime VR movies for web playback",
+          "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Optimizing_QuickTime_VR_movies_for_web_playback"
+        }
+      ],
+      "title" : "Storing QuickTime VR files"
+    }
+  ],
+  "source" : "appleJSON",
+  "title" : "Getting the name of a QuickTime VR node",
+  "url" : "https:\/\/developer.apple.com\/documentation\/QuickTime-File-Format\/Getting_the_name_of_a_QuickTime_VR_node"
+}
