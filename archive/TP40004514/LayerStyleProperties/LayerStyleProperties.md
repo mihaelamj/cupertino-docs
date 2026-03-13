@@ -1,7 +1,6 @@
 ---
 title: "Appendix A: Layer Style Property Animations"
 book: "Core Animation Programming Guide"
-framework: "QuartzCore"
 chapterId: "TP40004514-CH10"
 date: "2015-03-09"
 description: "Introduces the main components and services of Core Animation."

@@ -1,7 +1,6 @@
 ---
 title: "Revision History"
 book: "Core Animation Programming Guide"
-framework: "QuartzCore"
 chapterId: "TP40004628"
 date: "2015-03-09"
 description: "Introduces the main components and services of Core Animation."
